@@ -78,6 +78,9 @@ const SameBrandSection: React.FC<SameBrandSectionProps> = ({
         productProductPriceId: item?.product_productPrice?.[0]?.id,
         productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
         consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
+        consumerDiscountType: item?.product_productPrice?.[0]?.consumerDiscountType,
+        vendorDiscount: item?.product_productPrice?.[0]?.vendorDiscount,
+        vendorDiscountType: item?.product_productPrice?.[0]?.vendorDiscountType,
         askForPrice: item?.product_productPrice?.[0]?.askForPrice,
       })) || []
     );
@@ -210,7 +213,7 @@ const SameBrandSection: React.FC<SameBrandSectionProps> = ({
     <div className="suggestion-list-s1-col">
       <div className="suggestion-same-branch-lists-s1">
         <div className="title-headerpart">
-          <h3 dir={langDir}>{t("same_brand")}</h3>
+          <h3 dir={langDir} translate="no">{t("same_brand")}</h3>
         </div>
         <div className="contnet-bodypart min-h-[460px]">
           {!sameBrandProductsQuery?.isFetched ? (
@@ -251,6 +254,9 @@ const SameBrandSection: React.FC<SameBrandSectionProps> = ({
                           inWishlist={item?.inWishlist}
                           haveAccessToken={haveAccessToken}
                           consumerDiscount={item?.consumerDiscount}
+                          consumerDiscountType={item?.consumerDiscountType}
+                          vendorDiscount={item?.vendorDiscount}
+                          vendorDiscountType={item?.vendorDiscountType}
                           askForPrice={item?.askForPrice}
                         />
                       </div>
@@ -265,7 +271,7 @@ const SameBrandSection: React.FC<SameBrandSectionProps> = ({
             {sameBrandProductsQuery?.isFetched &&
             !memoizedSameBrandProductList?.length ? (
               <div className="w-full text-center">
-                <h3 dir={langDir}>{t("no_product_found")}</h3>
+                <h3 dir={langDir} translate="no">{t("no_product_found")}</h3>
               </div>
             ) : null}
           </div>

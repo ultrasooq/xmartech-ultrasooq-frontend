@@ -19,14 +19,7 @@ import {
   useCreateMember,
   useUpdateMember,
 } from "@/apis/queries/member.queries";
-import {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-  TooltipProvider,
-} from "@/components/ui/tooltip";
 import { Label } from "@radix-ui/react-dropdown-menu";
-import { Info } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 
@@ -52,7 +45,7 @@ const addFormSchema = (t: any) => {
     lastName: z
       .string()
       .trim()
-      .regex(/^[A-Za-z\s]+$/, { message: t("last_name_must_only_contain_letters") })
+      .regex(/^$|^[A-Za-z\s]+$/, { message: t("last_name_must_only_contain_letters") })
       .optional(), // Apply validation first, then make it optional
   
     email: z
@@ -141,8 +134,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
 
   const onSubmit = async (formData: any) => {
     const updatedFormData = { ...formData };
-    console.log(updatedFormData);
-
+    
     let response;
     if (memberDetails) {
       response = await updateMember.mutateAsync({
@@ -171,7 +163,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
   return (
     <>
       <div className="modal-header !justify-between" dir={langDir}>
-        <DialogTitle className="text-center text-xl font-bold">
+        <DialogTitle className="text-center text-xl font-bold" translate="no">
           {memberDetails ? t("edit_member") : t("add_member")}
         </DialogTitle>
         <Button
@@ -193,6 +185,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
             placeholder={t("first_name_placeholder")}
             type="text"
             dir={langDir}
+            translate="no"
           />
 
           <ControlledTextInput
@@ -201,6 +194,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
             placeholder={t("last_name_placeholder")}
             type="text"
             dir={langDir}
+            translate="no"
           />
 
           <ControlledTextInput
@@ -210,6 +204,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
             type="text"
             readOnly={memberDetails}
             dir={langDir}
+            translate="no"
           />
 
           <ControlledTextInput
@@ -221,7 +216,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
           />
 
           <div className="flex w-full items-center gap-1.5" dir={langDir}>
-            <Label  dir={langDir}>{t("user_role")}</Label>
+            <Label  dir={langDir} translate="no">{t("user_role")}</Label>
           </div>
           <Controller
             name="userRoleId"
@@ -253,17 +248,17 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
                   isRtl={langDir == 'rtl'}
                 />
                 {/* Validation Error Message */}
-                {form.formState.errors.userRoleId && (
+                {form.formState.errors.userRoleId ? (
                   <p className="text-sm text-red-500" dir={langDir}>
                     {form.formState.errors.userRoleId.message}
                   </p>
-                )}
+                ) : null}
               </>
             )}
           />
 
           <div className="flex w-full items-center gap-1.5" dir={langDir}>
-            <Label dir={langDir}>{t("status")}</Label>
+            <Label dir={langDir} translate="no">{t("status")}</Label>
           </div>
           <Controller
             name="status"
@@ -290,6 +285,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
             type="submit"
             className="theme-primary-btn mt-2 h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
             dir={langDir}
+            translate="no"
           >
             {memberDetails ? t("edit_member") : t("add_member")}
           </Button>

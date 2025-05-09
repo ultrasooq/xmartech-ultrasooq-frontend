@@ -104,6 +104,7 @@ export default function PasswordResetVerifyPage() {
       sessionStorage.clear();
       router.push("/reset-password");
     } else {
+      setOtp(new Array(4).fill(""));
       toast({
         title: t("verification_failed"),
         description: response.message,
@@ -216,10 +217,10 @@ export default function PasswordResetVerifyPage() {
         <div className="flex">
           <div className="m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-7 shadow-sm sm:p-12 md:w-9/12 lg:w-7/12">
             <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
-              <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10">
+              <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10" translate="no">
                 {t("verify_otp")}
               </h2>
-              <p>{t("enter_otp_text")}</p>
+              <p translate="no">{t("enter_otp_text")}</p>
             </div>
             <div className="w-full">
               <Form {...form}>
@@ -254,6 +255,7 @@ export default function PasswordResetVerifyPage() {
                       type="submit"
                       className="theme-primary-btn m-auto h-12 rounded bg-dark-orange px-10 text-center text-lg font-bold leading-6"
                       dir={langDir}
+                      translate="no"
                     >
                       {passwordResetVerify.isPending ? (
                         <LoaderWithMessage message={t("please_wait")} />
@@ -265,7 +267,7 @@ export default function PasswordResetVerifyPage() {
                 </form>
               </Form>
               <div className="mb-4 w-full space-x-2 text-center">
-                <span className="text-sm font-medium leading-4 text-light-gray" dir={langDir}>
+                <span className="text-sm font-medium leading-4 text-light-gray" dir={langDir} translate="no">
                   {t("didnt_receive_otp")}
                 </span>
                 <Button
@@ -279,6 +281,7 @@ export default function PasswordResetVerifyPage() {
                   onClick={handlePasswordResendVerify}
                   className="cursor-pointer p-0 font-medium text-dark-orange"
                   dir={langDir}
+                  translate="no"
                 >
                   {t("resend")}
                 </Button>

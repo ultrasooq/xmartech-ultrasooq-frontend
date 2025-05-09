@@ -2,13 +2,16 @@ import { APIResponseError } from "@/utils/types/common.types";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useQueryClient } from "@tanstack/react-query";
 import {
+  addServiceToCartWithProduct,
   deleteCartItem,
+  deleteServiceFromCart,
   fetchCartByDevice,
   fetchCartByUserId,
   fetchCartCountByDeviceId,
   fetchCartCountWithLogin,
   updateCartByDevice,
   updateCartWithLogin,
+  updateCartWithService,
   updateUserCartByDeviceId,
 } from "../requests/cart.requests";
 
@@ -112,6 +115,41 @@ export const useUpdateCartByDevice = () => {
   });
 };
 
+export const useUpdateCartWithService = () => {
+  const queryClient = useQueryClient();
+  return useMutation<
+    { data: any; message: string; success: boolean },
+    APIResponseError,
+    {
+      productId: number; 
+      productPriceId: number; 
+      quantity: number, 
+      productVariant?: any;
+      cartId: number;
+      serviceId: number;
+    }
+  >({
+    mutationFn: async (payload) => {
+      const res = await updateCartWithService({
+        ...payload,
+        ...{ relatedCartType: 'PRODUCT', cartType: 'SERVICE' }
+      });
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["cart-by-user"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["cart-count-with-login"],
+      });
+    },
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
+};
+
 export const useDeleteCartItem = () => {
   const queryClient = useQueryClient();
   return useMutation<
@@ -121,6 +159,37 @@ export const useDeleteCartItem = () => {
   >({
     mutationFn: async (payload) => {
       const res = await deleteCartItem(payload);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["cart-by-user"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["cart-by-device"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["cart-count-with-login"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["cart-count-without-login"],
+      });
+    },
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
+};
+
+export const useDeleteServiceFromCart = () => {
+  const queryClient = useQueryClient();
+  return useMutation<
+    { data: any; message: string; status: boolean },
+    APIResponseError,
+    { cartId: number, serviceFeatureId?: number }
+  >({
+    mutationFn: async (payload) => {
+      const res = await deleteServiceFromCart(payload.cartId, payload.serviceFeatureId);
       return res.data;
     },
     onSuccess: () => {
@@ -190,5 +259,36 @@ export const useCartCountWithoutLogin = (
       return res.data;
     },
     enabled,
+  });
+};
+
+export const useAddServiceToCartWithProduct = () => {
+  const queryClient = useQueryClient();
+  return useMutation<
+    { data: any; message: string; success: boolean },
+    APIResponseError,
+    {[key: string]: any}
+  >({
+    mutationFn: async (payload) => {
+      const res = await addServiceToCartWithProduct(payload);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["cart-by-user"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["cart-by-device"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["cart-count-with-login"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["cart-count-without-login"],
+      });
+    },
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
   });
 };

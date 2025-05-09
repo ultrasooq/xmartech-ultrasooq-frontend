@@ -39,7 +39,7 @@ const QuestionsAnswersSection: React.FC<QuestionsAnswersSectionProps> = ({
     <div className="w-full">
       <div className="flex w-full flex-wrap items-center justify-between">
         <div className="flex w-auto flex-wrap items-start justify-start">
-          <h2 className="mb-0 text-2xl font-semibold leading-7 text-color-dark" dir={langDir}>
+          <h2 className="mb-0 text-2xl font-semibold leading-7 text-color-dark" dir={langDir} translate="no">
             {t("question_n_answers")}
           </h2>
         </div>
@@ -50,6 +50,7 @@ const QuestionsAnswersSection: React.FC<QuestionsAnswersSectionProps> = ({
               onClick={handleToggleQuestionModal}
               className="flex rounded-sm bg-dark-orange p-3 text-sm font-bold leading-5 text-white"
               dir={langDir}
+              translate="no"
             >
               <Image
                 src="/images/pen-icon.svg"
@@ -72,6 +73,7 @@ const QuestionsAnswersSection: React.FC<QuestionsAnswersSectionProps> = ({
               onClick={() => setSortType("newest")}
               className="block rounded-full border border-solid border-gray-300 text-sm font-medium text-gray-500"
               dir={langDir}
+              translate="no"
             >
               {t("newest")}
             </Button>
@@ -83,6 +85,7 @@ const QuestionsAnswersSection: React.FC<QuestionsAnswersSectionProps> = ({
               onClick={() => setSortType("oldest")}
               className="block rounded-full border border-solid border-gray-300 text-sm font-medium text-gray-500"
               dir={langDir}
+              translate="no"
             >
               {t("oldest")}
             </Button>
@@ -92,7 +95,7 @@ const QuestionsAnswersSection: React.FC<QuestionsAnswersSectionProps> = ({
       <div className="flex w-full border-t-2 border-dashed border-gray-300 py-5">
         <div className="w-full space-y-3">
           {!questionQuery?.data?.data?.length ? (
-            <div className="w-full text-center text-sm font-bold text-dark-orange" dir={langDir}>
+            <div className="w-full text-center text-sm font-bold text-dark-orange" dir={langDir} translate="no">
               {t("no_questions_found")}
             </div>
           ) : null}

@@ -10,6 +10,7 @@ import {
   useDeleteCartItem,
   useUpdateCartByDevice,
   useUpdateCartWithLogin,
+  useUpdateCartWithService,
 } from "@/apis/queries/cart.queries";
 import { getOrCreateDeviceId } from "@/utils/helper";
 import { useAuth } from "@/context/AuthContext";
@@ -30,8 +31,12 @@ type ProductCardProps = {
   onWishlist: (args0: number) => void;
   haveAccessToken: boolean;
   consumerDiscount: number;
+  consumerDiscountType?: string;
+  vendorDiscount: number;
+  vendorDiscountType?: string;
   minQuantity?: number;
   maxQuantity?: number;
+  relatedCart?: any;
 };
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -47,15 +52,20 @@ const ProductCard: React.FC<ProductCardProps> = ({
   onWishlist,
   haveAccessToken,
   consumerDiscount,
+  consumerDiscountType,
+  vendorDiscount,
+  vendorDiscountType,
   minQuantity,
   maxQuantity,
+  relatedCart
 }) => {
   const t = useTranslations();
-  const { langDir, currency } = useAuth();
+  const { user, langDir, currency } = useAuth();
   const [quantity, setQuantity] = useState(1);
   const [selectedProductVariant, setSelectedProductVariant] = useState<any>();
   const deviceId = getOrCreateDeviceId() || "";
   const updateCartWithLogin = useUpdateCartWithLogin();
+  const updateCartWithService = useUpdateCartWithService();
   const updateCartByDevice = useUpdateCartByDevice();
   const deleteCartItem = useDeleteCartItem();
 
@@ -66,8 +76,16 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
   const calculateDiscountedPrice = () => {
     const price = offerPrice ? Number(offerPrice) : 0;
-    const discount = consumerDiscount || 0;
-    return Number((price - (price * discount) / 100).toFixed(2));
+    let discount = consumerDiscount;
+    let discountType = consumerDiscountType;
+    if (user?.tradeRole && user?.tradeRole != 'BUYER') {
+      discount = vendorDiscount;
+      discountType = vendorDiscountType;
+    }
+    if (discountType == 'PERCENTAGE') {
+      return Number((price - (price * discount) / 100).toFixed(2));
+    }
+    return Number((price - discount).toFixed(2));
   };
 
   useEffect(() => {
@@ -191,10 +209,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
             width={108}
           />
         </div>
-        <figcaption>
+        <figcaption dir={langDir}>
           <h4 className="!text-lg !font-bold">{productName}</h4>
           <div className="custom-form-group">
-            <label dir={langDir}>{t("quantity")}</label>
+            <label dir={langDir} translate="no">{t("quantity")}</label>
             <div className="qty-up-down-s1-with-rgMenuAction">
               <div className="flex items-center gap-x-1">
                 <Button
@@ -249,6 +267,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                     className="px-2 underline"
                     onClick={() => setIsConfirmDialogOpen(true)}
                     dir={langDir}
+                    translate="no"
                   >
                     {t("remove")}
                   </Button>
@@ -260,6 +279,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                       className="px-2 underline"
                       onClick={() => onWishlist(productId)}
                       dir={langDir}
+                      translate="no"
                     >
                       {t("move_to_wishlist")}
                     </Button>
@@ -271,7 +291,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </figcaption>
       </figure>
       <div className="right-info">
-        <h6 dir={langDir}>{t("price")}</h6>
+        <h6 dir={langDir} translate="no">{t("price")}</h6>
         <h5 dir={langDir}>
           {currency.symbol}
           {quantity * calculateDiscountedPrice()}

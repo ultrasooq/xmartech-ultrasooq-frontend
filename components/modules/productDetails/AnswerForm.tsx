@@ -75,7 +75,7 @@ const AnswerForm: React.FC<AnswerFormProps> = ({ onClose, questionId, onReplySuc
   return (
     <div>
       <DialogHeader>
-        <DialogTitle className="mb-5 text-center text-xl font-semibold" dir={langDir}>
+        <DialogTitle className="mb-5 text-center text-xl font-semibold" dir={langDir} translate="no">
           {t("post_your_answer")}
         </DialogTitle>
       </DialogHeader>
@@ -91,6 +91,7 @@ const AnswerForm: React.FC<AnswerFormProps> = ({ onClose, questionId, onReplySuc
             placeholder={t("enter_your_answer_here")}
             rows={6}
             dir={langDir}
+            translate="no"
           />
 
           <Button
@@ -98,6 +99,7 @@ const AnswerForm: React.FC<AnswerFormProps> = ({ onClose, questionId, onReplySuc
             type="submit"
             className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
             dir={langDir}
+            translate="no"
           >
             {updateAnswer.isPending ? (
               <>

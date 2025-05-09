@@ -63,7 +63,7 @@ const MySettingsLayout = ({ children }: { children: React.ReactNode }) => {
                     <span className="icon-container">
                       <PackageIcon />
                     </span>
-                    <span className="text-container">{t("my_orders")}</span>
+                    <span className="text-container" translate="no">{t("my_orders")}</span>
                     {/* TODO: commented for now */}
                     {/* <span className="arow">
                       <ChevronDownIcon />
@@ -75,7 +75,7 @@ const MySettingsLayout = ({ children }: { children: React.ReactNode }) => {
                     <span className="icon-container">
                       <UserIcon />
                     </span>
-                    <span className="text-container">{t("account_settings")}</span>
+                    <span className="text-container" translate="no">{t("account_settings")}</span>
                     <span className="arow">
                       <ChevronDownIcon />
                     </span>
@@ -88,6 +88,7 @@ const MySettingsLayout = ({ children }: { children: React.ReactNode }) => {
                           "sub-menu-links",
                           isActivePath("/my-settings/address") ? "active" : "",
                         )}
+                        translate="no"
                       >
                         {t("manage_address")}
                       </Link>
@@ -103,6 +104,7 @@ const MySettingsLayout = ({ children }: { children: React.ReactNode }) => {
                                 ? "active"
                                 : "",
                             )}
+                            translate="no"
                           >
                             {t("change_password")}
                           </Link>
@@ -116,6 +118,7 @@ const MySettingsLayout = ({ children }: { children: React.ReactNode }) => {
                                 ? "active"
                                 : "",
                             )}
+                            translate="no"
                           >
                             {t("change_email")}
                           </Link>

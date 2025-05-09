@@ -42,7 +42,7 @@ export function FixedToolbarButtons() {
           transform: 'translateX(calc(-1px))',
         }}
       >
-        {!readOnly && (
+        {!readOnly ? (
           <>
             <ToolbarGroup noSeparator>
               <InsertDropdownMenu />
@@ -110,7 +110,7 @@ export function FixedToolbarButtons() {
               <MoreDropdownMenu />
             </ToolbarGroup>
           </>
-        )}
+        ) : null}
 
         <div className="grow" />
 

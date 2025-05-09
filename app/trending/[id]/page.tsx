@@ -17,6 +17,7 @@ import {
   useUpdateCartByDevice,
   useUpdateCartWithLogin,
   useDeleteCartItem,
+  useDeleteServiceFromCart,
 } from "@/apis/queries/cart.queries";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
@@ -38,6 +39,7 @@ import Footer from "@/components/shared/Footer";
 import VendorSection from "@/components/modules/productDetails/VendorSection";
 import PlateEditor from "@/components/shared/Plate/PlateEditor";
 import ProductCard from "@/components/modules/cartList/ProductCard";
+import ServiceCard from "@/components/modules/cartList/ServiceCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CartItem } from "@/utils/types/cart.types";
 import { useTranslations } from "next-intl";
@@ -46,6 +48,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useClickOutside } from "use-events";
 import { Button } from "@/components/ui/button";
 import { IoCloseSharp } from "react-icons/io5";
+import RelatedServices from "@/components/modules/trending/RelatedServices";
 
 const ProductDetailsPage = () => {
   const t = useTranslations();
@@ -62,16 +65,25 @@ const ProductDetailsPage = () => {
   const type = searchQuery?.get("type");
   const otherSellerId = searchQuery?.get("sellerId");
   const otherProductId = searchQuery?.get("productId");
-  const sharedLinkId = searchQuery?.get("sharedLinkId") || '';
-  const [isShareLinkProcessed, setIsShareLinkProcessed] = useState<boolean>(false);
+  const sharedLinkId = searchQuery?.get("sharedLinkId") || "";
+  const [isShareLinkProcessed, setIsShareLinkProcessed] =
+    useState<boolean>(false);
   const [productVariantTypes, setProductVariantTypes] = useState<string[]>();
   const [productVariants, setProductVariants] = useState<any[]>();
-  const [selectedProductVariant, setSelectedProductVariant] = useState<any>(null);
+  const [selectedProductVariant, setSelectedProductVariant] =
+    useState<any>(null);
 
-  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
-  const handleConfirmDialog = () => setIsConfirmDialogOpen(!isConfirmDialogOpen);
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] =
+    useState<boolean>(false);
+  const handleConfirmDialog = () =>
+    setIsConfirmDialogOpen(!isConfirmDialogOpen);
   const confirmDialogRef = useRef(null);
-  const [isClickedOutsideConfirmDialog] = useClickOutside([confirmDialogRef], (event) => { onCancelRemove() });
+  const [isClickedOutsideConfirmDialog] = useClickOutside(
+    [confirmDialogRef],
+    (event) => {
+      onCancelRemove();
+    },
+  );
 
   const me = useMe();
   const productQueryById = useProductById(
@@ -117,6 +129,7 @@ const ProductDetailsPage = () => {
     !!otherProductId && !!otherSellerId,
   );
   const deleteCartItem = useDeleteCartItem();
+  const deleteServiceFromCart = useDeleteServiceFromCart();
   const [isVisible, setIsVisible] = useState(false); // Initially hidden
 
   const hasItemByUser = !!cartListByUser.data?.data?.find(
@@ -170,9 +183,39 @@ const ProductDetailsPage = () => {
     }
   };
 
+  const handleRemoveServiceFromCart = async (
+    cartId: number,
+    serviceFeatureId: number,
+  ) => {
+    const cartItem = memoizedCartList.find((item: any) => item.id == cartId);
+    let payload: any = { cartId };
+    if (cartItem?.cartServiceFeatures?.length > 1) {
+      payload.serviceFeatureId = serviceFeatureId;
+    }
+    const response = await deleteServiceFromCart.mutateAsync(payload);
+    if (response.status) {
+      toast({
+        title: t("item_removed_from_cart"),
+        description: t("check_your_cart_for_more_details"),
+        variant: "success",
+      });
+    } else {
+      toast({
+        title: response.message || t("item_not_removed_from_cart"),
+        description: response.message || t("check_your_cart_for_more_details"),
+        variant: "danger",
+      });
+    }
+  };
+
   const onConfirmRemove = () => {
-    const cartId = cartListByUser.data?.data?.find((item: any) => item.productId == productDetails.id)?.id
-      || cartListByDeviceQuery.data?.data?.find((item: any) => item.productId == productDetails.id)?.id;
+    const cartId =
+      cartListByUser.data?.data?.find(
+        (item: any) => item.productId == productDetails.id,
+      )?.id ||
+      cartListByDeviceQuery.data?.data?.find(
+        (item: any) => item.productId == productDetails.id,
+      )?.id;
 
     if (cartId) handleRemoveItemFromCart(cartId);
     setIsConfirmDialogOpen(false);
@@ -193,9 +236,19 @@ const ProductDetailsPage = () => {
   const addToCartFromSharedLink = async () => {
     if (isShareLinkProcessed) return;
 
-    if (productQueryById?.data?.generatedLinkDetail && !cartListByUser?.isLoading && !cartListByDeviceQuery?.isLoading) {
-      const item = memoizedCartList.find((item: any) => item.productId == Number(searchParams?.id || ''));
-      if (!item || (item && item.sharedLinkId != productQueryById.data.generatedLinkDetail.id)) {
+    if (
+      productQueryById?.data?.generatedLinkDetail &&
+      !cartListByUser?.isLoading &&
+      !cartListByDeviceQuery?.isLoading
+    ) {
+      const item = memoizedCartList.find(
+        (item: any) => item.productId == Number(searchParams?.id || ""),
+      );
+      if (
+        !item ||
+        (item &&
+          item.sharedLinkId != productQueryById.data.generatedLinkDetail.id)
+      ) {
         if (item) {
           await handleRemoveItemFromCart(item.id);
         }
@@ -207,7 +260,7 @@ const ProductDetailsPage = () => {
         setIsShareLinkProcessed(true);
       }
     }
-  }
+  };
 
   const productDetails = !otherSellerId
     ? productQueryById.data?.data
@@ -229,7 +282,9 @@ const ProductDetailsPage = () => {
 
   useEffect(() => {
     const fetchProductVariant = async () => {
-      const response = await getProductVariant.mutateAsync([productDetails?.product_productPrice?.[0]?.id]);
+      const response = await getProductVariant.mutateAsync([
+        productDetails?.product_productPrice?.[0]?.id,
+      ]);
       const variants = response?.data?.[0]?.object || [];
       if (variants.length > 0) {
         const variantTypes = variants.map((item: any) => item.type);
@@ -240,7 +295,7 @@ const ProductDetailsPage = () => {
     };
 
     if (!productQueryById?.isLoading) fetchProductVariant();
-  }, [productQueryById?.data?.data])
+  }, [productQueryById?.data?.data]);
 
   useEffect(() => {
     addToCartFromSharedLink();
@@ -248,7 +303,7 @@ const ProductDetailsPage = () => {
     productQueryById?.data?.generatedLinkDetail,
     memoizedCartList.length,
     cartListByDeviceQuery?.isLoading,
-    cartListByUser?.isLoading
+    cartListByUser?.isLoading,
   ]);
 
   useEffect(() => {
@@ -263,8 +318,10 @@ const ProductDetailsPage = () => {
     if (isAddedToCart) {
       handleAddToCart(quantity, action);
     } else {
-      const minQuantity = productDetails.product_productPrice?.[0]?.minQuantityPerCustomer;
-      const maxQuantity = productDetails.product_productPrice?.[0]?.maxQuantityPerCustomer;
+      const minQuantity =
+        productDetails.product_productPrice?.[0]?.minQuantityPerCustomer;
+      const maxQuantity =
+        productDetails.product_productPrice?.[0]?.maxQuantityPerCustomer;
 
       if (minQuantity && minQuantity > quantity) {
         toast({
@@ -287,9 +344,10 @@ const ProductDetailsPage = () => {
   const handleAddToCart = async (
     quantity: number,
     actionType: "add" | "remove",
-    productVariant?: any
+    productVariant?: any,
   ) => {
-    const minQuantity = productDetails.product_productPrice?.[0]?.minQuantityPerCustomer;
+    const minQuantity =
+      productDetails.product_productPrice?.[0]?.minQuantityPerCustomer;
     if (actionType == "add" && minQuantity && minQuantity > quantity) {
       toast({
         description: t("min_quantity_must_be_n", { n: minQuantity }),
@@ -307,7 +365,8 @@ const ProductDetailsPage = () => {
       return;
     }
 
-    const maxQuantity = productDetails.product_productPrice?.[0]?.maxQuantityPerCustomer;
+    const maxQuantity =
+      productDetails.product_productPrice?.[0]?.maxQuantityPerCustomer;
     if (maxQuantity && maxQuantity < quantity) {
       toast({
         description: t("max_quantity_must_be_n", { n: maxQuantity }),
@@ -342,14 +401,16 @@ const ProductDetailsPage = () => {
       if (response.status) {
         setGlobalQuantity(quantity);
         toast({
-          title: actionType == "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
+          title:
+            actionType == "add"
+              ? t("item_added_to_cart")
+              : t("item_removed_from_cart"),
           description: t("check_your_cart_for_more_details"),
           variant: "success",
         });
         setIsVisible(true); // Show the div when the button is clicked
         return response.status;
       }
-
     } else {
       if (!productDetails?.product_productPrice?.[0]?.id) {
         toast({
@@ -369,7 +430,10 @@ const ProductDetailsPage = () => {
       if (response.status) {
         setGlobalQuantity(quantity);
         toast({
-          title: actionType == "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
+          title:
+            actionType == "add"
+              ? t("item_added_to_cart")
+              : t("item_removed_from_cart"),
           description: t("check_your_cart_for_more_details"),
           variant: "success",
         });
@@ -498,13 +562,13 @@ const ProductDetailsPage = () => {
     }
   }, [accessToken]);
 
-  useEffect(() => {
-
-  }, []);
+  useEffect(() => {}, []);
 
   return (
     <>
-      <title dir={langDir}>{t("store")} | Ultrasooq</title>
+      <title dir={langDir} translate="no">
+        {t("store")} | Ultrasooq
+      </title>
       <div className="body-content-s1 relative">
         <div className="product-view-s1-left-right type2">
           <div className="container m-auto px-3">
@@ -545,7 +609,9 @@ const ProductDetailsPage = () => {
                 productDetails?.product_productShortDescription
               }
               productQuantity={
-                globalQuantity || getProductQuantityByUser || getProductQuantityByDevice
+                globalQuantity ||
+                getProductQuantityByUser ||
+                getProductQuantityByDevice
               }
               onQuantityChange={handleQuantity}
               productReview={productDetails?.productReview}
@@ -558,7 +624,8 @@ const ProductDetailsPage = () => {
               soldBy={`${productDetails?.product_productPrice?.[0]?.adminDetail?.firstName}
                 ${productDetails?.product_productPrice?.[0]?.adminDetail?.lastName}`}
               soldByTradeRole={
-                productDetails?.product_productPrice?.[0]?.adminDetail?.tradeRole
+                productDetails?.product_productPrice?.[0]?.adminDetail
+                  ?.tradeRole
               }
               userId={me.data?.data?.id}
               sellerId={
@@ -570,6 +637,15 @@ const ProductDetailsPage = () => {
               }
               consumerDiscount={
                 productDetails?.product_productPrice?.[0]?.consumerDiscount
+              }
+              consumerDiscountType={
+                productDetails?.product_productPrice?.[0]?.consumerDiscountType
+              }
+              vendorDiscount={
+                productDetails?.product_productPrice?.[0]?.vendorDiscount
+              }
+              vendorDiscountType={
+                productDetails?.product_productPrice?.[0]?.vendorDiscountType
               }
               askForPrice={
                 productDetails?.product_productPrice?.[0]?.askForPrice
@@ -587,7 +663,9 @@ const ProductDetailsPage = () => {
               productVariantTypes={productVariantTypes}
               productVariants={productVariants}
               selectedProductVariant={
-                getProductVariantByDevice || getProductVariantByUser || productVariants?.[0]
+                getProductVariantByDevice ||
+                getProductVariantByUser ||
+                productVariants?.[0]
               }
               selectProductVariant={selectProductVariant}
             />
@@ -603,6 +681,7 @@ const ProductDetailsPage = () => {
                       value="description"
                       className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
                       dir={langDir}
+                      translate="no"
                     >
                       {t("description")}
                     </TabsTrigger>
@@ -610,6 +689,7 @@ const ProductDetailsPage = () => {
                       value="specification"
                       className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
                       dir={langDir}
+                      translate="no"
                     >
                       {t("specification")}
                     </TabsTrigger>
@@ -617,6 +697,7 @@ const ProductDetailsPage = () => {
                       value="vendor"
                       className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
                       dir={langDir}
+                      translate="no"
                     >
                       {t("vendor")}
                     </TabsTrigger>
@@ -624,6 +705,7 @@ const ProductDetailsPage = () => {
                       value="reviews"
                       className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
                       dir={langDir}
+                      translate="no"
                     >
                       {t("reviews")}
                     </TabsTrigger>
@@ -631,6 +713,7 @@ const ProductDetailsPage = () => {
                       value="qanda"
                       className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
                       dir={langDir}
+                      translate="no"
                     >
                       {t("questions")}
                     </TabsTrigger>
@@ -638,8 +721,17 @@ const ProductDetailsPage = () => {
                       value="offers"
                       className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
                       dir={langDir}
+                      translate="no"
                     >
                       {t("more_offers")}
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="services"
+                      className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
+                      dir={langDir}
+                      translate="no"
+                    >
+                      {t("services")}
                     </TabsTrigger>
                   </TabsList>
                   <TabsContent value="description" className="mt-0">
@@ -663,10 +755,12 @@ const ProductDetailsPage = () => {
                       ) : null}
                       {productDetails?.product_productSpecification?.length ? (
                         <div className="specification-sec">
-                          <h2 dir={langDir}>{t("specification")}</h2>
+                          <h2 dir={langDir} translate="no">
+                            {t("specification")}
+                          </h2>
                           <table className="specification-table">
                             <tbody>
-                              <tr className="grid grid-cols-2">
+                              <tr className="grid grid-cols-1 md:grid-cols-2">
                                 {productDetails?.product_productSpecification?.map(
                                   (item: {
                                     id: number;
@@ -720,17 +814,38 @@ const ProductDetailsPage = () => {
                       <p>More Offers</p>
                     </div>
                   </TabsContent>
+                  <TabsContent value="services" className="mt-0">
+                    <div className="w-full bg-white">
+                      <RelatedServices
+                        productId={Number(searchParams?.id) || 0}
+                        productPriceId={
+                          productDetails?.product_productPrice?.[0]?.id
+                        }
+                        productCategoryId={String(
+                          productDetails?.categoryId || "",
+                        )}
+                        cartList={memoizedCartList}
+                        productCartId={
+                          memoizedCartList.find(
+                            (item: any) =>
+                              item.productId == Number(searchParams?.id),
+                          )?.id
+                        }
+                        isChildCart={
+                          !!memoizedCartList?.filter((c: any) => c.serviceId && c.cartProductServices?.length)
+                            ?.find((c: any) => {
+                                return !!c.cartProductServices
+                                    .find((r: any) => r.relatedCartType == 'PRODUCT' && r.productId == searchParams?.id);
+                            })
+                        }
+                      />
+                    </div>
+                  </TabsContent>
                 </Tabs>
               </div>
             </div>
             <div className="product-view-s1-details-right-suggestion">
               <div className="suggestion-lists-s1 mt-3">
-                {/* TODO: hide ad section for now */}
-                {/* <div className="suggestion-list-s1-col">
-                  <div className="suggestion-banner">
-                    <Image src="/images/suggestion-pic1.png" alt="suggested-preview" />
-                  </div>
-                </div> */}
                 <SameBrandSection
                   productDetails={productDetails}
                   productId={searchParams?.id as string}
@@ -740,7 +855,7 @@ const ProductDetailsPage = () => {
           </div>
         </div>
 
-        {isVisible && (
+        {isVisible ? (
           <div className="product_cart_modal absolute right-[20px] top-[150px] w-full px-4 md:w-[300px]">
             <div className="card-item cart-items">
               <div className="inline-flex w-full items-center justify-center pt-5 text-center">
@@ -749,26 +864,35 @@ const ProductDetailsPage = () => {
                   className="rounded-none bg-dark-orange px-5 py-3 text-base text-white"
                   onClick={handleCartPage}
                   dir={langDir}
+                  translate="no"
                 >
                   {t("go_to_cart_page")}
                 </a>
               </div>
               <div className="cart-item-lists">
                 {haveAccessToken &&
-                  !cartListByUser.data?.data?.length &&
-                  !cartListByUser.isLoading ? (
+                !cartListByUser.data?.data?.length &&
+                !cartListByUser.isLoading ? (
                   <div className="px-3 py-6">
-                    <p className="my-3 text-center" dir={langDir}>
+                    <p
+                      className="my-3 text-center"
+                      dir={langDir}
+                      translate="no"
+                    >
                       {t("no_cart_items")}
                     </p>
                   </div>
                 ) : null}
 
                 {!haveAccessToken &&
-                  !cartListByDeviceQuery.data?.data?.length &&
-                  !cartListByDeviceQuery.isLoading ? (
+                !cartListByDeviceQuery.data?.data?.length &&
+                !cartListByDeviceQuery.isLoading ? (
                   <div className="px-3 py-6">
-                    <p className="my-3 text-center" dir={langDir}>
+                    <p
+                      className="my-3 text-center"
+                      dir={langDir}
+                      translate="no"
+                    >
                       {t("no_cart_items")}
                     </p>
                   </div>
@@ -792,39 +916,97 @@ const ProductDetailsPage = () => {
                   ) : null}
                 </div>
 
-                {memoizedCartList?.map((item: CartItem) => (
-                  <ProductCard
-                    key={item.id}
-                    cartId={item.id}
-                    productId={item.productId}
-                    productPriceId={item.productPriceId}
-                    productName={
-                      item.productPriceDetails?.productPrice_product?.productName
-                    }
-                    offerPrice={item.productPriceDetails?.offerPrice}
-                    productQuantity={item.quantity}
-                    productVariant={item.object}
-                    productImages={
-                      item.productPriceDetails?.productPrice_product?.productImages
-                    }
-                    consumerDiscount={
-                      item.productPriceDetails?.consumerDiscount
-                    }
-                    onRemove={handleRemoveItemFromCart}
-                    onWishlist={handleAddToWishlist}
-                    haveAccessToken={haveAccessToken}
-                    minQuantity={
-                      item?.productPriceDetails?.minQuantityPerCustomer
-                    }
-                    maxQuantity={
-                      item?.productPriceDetails?.maxQuantityPerCustomer
-                    }
-                  />
-                ))}
+                {memoizedCartList?.map((item: CartItem) => {
+                  if (item.cartType == "DEFAULT") {
+                    let relatedCart = memoizedCartList
+                      ?.filter((c: any) => c.serviceId && c.cartProductServices?.length)
+                      .find((c: any) => {
+                          return !!c.cartProductServices
+                              .find((r: any) => r.relatedCartType == 'PRODUCT' && r.productId == item.productId);
+                      });
+                    return (
+                      <ProductCard
+                        key={item.id}
+                        cartId={item.id}
+                        productId={item.productId}
+                        productPriceId={item.productPriceId}
+                        productName={
+                          item.productPriceDetails?.productPrice_product
+                            ?.productName
+                        }
+                        offerPrice={item.productPriceDetails?.offerPrice}
+                        productQuantity={item.quantity}
+                        productVariant={item.object}
+                        productImages={
+                          item.productPriceDetails?.productPrice_product
+                            ?.productImages
+                        }
+                        consumerDiscount={
+                          item.productPriceDetails?.consumerDiscount
+                        }
+                        consumerDiscountType={
+                          item.productPriceDetails?.consumerDiscountType
+                        }
+                        vendorDiscount={
+                          item.productPriceDetails?.vendorDiscount
+                        }
+                        vendorDiscountType={
+                          item.productPriceDetails?.vendorDiscountType
+                        }
+                        onRemove={handleRemoveItemFromCart}
+                        onWishlist={handleAddToWishlist}
+                        haveAccessToken={haveAccessToken}
+                        minQuantity={
+                          item?.productPriceDetails?.minQuantityPerCustomer
+                        }
+                        maxQuantity={
+                          item?.productPriceDetails?.maxQuantityPerCustomer
+                        }
+                        relatedCart={relatedCart}
+                      />
+                    );
+                  }
+
+                  if (!item.cartServiceFeatures?.length) return null;
+
+                  const features = item.cartServiceFeatures.map(
+                    (feature: any) => ({
+                      id: feature.id,
+                      serviceFeatureId: feature.serviceFeatureId,
+                      quantity: feature.quantity,
+                    }),
+                  );
+
+                  let relatedCart: any = memoizedCartList
+                    ?.filter((c: any) => c.productId && c.cartProductServices?.length)
+                    .find((c: any) => {
+                        return !!c.cartProductServices
+                            .find((r: any) => r.relatedCartType == 'SERVICE' && r.serviceId == item.serviceId);
+                    });
+
+                  return item.cartServiceFeatures.map((feature: any) => {
+                    return (
+                      <ServiceCard
+                        key={feature.id}
+                        cartId={item.id}
+                        serviceId={item.serviceId}
+                        serviceFeatureId={feature.serviceFeatureId}
+                        serviceFeatureName={feature.serviceFeature.name}
+                        serviceCost={Number(feature.serviceFeature.serviceCost)}
+                        cartQuantity={feature.quantity}
+                        serviceFeatures={features}
+                        relatedCart={relatedCart}
+                        onRemove={() => {
+                          handleRemoveServiceFromCart(item.id, feature.id);
+                        }}
+                      />
+                    );
+                  });
+                })}
               </div>
             </div>
           </div>
-        )}
+        ) : null}
 
         <div className="product-view-s1-details-more-suggestion-sliders">
           <RelatedProductsSection
@@ -840,21 +1022,23 @@ const ProductDetailsPage = () => {
           ref={confirmDialogRef}
         >
           <div className="modal-header !justify-between" dir={langDir}>
-            <DialogTitle className="text-center text-xl text-dark-orange font-bold"></DialogTitle>
+            <DialogTitle className="text-center text-xl font-bold text-dark-orange"></DialogTitle>
             <Button
               onClick={onCancelRemove}
-              className={`${langDir == 'ltr' ? 'absolute' : ''} right-2 top-2 z-10 !bg-white !text-black shadow-none`}
+              className={`${langDir == "ltr" ? "absolute" : ""} right-2 top-2 z-10 !bg-white !text-black shadow-none`}
             >
               <IoCloseSharp size={20} />
             </Button>
           </div>
 
-          <div className="text-center mt-4 mb-4">
-            <p className="text-dark-orange">Do you want to remove this item from cart?</p>
+          <div className="mb-4 mt-4 text-center">
+            <p className="text-dark-orange">
+              Do you want to remove this item from cart?
+            </p>
             <div>
               <Button
                 type="button"
-                className="bg-white text-red-500 mr-2"
+                className="mr-2 bg-white text-red-500"
                 onClick={onCancelRemove}
               >
                 Cancel

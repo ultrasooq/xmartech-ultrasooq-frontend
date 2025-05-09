@@ -93,6 +93,7 @@ const TrendingCategories = () => {
             category.setSubCategoryParentName('');
             category.setSubSubCategoryParentName('');
           }}
+          translate="no"
         >
           {t("clear")}
         </Button>

@@ -8,7 +8,7 @@ import {
 } from "@/utils/types/common.types";
 import { useBrands } from "@/apis/queries/masters.queries";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useAllProducts } from "@/apis/queries/product.queries";
+import { useAllProducts, useProductVariant } from "@/apis/queries/product.queries";
 import ProductCard from "@/components/modules/trending/ProductCard";
 import GridIcon from "@/components/icons/GridIcon";
 import ListIcon from "@/components/icons/ListIcon";
@@ -61,6 +61,8 @@ import { useTranslations } from "next-intl";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/context/AuthContext";
+// @ts-ignore
+import  { startDebugger }  from "remove-child-node-error-debugger";
 
 interface TrendingPageProps {
   searchParams?: { term?: string };
@@ -85,6 +87,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
   const [displayMyProducts, setDisplayMyProducts] = useState("0");
   const [page, setPage] = useState(1);
   const [limit] = useState(8);
+  const [productVariants, setProductVariants] = useState<any[]>([]);
   const [haveAccessToken, setHaveAccessToken] = useState(false);
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
   const category = useCategoryStore();
@@ -114,6 +117,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
     categoryIds: category.categoryIds ? category.categoryIds : undefined,
     isOwner: displayMyProducts == "1" ? "me" : "",
   });
+  const fetchProductVariant = useProductVariant();
   const brandsQuery = useBrands({
     term: searchTerm,
   });
@@ -186,6 +190,9 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
         productProductPriceId: item?.product_productPrice?.[0]?.id,
         productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
         consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
+        consumerDiscountType: item?.product_productPrice?.[0]?.consumerDiscountType,
+        vendorDiscount: item?.product_productPrice?.[0]?.vendorDiscount,
+        vendorDiscountType: item?.product_productPrice?.[0]?.vendorDiscountType,
         askForPrice: item?.product_productPrice?.[0]?.askForPrice,
         productPrices: item?.product_productPrice,
       })) || []
@@ -206,6 +213,21 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
     selectedBrandIds,
     displayMyProducts,
   ]);
+
+  const getProductVariants = async () => {
+    let productPriceIds = memoizedProductList
+        .filter((item: any) => item.productPrices.length > 0)
+        .map((item: any) => item.productPrices[0].id);
+      
+    const response = await fetchProductVariant.mutateAsync(productPriceIds);
+    if (response.status) setProductVariants(response.data);
+  }
+
+  useEffect(() => {
+    if (memoizedProductList.length) {
+      getProductVariants();
+    }
+  }, [memoizedProductList]);
 
   const [cartList, setCartList] = useState<any[]>([]);
 
@@ -338,9 +360,11 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
     };
   }, []);
 
+  startDebugger();
+
   return (
     <>
-      <title dir={langDir}>{t("store")} | Ultrasooq</title>
+      <title dir={langDir} translate="no">{t("store")} | Ultrasooq</title>
       <div className="body-content-s1">
         <TrendingCategories />
 
@@ -350,10 +374,10 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
           <div className="container m-auto px-3">
             <div className={productFilter ? "left-filter show" : "left-filter"} dir={langDir}>
               <div className="all_select_button">
-                <button type="button" onClick={selectAll}>
+                <button type="button" onClick={selectAll} translate="no">
                   {t("select_all")}
                 </button>
-                <button type="button" onClick={clearFilter}>
+                <button type="button" onClick={clearFilter} translate="no">
                   {t("clean_select")}
                 </button>
               </div>
@@ -363,7 +387,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
                 className="filter-col"
               >
                 <AccordionItem value="brand">
-                  <AccordionTrigger className="px-3 text-base hover:!no-underline" dir={langDir}>
+                  <AccordionTrigger className="px-3 text-base hover:!no-underline" dir={langDir} translate="no">
                     {t("by_brand")}
                   </AccordionTrigger>
                   <AccordionContent>
@@ -374,12 +398,13 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
                         className="custom-form-control-s1 searchInput rounded-none"
                         onChange={handleDebounce}
                         dir={langDir}
+                        translate="no"
                       />
                     </div>
                     <div className="filter-body-part">
                       <div className="filter-checklists">
                         {!memoizedBrands.length ? (
-                          <p className="text-center text-sm font-medium" dir={langDir}>
+                          <p className="text-center text-sm font-medium" dir={langDir} translate="no">
                             {t("no_data_found")}
                           </p>
                         ) : null}
@@ -409,7 +434,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
                 </AccordionItem>
 
                 <AccordionItem value="price">
-                  <AccordionTrigger className="px-3 text-base hover:!no-underline" dir={langDir}>
+                  <AccordionTrigger className="px-3 text-base hover:!no-underline" dir={langDir} translate="no">
                     {t("price")}
                   </AccordionTrigger>
                   <AccordionContent>
@@ -442,6 +467,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
                           className="mb-4"
                           onClick={() => setPriceRange([])}
                           dir={langDir}
+                          translate="no"
                         >
                           {t("clear")}
                         </Button>
@@ -475,7 +501,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
               onClick={() => setProductFilter(false)}
             ></div>
             <div className="right-products">
-              {haveAccessToken && me?.data?.data?.tradeRole != 'BUYER' && <RadioGroup
+              {haveAccessToken && me?.data?.data?.tradeRole != 'BUYER' ? (<RadioGroup
                 className="mb-3 flex flex-row gap-y-3"
                 value={displayMyProducts}
                 onValueChange={setDisplayMyProducts}
@@ -488,7 +514,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
                     id="all_products"
                     checked={displayMyProducts == "0"}
                   />
-                  <Label htmlFor="all_products" className="text-base" dir={langDir}>
+                  <Label htmlFor="all_products" className="text-base" dir={langDir} translate="no">
                     {t("all_products")}
                   </Label>
                 </div>
@@ -498,18 +524,18 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
                     id="my_products"
                     checked={displayMyProducts == "1"}
                   />
-                  <Label htmlFor="my_products" className="text-base" dir={langDir}>
+                  <Label htmlFor="my_products" className="text-base" dir={langDir} translate="no">
                     {t("my_products")}
                   </Label>
                 </div>
-              </RadioGroup>}
+              </RadioGroup>) : null}
               <div className="products-header-filter">
                 <div className="le-info">
                   {/* TODO: need name here */}
                   {/* <h3></h3> */}
                 </div>
                 <div className="rg-filter">
-                  <p dir={langDir}>
+                  <p dir={langDir} translate="no">
                     {t("n_products_found", {
                       n: allProductsQuery.data?.totalCount,
                     })}
@@ -518,14 +544,14 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
                     <li>
                       <Select onValueChange={(e) => setSortBy(e)}>
                         <SelectTrigger className="custom-form-control-s1 bg-white">
-                          <SelectValue placeholder={t("sort_by")} dir={langDir} />
+                          <SelectValue placeholder={t("sort_by")} dir={langDir} translate="no" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectGroup>
-                            <SelectItem value="desc" dir={langDir}>
+                            <SelectItem value="desc" dir={langDir} translate="no">
                               {t("sort_by_latest")}
                             </SelectItem>
-                            <SelectItem value="asc" dir={langDir}>
+                            <SelectItem value="asc" dir={langDir} translate="no">
                               {t("sort_by_oldest")}
                             </SelectItem>
                           </SelectGroup>
@@ -573,7 +599,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
               ) : null}
 
               {!memoizedProductList.length && !allProductsQuery.isLoading ? (
-                <p className="text-center text-sm font-medium" dir={langDir}>
+                <p className="text-center text-sm font-medium" dir={langDir} translate="no">
                   {t("no_data_found")}
                 </p>
               ) : null}
@@ -582,9 +608,21 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
                 <div className="product-list-s1">
                   {memoizedProductList.map((item: TrendingProduct) => {
                     const cartItem = cartList?.find((el: any) => el.productId == item.id);
+                    let relatedCart: any = null;
+                    if (cartItem) {
+                      relatedCart = cartList
+                        ?.filter((c: any) => c.serviceId && c.cartProductServices?.length)
+                        .find((c: any) => {
+                            return !!c.cartProductServices
+                                .find((r: any) => r.relatedCartType == 'PRODUCT' && r.productId == item.id);
+                        });
+                    }
                     return (
                       <ProductCard
                         key={item.id}
+                        productVariants={
+                          productVariants.find((variant: any) => variant.productId == item.id)?.object || []
+                        }
                         item={item}
                         onWishlist={() =>
                           handleAddToWishlist(item.id, item?.productWishlist)
@@ -595,6 +633,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
                         productQuantity={cartItem?.quantity || 0}
                         productVariant={cartItem?.object}
                         cartId={cartItem?.id}
+                        relatedCart={relatedCart}
                         isAddedToCart={cartItem ? true : false}
                       />
                     );

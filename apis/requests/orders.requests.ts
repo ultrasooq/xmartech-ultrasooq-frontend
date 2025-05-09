@@ -59,6 +59,32 @@ export const createPaymentIntent = (payload: any) => {
   });
 };
 
+export const createPaymentLink = (payload: any) => {
+  return axios({
+    method: "POST",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/payment/createPaymentLink`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+export const createEMIPayment = (payload: any) => {
+  return axios({
+    method: "POST",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/payment/createPaymentForEMI`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
 export const fetchOrderById = (payload: { orderProductId: string }) => {
   return axios({
     method: "GET",
@@ -134,6 +160,23 @@ export const updateCancelReason = (payload: {
   return axios({
     method: "PATCH",
     url: `${process.env.NEXT_PUBLIC_API_URL}/order/orderProductCancelReason`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+export const updateOrderShippingStatus = (payload: {
+  orderShippingId: number;
+  status: string;
+  receipt: string;
+}) => {
+  return axios({
+    method: "PATCH",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/order/orderShippingStatusUpdateById`,
     data: payload,
     headers: {
       "Content-Type": "application/json",

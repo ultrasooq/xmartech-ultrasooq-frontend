@@ -46,6 +46,8 @@ import { getOrCreateDeviceId } from "@/utils/helper";
 import { useCategoryStore } from "@/lib/categoryStore";
 import { useRouter } from "next/navigation";
 import { useCategory } from "@/apis/queries/category.queries";
+// @ts-ignore
+import { startDebugger } from "remove-child-node-error-debugger";
 // import { Metadata } from "next";
 
 // export const metadata: Metadata = {
@@ -54,7 +56,7 @@ import { useCategory } from "@/apis/queries/category.queries";
 
 function HomePage() {
   const t = useTranslations();
-  const { currency } = useAuth();
+  const { currency, langDir } = useAuth();
   const queryClient = useQueryClient();
   const router = useRouter();
   const categoryStore = useCategoryStore();
@@ -76,7 +78,7 @@ function HomePage() {
     }
   }, [accessToken]);
 
-  const categoryQuery = useCategory("184");
+  const categoryQuery = useCategory("4");
 
   const memoizedCategories = useMemo(() => {
     let tempArr: any = [];
@@ -94,34 +96,43 @@ function HomePage() {
 
   const memoizedBuyGroupProducts = useMemo(() => {
     return (
-      buyGroupProductsQuery?.data?.data?.map((item: any) => ({
-        id: item.id,
-        productName: item?.productName || "-",
-        productPrice: item?.productPrice || 0,
-        offerPrice: item?.offerPrice || 0,
-        productImage: item?.product_productPrice?.[0]
-          ?.productPrice_productSellerImage?.length
-          ? item?.product_productPrice?.[0]
+      buyGroupProductsQuery?.data?.data?.map((item: any) => {
+        let sold = 0;
+        if (item.orderProducts?.length) {
+          item.orderProducts.forEach((product: any) => {
+            sold += product?.orderQuantity || 0;
+          });
+        }
+
+        return {
+          id: item.id,
+          productName: item?.productName || "-",
+          productPrice: item?.productPrice || 0,
+          offerPrice: item?.offerPrice || 0,
+          productImage: item?.product_productPrice?.[0]
+            ?.productPrice_productSellerImage?.length
+            ? item?.product_productPrice?.[0]
               ?.productPrice_productSellerImage?.[0]?.image
-          : item?.productImages?.[0]?.image,
-        categoryName: item?.category?.name || "-",
-        skuNo: item?.skuNo,
-        brandName: item?.brand?.brandName || "-",
-        productReview: item?.productReview || [],
-        productWishlist: item?.product_wishlist || [],
-        inWishlist: item?.product_wishlist?.find(
-          (ele: any) => ele?.userId === me.data?.data?.id,
-        ),
-        shortDescription: item?.product_productShortDescription?.length
-          ? item?.product_productShortDescription?.[0]?.shortDescription
-          : "-",
-        productProductPriceId: item?.product_productPrice?.[0]?.id,
-        productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
-        consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
-        askForPrice: item?.product_productPrice?.[0]?.askForPrice,
-        productPrices: item?.product_productPrice,
-        sold: item.orderProducts?.length,
-      })) || []
+            : item?.productImages?.[0]?.image,
+          categoryName: item?.category?.name || "-",
+          skuNo: item?.skuNo,
+          brandName: item?.brand?.brandName || "-",
+          productReview: item?.productReview || [],
+          productWishlist: item?.product_wishlist || [],
+          inWishlist: item?.product_wishlist?.find(
+            (ele: any) => ele?.userId === me.data?.data?.id,
+          ),
+          shortDescription: item?.product_productShortDescription?.length
+            ? item?.product_productShortDescription?.[0]?.shortDescription
+            : "-",
+          productProductPriceId: item?.product_productPrice?.[0]?.id,
+          productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
+          consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
+          askForPrice: item?.product_productPrice?.[0]?.askForPrice,
+          productPrices: item?.product_productPrice,
+          sold: sold,
+        };
+      }) || []
     );
   }, [buyGroupProductsQuery?.data?.data]);
 
@@ -142,7 +153,7 @@ function HomePage() {
         productImage: item?.product_productPrice?.[0]
           ?.productPrice_productSellerImage?.length
           ? item?.product_productPrice?.[0]
-              ?.productPrice_productSellerImage?.[0]?.image
+            ?.productPrice_productSellerImage?.[0]?.image
           : item?.productImages?.[0]?.image,
         categoryName: item?.category?.name || "-",
         skuNo: item?.skuNo,
@@ -181,7 +192,7 @@ function HomePage() {
         productImage: item?.product_productPrice?.[0]
           ?.productPrice_productSellerImage?.length
           ? item?.product_productPrice?.[0]
-              ?.productPrice_productSellerImage?.[0]?.image
+            ?.productPrice_productSellerImage?.[0]?.image
           : item?.productImages?.[0]?.image,
         categoryName: item?.category?.name || "-",
         skuNo: item?.skuNo,
@@ -220,7 +231,7 @@ function HomePage() {
         productImage: item?.product_productPrice?.[0]
           ?.productPrice_productSellerImage?.length
           ? item?.product_productPrice?.[0]
-              ?.productPrice_productSellerImage?.[0]?.image
+            ?.productPrice_productSellerImage?.[0]?.image
           : item?.productImages?.[0]?.image,
         categoryName: item?.category?.name || "-",
         skuNo: item?.skuNo,
@@ -331,6 +342,7 @@ function HomePage() {
     }
   }, [cartListByUser.data?.data, cartListByDeviceQuery.data?.data]);
 
+  startDebugger();
   return (
     <>
       <section className="w-full py-8">
@@ -381,7 +393,7 @@ function HomePage() {
                       <b>Fluence</b> Minimal Speaker
                     </h3>
                     <p>Just Price</p>
-                    <h5 className="mb-5 text-lg font-semibold text-olive-green">
+                    <h5 className="mb-5 text-lg font-semibold text-olive-green" translate="no">
                       {currency.symbol}159.99
                     </h5>
                   </div>
@@ -406,7 +418,7 @@ function HomePage() {
                       20% OFF
                     </span>
                     <p>Just Price</p>
-                    <h5 className="mb-5 text-lg font-semibold text-olive-green">
+                    <h5 className="mb-5 text-lg font-semibold text-olive-green" translate="no">
                       {currency.symbol}159.99
                     </h5>
                   </div>
@@ -420,7 +432,7 @@ function HomePage() {
       <section className="w-full pb-4 pt-8">
         <div className="container m-auto px-3">
           <div className="flex flex-wrap">
-            <div className="mb-5 w-full">
+            <div className="mb-5 w-full" dir={langDir}>
               <h3 className="text-lg font-normal capitalize text-color-dark md:text-2xl">
                 Search Trending
               </h3>
@@ -447,13 +459,13 @@ function HomePage() {
         </div>
       </section>
 
-      {memoizedBuyGroupProducts?.length > 0 && (
+      {memoizedBuyGroupProducts?.length > 0 ? (
         <section className="w-full pb-8 pt-0">
           <div className="container m-auto px-3">
             <div className="flex flex-wrap">
               <div className="flex w-full flex-wrap items-center justify-between border-b border-solid border-gray-300 pb-3.5">
                 <div className="flex flex-wrap items-center justify-start">
-                  <h4 className="mr-3 whitespace-nowrap text-lg font-normal capitalize text-color-dark md:mr-6 md:text-2xl">
+                  <h4 className="mr-3 whitespace-nowrap text-lg font-normal capitalize text-color-dark md:mr-6 md:text-2xl" translate="no">
                     {t("deal_of_the_day")}
                   </h4>
                   {/* <span className="rounded bg-dark-orange px-3 py-1.5 text-sm font-medium capitalize text-white md:px-5 md:py-2.5 md:text-lg">
@@ -464,6 +476,7 @@ function HomePage() {
                   <Link
                     href="/buygroup"
                     className="mr-3.5 text-sm font-normal text-black underline sm:mr-0"
+                    translate="no"
                   >
                     {t("view_all")}
                   </Link>
@@ -471,9 +484,16 @@ function HomePage() {
               </div>
               <div className="product-list-s1 w-full">
                 {memoizedBuyGroupProducts.map((item: TrendingProduct) => {
-                  const cartQuantity =
-                    cartList?.find((el: any) => el.productId == item.id)
-                      ?.quantity || 0;
+                  const cartItem =  cartList?.find((el: any) => el.productId == item.id);
+                  let relatedCart: any = null;
+                  if (cartItem) {
+                    relatedCart = cartList
+                      ?.filter((c: any) => c.serviceId && c.cartProductServices?.length)
+                      .find((c: any) => {
+                          return !!c.cartProductServices
+                              .find((r: any) => r.relatedCartType == 'PRODUCT' && r.productId == item.id);
+                      });
+                  }
                   return (
                     <ProductCard
                       key={item.id}
@@ -484,8 +504,11 @@ function HomePage() {
                       inWishlist={item?.inWishlist}
                       haveAccessToken={haveAccessToken}
                       isInteractive
-                      productQuantity={cartQuantity}
-                      isAddedToCart={cartQuantity > 0}
+                      cartId={cartItem?.id}
+                      productQuantity={cartItem?.quantity}
+                      productVariant={cartItem?.object}
+                      isAddedToCart={cartItem ? true : false}
+                      relatedCart={relatedCart}
                       sold={item.sold}
                     />
                   );
@@ -494,7 +517,7 @@ function HomePage() {
             </div>
           </div>
         </section>
-      )}
+      ) : null}
 
       {/* <section className="w-full py-8">
         <div className="container m-auto px-3">
@@ -546,19 +569,19 @@ function HomePage() {
           <div className="flex">
             <div className="relative flex w-full flex-wrap bg-neutral-100 px-5 py-6 md:py-12 lg:px-10 lg:py-24">
               <div className="sm:w-12/12 w-12/12 flex flex-wrap content-center items-center pr-3.5 md:w-6/12">
-                <h3 className="text-xl font-normal capitalize leading-8 text-color-dark md:text-2xl md:leading-10 lg:text-4xl">
+                <h3 className="text-xl font-normal capitalize leading-8 text-color-dark md:text-2xl md:leading-10 lg:text-4xl" dir={langDir}>
                   Contrary to popular belief, Lorem Ipsum is not..
                 </h3>
-                <p className="text-base font-normal capitalize text-light-gray">
+                <p className="text-base font-normal capitalize text-light-gray" dir={langDir}>
                   Lorem Ipsum is simply dummy text of the printing and
                   typesetting industry.{" "}
                 </p>
               </div>
-              <div className="w-12/12 flex flex-wrap content-center items-center px-3.5 sm:w-4/12 md:w-3/12">
-                <h6 className="mb-1.5 text-base font-medium uppercase text-color-dark line-through">
+              <div className="w-12/12 flex flex-wrap content-center items-center px-3.5 sm:w-4/12 md:w-3/12" dir={langDir}>
+                <h6 className="mb-1.5 text-base font-medium uppercase text-color-dark line-through" translate="no">
                   {currency.symbol}332.38
                 </h6>
-                <h4 className="w-full text-3xl font-medium uppercase text-olive-green">
+                <h4 className="w-full text-3xl font-medium uppercase text-olive-green" translate="no">
                   <span className="line-through">{currency.symbol}</span>219.05
                 </h4>
                 <div className="mt-5">
@@ -584,13 +607,13 @@ function HomePage() {
         </div>
       </section>
 
-      {memoizedHomeDecorProducts?.length > 0 && (
+      {memoizedHomeDecorProducts?.length > 0 ? (
         <section className="w-full py-8">
           <div className="container m-auto">
             <div className="flex flex-wrap">
               <div className="flex w-full flex-wrap items-center justify-between border-b border-solid border-gray-300 bg-neutral-100 px-3.5 py-3.5">
                 <div className="flex flex-wrap items-center justify-start">
-                  <h4 className="mr-3 whitespace-nowrap text-xl font-normal capitalize text-color-dark md:mr-6 md:text-2xl">
+                  <h4 className="mr-3 whitespace-nowrap text-xl font-normal capitalize text-color-dark md:mr-6 md:text-2xl" translate="no">
                     {t("home_decor")}
                   </h4>
                 </div>
@@ -659,6 +682,7 @@ function HomePage() {
                       router.push("/trending");
                     }}
                     className="mr-3.5 cursor-pointer text-sm font-normal text-black sm:ml-3.5 sm:mr-0"
+                    translate="no"
                   >
                     {t("view_all")}
                   </a>
@@ -666,9 +690,16 @@ function HomePage() {
               </div>
               <div className="product-list-s1 w-full">
                 {memoizedHomeDecorProducts.map((item: TrendingProduct) => {
-                  const cartQuantity =
-                    cartList?.find((el: any) => el.productId == item.id)
-                      ?.quantity || 0;
+                  const cartItem = cartList?.find((el: any) => el.productId == item.id);
+                  let relatedCart: any = null;
+                  if (cartItem) {
+                    relatedCart = cartList
+                      ?.filter((c: any) => c.serviceId && c.cartProductServices?.length)
+                      .find((c: any) => {
+                        return !!c.cartProductServices
+                          .find((r: any) => r.relatedCartType == 'PRODUCT' && r.productId == item.id);
+                      });
+                  }
                   return (
                     <ProductCard
                       key={item.id}
@@ -679,8 +710,11 @@ function HomePage() {
                       inWishlist={item?.inWishlist}
                       haveAccessToken={haveAccessToken}
                       isInteractive
-                      productQuantity={cartQuantity}
-                      isAddedToCart={cartQuantity > 0}
+                      cartId={cartItem?.id}
+                      productQuantity={cartItem?.quantity}
+                      productVariant={cartItem?.object}
+                      isAddedToCart={cartItem ? true : false}
+                      relatedCart={relatedCart}
                     />
                   );
                 })}
@@ -688,15 +722,15 @@ function HomePage() {
             </div>
           </div>
         </section>
-      )}
+      ) : null}
 
-      {memoizedFashionBeautyProducts?.length > 0 && (
+      {memoizedFashionBeautyProducts?.length > 0 ? (
         <section className="w-full py-8">
           <div className="container m-auto">
             <div className="flex flex-wrap">
               <div className="flex w-full flex-wrap items-center justify-between border-b border-solid border-gray-300 bg-neutral-100 px-3.5 py-3.5">
                 <div className="flex flex-wrap items-center justify-start">
-                  <h4 className="mr-3 whitespace-nowrap text-xl font-normal capitalize text-color-dark md:mr-6 md:text-2xl">
+                  <h4 className="mr-3 whitespace-nowrap text-xl font-normal capitalize text-color-dark md:mr-6 md:text-2xl" translate="no">
                     {t("fashion_n_beauty")}
                   </h4>
                 </div>
@@ -759,6 +793,7 @@ function HomePage() {
                       router.push("/trending");
                     }}
                     className="mr-3.5 cursor-pointer text-sm font-normal text-black sm:ml-3.5 sm:mr-0"
+                    translate="no"
                   >
                     {t("view_all")}
                   </a>
@@ -766,9 +801,16 @@ function HomePage() {
               </div>
               <div className="product-list-s1 w-full">
                 {memoizedFashionBeautyProducts.map((item: TrendingProduct) => {
-                  const cartQuantity =
-                    cartList?.find((el: any) => el.productId == item.id)
-                      ?.quantity || 0;
+                  const cartItem = cartList?.find((el: any) => el.productId == item.id);
+                  let relatedCart: any = null;
+                  if (cartItem) {
+                    relatedCart = cartList
+                      ?.filter((c: any) => c.serviceId && c.cartProductServices?.length)
+                      .find((c: any) => {
+                        return !!c.cartProductServices
+                          .find((r: any) => r.relatedCartType == 'PRODUCT' && r.productId == item.id);
+                      });
+                  }
                   return (
                     <ProductCard
                       key={item.id}
@@ -779,8 +821,11 @@ function HomePage() {
                       inWishlist={item?.inWishlist}
                       haveAccessToken={haveAccessToken}
                       isInteractive
-                      productQuantity={cartQuantity}
-                      isAddedToCart={cartQuantity > 0}
+                      cartId={cartItem?.id}
+                      productQuantity={cartItem?.quantity}
+                      productVariant={cartItem?.object}
+                      isAddedToCart={cartItem ? true : false}
+                      relatedCart={relatedCart}
                     />
                   );
                 })}
@@ -788,15 +833,15 @@ function HomePage() {
             </div>
           </div>
         </section>
-      )}
+      ) : null}
 
-      {memoizedConsumerElectronicsProducts.length > 0 && (
+      {memoizedConsumerElectronicsProducts.length > 0 ? (
         <section className="w-full py-8">
           <div className="container m-auto">
             <div className="flex flex-wrap">
               <div className="flex w-full flex-wrap items-center justify-between border-b border-solid border-gray-300 bg-neutral-100 px-3.5 py-3.5">
                 <div className="flex flex-wrap items-center justify-start">
-                  <h4 className="mr-3 whitespace-nowrap text-xl font-normal capitalize text-color-dark md:mr-6 md:text-2xl">
+                  <h4 className="mr-3 whitespace-nowrap text-xl font-normal capitalize text-color-dark md:mr-6 md:text-2xl" translate="no">
                     {t("consumer_electronics")}
                   </h4>
                 </div>
@@ -866,6 +911,7 @@ function HomePage() {
                       router.push("/trending");
                     }}
                     className="mr-3.5 cursor-pointer text-sm font-normal text-black sm:ml-3.5 sm:mr-0"
+                    translate="no"
                   >
                     {t("view_all")}
                   </a>
@@ -874,9 +920,16 @@ function HomePage() {
               <div className="product-list-s1 w-full">
                 {memoizedConsumerElectronicsProducts.map(
                   (item: TrendingProduct) => {
-                    const cartQuantity =
-                      cartList?.find((el: any) => el.productId == item.id)
-                        ?.quantity || 0;
+                    const cartItem = cartList?.find((el: any) => el.productId == item.id);
+                    let relatedCart: any = null;
+                    if (cartItem) {
+                      relatedCart = cartList
+                        ?.filter((c: any) => c.serviceId && c.cartProductServices?.length)
+                        .find((c: any) => {
+                          return !!c.cartProductServices
+                            .find((r: any) => r.relatedCartType == 'PRODUCT' && r.productId == item.id);
+                        });
+                    }
                     return (
                       <ProductCard
                         key={item.id}
@@ -887,8 +940,11 @@ function HomePage() {
                         inWishlist={item?.inWishlist}
                         haveAccessToken={haveAccessToken}
                         isInteractive
-                        productQuantity={cartQuantity}
-                        isAddedToCart={cartQuantity > 0}
+                        cartId={cartItem?.id}
+                        productQuantity={cartItem?.quantity}
+                        productVariant={cartItem?.object}
+                        isAddedToCart={cartItem ? true : false}
+                        relatedCart={relatedCart}
                       />
                     );
                   },
@@ -897,7 +953,7 @@ function HomePage() {
             </div>
           </div>
         </section>
-      )}
+      ) : null}
 
       <Footer />
     </>

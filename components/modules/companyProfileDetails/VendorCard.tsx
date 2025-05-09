@@ -36,17 +36,17 @@ const VendorCard: React.FC<VendorCardProps> = ({ vendor }) => {
         </div>
         <div className="mt-3 h-auto w-full"></div>
         <div className="text-normal mt-4 w-full text-sm font-normal leading-4 text-gray-500">
-          <p dir={langDir}>
+          <p dir={langDir} translate="no">
             {t("annual_purchasing_volume")}:{" "}
             <span className="font-bold text-dark-cyan">
               {vendor?.userProfile?.[0]?.annualPurchasingVolume
                 ? `${currency.symbol}${vendor.userProfile[0].annualPurchasingVolume}`
-                : "NA"}
+                : "0"}
             </span>
           </p>
         </div>
         <div className="text-normal mt-4 w-full text-sm font-normal leading-4 text-gray-500">
-          <h5 dir={langDir}>{t("business_type")}</h5>
+          <h5 dir={langDir} translate="no">{t("business_type")}</h5>
           <div className="tagLists">
             <div className="tagItem">
               {vendor?.userProfile
@@ -62,7 +62,7 @@ const VendorCard: React.FC<VendorCardProps> = ({ vendor }) => {
         </div>
         <div className="mt-4 flex w-full flex-wrap items-center justify-between">
           <div className="my-2 text-sm font-normal leading-4 text-gray-500">
-            <p dir={langDir}>
+            <p dir={langDir} translate="no">
               {t("company_id")}:
               <span className="text-base font-medium leading-4 text-gray-600">
                 {vendor?.uniqueId

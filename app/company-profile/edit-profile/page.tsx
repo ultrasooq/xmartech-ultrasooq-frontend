@@ -49,7 +49,7 @@ const formSchema = (t: any) => {
       .transform((value) => Number(value)),
     totalNoOfEmployee: z.string().trim().min(2, { message: t("total_no_of_employees_required") }),
     aboutUs: z.string().trim().optional(),
-    aboutUsJson: z.string().optional(),
+    aboutUsJson: z.any().optional(),
     cc: z.string().trim(),
     phoneNumber: z.string().trim()
       .min(2, { message: t("phone_number_required"), })
@@ -63,7 +63,6 @@ export default function EditProfilePage() {
   const { langDir } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
-
 
   const form = useForm({
     resolver: zodResolver(formSchema(t)),
@@ -87,7 +86,6 @@ export default function EditProfilePage() {
       aboutUsJson: "",
     },
   });
-
 
   const [imageFile, setImageFile] = useState<FileList | null>();
   const [activeUserId, setActiveUserId] = useState<string | null>();
@@ -136,7 +134,7 @@ export default function EditProfilePage() {
   };
 
   const onSubmit = async (formData: any) => {
-    let data = { ...formData, aboutUs: formData.aboutUsJson, profileType: "COMPANY", userProfileId: uniqueUser.data?.data?.userProfile?.[0]?.id as number, };
+    let data = { ...formData, aboutUs: JSON.stringify(formData.aboutUsJson || ''), profileType: "COMPANY", userProfileId: uniqueUser.data?.data?.userProfile?.[0]?.id as number, };
 
     formData.uploadImage = imageFile;
     let getImageUrl;
@@ -168,6 +166,14 @@ export default function EditProfilePage() {
   useEffect(() => {
     if (uniqueUser.data?.data) {
       const userProfile = uniqueUser.data?.data?.userProfile?.[0];
+      let abountUsJson = "";
+      if (userProfile?.aboutUs) {
+        try {
+          abountUsJson = JSON.parse(userProfile?.aboutUs);
+        } catch (error) {
+
+        }
+      }
       form.reset({
         logo: userProfile?.logo || "",
         address: userProfile?.address || "",
@@ -178,7 +184,7 @@ export default function EditProfilePage() {
         totalNoOfEmployee: userProfile?.totalNoOfEmployee?.toString() || "",
         annualPurchasingVolume: userProfile?.annualPurchasingVolume || "",
         aboutUs: userProfile?.aboutUs || "",
-        aboutUsJson: userProfile?.aboutUs,
+        aboutUsJson: abountUsJson,
         companyName: userProfile?.companyName || "",
         businessTypeList: userProfile?.userProfileBusinessType?.[0]?.businessTypeId?.toString() || undefined,
         cc: userProfile?.cc,
@@ -186,8 +192,7 @@ export default function EditProfilePage() {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [uniqueUser.data?.data?.userProfile?.length, memoizedTags?.length, memoizedCountries?.length, memoizedLastTwoHundredYears?.length,]);
-
+  }, [uniqueUser.data?.data?.userProfile?.length, memoizedTags?.length, memoizedCountries?.length, memoizedLastTwoHundredYears?.length]);
   return (
     <section className="relative w-full py-7">
       <div className="absolute left-0 top-0 -z-10 h-full w-full">
@@ -206,19 +211,20 @@ export default function EditProfilePage() {
             className="m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-8 md:w-10/12 lg:w-10/12 lg:p-12"
           >
             <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
-              <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10">
+              <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10" translate="no">
                 {t("profile")}
               </h2>
             </div>
             <div className="flex w-full flex-wrap">
               <div className="mb-4 w-full">
                 <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
-                  <label 
+                  <label
                     className={cn(
                       "mb-3.5 block",
                       langDir == "rtl" ? "text-right" : "text-left",
                       "text-lg font-medium capitalize leading-5 text-color-dark"
                     )}
+                    translate="no"
                   >
                     {t("company_information")}
                   </label>
@@ -231,7 +237,7 @@ export default function EditProfilePage() {
                     name="uploadImage"
                     render={({ field }) => (
                       <FormItem className="mb-3.5 w-full md:w-6/12 md:pr-3.5" dir={langDir}>
-                        <FormLabel>{t("upload_company_logo")}</FormLabel>
+                        <FormLabel translate="no">{t("upload_company_logo")}</FormLabel>
                         <FormControl>
                           <div className="relative m-auto h-64 w-full border-2 border-dashed border-gray-300">
                             <div className="relative h-full w-full">
@@ -262,13 +268,13 @@ export default function EditProfilePage() {
                                       height={30}
                                       alt="camera"
                                     />
-                                    <span>
+                                    <span translate="no">
                                       {t("drop_your_company_logo")}{" "}
                                     </span>
                                     <span className="text-blue-500">
                                       browse
                                     </span>
-                                    <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
+                                    <p className="text-normal mt-3 text-xs leading-4 text-gray-300" translate="no">
                                       ({t("company_logo_spec")})
                                     </p>
                                   </div>
@@ -311,6 +317,7 @@ export default function EditProfilePage() {
                       name="companyName"
                       placeholder={t("company_name")}
                       dir={langDir}
+                      translate="no"
                     />
 
                     {/* TODO:fix this */}
@@ -330,6 +337,7 @@ export default function EditProfilePage() {
                       type="number"
                       onWheel={(e) => e.currentTarget.blur()}
                       dir={langDir}
+                      translate="no"
                     />
                   </div>
                 </div>
@@ -337,12 +345,13 @@ export default function EditProfilePage() {
 
               <div className="mb-3.5 w-full">
                 <div className="mb-4 w-full border-y border-solid border-gray-200 py-2.5">
-                  <label 
+                  <label
                     className={cn(
                       "mb-0 block",
                       langDir == "rtl" ? "text-right" : "text-left",
                       "text-base font-medium leading-5 text-color-dark"
                     )}
+                    translate="no"
                   >
                     {t("registration_address")}
                   </label>
@@ -354,7 +363,9 @@ export default function EditProfilePage() {
                       label={t("address")}
                       name="address"
                       placeholder={t("address")}
+                      showLabel={true}
                       dir={langDir}
+                      translate="no"
                     />
                   </div>
 
@@ -362,7 +373,9 @@ export default function EditProfilePage() {
                     label={t("city")}
                     name="city"
                     placeholder={t("city")}
+                    showLabel={true}
                     dir={langDir}
+                    translate="no"
                   />
                 </div>
 
@@ -371,40 +384,64 @@ export default function EditProfilePage() {
                     label={t("province")}
                     name="province"
                     placeholder={t("province")}
+                    showLabel={true}
                     dir={langDir}
+                    translate="no"
                   />
 
                   <ControlledSelectInput label={t("country")} name="country" options={memoizedCountries} />
                 </div>
 
-                <ControlledPhoneInput name={"phoneNumber"} countryName={"cc"} placeholder={t("enter_phone_number")} />
+                <ControlledPhoneInput
+                  name={"phoneNumber"}
+                  countryName={"cc"}
+                  placeholder={t("enter_phone_number")}
+                />
 
               </div>
 
               <div className="mb-5 w-full">
                 <div className="mb-4 w-full border-y border-solid border-gray-200 py-2.5">
-                  <label 
+                  <label
                     className={cn(
                       "mb-0 block",
                       langDir == "rtl" ? "text-right" : "text-left",
                       "text-base font-medium leading-5 text-color-dark"
                     )}
+                    translate="no"
                   >
                     {t("more_information")}
                   </label>
                 </div>
 
                 <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
-                  {/* TODO: fix submit value type */}
-                  <ControlledSelectInput label={t("year_of_establishment")} name="yearOfEstablishment" options={memoizedLastTwoHundredYears?.map((item: any) => ({ label: item?.toString(), value: item?.toString(), }))} />
-                  <ControlledSelectInput label={t("total_no_of_employees")} name="totalNoOfEmployee" options={NO_OF_EMPLOYEES_LIST} />
+                  <ControlledSelectInput
+                    label={t("year_of_establishment")}
+                    name="yearOfEstablishment"
+                    options={memoizedLastTwoHundredYears?.map((item: any) => ({ label: item?.toString(), value: item?.toString(), }))}
+                  />
+
+                  <ControlledSelectInput
+                    label={t("total_no_of_employees")}
+                    name="totalNoOfEmployee"
+                    options={NO_OF_EMPLOYEES_LIST}
+                  />
                 </div>
 
-                <QuillEditor label={t("about_us")} name="aboutUsJson" />
+                {/* <QuillEditor label={t("about_us")} name="aboutUsJson" /> */}
+                <ControlledRichTextEditor
+                  label={t("about_us")}
+                  name="aboutUsJson"
+                />
               </div>
             </div>
 
-            <Button disabled={updateCompanyProfile.isPending || upload.isPending} type="submit" className="h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90">
+            <Button
+              disabled={updateCompanyProfile.isPending || upload.isPending}
+              type="submit"
+              className="h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
+              translate="no"
+            >
               {
                 updateCompanyProfile.isPending || upload.isPending ? (
                   <>

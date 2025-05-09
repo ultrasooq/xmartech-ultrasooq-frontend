@@ -130,7 +130,7 @@ export default function ResetPasswordPage() {
             ) : (
               <>
                 <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
-                  <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10" dir={langDir}>
+                  <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10" dir={langDir} translate="no">
                     {t("reset_password")}
                   </h2>
                 </div>
@@ -146,6 +146,7 @@ export default function ResetPasswordPage() {
                         placeholder="**********"
                         type="password"
                         dir={langDir}
+                        translate="no"
                       />
 
                       <ControlledTextInput
@@ -154,6 +155,7 @@ export default function ResetPasswordPage() {
                         placeholder="**********"
                         type="password"
                         dir={langDir}
+                        translate="no"
                       />
 
                       <div className="mb-4 w-full">
@@ -161,6 +163,7 @@ export default function ResetPasswordPage() {
                           disabled={resetPassword.isPending}
                           type="submit"
                           className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
+                          translate="no"
                         >
                           {resetPassword.isPending ? (
                             <LoaderWithMessage message="Please wait" />

@@ -83,7 +83,7 @@ const QueryForm: React.FC<QueryFormProps> = ({ onClose }) => {
     return (
         <>
             <div className="modal-header !justify-between" dir={langDir}>
-                <DialogTitle className="text-center text-xl font-bold" dir={langDir}>
+                <DialogTitle className="text-center text-xl font-bold" dir={langDir} translate="no">
                     {t("submit_your_query")}
                 </DialogTitle>
                 <Button
@@ -100,7 +100,7 @@ const QueryForm: React.FC<QueryFormProps> = ({ onClose }) => {
                     className="card-item card-payment-form px-5 pb-5 pt-3"
                 >
                     <div dir={langDir}>
-                        <label className="text-sm font-medium leading-none text-color-dark">
+                        <label className="text-sm font-medium leading-none text-color-dark" translate="no">
                             {t("email")}
                         </label>
                     </div>
@@ -111,6 +111,7 @@ const QueryForm: React.FC<QueryFormProps> = ({ onClose }) => {
                         type="email"
                         disabled={!!me?.data?.data?.id}
                         dir={langDir}
+                        translate="no"
                     />
 
                     <ControlledTextareaInput
@@ -118,6 +119,7 @@ const QueryForm: React.FC<QueryFormProps> = ({ onClose }) => {
                         name="query"
                         placeholder={t("enter_your_query")}
                         dir={langDir}
+                        translate="no"
                     />
 
                     <Button
@@ -125,6 +127,7 @@ const QueryForm: React.FC<QueryFormProps> = ({ onClose }) => {
                         className="theme-primary-btn mt-2 h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
                         disabled={submitQuery?.isPending}
                         dir={langDir}
+                        translate="no"
                     >
                         {submitQuery?.isPending ? t("processing") : t("submit")}
                     </Button>

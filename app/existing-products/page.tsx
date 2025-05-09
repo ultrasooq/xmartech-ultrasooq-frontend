@@ -189,7 +189,7 @@ const ExistingProductsPage = () => {
           <div className="container m-auto flex flex-wrap px-3">
             <div className="mb-5 flex w-full flex-wrap items-center justify-between border-b border-solid border-gray-300 pb-3.5">
               <div className="flex flex-wrap items-center justify-start">
-                <h4 className="mr-3 whitespace-nowrap text-xl font-normal capitalize text-color-dark md:mr-6 md:text-2xl" dir={langDir}>
+                <h4 className="mr-3 whitespace-nowrap text-xl font-normal capitalize text-color-dark md:mr-6 md:text-2xl" dir={langDir} translate="no">
                   {t("choose_products")}
                 </h4>
               </div>
@@ -202,6 +202,7 @@ const ExistingProductsPage = () => {
                   className="border-color-[rgb(232 232 232 / var(--tw-border-opacity))] h-[45px] w-full rounded-none border border-solid px-3 py-0 text-sm font-normal"
                   onChange={handleProductDebounce}
                   dir={langDir}
+                  translate="no"
                 />
               </div>
               <Accordion
@@ -210,7 +211,7 @@ const ExistingProductsPage = () => {
                 className="filter-col"
               >
                 <AccordionItem value="brand">
-                  <AccordionTrigger className="px-3 text-base hover:!no-underline">
+                  <AccordionTrigger className="px-3 text-base hover:!no-underline" translate="no">
                     {t("by_brand")}
                   </AccordionTrigger>
                   <AccordionContent>
@@ -221,12 +222,13 @@ const ExistingProductsPage = () => {
                         className="custom-form-control-s1 searchInput rounded-none"
                         onChange={handleBrandDebounce}
                         dir={langDir}
+                        translate="no"
                       />
                     </div>
                     <div className="filter-body-part">
                       <div className="filter-checklists">
                         {!memoizedBrands.length ? (
-                          <p className="text-center text-sm font-medium" dir={langDir}>
+                          <p className="text-center text-sm font-medium" dir={langDir} translate="no">
                             {t("no_data_found")}
                           </p>
                         ) : null}
@@ -270,7 +272,9 @@ const ExistingProductsPage = () => {
               ) : null}
 
               {!memoizedProductList.length && !allProductsQuery.isLoading ? (
-                <p className="text-center text-sm font-medium" dir={langDir}>{t("no_data_found")}</p>
+                <p className="text-center text-sm font-medium" dir={langDir} translate="no">
+                  {t("no_data_found")}
+                </p>
               ) : null}
 
               <div className="product-list-s1">
@@ -303,7 +307,7 @@ const ExistingProductsPage = () => {
 
       {selectedProductIds.length ? (
         <div className="fixed bottom-0 left-0 z-10 flex w-full items-center justify-end border-t border-solid border-gray-300 bg-dark-orange px-10 py-3">
-          <p className="mr-4 text-base font-medium text-white">
+          <p className="mr-4 text-base font-medium text-white" translate="no">
             {t("n_products_selected").replace("{n}", String(selectedProductIds.length))}
           </p>
           <Button
@@ -313,6 +317,7 @@ const ExistingProductsPage = () => {
             className="flex items-center rounded-sm bg-white text-sm font-bold text-dark-orange"
             disabled={addMultiplePriceForProductIds.isPending}
             dir={langDir}
+            translate="no"
           >
             {addMultiplePriceForProductIds.isPending ? (
               <>

@@ -9,6 +9,7 @@ import {
 import { Input, InputProps } from "@/components/ui/input";
 import { useFormContext } from "react-hook-form";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/context/AuthContext";
 
 interface ControlledTextInputProps extends InputProps {
   label?: string;
@@ -19,10 +20,11 @@ interface ControlledTextInputProps extends InputProps {
 const ControlledTextInput: React.FC<ControlledTextInputProps> = ({
   label,
   name,
-  showLabel = false,
+  showLabel,
   ...props
 }) => {
   const formContext = useFormContext();
+  const { langDir } = useAuth();
 
   return (
     <FormField
@@ -33,7 +35,7 @@ const ControlledTextInput: React.FC<ControlledTextInputProps> = ({
           "mt-2 flex w-full flex-col gap-y-1",
           props.className || ""
         )}>
-          {showLabel && <FormLabel>{label}</FormLabel>}
+          {showLabel ? <FormLabel dir={langDir}>{label}</FormLabel> : null}
           <FormControl>
             <Input {...props} className="theme-form-control-s1" {...field} />
           </FormControl>

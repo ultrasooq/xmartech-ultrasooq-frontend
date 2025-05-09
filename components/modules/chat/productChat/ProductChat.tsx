@@ -394,9 +394,9 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
       <div className="flex w-full rounded-sm border border-solid border-gray-300">
         <div className="w-full border-r border-solid border-gray-300 lg:w-[15%]">
           <div className="flex h-[55px] min-w-full items-center border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
-            <span>{t("product")}</span>
+            <span translate="no">{t("product")}</span>
           </div>
-          {productDetails && (
+          {productDetails ? (
             <a
               target="_blank"
               href={`/trending/${productDetails?.id}`}
@@ -429,7 +429,7 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
                 </div>
               </div>
             </a>
-          )}
+          ) : null}
 
           <div className="max-h-[720px] w-full overflow-y-auto p-2">
             {product?.isPending ? (
@@ -442,7 +442,7 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
 
             {!product?.isPending && !productDetails ? (
               <div className="my-2 space-y-2">
-                <p className="text-center text-sm font-normal text-gray-500">
+                <p className="text-center text-sm font-normal text-gray-500" translate="no">
                   {t("no_data_found")}
                 </p>
               </div>
@@ -464,7 +464,7 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
                 chatHistoryLoading={chatHistoryLoading}
               />
             </div>
-            {productDetails && (
+            {productDetails ? (
               <div className="mt-2 flex w-full flex-wrap border-t border-solid border-gray-300 px-[15px] py-[10px]">
                 <div className="flex w-full items-center">
                   <div className="relative flex h-[32px] w-[32px] items-center">
@@ -508,13 +508,13 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
                   </div>
                 </div>
 
-                {showEmoji && (
+                {showEmoji ? (
                   <div className="mt-2 w-full border-t border-solid">
                     <EmojiPicker onEmojiClick={onEmojiClick} className="mt-2" />
                   </div>
-                )}
+                ) : null}
 
-                {!isAttachmentUploading && attachments.length > 0 && (
+                {!isAttachmentUploading && attachments.length > 0 ? (
                   <div className="mt-2 flex w-full flex-wrap gap-2">
                     {attachments.map((file: any, index: any) => (
                       <div
@@ -531,9 +531,9 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
                       </div>
                     ))}
                   </div>
-                )}
+                ) : null}
               </div>
-            )}
+            ) : null}
           </div>
         )}
       </div>

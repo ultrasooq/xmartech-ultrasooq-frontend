@@ -144,7 +144,7 @@ export function InsertDropdownMenu(props: DropdownMenuProps) {
       >
         {items.map(({ items: nestedItems, label }, index) => (
           <React.Fragment key={label}>
-            {index !== 0 && <DropdownMenuSeparator />}
+            {index !== 0 ? <DropdownMenuSeparator /> : null}
 
             <DropdownMenuLabel>{label}</DropdownMenuLabel>
             {nestedItems.map(

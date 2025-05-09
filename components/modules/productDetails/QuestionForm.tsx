@@ -73,7 +73,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({ onClose }) => {
   return (
     <div>
       <DialogHeader>
-        <DialogTitle className="mb-5 text-center text-xl font-semibold" dir={langDir}>
+        <DialogTitle className="mb-5 text-center text-xl font-semibold" dir={langDir} translate="no">
           {t("post_your_question")}
         </DialogTitle>
       </DialogHeader>
@@ -81,9 +81,9 @@ const QuestionForm: React.FC<QuestionFormProps> = ({ onClose }) => {
       <section className="grid gap-3 md:grid-cols-2">
         <div className="pl-5">
           <ul className="list-disc">
-            <li dir={langDir}>{t("question_instruction_1")}</li>
-            <li dir={langDir}>{t("question_instruction_2")}</li>
-            <li dir={langDir}>{t("question_instruction_3")}</li>
+            <li dir={langDir} translate="no">{t("question_instruction_1")}</li>
+            <li dir={langDir} translate="no">{t("question_instruction_2")}</li>
+            <li dir={langDir} translate="no">{t("question_instruction_3")}</li>
           </ul>
         </div>
 
@@ -98,6 +98,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({ onClose }) => {
               placeholder={t("enter_your_question_here")}
               rows={6}
               dir={langDir}
+              translate="no"
             />
 
             <Button
@@ -105,6 +106,7 @@ const QuestionForm: React.FC<QuestionFormProps> = ({ onClose }) => {
               type="submit"
               className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
               dir={langDir}
+              translate="no"
             >
               {addQuestion.isPending ? (
                 <>

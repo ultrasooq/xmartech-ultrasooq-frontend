@@ -9,6 +9,7 @@ import { useAuth } from "@/context/AuthContext";
 
 type OtherItemCardProps = {
   id: number;
+  orderProductType?: string;
   productName: string;
   offerPrice: string;
   orderQuantity?: number;
@@ -22,6 +23,7 @@ type OtherItemCardProps = {
 
 const OtherItemCard: React.FC<OtherItemCardProps> = ({
   id,
+  orderProductType,
   productName,
   offerPrice,
   orderQuantity,
@@ -39,32 +41,50 @@ const OtherItemCard: React.FC<OtherItemCardProps> = ({
     <div className="my-order-item">
       <div className="my-order-card">
         <div className="cardTitle !mb-2">Other Items in this order</div>
-        <h5 className="mb-2" dir={langDir}>
+        <h5 className="mb-2" dir={langDir} translate="no">
           {t("order_id")}: <span className="font-semibold">{orderNo}</span>
         </h5>
         <div className="my-order-box">
           <Link href={`/seller-orders/${id}`}>
-            <figure>
-              <div className="image-container rounded border border-gray-300">
-                <Image
-                  src={productImages?.[0]?.image || PlaceholderImage}
-                  alt="preview-product"
-                  width={120}
-                  height={120}
-                  placeholder="blur"
-                  blurDataURL="/images/product-placeholder.png"
-                />
-              </div>
-              <figcaption>
-                <h3>{productName}</h3>
-                {/* <p>Color: B.A.E Black</p> */}
-                <p className="mt-1">Seller: {sellerName}</p>
-                <h4 className="mt-1">{currency.symbol}{offerPrice}</h4>
-              </figcaption>
-            </figure>
+            {orderProductType == 'SERVICE' ? (
+              <figure>
+                <div className="image-container rounded border border-gray-300">
+                  <Image
+                    src={PlaceholderImage}
+                    alt="preview-product"
+                    width={120}
+                    height={120}
+                    placeholder="blur"
+                    blurDataURL="/images/product-placeholder.png"
+                  />
+                </div>
+                <figcaption>
+                  <h3>{t("service")}</h3>
+                  <h4 className="mt-1">{currency.symbol}{offerPrice}</h4>
+                </figcaption>
+              </figure>
+            ) : (
+              <figure>
+                <div className="image-container rounded border border-gray-300">
+                  <Image
+                    src={productImages?.[0]?.image || PlaceholderImage}
+                    alt="preview-product"
+                    width={120}
+                    height={120}
+                    placeholder="blur"
+                    blurDataURL="/images/product-placeholder.png"
+                  />
+                </div>
+                <figcaption>
+                  <h3>{productName}</h3>
+                  <p className="mt-1">Seller: {sellerName}</p>
+                  <h4 className="mt-1">{currency.symbol}{offerPrice}</h4>
+                </figcaption>
+              </figure>
+            )}
           </Link>
           <div className="right-info">
-            <h4 className="mb-2" dir={langDir}>
+            <h4 className="mb-2" dir={langDir} translate="no">
               {orderProductStatus === "CONFIRMED" ? (
                 <>
                   <BiCircle color="green" />

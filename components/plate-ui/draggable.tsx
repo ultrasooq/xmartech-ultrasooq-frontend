@@ -116,7 +116,7 @@ export const Draggable = withRef<'div', DraggableProps>(
               )}
             >
               <div className="size-4">
-                {isHovered && dragHandle}
+                {isHovered ? dragHandle : null}
               </div>
             </div>
           </div>
@@ -125,7 +125,7 @@ export const Draggable = withRef<'div', DraggableProps>(
         <div className={classNames.blockWrapper} ref={previewRef}>
           {children}
 
-          {!!dropLine && (
+          {!!dropLine ? (
             <div
               className={cn(
                 'absolute inset-x-0 h-0.5 opacity-100',
@@ -136,7 +136,7 @@ export const Draggable = withRef<'div', DraggableProps>(
               )}
               {...droplineProps}
             />
-          )}
+          ) : null}
         </div>
       </div>
     );

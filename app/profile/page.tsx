@@ -74,7 +74,7 @@ const formSchema = (t: any) => {
       .trim()
       .min(2, { message: t("gender_required") }),
     userName: z
-      .string()
+      .string({ invalid_type_error: t("username_required") })
       .trim()
       .min(5, { message: t("username_required") }),
     email: z
@@ -380,10 +380,11 @@ export default function ProfilePage() {
               <h2
                 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10"
                 dir={langDir}
+                translate="no"
               >
                 {t("profile")}
               </h2>
-              <p dir={langDir}>{t("update_profile")}</p>
+              <p dir={langDir} translate="no">{t("update_profile")}</p>
             </div>
             <div className="w-full">
               <Form {...form}>
@@ -434,7 +435,7 @@ export default function ProfilePage() {
                                       height={29}
                                       alt="camera"
                                     />
-                                    <span dir={langDir}>
+                                    <span dir={langDir} translate="no">
                                       {t("upload_image")}
                                     </span>
                                   </div>
@@ -479,6 +480,7 @@ export default function ProfilePage() {
                     name="firstName"
                     placeholder={t("enter_first_name")}
                     dir={langDir}
+                    translate="no"
                   />
 
                   <ControlledTextInput
@@ -486,6 +488,7 @@ export default function ProfilePage() {
                     name="lastName"
                     placeholder={t("enter_last_name")}
                     dir={langDir}
+                    translate="no"
                   />
 
                   <FormField
@@ -495,6 +498,7 @@ export default function ProfilePage() {
                       <FormItem className="mb-5 mt-3 flex w-full flex-col items-start" dir={langDir}>
                         <FormLabel
                           className="mb-3 mr-6 capitalize"
+                          translate="no"
                         >
                           {t("gender")}
                         </FormLabel>
@@ -537,12 +541,14 @@ export default function ProfilePage() {
                     name="userName"
                     placeholder={t("enter_username")}
                     dir={langDir}
+                    translate="no"
                   />
                   <ControlledTextInput
                     label={t("email")}
                     name="email"
                     placeholder={t("enter_email")}
                     dir={langDir}
+                    translate="no"
                     disabled
                   />
                   <ControlledTextInput
@@ -551,6 +557,7 @@ export default function ProfilePage() {
                     placeholder="**********"
                     type="password"
                     dir={langDir}
+                    translate="no"
                   />
 
                   <div className="w-full">
@@ -562,6 +569,7 @@ export default function ProfilePage() {
                             ? "!text-red-500"
                             : "",
                         )}
+                        translate="no"
                       >
                         {t("phone_number")}
                       </label>
@@ -570,6 +578,7 @@ export default function ProfilePage() {
                         type="button"
                         onClick={appendPhoneNumber}
                         className="flex cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
+                        translate="no"
                       >
                         <Image
                           src="/images/add-icon.svg"
@@ -612,6 +621,7 @@ export default function ProfilePage() {
                     <div className="flex w-full items-center justify-between" dir={langDir}>
                       <label
                         className="block text-left text-sm font-medium capitalize leading-4 text-color-dark"
+                        translate="no"
                       >
                         {t("social_links")}
                       </label>
@@ -620,6 +630,7 @@ export default function ProfilePage() {
                         type="button"
                         onClick={appendSocialLinks}
                         className="flex cursor-pointer items-center bg-transparent p-0 text-sm font-semibold capitalize text-dark-orange shadow-none hover:bg-transparent"
+                        translate="no"
                       >
                         <Image
                           src="/images/add-icon.svg"
@@ -659,7 +670,7 @@ export default function ProfilePage() {
                                   alt="social-facebook-icon"
                                 />
                               ) : (
-                                <span className="capitalize">
+                                <span className="capitalize" translate="no">
                                   {t("select_type")}
                                 </span>
                               )}
@@ -701,6 +712,7 @@ export default function ProfilePage() {
                               name={`socialLinkList.${index}.link`}
                               placeholder={t("enter_your_link")}
                               dir={langDir}
+                              translate="no"
                             />
                           </AccordionContent>
                         </AccordionItem>
@@ -726,12 +738,12 @@ export default function ProfilePage() {
                       name="uploadIdentityFrontImage"
                       render={({ field }) => (
                         <FormItem className="mb-3.5 w-full">
-                          <FormLabel className="block" dir={langDir}>
+                          <FormLabel className="block" dir={langDir} translate="no">
                             {t("upload_identity_proof")}
                           </FormLabel>
                           <div className="upload-identity-proof-both-side">
                             <div className="upload-identity-proof-both-side-col">
-                              <FormLabel className="block" dir={langDir}>
+                              <FormLabel className="block" dir={langDir} translate="no">
                                 {t("front")}
                               </FormLabel>
                               <FormControl>
@@ -820,7 +832,7 @@ export default function ProfilePage() {
                               </FormControl>
                             </div>
                             <div className="upload-identity-proof-both-side-col">
-                              <FormLabel className="block" dir={langDir}>
+                              <FormLabel className="block" dir={langDir} translate="no">
                                 {t("back")}
                               </FormLabel>
                               <FormControl>
@@ -927,6 +939,7 @@ export default function ProfilePage() {
                     type="submit"
                     className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold  leading-6"
                     dir={langDir}
+                    translate="no"
                   >
                     {updateProfile.isPending || upload.isPending ? (
                       <>

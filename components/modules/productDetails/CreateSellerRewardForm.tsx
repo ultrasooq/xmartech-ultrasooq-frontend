@@ -46,9 +46,9 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
     // Default values based on whether editing or adding a new member
     const addDefaultValues = {
         productId: "",
-        startDate: "", //undefined as unknown as Date,
+        startDate: undefined as unknown as Date,
         startTime: "",
-        endDate: "", //undefined as unknown as Date,
+        endDate: undefined as unknown as Date,
         endTime: "",
         rewardPercentage: 1,
         rewardFixAmount: 1,
@@ -81,19 +81,10 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
     }, [productsQuery?.data?.data]);
 
     const onSubmit = async (values: typeof addDefaultValues) => {
-        let startDateTime = values.startDate + ' ' + values.startTime + ':00';
-        let endDateTime = values.endDate + ' ' + values.endTime + ':00';
+        let startDateTime = values.startDate;
+        let endDateTime = values.endDate;
 
-        if (new Date(startDateTime).getTime() < new Date().getTime()) {
-            toast({
-                title: t("datetime_error"),
-                description: t("start_datetime_cant_be_in_past"),
-                variant: "danger",
-            });
-            return;
-        }
-
-        if (new Date(values.startDate).getTime() > new Date(values.endDate).getTime()) {
+        if (startDateTime.getTime() > endDateTime.getTime()) {
             toast({
                 title: t("datetime_error"),
                 description: t("start_date_cant_be_greater_than_end_date"),
@@ -102,7 +93,7 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
             return;
         }
 
-        if (values.startDate == values.endDate && new Date(startDateTime).getTime() >= new Date(endDateTime).getTime()) {
+        if (startDateTime.getTime() == endDateTime.getTime() && values.startTime >= values.endTime) {
             toast({
                 title: t("datetime_error"),
                 description: t("start_time_must_be_less_than_end_time"),
@@ -111,10 +102,27 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
             return;
         }
 
+        let startTime = values.startTime.split(':');
+        startDateTime.setHours(Number(startTime[0]));
+        startDateTime.setMinutes(Number(startTime[1]));
+
+        let endTime = values.endTime.split(':');
+        endDateTime.setHours(Number(endTime[0]));
+        endDateTime.setMinutes(Number(endTime[1]));
+
+        if (startDateTime.getTime() < new Date().getTime()) {
+            toast({
+                title: t("datetime_error"),
+                description: t("start_datetime_cant_be_in_past"),
+                variant: "danger",
+            });
+            return;
+        }
+
         const response = await addSellerReward.mutateAsync({
             productId: Number(values.productId),
-            startTime: startDateTime,
-            endTime: endDateTime,
+            startTime: startDateTime.toISOString(),
+            endTime: endDateTime.toISOString(),
             rewardPercentage: values.rewardPercentage,
             rewardFixAmount: values.rewardFixAmount,
             minimumOrder: values.minimumOrder,
@@ -142,7 +150,7 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
     return (
         <>
             <div className="modal-header !justify-between">
-                <DialogTitle className="text-center text-xl font-bold" dir={langDir}>
+                <DialogTitle className="text-center text-xl font-bold" dir={langDir} translate="no">
                     {t("create_seller_reward")}
                 </DialogTitle>
                 <Button
@@ -194,7 +202,7 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
                         name="rewardPercentage"
                         render={({ field }) => (
                             <FormItem dir={langDir}>
-                                <FormLabel>{t("reward_percentage")}</FormLabel>
+                                <FormLabel translate="no">{t("reward_percentage")}</FormLabel>
                                 <FormControl>
                                     <Input
                                         type="number"
@@ -213,7 +221,7 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
                         name="rewardFixAmount"
                         render={({ field }) => (
                             <FormItem dir={langDir}>
-                                <FormLabel>{t("reward_fix_amount")}</FormLabel>
+                                <FormLabel translate="no">{t("reward_fix_amount")}</FormLabel>
                                 <FormControl>
                                     <Input
                                         type="number"
@@ -232,7 +240,7 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
                         name="minimumOrder"
                         render={({ field }) => (
                             <FormItem dir={langDir}>
-                                <FormLabel>{t("minimum_order")}</FormLabel>
+                                <FormLabel translate="no">{t("minimum_order")}</FormLabel>
                                 <FormControl>
                                     <Input
                                         type="number"
@@ -251,7 +259,7 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
                         name="stock"
                         render={({ field }) => (
                             <FormItem dir={langDir}>
-                                <FormLabel>{t("stock")}</FormLabel>
+                                <FormLabel translate="no">{t("stock")}</FormLabel>
                                 <FormControl>
                                     <Input
                                         type="number"
@@ -269,6 +277,7 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
                         type="submit"
                         disabled={addSellerReward?.isPending}
                         className="theme-primary-btn mt-2 h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
+                        translate="no"
                     >
                         {!addSellerReward?.isPending ? t("create_reward") : t("processing")}
                     </Button>

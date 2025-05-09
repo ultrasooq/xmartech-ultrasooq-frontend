@@ -84,7 +84,11 @@ const BuyerProfileDetailsPage = () => {
         <div className="container relative z-10 m-auto px-3">
           <div className="flex flex-wrap">
             <div className="mb-7 w-full">
-              <h2 className="text-4xl font-semibold leading-10 text-color-dark" dir={langDir}>
+              <h2
+                className="text-2xl font-semibold leading-10 text-color-dark md:text-4xl"
+                dir={langDir}
+                translate="no"
+              >
                 {t("my_profile")}
               </h2>
             </div>
@@ -96,6 +100,7 @@ const BuyerProfileDetailsPage = () => {
                 onClick={handleRoleModal}
                 className="theme-primary-btn addbtn"
                 dir={langDir}
+                translate="no"
               >
                 {t("update")}
               </button>
@@ -103,11 +108,12 @@ const BuyerProfileDetailsPage = () => {
             <ProfileCard userDetails={me.data?.data} />
             <div className="mt-12 w-full">
               <Tabs defaultValue="profile-info">
-                <TabsList className="mb-1 grid min-h-[80px] w-[560px] grid-cols-3 gap-x-6 rounded-none bg-transparent px-0 pt-7">
+                <TabsList className="mb-1 grid min-h-[80px] w-[560px] max-w-full grid-cols-3 gap-x-6 rounded-none bg-transparent px-0 pt-7">
                   <TabsTrigger
                     value="profile-info"
                     className="rounded-b-none !bg-[#d1d5db] py-4 text-base font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white"
                     dir={langDir}
+                    translate="no"
                   >
                     {t("profile_info")}
                   </TabsTrigger>

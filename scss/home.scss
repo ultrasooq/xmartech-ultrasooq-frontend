@@ -325,6 +325,121 @@
 
 }
 
+.home_sec5 {
+    .home_sec5_box {
+        background-color: #F2F2F2;
+        padding: 80px 40px;
+        color: #7F818D;
+        font-size: 15px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 24px; 
+        text-transform: capitalize;
+        background-image: url(../public/images/big-headphone.png);
+        background-repeat: no-repeat;
+        background-position: center right;
+        background-size: contain;
+        background-position-x: 97%;
+        @media only screen and (min-width: 992px) and (max-width: 1100px) {
+            padding: 60px 30px;
+            font-size: 14px;
+        }
+        @media only screen and (min-width: 768px) and (max-width: 991px) {
+            padding: 60px 40px;
+            background-size: 200px;
+            font-size: 14px;
+        }
+        @media only screen and (min-width: 575px) and (max-width: 767px) {
+            font-size: 14px;
+            line-height: 20px;
+        }
+        @media only screen and (min-width: 240px) and (max-width: 767px) {
+            background-image: none;
+            padding: 50px 30px;
+        }
+        .home_sec5_box_left {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            align-content: center;
+            h3 {
+                color: #333;
+                font-size: 35px;
+                font-style: normal;
+                font-weight: 400;
+                line-height: 43px;
+                text-transform: capitalize;
+                @media only screen and (min-width: 992px) and (max-width: 1100px) {
+                    font-size: 30px;
+                    line-height: 38px;
+                }
+                @media only screen and (min-width: 768px) and (max-width: 991px) {
+                    font-size: 24px;
+                    line-height: 34px;
+                }
+                @media only screen and (min-width: 240px) and (max-width: 767px) {
+                    font-size: 20px;
+                    line-height: 30px;
+                }
+            }
+        }
+        .home_sec5_box_right {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            align-content: center;
+            h6 {
+                color: #333;
+                font-size: 16px;
+                font-style: normal;
+                font-weight: 500;
+                line-height: normal;
+                text-decoration: line-through;
+                text-transform: uppercase;
+            }
+            h4 {
+                color: #679A03;
+                font-size: 33px;
+                font-style: normal;
+                font-weight: 500;
+                line-height: normal;
+                text-transform: uppercase;
+                @media only screen and (min-width: 575px) and (max-width: 767px) {
+                    font-size: 28px;
+                }
+                span {
+                    text-decoration: line-through;
+                }
+            }
+            .button {
+                margin-top: 20px;
+                a {
+                    padding: 10px 20px;
+                    border-radius: 2px;
+                    background: #DF2100;
+                    color: #FFF;
+                    font-size: 14px;
+                    font-style: normal;
+                    font-weight: 700;
+                    line-height: 24px;
+                    display: inline-block;
+                    @media only screen and (min-width: 575px) and (max-width: 767px) {
+                        padding: 10px 16px;
+                    }
+                }
+            }
+        }
+        .home_sec5_box_image {
+            @media only screen and (min-width: 240px) and (max-width: 767px) {
+                text-align: center;
+            }
+        }
+    }
+}
+
+
+
+
 .product_section {
     .products_sec_wrap {
         .products_sec_top {
@@ -576,118 +691,3 @@
         }
     }
 }
-
-
-.home_sec5 {
-    .home_sec5_box {
-        background-color: #F2F2F2;
-        padding: 80px 40px;
-        color: #7F818D;
-        font-size: 15px;
-        font-style: normal;
-        font-weight: 400;
-        line-height: 24px; 
-        text-transform: capitalize;
-        background-image: url(../public/images/big-headphone.png);
-        background-repeat: no-repeat;
-        background-position: center right;
-        background-size: contain;
-        background-position-x: 97%;
-        @media only screen and (min-width: 992px) and (max-width: 1100px) {
-            padding: 60px 30px;
-            font-size: 14px;
-        }
-        @media only screen and (min-width: 768px) and (max-width: 991px) {
-            padding: 60px 40px;
-            background-size: 200px;
-            font-size: 14px;
-        }
-        @media only screen and (min-width: 575px) and (max-width: 767px) {
-            font-size: 14px;
-            line-height: 20px;
-        }
-        @media only screen and (min-width: 240px) and (max-width: 767px) {
-            background-image: none;
-            padding: 50px 30px;
-        }
-        .home_sec5_box_left {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            align-content: center;
-            h3 {
-                color: #333;
-                font-size: 35px;
-                font-style: normal;
-                font-weight: 400;
-                line-height: 43px;
-                text-transform: capitalize;
-                @media only screen and (min-width: 992px) and (max-width: 1100px) {
-                    font-size: 30px;
-                    line-height: 38px;
-                }
-                @media only screen and (min-width: 768px) and (max-width: 991px) {
-                    font-size: 24px;
-                    line-height: 34px;
-                }
-                @media only screen and (min-width: 240px) and (max-width: 767px) {
-                    font-size: 20px;
-                    line-height: 30px;
-                }
-            }
-        }
-        .home_sec5_box_right {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            align-content: center;
-            h6 {
-                color: #333;
-                font-size: 16px;
-                font-style: normal;
-                font-weight: 500;
-                line-height: normal;
-                text-decoration: line-through;
-                text-transform: uppercase;
-            }
-            h4 {
-                color: #679A03;
-                font-size: 33px;
-                font-style: normal;
-                font-weight: 500;
-                line-height: normal;
-                text-transform: uppercase;
-                @media only screen and (min-width: 575px) and (max-width: 767px) {
-                    font-size: 28px;
-                }
-                span {
-                    text-decoration: line-through;
-                }
-            }
-            .button {
-                margin-top: 20px;
-                a {
-                    padding: 10px 20px;
-                    border-radius: 2px;
-                    background: #DF2100;
-                    color: #FFF;
-                    font-size: 14px;
-                    font-style: normal;
-                    font-weight: 700;
-                    line-height: 24px;
-                    display: inline-block;
-                    @media only screen and (min-width: 575px) and (max-width: 767px) {
-                        padding: 10px 16px;
-                    }
-                }
-            }
-        }
-        .home_sec5_box_image {
-            @media only screen and (min-width: 240px) and (max-width: 767px) {
-                text-align: center;
-            }
-        }
-    }
-}
-
-

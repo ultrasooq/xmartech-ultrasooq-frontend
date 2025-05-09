@@ -126,7 +126,7 @@ export const TableFloatingToolbar = withRef<typeof PopoverContent>(
 
     const { canMerge, canUnmerge } = useTableMergeState();
 
-    const mergeContent = canMerge && (
+    const mergeContent = canMerge ? (
       <Button
         contentEditable={false}
         variant="ghost"
@@ -136,9 +136,9 @@ export const TableFloatingToolbar = withRef<typeof PopoverContent>(
         <Icons.combine className="mr-2 size-4" />
         Merge
       </Button>
-    );
+    ) : null;
 
-    const unmergeButton = canUnmerge && (
+    const unmergeButton = canUnmerge ? (
       <Button
         contentEditable={false}
         variant="ghost"
@@ -148,9 +148,9 @@ export const TableFloatingToolbar = withRef<typeof PopoverContent>(
         <Icons.ungroup className="mr-2 size-4" />
         Unmerge
       </Button>
-    );
+    ) : null;
 
-    const bordersContent = collapsed && (
+    const bordersContent = collapsed ? (
       <>
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
@@ -170,12 +170,12 @@ export const TableFloatingToolbar = withRef<typeof PopoverContent>(
           Delete
         </Button>
       </>
-    );
+    ) : null;
 
     return (
       <Popover open={open} modal={false}>
         <PopoverAnchor asChild>{children}</PopoverAnchor>
-        {(canMerge || canUnmerge || collapsed) && (
+        {(canMerge || canUnmerge || collapsed) ? (
           <PopoverContent
             ref={ref}
             className={cn(
@@ -189,7 +189,7 @@ export const TableFloatingToolbar = withRef<typeof PopoverContent>(
             {mergeContent}
             {bordersContent}
           </PopoverContent>
-        )}
+        ) : null}
       </Popover>
     );
   }

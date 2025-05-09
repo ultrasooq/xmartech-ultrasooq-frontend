@@ -74,22 +74,19 @@ const formSchema = z
         message: "Email must be in lower case",
       }),
     initialPassword: z
-      .string()
+      .string({ required_error: "Login Password is required" })
       .trim()
-      .min(2, {
+      .min(1, {
         message: "Login Password is required",
       })
       .min(8, {
         message: "Password must be longer than or equal to 8 characters",
       }),
     password: z
-      .string()
+      .string({ required_error: "Login Password is required" })
       .trim()
-      .min(2, {
+      .min(1, {
         message: "Confirm Password is required",
-      })
-      .min(8, {
-        message: "Password must be longer than or equal to 8 characters",
       }),
     cc: z.string().trim(),
     phoneNumber: z
@@ -203,7 +200,7 @@ export default function RegisterPage() {
 
   return (
     <>
-      <title dir={langDir}>{t("register")} | Ultrasooq</title>
+      <title dir={langDir} translate="no">{t("register")} | Ultrasooq</title>
       <section className="relative w-full py-7">
         <div className="absolute left-0 top-0 -z-10 h-full w-full">
           <Image
@@ -218,10 +215,14 @@ export default function RegisterPage() {
           <div className="flex">
             <div className="auth-page-box m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-7 shadow-sm sm:p-12 md:w-9/12 lg:w-7/12">
               <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
-                <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10" dir={langDir}>
+                <h2
+                  className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10"
+                  dir={langDir}
+                  translate="no"
+                >
                   {t("registration")}
                 </h2>
-                <p dir={langDir}>{t("create_your_account")}</p>
+                <p dir={langDir} translate="no">{t("create_your_account")}</p>
               </div>
               <div className="w-full">
                 <ul className="flex w-full flex-wrap items-center justify-between">
@@ -234,6 +235,7 @@ export default function RegisterPage() {
                         signIn("facebook");
                       }}
                       dir={langDir}
+                      translate="no"
                     >
                       <Image
                         src={FacebookIcon}
@@ -254,6 +256,7 @@ export default function RegisterPage() {
                         signIn("google");
                       }}
                       dir={langDir}
+                      translate="no"
                     >
                       <Image
                         src={GoogleIcon}
@@ -283,7 +286,11 @@ export default function RegisterPage() {
                       name="tradeRole"
                       render={({ field }) => (
                         <FormItem className="mb-4 flex w-full flex-col items-center md:flex-row md:items-start">
-                          <FormLabel className="mb-3 mr-6 capitalize md:mb-0" dir={langDir}>
+                          <FormLabel
+                            className="mb-3 mr-6 capitalize md:mb-0"
+                            dir={langDir}
+                            translate="no"
+                          >
                             {t("select_trade_role")}:
                           </FormLabel>
                           <div className="!mt-0">
@@ -326,6 +333,7 @@ export default function RegisterPage() {
                       name="firstName"
                       placeholder={t("enter_first_name")}
                       dir={langDir}
+                      translate="no"
                     />
 
                     <ControlledTextInput
@@ -333,6 +341,7 @@ export default function RegisterPage() {
                       name="lastName"
                       placeholder={t("enter_last_name")}
                       dir={langDir}
+                      translate="no"
                     />
 
                     <ControlledTextInput
@@ -346,6 +355,7 @@ export default function RegisterPage() {
                           : false
                       }
                       dir={langDir}
+                      translate="no"
                     />
 
                     <ControlledTextInput
@@ -354,6 +364,7 @@ export default function RegisterPage() {
                       placeholder={t("enter_login_password")}
                       type="password"
                       dir={langDir}
+                      translate="no"
                     />
 
                     <ControlledTextInput
@@ -362,6 +373,8 @@ export default function RegisterPage() {
                       placeholder={t("enter_login_password_again")}
                       type="password"
                       dir={langDir}
+                      className="mb-2"
+                      translate="no"
                     />
 
                     <ControlledPhoneInput
@@ -375,7 +388,7 @@ export default function RegisterPage() {
                       control={form.control}
                       name="acceptTerms"
                       render={({ field }) => (
-                        <FormItem className="mb-4 flex flex-row items-center space-x-3 space-y-0">
+                        <FormItem className="mb-4 mt-3 flex flex-row items-start space-x-3 space-y-0">
                           <FormControl>
                             <Checkbox
                               checked={field.value}
@@ -385,12 +398,13 @@ export default function RegisterPage() {
                           </FormControl>
                           <div className="flex flex-col leading-none">
                             <div className="agreeText text-xs text-light-gray md:text-sm">
-                              <span dir={langDir}>{t("i_agree")}</span>
+                              <span dir={langDir} translate="no">{t("i_agree")}</span>
                               <Button
                                 onClick={handleToggleTermsModal}
                                 type="button"
-                                className="ml-1 bg-transparent p-0 shadow-none hover:bg-transparent"
+                                className="ml-1 h-auto bg-transparent p-0 shadow-none hover:bg-transparent"
                                 dir={langDir}
+                                translate="no"
                               >
                                 <span className="text-xs text-light-gray underline md:text-sm">
                                   {t("terms_of_use")}
@@ -402,8 +416,9 @@ export default function RegisterPage() {
                               <Button
                                 onClick={handleTogglePrivacyModal}
                                 type="button"
-                                className="ml-1 bg-transparent p-0 text-xs shadow-none hover:bg-transparent md:text-sm"
+                                className="ml-1 h-auto bg-transparent p-0 text-xs shadow-none hover:bg-transparent md:text-sm"
                                 dir={langDir}
+                                translate="no"
                               >
                                 <span className="text-light-gray underline">
                                   {t("privacy_policy")}
@@ -415,11 +430,13 @@ export default function RegisterPage() {
                         </FormItem>
                       )}
                     />
+                    
                     <div className="mb-4 w-full">
                       <Button
                         disabled={register.isPending}
                         type="submit"
                         className="theme-primary-btn h-12 w-full rounded text-center text-lg font-bold leading-6"
+                        translate="no"
                       >
                         {register.isPending ? (
                           <LoaderWithMessage message="Please wait" />
@@ -431,7 +448,11 @@ export default function RegisterPage() {
                   </form>
                 </Form>
                 <div className="mb-4 w-full text-center">
-                  <span className="text-sm font-medium leading-4 text-light-gray" dir={langDir}>
+                  <span
+                    className="text-sm font-medium leading-4 text-light-gray"
+                    dir={langDir}
+                    translate="no"
+                  >
                     {t("already_have_an_account")}{" "}
                     <Link
                       href="/login"
@@ -449,7 +470,11 @@ export default function RegisterPage() {
         <Dialog open={isTermsModalOpen} onOpenChange={handleToggleTermsModal}>
           <DialogContent className="max-h-[93vh] max-w-[90%] gap-0 p-0 md:!max-w-[90%] lg:!max-w-5xl">
             <DialogHeader className="border-b border-light-gray py-4">
-              <DialogTitle className="text-center text-xl font-bold" dir={langDir}>
+              <DialogTitle
+                className="text-center text-xl font-bold"
+                dir={langDir}
+                translate="no"
+              >
                 {t("terms_of_use")}
               </DialogTitle>
             </DialogHeader>
@@ -465,7 +490,11 @@ export default function RegisterPage() {
         >
           <DialogContent className="max-h-[93vh] max-w-[90%] gap-0 p-0 md:!max-w-[90%] lg:!max-w-5xl">
             <DialogHeader className="border-b border-light-gray py-4">
-              <DialogTitle className="text-center text-xl font-bold" dir={langDir}>
+              <DialogTitle
+                className="text-center text-xl font-bold"
+                dir={langDir}
+                translate="no"
+              >
                 {t("privacy_policy")}
               </DialogTitle>
             </DialogHeader>

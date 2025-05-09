@@ -52,6 +52,7 @@ const BranchSection: React.FC<BranchSectionProps> = ({ branchDetails }) => {
                   : "text-dark-cyan",
                 "text-base font-semibold leading-5",
               )}
+              translate="no"
             >
               {branchDetails?.mainOffice === 1
                 ? t("main_branch")
@@ -65,6 +66,7 @@ const BranchSection: React.FC<BranchSectionProps> = ({ branchDetails }) => {
               <h2
                 className="left-8 text-lg font-semibold text-color-dark"
                 dir={langDir}
+                translate="no"
               >
                 {t("branch_information")}
               </h2>
@@ -73,6 +75,7 @@ const BranchSection: React.FC<BranchSectionProps> = ({ branchDetails }) => {
                 href={`/company-profile/edit-branch?branchId=${branchDetails?.id}`}
                 className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
                 dir={langDir}
+                translate="no"
               >
                 <Image
                   src={EditIcon}
@@ -91,6 +94,7 @@ const BranchSection: React.FC<BranchSectionProps> = ({ branchDetails }) => {
                     <span
                       className="text-sm font-normal capitalize leading-4 text-gray-500"
                       dir={langDir}
+                      translate="no"
                     >
                       {t("address")}:
                     </span>
@@ -111,6 +115,7 @@ const BranchSection: React.FC<BranchSectionProps> = ({ branchDetails }) => {
                     <span
                       className="text-sm font-normal capitalize leading-4 text-gray-500"
                       dir={langDir}
+                      translate="no"
                     >
                       {t("country")}:
                     </span>
@@ -131,6 +136,7 @@ const BranchSection: React.FC<BranchSectionProps> = ({ branchDetails }) => {
                     <span
                       className="text-sm font-normal capitalize leading-4 text-gray-500"
                       dir={langDir}
+                      translate="no"
                     >
                       {t("city")}:
                     </span>
@@ -151,6 +157,7 @@ const BranchSection: React.FC<BranchSectionProps> = ({ branchDetails }) => {
                     <span
                       className="text-sm font-normal capitalize leading-4 text-gray-500"
                       dir={langDir}
+                      translate="no"
                     >
                       {t("branch_contact_number")}:
                     </span>
@@ -171,6 +178,7 @@ const BranchSection: React.FC<BranchSectionProps> = ({ branchDetails }) => {
                     <span
                       className="text-sm font-normal capitalize leading-4 text-gray-500"
                       dir={langDir}
+                      translate="no"
                     >
                       {t("province")}:
                     </span>
@@ -191,6 +199,7 @@ const BranchSection: React.FC<BranchSectionProps> = ({ branchDetails }) => {
                     <span
                       className="text-sm font-normal capitalize leading-4 text-gray-500"
                       dir={langDir}
+                      translate="no"
                     >
                       {t("branch_contact_name")}:
                     </span>
@@ -211,6 +220,7 @@ const BranchSection: React.FC<BranchSectionProps> = ({ branchDetails }) => {
                     <span
                       className="text-sm font-normal capitalize leading-4 text-gray-500"
                       dir={langDir}
+                      translate="no"
                     >
                       {t("start_time")}:
                     </span>
@@ -231,6 +241,7 @@ const BranchSection: React.FC<BranchSectionProps> = ({ branchDetails }) => {
                     <span
                       className="text-sm font-normal capitalize leading-4 text-gray-500"
                       dir={langDir}
+                      translate="no"
                     >
                       {t("end_time")}:
                     </span>
@@ -251,6 +262,7 @@ const BranchSection: React.FC<BranchSectionProps> = ({ branchDetails }) => {
                     <span
                       className="text-sm font-normal capitalize leading-4 text-gray-500"
                       dir={langDir}
+                      translate="no"
                     >
                       {t("working_days")}:
                     </span>
@@ -272,6 +284,7 @@ const BranchSection: React.FC<BranchSectionProps> = ({ branchDetails }) => {
                       <span
                         className="text-sm font-normal capitalize leading-4 text-gray-500"
                         dir={langDir}
+                        translate="no"
                       >
                         {t("branch_front_picture")}:
                       </span>
@@ -301,6 +314,7 @@ const BranchSection: React.FC<BranchSectionProps> = ({ branchDetails }) => {
                       <span
                         className="text-sm font-normal capitalize leading-4 text-gray-500"
                         dir={langDir}
+                        translate="no"
                       >
                         {t("address_proof")}
                       </span>

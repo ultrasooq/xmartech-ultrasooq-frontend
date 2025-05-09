@@ -16,6 +16,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { useEffect, useState } from "react";
 import { getLocale } from "next-intl/server";
 import { getUserLocale } from "@/src/services/locale";
+import DisableRouteAnnouncer from "@/components/DisableRouteAnnouncer";
 
 export const metadata: Metadata = {
   title: {
@@ -93,6 +94,7 @@ export default async function RootLayout({
     <SessionWrapper>
       <html lang={locale}>
         <body className={`${inter.className}`}>
+          {/* <DisableRouteAnnouncer /> */}
           <ReactQueryProvider>
             <AuthProvider
               user={{ id: userData?.data?.id, firstName: userData?.data?.firstName, lastName: userData?.data?.lastName, tradeRole: userData?.data?.tradeRole }}

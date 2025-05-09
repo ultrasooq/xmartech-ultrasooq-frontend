@@ -13,12 +13,12 @@ const CheckoutCompletePage = () => {
 
     return (
         <div className="text-center mt-10" dir={langDir}>
-            <h1 className={`text-5xl ${success ? 'text-green-500' : 'text-red-500'}`}>
+            <h1 className={`text-5xl ${success ? 'text-green-500' : 'text-red-500'}`} translate="no">
                 {success ? t('success') : t('failed')}
             </h1>
-            <p className="mt-2">{t("transaction_id")}: {searchParams?.get('id')}</p>
-            <p className="mt-2">{t("order_id")}: {searchParams?.get('order')}</p>
-            <p className="mt-2">{t("transaction_note")}</p>
+            <p className="mt-2" translate="no">{t("transaction_id")}: {searchParams?.get('id')}</p>
+            <p className="mt-2" translate="no">{t("order_id")}: {searchParams?.get('order')}</p>
+            <p className="mt-2" translate="no">{t("transaction_note")}</p>
         </div>
     );
 };

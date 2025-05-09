@@ -185,3 +185,43 @@ export const convertDateTime = (dateString: string) => {
   const formattedDate = date.toLocaleDateString("en-GB", options);
   return formattedDate;
 };
+
+export const convertDate = (dateString: string) => {
+  if (!dateString) {
+    return "-";
+  }
+  const date = new Date(dateString);
+  const options: Intl.DateTimeFormatOptions = {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  };
+  const formattedDate = date.toLocaleDateString("en-GB", options);
+  return formattedDate;
+};
+
+export const convertTime = (dateString: string) => {
+  if (!dateString) {
+    return "-";
+  }
+  const date = new Date(dateString);
+  const options: Intl.DateTimeFormatOptions = {
+    minute: "numeric",
+    hour: "numeric",
+    hour12: true,
+    second: "numeric",
+  };
+  const formattedDate = date.toLocaleTimeString("en-GB", options);
+  return formattedDate;
+};
+
+export const convertDateTimeToUTC = (datetime: string) => {
+  const date = new Date(datetime);
+  const year = date.getUTCFullYear();
+  const month = date.getUTCMonth() < 9 ? `0${date.getUTCMonth() + 1}` : (date.getUTCMonth() + 1).toString();
+  const day = date.getUTCDate() < 10 ? `0${date.getUTCDate()}` : date.getUTCDate().toString();
+  const hour = date.getUTCHours() < 10 ? `0${date.getUTCHours()}` : date.getUTCHours().toString();
+  const minutes = date.getUTCMinutes() < 10 ? `0${date.getUTCMinutes()}` : date.getUTCMinutes().toString();
+  const seconds = date.getUTCSeconds() < 10 ? `0${date.getUTCSeconds()}` : date.getUTCSeconds().toString();
+  return `${year}-${month}-${day} ${hour}:${minutes}:${seconds}`;
+}

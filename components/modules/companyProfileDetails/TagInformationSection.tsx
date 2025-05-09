@@ -14,7 +14,7 @@ const TagInformationSection: React.FC<TagInformationSectionProps> = ({
   return (
     <div className="mt-6 w-full pb-5">
       <div className="w-full">
-        <label className="block text-lg font-semibold leading-5 text-color-dark" dir={langDir}>
+        <label className="block text-lg font-semibold leading-5 text-color-dark" dir={langDir} translate="no">
           {t("tag")}
         </label>
         <div className="flex w-full flex-wrap" dir={langDir}>

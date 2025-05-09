@@ -48,6 +48,8 @@ import BrandFilterList from "@/components/modules/rfq/BrandFilterList";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/context/AuthContext";
+// @ts-ignore
+import  { startDebugger }  from "remove-child-node-error-debugger";
 
 const RfqPage = () => {
   const t = useTranslations();
@@ -266,9 +268,11 @@ const RfqPage = () => {
     }
   }, [accessToken]);
 
+  startDebugger();
+
   return (
     <>
-      <title dir={langDir}>{t("rfq")} | Ultrasooq</title>
+      <title dir={langDir} translate="no">{t("rfq")} | Ultrasooq</title>
       <section className="rfq_section">
         <div className="sec-bg relative">
           <Image src={BannerImage} alt="background-banner" fill />
@@ -278,10 +282,10 @@ const RfqPage = () => {
             <div className="rfq_main_box !justify-center">
               <div className="rfq_left" dir={langDir}>
                 <div className="all_select_button">
-                  <button type="button" onClick={selectAll}>
+                  <button type="button" onClick={selectAll} translate="no">
                     {t("select_all")}
                   </button>
-                  <button type="button" onClick={clearFilter}>
+                  <button type="button" onClick={clearFilter} translate="no">
                     {t("clean_select")}
                   </button>
                 </div>
@@ -294,7 +298,7 @@ const RfqPage = () => {
                 />
               </div>
               <div className="rfq_middle">
-                {me?.data?.data?.tradeRole != 'BUYER' && <RadioGroup
+                {me?.data?.data?.tradeRole != 'BUYER' ? (<RadioGroup
                   className="mb-3 flex flex-row gap-y-3"
                   value={displayMyProducts}
                   onValueChange={setDisplayMyProducts}
@@ -307,7 +311,7 @@ const RfqPage = () => {
                       id="all_products"
                       checked={displayMyProducts == "0"}
                     />
-                    <Label htmlFor="all_products" className="text-base" dir={langDir}>
+                    <Label htmlFor="all_products" className="text-base" dir={langDir} translate="no">
                       {t("all_products")}
                     </Label>
                   </div>
@@ -317,11 +321,11 @@ const RfqPage = () => {
                       id="my_products"
                       checked={displayMyProducts == "1"}
                     />
-                    <Label htmlFor="my_products" className="text-base" dir={langDir}>
+                    <Label htmlFor="my_products" className="text-base" dir={langDir} translate="no">
                       {t("my_products")}
                     </Label>
                   </div>
-                </RadioGroup>}
+                </RadioGroup>) : null}
                 <div className="rfq_middle_top">
                   <div className="rfq_search">
                     <input
@@ -331,6 +335,7 @@ const RfqPage = () => {
                       onChange={handleRfqDebounce}
                       ref={searchInputRef}
                       dir={langDir}
+                      translate="no"
                     />
                     <button type="button">
                       <Image
@@ -347,6 +352,7 @@ const RfqPage = () => {
                         href="/product?productType=R"
                         className="flex items-center gap-x-2 bg-dark-orange px-3 py-2 text-sm text-white lg:text-base"
                         dir={langDir}
+                        translate="no"
                       >
                         <FaPlus />
                         {t("add_new_rfq_product")}
@@ -359,7 +365,7 @@ const RfqPage = () => {
                     <div className="col-lg-12 products_sec_wrap">
                       <div className="products_sec_top">
                         <div className="products_sec_top_left" dir={langDir}>
-                          <h4>{t("trending_n_high_rate_product")}</h4>
+                          <h4 translate="no">{t("trending_n_high_rate_product")}</h4>
                         </div>
                         <div className="products_sec_top_right">
                           <div className="trending_filter">
@@ -368,14 +374,14 @@ const RfqPage = () => {
                               defaultValue={sortBy}
                             >
                               <SelectTrigger className="custom-form-control-s1 bg-white">
-                                <SelectValue placeholder={t("sort_by")} dir={langDir} />
+                                <SelectValue placeholder={t("sort_by")} dir={langDir} translate="no" />
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectGroup>
-                                  <SelectItem value="newest" dir={langDir}>
+                                  <SelectItem value="newest" dir={langDir} translate="no">
                                     {t("sort_by_latest")}
                                   </SelectItem>
-                                  <SelectItem value="oldest" dir={langDir}>
+                                  <SelectItem value="oldest" dir={langDir} translate="no">
                                     {t("sort_by_oldest")}
                                   </SelectItem>
                                 </SelectGroup>
@@ -415,7 +421,7 @@ const RfqPage = () => {
 
                       {!rfqProductsQuery?.data?.data?.length &&
                       !rfqProductsQuery.isLoading ? (
-                        <p className="my-10 text-center text-sm font-medium" dir={langDir}>
+                        <p className="my-10 text-center text-sm font-medium" dir={langDir} translate="no">
                           {t("no_data_found")}
                         </p>
                       ) : null}

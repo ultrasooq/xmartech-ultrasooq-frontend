@@ -85,7 +85,7 @@ const FactoriesCustomizedProductCard: React.FC<FactoriesProductCardProps> = ({
         </div>
         <figcaption>
           <h5>{productName}</h5>
-          <label dir={langDir}>{t("quantity")}</label>
+          <label dir={langDir} translate="no">{t("quantity")}</label>
           <div className="qty-with-remove">
             <div className="qty-up-down-s1-with-rgMenuAction">
               <div className="flex items-center gap-x-4">
@@ -139,6 +139,7 @@ const FactoriesCustomizedProductCard: React.FC<FactoriesProductCardProps> = ({
                 // cart.deleteCartItem(rfqProductId);
               }}
               dir={langDir}
+              translate="no"
             >
               {t("remove")}
             </Button>
@@ -149,7 +150,7 @@ const FactoriesCustomizedProductCard: React.FC<FactoriesProductCardProps> = ({
         <span>Note:</span> {note}
       </p>
       <div className="price-info">
-        <h5 dir={langDir}>{t("price")}</h5>
+        <h5 dir={langDir} translate="no">{t("price")}</h5>
         {/* <p>${offerFromPrice ? Number(offerFromPrice) * quantity : 0}</p> */}
         <p dir={langDir}> {offerFromPrice ? `${currency.symbol}${Number(offerFromPrice)} - ${currency.symbol}${Number(offerToPrice)}` : '0'}</p>
       </div>

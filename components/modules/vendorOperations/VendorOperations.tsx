@@ -16,36 +16,36 @@ const VendorOperations = () => {
 
         <Products onSelect={(product) => setSelectedProduct(product)} />
 
-        {selectedOperation == "admin_n_support" && selectedProduct && (
+        {selectedOperation == "admin_n_support" && selectedProduct ? (
           <div className="w-full border-r border-solid border-gray-300 lg:w-[67%]">
             <div className="flex min-h-[55px] w-full items-center justify-between border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
               <span>Admin & Support</span>
             </div>
           </div>
-        )}
+        ) : null}
 
-        {selectedOperation == "questions_n_comments" && selectedProduct && (
+        {selectedOperation == "questions_n_comments" && selectedProduct ? (
           <QuestionAndAnswers 
             productId={selectedProduct.productId} 
             productAddedBy={selectedProduct.userId} 
           />
-        )}
+        ) : null}
 
-        {selectedOperation == "rate_n_review" && selectedProduct && (
+        {selectedOperation == "rate_n_review" && selectedProduct ? (
           <div className="w-full border-r border-solid border-gray-300 lg:w-[67%]">
             <div className="flex min-h-[55px] w-full items-center justify-between border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
               <span>Rate & Review</span>
             </div>
           </div>
-        )}
+        ) : null}
 
-        {selectedOperation == "complains" && selectedProduct && (
+        {selectedOperation == "complains" && selectedProduct ? (
           <div className="w-full border-r border-solid border-gray-300 lg:w-[67%]">
             <div className="flex min-h-[55px] w-full items-center justify-between border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
               <span>Complains</span>
             </div>
           </div>
-        )}
+        ) : null}
       </div>
     </>
   );

@@ -67,7 +67,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
         </div>
         <figcaption>
           <h5>{productName}</h5>
-          <label dir={langDir}>{t("quantity")}</label>
+          <label dir={langDir} translate="no">{t("quantity")}</label>
           <div className="qty-with-remove">
             <div className="qty-up-down-s1-with-rgMenuAction">
               <div className="flex items-center gap-x-4">
@@ -126,6 +126,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                 onRemove(id);
               }}
               dir={langDir}
+              translate="no"
             >
               {t("remove")}
             </Button>
@@ -133,14 +134,14 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
         </figcaption>
       </figure>
       <p dir={langDir}>
-        <span>{t("note")}:</span> {note}
+        <span translate="no">{t("note")}:</span> {note}
       </p>
       <div className="price-info" dir={langDir}>
-        <h5>{t("offer_price_from")}</h5>
+        <h5 translate="no">{t("offer_price_from")}</h5>
         <p>{currency.symbol}{offerPriceFrom}</p>
       </div>
       <div className="price-info" dir={langDir}>
-        <h5>{t("offer_price_to")}</h5>
+        <h5 translate="no">{t("offer_price_to")}</h5>
         <p>{currency.symbol}{offerPriceTo}</p>
       </div>
     </div>

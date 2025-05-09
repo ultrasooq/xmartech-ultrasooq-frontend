@@ -39,7 +39,6 @@ const schema = (t: any) => {
       .object({
         productPrice: z.number().optional(),
         offerPrice: z.coerce.number().optional(),
-        productLocationId: z.number().optional(),
         stock: z.coerce.number().optional(),
         deliveryAfter: z.coerce.number().optional(),
         timeOpen: z.coerce.number().optional(),
@@ -47,7 +46,9 @@ const schema = (t: any) => {
         consumerType: z.string().trim().optional(),
         sellType: z.string().trim().optional(),
         vendorDiscount: z.coerce.number().optional(),
+        vendorDiscountType: z.coerce.string().optional(),
         consumerDiscount: z.coerce.number().optional(),
+        consumerDiscountType: z.coerce.string().optional(),
         minQuantity: z.coerce.number().optional(),
         maxQuantity: z.coerce.number().optional(),
         minCustomer: z.coerce.number().optional(),
@@ -104,7 +105,6 @@ const schema = (t: any) => {
 const defaultValues = {
   productPrice: 0,
   offerPrice: 0,
-  productLocationId: undefined,
   stock: 0,
   deliveryAfter: 0,
   timeOpen: 0,
@@ -137,6 +137,7 @@ const ManageProductsPage = () => {
   const [page, setPage] = useState(1);
   const [limit] = useState(6);
   const [selectedProductIds, setSelectedProductIds] = useState<number[]>([]);
+  const [prefilledData, setPrefilledData] = useState<{[key: string]: any}>();
   const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const me = useMe();
@@ -148,8 +149,7 @@ const ManageProductsPage = () => {
   const [displayBuyGroupProducts, setDisplayBuyGroupProducts] = useState(false);
   const [displayExpiredProducts, setDisplayExpiredProducts] = useState(false);
   const [displayHiddenProducts, setDisplayHiddenProducts] = useState(false);
-  const [displayDiscountedProducts, setDisplayDiscountedProducts] =
-    useState(false);
+  const [displayDiscountedProducts, setDisplayDiscountedProducts] = useState(false);
 
   const [searchTermBrand, setSearchTermBrand] = useState("");
 
@@ -381,6 +381,14 @@ const ManageProductsPage = () => {
           updatedFormData.consumerDiscount !== 0
             ? updatedFormData.consumerDiscount
             : undefined,
+        vendorDiscountType:
+          updatedFormData.vendorDiscountType 
+          ? updatedFormData.vendorDiscountType
+          : undefined,
+        consumerDiscountType:
+          updatedFormData.consumerDiscountType
+            ? updatedFormData.consumerDiscountType
+            : undefined,
         productCondition:
           updatedFormData.productCondition &&
           updatedFormData.productCondition !== ""
@@ -467,10 +475,10 @@ const ManageProductsPage = () => {
               <div className="w-full md:w-[25%]">
                 <div className="trending-search-sec mt-0" dir={langDir}>
                   <div className="all_select_button">
-                    <button type="button" onClick={selectAll}>
+                    <button type="button" onClick={selectAll} translate="no">
                       {t("select_all")}
                     </button>
-                    <button type="button" onClick={clearFilter}>
+                    <button type="button" onClick={clearFilter} translate="no">
                       {t("clean_select")}
                     </button>
                   </div>
@@ -485,6 +493,7 @@ const ManageProductsPage = () => {
                           <AccordionTrigger
                             className="px-3 text-base hover:!no-underline"
                             dir={langDir}
+                            translate="no"
                           >
                             {t("by_brand")}
                           </AccordionTrigger>
@@ -496,6 +505,7 @@ const ManageProductsPage = () => {
                                 className="custom-form-control-s1 searchInput rounded-none"
                                 onChange={handleDebounceBrandSearch}
                                 dir={langDir}
+                                translate="no"
                               />
                             </div>
                             <div className="filter-body-part">
@@ -504,6 +514,7 @@ const ManageProductsPage = () => {
                                   <p
                                     className="text-center text-sm font-medium"
                                     dir={langDir}
+                                    translate="no"
                                   >
                                     {t("no_data_found")}
                                   </p>
@@ -542,7 +553,7 @@ const ManageProductsPage = () => {
                         className="filter-col"
                       >
                         <AccordionItem value="product_conditions">
-                          <AccordionTrigger className="px-3 text-base hover:!no-underline">
+                          <AccordionTrigger className="px-3 text-base hover:!no-underline" translate="no">
                             {t("by_menu")}
                           </AccordionTrigger>
                           <AccordionContent>
@@ -562,6 +573,7 @@ const ManageProductsPage = () => {
                                       htmlFor="displayStoreProducts"
                                       className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                                       dir={langDir}
+                                      translate="no"
                                     >
                                       {t("store")}
                                     </label>
@@ -586,12 +598,13 @@ const ManageProductsPage = () => {
                                       htmlFor="displayBuyGroupProducts"
                                       className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                                       dir={langDir}
+                                      translate="no"
                                     >
                                       {t("buy_group")}
                                     </label>
                                   </div>
                                 </div>
-                                {displayBuyGroupProducts && (
+                                {displayBuyGroupProducts ? (
                                   <div className="div-li">
                                     <Checkbox
                                       id="displayExpiredProducts"
@@ -606,12 +619,13 @@ const ManageProductsPage = () => {
                                         htmlFor="displayExpiredProducts"
                                         className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                                         dir={langDir}
+                                        translate="no"
                                       >
                                         {t("expired")}
                                       </label>
                                     </div>
                                   </div>
-                                )}
+                                ) : null}
                                 <div className="div-li">
                                   <Checkbox
                                     id="displayHiddenProducts"
@@ -626,6 +640,7 @@ const ManageProductsPage = () => {
                                       htmlFor="displayHiddenProducts"
                                       className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                                       dir={langDir}
+                                      translate="no"
                                     >
                                       {t("hidden")}
                                     </label>
@@ -645,6 +660,7 @@ const ManageProductsPage = () => {
                                       htmlFor="displayDiscountedProducts"
                                       className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                                       dir={langDir}
+                                      translate="no"
                                     >
                                       {t("discounted")}
                                     </label>
@@ -665,6 +681,7 @@ const ManageProductsPage = () => {
                   <h2
                     className="text-2xl font-medium capitalize text-color-dark"
                     dir={langDir}
+                    translate="no"
                   >
                     {t("products")}
                   </h2>
@@ -677,6 +694,7 @@ const ManageProductsPage = () => {
                         onChange={handleDebounce}
                         ref={searchInputRef}
                         dir={langDir}
+                        translate="no"
                       />
                     </li>
                     <li className="flex">
@@ -696,6 +714,7 @@ const ManageProductsPage = () => {
                         className="theme-primary-btn add-btn p-2"
                         onClick={() => router.replace("/cart")}
                         dir={langDir}
+                        translate="no"
                       >
                         <span className="d-none-mobile">{t("go_to_cart")}</span>
                       </button>
@@ -726,6 +745,7 @@ const ManageProductsPage = () => {
                             <p
                               className="w-full py-10 text-center text-base font-medium"
                               dir={langDir}
+                              translate="no"
                             >
                               {t("no_product_found")}
                             </p>
@@ -753,9 +773,6 @@ const ManageProductsPage = () => {
                               }[];
                               productPrice: string;
                               offerPrice: string;
-                              productPrice_productLocation: {
-                                locationName: string;
-                              };
                               stock: number;
                               consumerType: string;
                               sellType: string;
@@ -763,7 +780,9 @@ const ManageProductsPage = () => {
                               timeOpen: number | null;
                               timeClose: number | null;
                               vendorDiscount: number | null;
+                              vendorDiscountType: string | null;
                               consumerDiscount: number | null;
+                              consumerDiscountType: string | null;
                               minQuantity: number | null;
                               maxQuantity: number | null;
                               minCustomer: number | null;
@@ -775,16 +794,13 @@ const ManageProductsPage = () => {
                               <ManageProductCard
                                 selectedIds={selectedProductIds}
                                 onSelectedId={handleProductIds}
+                                onSelect={setPrefilledData}
                                 key={product?.id}
                                 id={product?.id}
                                 productId={product?.productId}
                                 status={product?.status}
                                 askForPrice={product?.askForPrice}
                                 askForStock={product?.askForStock}
-                                // productImage={
-                                //   product?.productPrice_product?.productImages?.[0]
-                                //     ?.image
-                                // }
                                 productImage={
                                   product?.productPrice_productSellerImage
                                     ?.length
@@ -800,17 +816,15 @@ const ManageProductsPage = () => {
                                 productPrice={product?.productPrice}
                                 offerPrice={product?.offerPrice}
                                 deliveryAfter={product?.deliveryAfter}
-                                productLocation={
-                                  product?.productPrice_productLocation
-                                    ?.locationName
-                                }
                                 stock={product?.stock}
                                 consumerType={product?.consumerType}
                                 sellType={product?.sellType}
                                 timeOpen={product?.timeOpen}
                                 timeClose={product?.timeClose}
                                 vendorDiscount={product?.vendorDiscount}
+                                vendorDiscountType={product?.vendorDiscountType}
                                 consumerDiscount={product?.consumerDiscount}
+                                consumerDiscountType={product?.consumerDiscountType}
                                 minQuantity={product?.minQuantity}
                                 maxQuantity={product?.maxQuantity}
                                 minCustomer={product?.minCustomer}
@@ -827,14 +841,6 @@ const ManageProductsPage = () => {
                             ),
                           )}
 
-                          {/* {allManagedProductsQuery.data?.totalCount > 6 ? (
-                            <Pagination
-                              page={page}
-                              setPage={setPage}
-                              totalCount={allManagedProductsQuery.data?.totalCount}
-                              limit={limit}
-                            />
-                          ) : null} */}
                           {totalCount > limit ? (
                             <Pagination
                               page={page}
@@ -848,6 +854,7 @@ const ManageProductsPage = () => {
                       <ManageProductAside
                         isLoading={updateMultipleProductPrice.isPending}
                         // onUpdateProductPrice={handleUpdateProductPrice}
+                        prefilledData={prefilledData}
                       />
                     </form>
                   </FormProvider>

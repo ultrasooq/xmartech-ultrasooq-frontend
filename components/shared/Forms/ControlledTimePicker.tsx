@@ -7,7 +7,11 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
@@ -31,7 +35,10 @@ const generateTimeOptions = () => {
 
 const timeOptions = generateTimeOptions();
 
-const ControlledTimePicker: React.FC<ControlledTimePickerProps> = ({ label, name }) => {
+const ControlledTimePicker: React.FC<ControlledTimePickerProps> = ({
+  label,
+  name,
+}) => {
   const t = useTranslations();
   const { control, setValue, watch } = useFormContext();
   const { langDir } = useAuth();
@@ -50,16 +57,26 @@ const ControlledTimePicker: React.FC<ControlledTimePickerProps> = ({ label, name
                   variant={"outline"}
                   className={cn(
                     "!h-12 rounded border-gray-300 pl-3 text-left font-normal focus-visible:!ring-0",
-                    !field.value && "text-muted-foreground"
+                    !field.value && "text-muted-foreground",
                   )}
+                  translate="no"
                 >
-                  {field.value ? field.value : <span>{t("select")} {label || "Time"}</span>}
+                  {field.value ? (
+                    field.value
+                  ) : (
+                    <span className="w-full whitespace-pre-wrap break-words">
+                      {t("select")} {label || t("time")}
+                    </span>
+                  )}
                 </Button>
               </FormControl>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-2 max-h-64 overflow-y-auto" align={langDir == 'rtl' ? 'end' : 'start'}>
+            <PopoverContent
+              className="max-h-64 w-auto overflow-y-auto p-2"
+              align={langDir == "rtl" ? "end" : "start"}
+            >
               <select
-                className="w-full border border-gray-300 rounded-lg p-2 text-lg cursor-pointer"
+                className="w-full cursor-pointer rounded-lg border border-gray-300 p-2 text-lg"
                 value={field.value || ""}
                 onChange={(e) => {
                   const selectedTime = e.target.value;
@@ -69,7 +86,7 @@ const ControlledTimePicker: React.FC<ControlledTimePickerProps> = ({ label, name
                 }}
                 dir={langDir}
               >
-                <option value="" disabled>
+                <option value="" translate="no" disabled>
                   {t("select_time")}
                 </option>
                 {timeOptions.map((time) => (

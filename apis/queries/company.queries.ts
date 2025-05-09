@@ -31,6 +31,9 @@ export const useCreateCompanyProfile = () => {
       queryClient.invalidateQueries({
         queryKey: ["me"],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["unique-user"]
+      });
     },
     onError: (err: APIResponseError) => {
       console.log(err);
@@ -52,6 +55,9 @@ export const useUpdateCompanyProfile = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["me"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["unique-user"]
       });
     },
     onError: (err: APIResponseError) => {
@@ -75,6 +81,9 @@ export const useUpdateCompanyBranch = () => {
       queryClient.invalidateQueries({
         queryKey: ["me"],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["unique-user"]
+      });
     },
     onError: (err: APIResponseError) => {
       console.log(err);
@@ -96,6 +105,9 @@ export const useCreateCompanyBranch = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["me"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["unique-user"]
       });
     },
     onError: (err: APIResponseError) => {

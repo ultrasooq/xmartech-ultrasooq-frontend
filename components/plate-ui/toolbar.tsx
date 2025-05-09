@@ -143,11 +143,11 @@ export const ToolbarGroup = withRef<
 
   return (
     <div ref={ref} className={cn('flex', className)}>
-      {!noSeparator && (
+      {!noSeparator ? (
         <div className="h-full py-1">
           <Separator orientation="vertical" />
         </div>
-      )}
+      ) : null}
 
       <div className="mx-1 flex items-center gap-1">{children}</div>
     </div>

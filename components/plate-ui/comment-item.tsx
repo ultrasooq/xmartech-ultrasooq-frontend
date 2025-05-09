@@ -38,13 +38,13 @@ function CommentItemContent() {
           {formatDistance(comment.createdAt, Date.now())} ago
         </div>
 
-        {isMyComment && (
+        {isMyComment ? (
           <div className="absolute -right-0.5 -top-0.5 flex space-x-1">
             {isReplyComment ? null : <CommentResolveButton />}
 
             <CommentMoreDropdown />
           </div>
-        )}
+        ) : null}
       </div>
 
       <div className="mb-4 pl-7 pt-0.5">

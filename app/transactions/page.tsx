@@ -44,7 +44,7 @@ const TransactionsPage = () => {
                 <div className="container relative z-10 m-auto px-3">
                     <div className="flex w-full flex-wrap">
                         <div className="team_members_heading w-full" dir={langDir}>
-                            <h1 dir={langDir}>{t("transactions")}</h1>
+                            <h1 dir={langDir} translate="no">{t("transactions")}</h1>
                         </div>
 
                         <div className="team_members_table w-full">
@@ -53,11 +53,11 @@ const TransactionsPage = () => {
                                     <table cellPadding={0} cellSpacing={0} border={0}>
                                         <thead>
                                             <tr>
-                                                <th dir={langDir}>{t("transaction_id")}</th>
-                                                <th dir={langDir}>{t("amount")}</th>
-                                                <th dir={langDir}>{t("status")}</th>
-                                                <th dir={langDir}>{t("date_n_time")}</th>
-                                                <th dir={langDir}>{t("action")}</th>
+                                                <th dir={langDir} translate="no">{t("transaction_id")}</th>
+                                                <th dir={langDir} translate="no">{t("amount")}</th>
+                                                <th dir={langDir} translate="no">{t("status")}</th>
+                                                <th dir={langDir} translate="no">{t("date_n_time")}</th>
+                                                <th dir={langDir} translate="no">{t("action")}</th>
                                             </tr>
                                         </thead>
 
@@ -89,30 +89,30 @@ const TransactionsPage = () => {
                             ) : null}
 
                             {!transactionsQuery?.isLoading && !transactions.length ? (
-                                <p className="py-10 text-center text-sm font-medium" dir={langDir}>
+                                <p className="py-10 text-center text-sm font-medium" dir={langDir} translate="no">
                                     {t("no_data_found")}
                                 </p>
                             ) : null}
 
-                            {transactionsQuery.data?.totalCount > limit && (
+                            {transactionsQuery.data?.totalCount > limit ? (
                                 <Pagination
                                     page={page}
                                     setPage={setPage}
                                     totalCount={transactionsQuery.data?.totalCount}
                                     limit={limit}
                                 />
-                            )}
+                            ) : null}
                         </div>
                     </div>
                 </div>
 
-                {selectedTransaction && <Dialog open={isTransactionModalOpen} onOpenChange={handleTransactionModal}>
+                {selectedTransaction ? (<Dialog open={isTransactionModalOpen} onOpenChange={handleTransactionModal}>
                     <DialogContent
                         className="add-new-address-modal add_member_modal gap-0 p-0 md:!max-w-2xl"
                         ref={wrapperRef}
                     >
                         <div className="modal-header !justify-between">
-                            <DialogTitle className="text-center text-xl font-bold" dir={langDir}>
+                            <DialogTitle className="text-center text-xl font-bold" dir={langDir} translate="no">
                                 {t("transaction")}
                             </DialogTitle>
                             <Button
@@ -127,7 +127,9 @@ const TransactionsPage = () => {
                         </div>
                         <form className="card-item card-payment-form px-5 pb-5 pt-3">
                             <div>
-                                <Label htmlFor="query" dir={langDir}>{t("transaction_id")}</Label>
+                                <Label htmlFor="query" dir={langDir} translate="no">
+                                    {t("transaction_id")}
+                                </Label>
                                 <Input
                                     type="text"
                                     defaultValue={selectedTransaction.id}
@@ -135,7 +137,9 @@ const TransactionsPage = () => {
                                 />
                             </div>
                             <div className="pt-3">
-                                <Label htmlFor="reply" dir={langDir}>{t("date_n_time")}</Label>
+                                <Label htmlFor="reply" dir={langDir} translate="no">
+                                    {t("date_n_time")}
+                                </Label>
                                 <Input
                                     type="text"
                                     defaultValue={convertDateTime(selectedTransaction.updatedAt)}
@@ -143,7 +147,9 @@ const TransactionsPage = () => {
                                 />
                             </div>
                             <div className="pt-3">
-                                <Label htmlFor="reply" dir={langDir}>{t("transaction_type")}</Label>
+                                <Label htmlFor="reply" dir={langDir} translate="no">
+                                    {t("transaction_type")}
+                                </Label>
                                 <Input
                                     type="text"
                                     defaultValue={selectedTransaction.transactionType}
@@ -151,7 +157,9 @@ const TransactionsPage = () => {
                                 />
                             </div>
                             <div className="pt-3">
-                                <Label htmlFor="reply" dir={langDir}>{t("status")}</Label>
+                                <Label htmlFor="reply" dir={langDir} translate="no">
+                                    {t("status")}
+                                </Label>
                                 <Input
                                     type="text"
                                     defaultValue={selectedTransaction.transactionStatus}
@@ -161,7 +169,9 @@ const TransactionsPage = () => {
                             {selectedTransaction.transactionStatus == 'SUCCESS' ? (
                                 <>
                                     <div className="pt-3">
-                                        <Label htmlFor="reply" dir={langDir}>{t("amount")}</Label>
+                                        <Label htmlFor="reply" dir={langDir} translate="no">
+                                            {t("amount")}
+                                        </Label>
                                         <Input
                                             type="text"
                                             defaultValue={(selectedTransaction.amountCents / 1000).toFixed(2)}
@@ -169,7 +179,9 @@ const TransactionsPage = () => {
                                         />
                                     </div>
                                     <div className="pt-3">
-                                        <Label htmlFor="reply" dir={langDir}>{t("transaction_reference_number")}</Label>
+                                        <Label htmlFor="reply" dir={langDir} translate="no">
+                                            {t("transaction_reference_number")}
+                                        </Label>
                                         <Input
                                             type="text"
                                             defaultValue={selectedTransaction.paymobTransactionId}
@@ -177,7 +189,9 @@ const TransactionsPage = () => {
                                         />
                                     </div>
                                     <div className="pt-3">
-                                        <Label htmlFor="reply" dir={langDir}>{t("order_reference_number")}</Label>
+                                        <Label htmlFor="reply" dir={langDir} translate="no">
+                                            {t("order_reference_number")}
+                                        </Label>
                                         <Input
                                             type="text"
                                             defaultValue={selectedTransaction.paymobOrderId}
@@ -188,7 +202,7 @@ const TransactionsPage = () => {
                             ) : null}
                         </form>
                     </DialogContent>
-                </Dialog>}
+                </Dialog>) : null}
             </section>
         </>
     );

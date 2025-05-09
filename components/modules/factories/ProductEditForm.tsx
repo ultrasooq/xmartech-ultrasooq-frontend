@@ -416,7 +416,7 @@ const ProductEditForm: React.FC<EditFormProps> = ({
   return (
     <>
       <div className="modal-header !justify-between">
-        <DialogTitle className="text-center text-xl font-bold" dir={langDir}>
+        <DialogTitle className="text-center text-xl font-bold" dir={langDir} translate="no">
           {t("edit_product")}
         </DialogTitle>
         <Button
@@ -468,6 +468,7 @@ const ProductEditForm: React.FC<EditFormProps> = ({
                         type="submit"
                         className="h-12 rounded bg-dark-orange px-10 text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
                         dir={langDir}
+                        translate="no"
                       >
                         {updateProduct.isPending ||
                           uploadMultiple.isPending ? (

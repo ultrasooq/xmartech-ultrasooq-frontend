@@ -25,6 +25,8 @@ import { PERMISSION_ORDERS, checkPermission } from "@/helpers/permission";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import { convertDate, convertTime } from "@/utils/helper";
+import AddReceipt from "@/components/modules/sellerOrderDetails/AddReceipt";
 
 const MyOrderDetailsPage = ({}) => {
   const t = useTranslations();
@@ -32,9 +34,14 @@ const MyOrderDetailsPage = ({}) => {
   const router = useRouter();
   const hasPermission = checkPermission(PERMISSION_ORDERS);
   const searchParams = useParams();
-  const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
 
-  const handleToggleStatusModal = () => setIsStatusModalOpen(!isStatusModalOpen);
+  const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
+  const handleToggleStatusModal = () =>
+    setIsStatusModalOpen(!isStatusModalOpen);
+
+  const [isAddReceiptModalOpen, setIsAddReceiptModalOpen] = useState(false);
+  const handleToggleAddReceiptModal = () =>
+    setIsAddReceiptModalOpen(!isAddReceiptModalOpen);
 
   const orderByIdQuery = useOrderBySellerId(
     {
@@ -100,10 +107,14 @@ const MyOrderDetailsPage = ({}) => {
               <div className="my-order-lists for-delivery-address">
                 <ul className="page-indicator-s1 !mb-0">
                   <li>
-                    <Link href="/home" dir={langDir}>{t("home")}</Link>
+                    <Link href="/home" dir={langDir} translate="no">
+                      {t("home")}
+                    </Link>
                   </li>
                   <li>
-                    <Link href="/seller-orders" dir={langDir}>{t("my_orders")}</Link>
+                    <Link href="/seller-orders" dir={langDir} translate="no">
+                      {t("my_orders")}
+                    </Link>
                   </li>
                   <li>
                     <h5>
@@ -121,7 +132,9 @@ const MyOrderDetailsPage = ({}) => {
                     <div className="my-order-card">
                       <div className="delivery-address">
                         <div className="delivery-address-col deliveryAddress">
-                          <h2 dir={langDir}>{t("delivery_address")}</h2>
+                          <h2 dir={langDir} translate="no">
+                            {t("delivery_address")}
+                          </h2>
                           <h3 dir={langDir}>
                             {shippingDetails?.firstName}{" "}
                             {shippingDetails?.lastName}
@@ -131,14 +144,14 @@ const MyOrderDetailsPage = ({}) => {
                             {shippingDetails?.postCode}
                           </address>
                           <p dir={langDir}>
-                            {t("phone_number")}{" "}
+                            <span translate="no">{t("phone_number")} </span>
                             <span className="!text-red-500" dir={langDir}>
                               {shippingDetails?.phone}
                             </span>
                           </p>
                         </div>
                         <div className="delivery-address-col deliveryAddress">
-                          <h2>{t("billing_address")}</h2>
+                          <h2 translate="no">{t("billing_address")}</h2>
                           <h3>
                             {billingDetails?.firstName}{" "}
                             {billingDetails?.lastName}
@@ -148,20 +161,23 @@ const MyOrderDetailsPage = ({}) => {
                             {billingDetails?.postCode}
                           </address>
                           <p>
-                            {t("phone_number")}{" "}
+                            <span translate="no">{t("phone_number")} </span>
                             <span className="!text-red-500" dir={langDir}>
                               {billingDetails?.phone}
                             </span>
                           </p>
                         </div>
-                        {/* <div className='delivery-address-col yourRewards'>
-                        <h2>Your Rewards</h2>
-                      </div> */}
                         <div className="delivery-address-col moreActions">
-                          <h2 dir={langDir}>{t("more_actions")}</h2>
+                          <h2 dir={langDir} translate="no">
+                            {t("more_actions")}
+                          </h2>
                           <figure className="downloadInvoice">
                             <figcaption>
-                              <Button className="downloadInvoice-btn theme-primary-btn" dir={langDir}>
+                              <Button
+                                className="downloadInvoice-btn theme-primary-btn"
+                                dir={langDir}
+                                translate="no"
+                              >
                                 <LiaFileInvoiceSolid /> {t("download_invoice")}
                               </Button>
                             </figcaption>
@@ -172,17 +188,98 @@ const MyOrderDetailsPage = ({}) => {
                   </div>
                 )}
 
+                {orderDetails?.orderShippingDetail && orderDetails?.orderProductType != 'SERVICE' ? (
+                  <div className="my-order-item">
+                    <div className="my-order-card">
+                      <div className="mb-2 w-full gap-2 sm:grid sm:grid-cols-3">
+                        <div className="gap-2 sm:flex">
+                          <h3 className="!font-bold" translate="no">
+                            {t("shipping_mode")}:
+                          </h3>
+                          <span>
+                            {
+                              orderDetails?.orderShippingDetail
+                                ?.orderShippingType
+                            }
+                          </span>
+                        </div>
+                        <div className="gap-2 sm:flex">
+                          <h3 className="!font-bold" translate="no">
+                            {t("delivery_charge")}:
+                          </h3>
+                          <span>
+                            {currency.symbol}
+                            {orderDetails?.orderShippingDetail?.shippingCharge}
+                          </span>
+                        </div>
+                        <div className="more-actions">
+                          <button
+                            type="button"
+                            className="theme-primary-btn update-status-btn px-2 py-1"
+                            onClick={handleToggleAddReceiptModal}
+                            dir={langDir}
+                            translate="no"
+                          >
+                            {t("add_receipt")}
+                          </button>
+                        </div>
+                      </div>
+                      {orderDetails?.orderShippingDetail?.orderShippingType ==
+                      "PICKUP" ? (
+                        <div className="w-full gap-2 sm:grid sm:grid-cols-3">
+                          <div className="gap-2 sm:flex">
+                            <h3 className="!font-bold" translate="no">
+                              {t("shipping_date")}:
+                            </h3>
+                            <span>
+                              {convertDate(
+                                orderDetails?.orderShippingDetail?.shippingDate,
+                              )}
+                            </span>
+                          </div>
+                          <div className="gap-2 sm:flex">
+                            <h3 className="!font-bold" translate="no">
+                              {t("from_time")}:
+                            </h3>
+                            <span>
+                              {convertTime(
+                                orderDetails?.orderShippingDetail?.fromTime,
+                              )}
+                            </span>
+                          </div>
+                          <div className="gap-2 sm:flex">
+                            <h3 className="!font-bold" translate="no">
+                              {t("to_time")}:
+                            </h3>
+                            <span>
+                              {convertTime(
+                                orderDetails?.orderShippingDetail?.toTime,
+                              )}
+                            </span>
+                          </div>
+                        </div>
+                      ) : null}
+                      {orderDetails?.orderShippingDetail?.receipt ? (
+                        <div className="mt-2 w-full gap-2 sm:grid sm:grid-cols-3">
+                          <Link
+                            className="text-red-500"
+                            href={orderDetails?.orderShippingDetail?.receipt}
+                            target="_blank"
+                            translate="no"
+                          >
+                            {t("download_receipt")}
+                          </Link>
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+                ) : null}
+
                 {orderByIdQuery.isLoading ? (
                   <Skeleton className="h-44" />
                 ) : (
                   <div className="my-order-item">
                     <div className="my-order-card">
-                      {/* <h5 className="mb-2">
-                        Order ID:{" "}
-                        <span className="font-semibold">
-                          {orderDetails?.orderProduct_order?.orderNo}
-                        </span>
-                      </h5> */}
                       <div className="my-order-box">
                         <Link
                           href={`/trending/${orderDetails?.orderProduct_product?.id}`}
@@ -209,8 +306,7 @@ const MyOrderDetailsPage = ({}) => {
                                     ?.productPrice_product?.productName
                                 }
                               </h3>
-                              {/* <p>Color: B.A.E Black</p> */}
-                              <p className="mt-1" dir={langDir}>
+                              <p className="mt-1" dir={langDir} translate="no">
                                 {t("seller")}:{" "}
                                 {
                                   orderDetails?.orderProduct_productPrice
@@ -232,8 +328,13 @@ const MyOrderDetailsPage = ({}) => {
                                     )
                                   : 0}
                               </h4>
-                              <p className="text-gray-500" dir={langDir}>
-                                {t("quantity")} x {orderDetails?.orderQuantity || 0}
+                              <p
+                                className="text-gray-500"
+                                dir={langDir}
+                                translate="no"
+                              >
+                                {t("quantity")} x{" "}
+                                {orderDetails?.orderQuantity || 0}
                               </p>
                             </figcaption>
                           </figure>
@@ -242,7 +343,11 @@ const MyOrderDetailsPage = ({}) => {
                           <div className="order-delivery-progess-s1">
                             <ul>
                               <li className="complted">
-                                <div className="orderStatusText" dir={langDir}>
+                                <div
+                                  className="orderStatusText"
+                                  dir={langDir}
+                                  translate="no"
+                                >
                                   {t("order_received")}
                                 </div>
                                 <div className="dot">
@@ -269,7 +374,11 @@ const MyOrderDetailsPage = ({}) => {
                                       : "",
                                 )}
                               >
-                                <div className="orderStatusText" dir={langDir}>
+                                <div
+                                  className="orderStatusText"
+                                  dir={langDir}
+                                  translate="no"
+                                >
                                   {t("order_confirmed")}
                                 </div>
                                 <div className="dot">
@@ -294,7 +403,9 @@ const MyOrderDetailsPage = ({}) => {
                                 )}
                                 dir={langDir}
                               >
-                                <div className="orderStatusText">{t("shipped")}</div>
+                                <div className="orderStatusText" translate="no">
+                                  {t("shipped")}
+                                </div>
                                 <div className="dot">
                                   <small></small>
                                 </div>
@@ -318,7 +429,11 @@ const MyOrderDetailsPage = ({}) => {
                                 )}
                                 dir={langDir}
                               >
-                                <div className="orderStatusText" dir={langDir}>
+                                <div
+                                  className="orderStatusText"
+                                  dir={langDir}
+                                  translate="no"
+                                >
                                   {t("out_for_delivery")}
                                 </div>
                                 <div className="dot">
@@ -349,6 +464,7 @@ const MyOrderDetailsPage = ({}) => {
                                       ? "orderStatusCancelledText"
                                       : "orderStatusText",
                                   )}
+                                  translate="no"
                                 >
                                   {orderDetails?.orderProductStatus ===
                                   "CANCELLED"
@@ -378,7 +494,7 @@ const MyOrderDetailsPage = ({}) => {
                           </div>
                         </div>
                         <div className="right-info">
-                          <h4 className="mb-2"dir={langDir}>
+                          <h4 className="mb-2" dir={langDir} translate="no">
                             {orderDetails?.orderProductStatus ===
                             "CONFIRMED" ? (
                               <>
@@ -402,7 +518,8 @@ const MyOrderDetailsPage = ({}) => {
 
                             {orderDetails?.orderProductStatus === "OFD" ? (
                               <>
-                                <BiCircle color="green" /> {t("out_for_delivery")}{" "}
+                                <BiCircle color="green" />{" "}
+                                {t("out_for_delivery")}{" "}
                                 {orderDetails?.updatedAt
                                   ? formattedDate(orderDetails.updatedAt)
                                   : ""}
@@ -412,7 +529,8 @@ const MyOrderDetailsPage = ({}) => {
                             {orderDetails?.orderProductStatus ===
                             "DELIVERED" ? (
                               <>
-                                <BiSolidCircle color="green" /> {t("delivered_on")}{" "}
+                                <BiSolidCircle color="green" />{" "}
+                                {t("delivered_on")}{" "}
                                 {orderDetails?.updatedAt
                                   ? formattedDate(orderDetails.updatedAt)
                                   : ""}
@@ -422,7 +540,8 @@ const MyOrderDetailsPage = ({}) => {
                             {orderDetails?.orderProductStatus ===
                             "CANCELLED" ? (
                               <>
-                                <BiSolidCircle color="red" /> {t("cancelled_on")}{" "}
+                                <BiSolidCircle color="red" />{" "}
+                                {t("cancelled_on")}{" "}
                                 {orderDetails?.updatedAt
                                   ? formattedDate(orderDetails.updatedAt)
                                   : ""}
@@ -430,7 +549,12 @@ const MyOrderDetailsPage = ({}) => {
                             ) : null}
                           </h4>
 
-                          <a href="#" className="ratingLink"dir={langDir}>
+                          <a
+                            href="#"
+                            className="ratingLink"
+                            dir={langDir}
+                            translate="no"
+                          >
                             <MdHelpCenter />
                             {t("need_help")}
                           </a>
@@ -441,6 +565,7 @@ const MyOrderDetailsPage = ({}) => {
                               className="theme-primary-btn update-status-btn"
                               onClick={handleToggleStatusModal}
                               dir={langDir}
+                              translate="no"
                             >
                               {t("update_status")}
                             </button>
@@ -488,11 +613,12 @@ const MyOrderDetailsPage = ({}) => {
                   <OtherItemCard
                     key={item?.id}
                     id={item?.id}
+                    orderProductType={item?.orderProductType}
                     productName={
                       item.orderProduct_productPrice?.productPrice_product
                         ?.productName
                     }
-                    offerPrice={item.orderProduct_productPrice?.offerPrice}
+                    offerPrice={item?.purchasePrice}
                     orderQuantity={
                       item?.orderProduct_productPrice?.orderQuantity
                     }
@@ -500,9 +626,6 @@ const MyOrderDetailsPage = ({}) => {
                       item.orderProduct_productPrice?.productPrice_product
                         ?.productImages
                     }
-                    // productName={item?.orderProduct_product?.productName}
-                    // offerPrice={item?.orderProduct_product?.offerPrice}
-                    // productImages={item?.orderProduct_product?.productImages}
                     sellerName={`${item?.orderProduct_productPrice?.adminDetail?.firstName} ${item?.orderProduct_productPrice?.adminDetail?.lastName}`}
                     orderNo={orderDetails?.orderProduct_order?.orderNo}
                     orderProductDate={item?.orderProductDate}
@@ -516,11 +639,12 @@ const MyOrderDetailsPage = ({}) => {
         </div>
       </div>
       <Footer />
+
       <Dialog open={isStatusModalOpen} onOpenChange={handleToggleStatusModal}>
         <DialogContent className="customModal-s1">
           <DialogHeader className="modal-header">
-            <DialogTitle className="modal-title">
-              Update Delivery Status
+            <DialogTitle className="modal-title" translate="no">
+              {t("update_delivery_status")}
             </DialogTitle>
           </DialogHeader>
 
@@ -532,20 +656,27 @@ const MyOrderDetailsPage = ({}) => {
         </DialogContent>
       </Dialog>
 
-      {/* <Dialog open={isReviewModalOpen} onOpenChange={handleToggleReviewModal}>
-        <DialogContent>
-          <SellerReviewForm
-            onClose={() => {
-              setReviewId(undefined);
-              handleToggleReviewModal();
-            }}
-            reviewId={reviewId}
-            productPriceId={orderDetails?.orderProduct_productPrice?.id}
-            adminId={orderDetails?.orderProduct_productPrice?.adminDetail?.id}
-            productId={orderDetails?.orderProduct_productPrice?.productId}
-          />
-        </DialogContent>
-      </Dialog> */}
+      {orderDetails?.orderShippingDetail ? (
+        <Dialog
+          open={isAddReceiptModalOpen}
+          onOpenChange={handleToggleAddReceiptModal}
+        >
+          <DialogContent className="customModal-s1">
+            <DialogHeader className="modal-header">
+              <DialogTitle className="modal-title" translate="no">
+                {t("add_receipt")}
+              </DialogTitle>
+            </DialogHeader>
+
+            <AddReceipt
+              orderProductId={Number(searchParams?.id)}
+              orderShippingId={orderDetails.orderShippingDetail.id}
+              orderShippingStatus={orderDetails.orderShippingDetail.status}
+              onClose={handleToggleAddReceiptModal}
+            />
+          </DialogContent>
+        </Dialog>
+      ) : null}
     </>
   );
 };

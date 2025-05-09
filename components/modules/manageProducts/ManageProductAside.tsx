@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   CONSUMER_TYPE_LIST,
@@ -9,7 +9,6 @@ import { Controller, useFormContext } from "react-hook-form";
 import ReactSelect from "react-select";
 import { Label } from "@/components/ui/label";
 import CounterTextInputField from "../createProduct/CounterTextInputField";
-import { useLocation } from "@/apis/queries/masters.queries";
 import { ILocations, IOption } from "@/utils/types/common.types";
 import { FiEyeOff } from "react-icons/fi";
 // import { FiEye } from "react-icons/fi";
@@ -40,26 +39,17 @@ const customStyles = {
 
 type ManageProductAsideProps = {
   isLoading?: boolean;
+  prefilledData?: {[key: string]: any}
 };
 
 const ManageProductAside: React.FC<ManageProductAsideProps> = ({
   isLoading,
+  prefilledData
 }) => {
   const t = useTranslations();
   const { langDir } = useAuth();
 
   const formContext = useFormContext();
-
-  const locationsQuery = useLocation();
-
-  const memoizedLocations = useMemo(() => {
-    return (
-      locationsQuery?.data?.data.map((item: ILocations) => {
-        return { label: item.locationName, value: item.id };
-      }) || []
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [locationsQuery?.data?.data?.length]);
 
   const watchConsumerType = formContext.watch("consumerType");
   const watchSellType = formContext.watch("sellType");
@@ -80,9 +70,11 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
   const watchIsVendorDiscountRequired = formContext.watch(
     "isVendorDiscountRequired",
   );
+  const watchVendorDiscount = formContext.watch("vendorDiscount")
   const watchIsConsumerDiscountRequired = formContext.watch(
     "isConsumerDiscountRequired",
   );
+  const watchConsumerDiscount = formContext.watch("consumerDiscount")
   const watchIsMinQuantityRequired = formContext.watch("isMinQuantityRequired");
   const watchIsMaxQuantityRequired = formContext.watch("isMaxQuantityRequired");
   const watchIsMinCustomerRequired = formContext.watch("isMinCustomerRequired");
@@ -132,10 +124,33 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
     );
   };
 
+  useEffect(() => {
+    if (prefilledData) {
+      formContext.setValue('productCondition', prefilledData.productCondition);
+      formContext.setValue('stock', prefilledData.stock);
+      formContext.setValue('offerPrice', prefilledData.offerPrice);
+      formContext.setValue('deliveryAfter', prefilledData.deliveryAfter);
+      formContext.setValue('consumerType', prefilledData.consumerType);
+      formContext.setValue('consumerDiscount', prefilledData.consumerDiscount);
+      formContext.setValue('consumerDiscountType', prefilledData.consumerDiscountType);
+      formContext.setValue('vendorDiscount', prefilledData.vendorDiscount);
+      formContext.setValue('vendorDiscountType', prefilledData.vendorDiscountType);
+      formContext.setValue('sellType', prefilledData.sellType);
+      formContext.setValue('minQuantity', prefilledData.minQuantity);
+      formContext.setValue('maxQuantity', prefilledData.maxQuantity);
+      formContext.setValue('minCustomer', prefilledData.minCustomer);
+      formContext.setValue('maxCustomer', prefilledData.maxCustomer);
+      formContext.setValue('minQuantityPerCustomer', prefilledData.minQuantityPerCustomer);
+      formContext.setValue('maxQuantityPerCustomer', prefilledData.maxQuantityPerCustomer);
+      formContext.setValue('timeOpen', prefilledData.timeOpen);
+      formContext.setValue('timeClose', prefilledData.timeClose);
+    }
+  }, [prefilledData])
+
   return (
     <aside className="manage_product_list h-fit">
       <div className="manage_product_list_wrap">
-        <h2 dir={langDir}>{t("manage_product")}</h2>
+        <h2 dir={langDir} translate="no">{t("manage_product")}</h2>
         <div className="all_select_button" dir={langDir}>
           <button
             type="button"
@@ -158,13 +173,13 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
               formContext.setValue("isMinQuantityPerCustomerRequired", true);
               formContext.setValue("isMaxQuantityPerCustomerRequired", true);
             }}
+            translate="no"
           >
             {t("select_all")}
           </button>
           <button
             type="button"
             onClick={() => {
-              formContext.setValue("productLocationId", null);
               formContext.setValue("isHiddenRequired", false);
               formContext.setValue("isProductConditionRequired", false);
               formContext.setValue("productCondition", null);
@@ -184,39 +199,13 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
               formContext.setValue("isMinQuantityPerCustomerRequired", false);
               formContext.setValue("isMaxQuantityPerCustomerRequired", false);
             }}
+            translate="no"
           >
             {t("clean_select")}
           </button>
         </div>
 
         <div className="select_main_wrap">
-          <div className="mt-2 flex flex-col gap-y-3">
-            <Label dir={langDir}>{t("product_location")}</Label>
-            <Controller
-              name="productLocationId"
-              control={formContext.control}
-              render={({ field }) => (
-                <ReactSelect
-                  {...field}
-                  onChange={(newValue) => {
-                    field.onChange(newValue?.value);
-                  }}
-                  options={memoizedLocations}
-                  value={
-                    memoizedLocations.find(
-                      (item: IOption) => item.value === field.value,
-                    ) || ""
-                  }
-                  styles={customStyles}
-                  instanceId="productLocationId"
-                  isClearable={true}
-                  placeholder={t("select")}
-                  isRtl={langDir == "rtl"}
-                />
-              )}
-            />
-          </div>
-
           <div className="flex items-center justify-start gap-[10px] py-2">
             <Controller
               name="isProductConditionRequired"
@@ -235,7 +224,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
               className="flex w-[calc(100%_-_40px)] flex-wrap items-center justify-start border-[1px] border-[#ccc] border-[solid] p-2"
               dir={langDir}
             >
-              <Label>{t("product_condition")}</Label>
+              <Label translate="no">{t("product_condition")}</Label>
               <div className="mt-2 flex w-full gap-2 space-y-2">
                 <Controller
                   name="productCondition"
@@ -283,7 +272,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
               dir={langDir}
             >
               <IoIosEyeOff className="text-[20px] text-[#ccc]" />
-              <Label>{t("hide_All_selected")}</Label>
+              <Label translate="no">{t("hide_All_selected")}</Label>
             </div>
           </div>
 
@@ -304,7 +293,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
               className="flex w-[calc(100%_-_40px)] flex-wrap items-center justify-start border-[1px] border-[#ccc] border-[solid] p-2"
               dir={langDir}
             >
-              <Label>{t("ask_for_the_stock")}</Label>
+              <Label translate="no">{t("ask_for_the_stock")}</Label>
               <div className="mt-2 flex w-full gap-2 space-y-2">
                 {!watchIsStockRequired ? (
                   <Controller
@@ -320,6 +309,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                           onWheel={(e) => e.currentTarget.blur()}
                           disabled={watchIsStockRequired}
                           dir={langDir}
+                          translate="no"
                         />
                       </div>
                     )}
@@ -351,7 +341,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
               className="flex w-[calc(100%_-_40px)] flex-wrap items-center justify-start border-[1px] border-[#ccc] border-[solid] p-2"
               dir={langDir}
             >
-              <Label>{t("ask_for_the_price")}</Label>
+              <Label translate="no">{t("ask_for_the_price")}</Label>
               {!watchIsOfferPriceRequired ? (
                 <Controller
                   name="offerPrice"
@@ -366,6 +356,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                         onWheel={(e) => e.currentTarget.blur()}
                         disabled={watchIsOfferPriceRequired}
                         dir={langDir}
+                        translate="no"
                       />
                     </div>
                   )}
@@ -396,7 +387,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
               className="flex w-[calc(100%_-_40px)] flex-wrap items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2"
               dir={langDir}
             >
-              <Label>{t("deliver_after")}</Label>
+              <Label translate="no">{t("deliver_after")}</Label>
               <div className="flex w-full gap-2 space-y-2">
                 {/* <div className="flex w-[90px] items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid]"> */}
                 <CounterTextInputField
@@ -426,7 +417,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                 className="flex w-[calc(100%_-_40px)] items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2"
                 dir={langDir}
               >
-                <Label>{t("time_open")}</Label>
+                <Label translate="no">{t("time_open")}</Label>
                 <CounterTextInputField
                   label=""
                   name="timeOpen"
@@ -454,7 +445,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                 className="flex w-[calc(100%_-_40px)] items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2"
                 dir={langDir}
               >
-                <Label>{t("time_close")}</Label>
+                <Label translate="no">{t("time_close")}</Label>
                 <CounterTextInputField
                   label=""
                   name="timeClose"
@@ -481,7 +472,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
               className="flex w-[calc(100%_-_40px)] flex-wrap items-center justify-start border-[1px] border-[#ccc] border-[solid] p-2"
               dir={langDir}
             >
-              <Label>{t("consumer_type")}</Label>
+              <Label translate="no">{t("consumer_type")}</Label>
               <div className="mt-2 flex w-full gap-2 space-y-2">
                 <Controller
                   name="consumerType"
@@ -531,7 +522,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
               className="flex w-[calc(100%_-_40px)] flex-wrap items-center justify-start border-[1px] border-[#ccc] border-[solid] p-2"
               dir={langDir}
             >
-              <Label>{t("sell_type")}</Label>
+              <Label translate="no">{t("sell_type")}</Label>
               <div className="mt-2 flex w-full gap-2 space-y-2">
                 <Controller
                   name="sellType"
@@ -564,7 +555,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
           </div>
 
           {watchConsumerType === "EVERYONE" ||
-          watchConsumerType === "CONSUMER" ? (
+          watchConsumerType === "VENDORS" ? (
             <div className="flex items-center justify-start gap-[10px] py-2">
               {/* <div className="select_type_checkbox"> */}
               <Controller
@@ -584,19 +575,43 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                 className="flex w-[calc(100%_-_40px)] flex-wrap items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2"
                 dir={langDir}
               >
-                <Label>{t("vendor_discount")}</Label>
+                <Label translate="no">{t("vendor_discount")}</Label>
                 <div className="flex w-full gap-2 space-y-2">
                   <CounterTextInputField
                     name="vendorDiscount"
                     placeholder="Discount"
                   />
                 </div>
+
+                {watchVendorDiscount ? (
+                  <>
+                    <Label dir={langDir} className="mb-1" translate="no">{t("discount_type")}</Label>
+                    <Controller
+                      name="vendorDiscountType"
+                      control={formContext.control}
+                      render={({ field }) => (
+                        <select
+                          {...field}
+                          className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                        >
+                          <option value="" dir={langDir}></option>
+                          <option value="FLAT" dir={langDir} translate="no">
+                            {t("flat").toUpperCase()}
+                          </option>
+                          <option value="PERCENTAGE" dir={langDir} translate="no">
+                            {t("percentage").toUpperCase()}
+                          </option>
+                        </select>
+                      )}
+                    />
+                  </>
+                ) : null}
               </div>
             </div>
           ) : null}
 
           {watchConsumerType === "EVERYONE" ||
-          watchConsumerType === "VENDORS" ? (
+          watchConsumerType === "CONSUMER" ? (
             <div className="flex items-center justify-start gap-[10px] py-2">
               {/* <div className="select_type_checkbox"> */}
               <Controller
@@ -616,12 +631,34 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                 className="flex w-[calc(100%_-_40px)] flex-wrap items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2"
                 dir={langDir}
               >
-                <Label>{t("consumer_discount")}</Label>
-                {watchIsConsumerDiscountRequired ? (
-                  <CounterTextInputField
-                    name="consumerDiscount"
-                    placeholder={t("discount")}
-                  />
+                <Label translate="no">{t("consumer_discount")}</Label>
+                <CounterTextInputField
+                  name="consumerDiscount"
+                  placeholder={t("discount")}
+                />
+
+                {watchConsumerDiscount ? (
+                  <>
+                    <Label dir={langDir} className="mb-1" translate="no">{t("discount_type")}</Label>
+                    <Controller
+                      name="consumerDiscountType"
+                      control={formContext.control}
+                      render={({ field }) => (
+                        <select
+                          {...field}
+                          className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                        >
+                          <option value="" dir={langDir}></option>
+                          <option value="FLAT" dir={langDir} translate="no">
+                            {t("flat").toUpperCase()}
+                          </option>
+                          <option value="PERCENTAGE" dir={langDir} translate="no">
+                            {t("percentage").toUpperCase()}
+                          </option>
+                        </select>
+                      )}
+                    />
+                  </>
                 ) : null}
               </div>
             </div>
@@ -647,7 +684,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                 className="flex w-[calc(100%_-_40px)] flex-wrap items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2"
                 dir={langDir}
               >
-                <Label>{t("min_quantity")}</Label>
+                <Label translate="no">{t("min_quantity")}</Label>
                 <CounterTextInputField
                   name="minQuantity"
                   placeholder={t("min")}
@@ -674,7 +711,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                 className="flex w-[calc(100%_-_40px)] flex-wrap items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2"
                 dir={langDir}
               >
-                <Label>{t("max_quantity")}</Label>
+                <Label translate="no">{t("max_quantity")}</Label>
                 <CounterTextInputField
                   name="maxQuantity"
                   placeholder={t("max")}
@@ -701,7 +738,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                 className="flex w-[calc(100%_-_40px)] flex-wrap flex-wrap items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2"
                 dir={langDir}
               >
-                <Label>{t("min_customer")}</Label>
+                <Label translate="no">{t("min_customer")}</Label>
                 <div className="flex w-full gap-2 space-y-2">
                   <CounterTextInputField
                     name="minCustomer"
@@ -730,7 +767,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                 className="flex w-[calc(100%_-_40px)] flex-wrap items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2"
                 dir={langDir}
               >
-                <Label>{t("max_customer")}</Label>
+                <Label translate="no">{t("max_customer")}</Label>
                 <div className="flex w-full gap-2 space-y-2">
                   <CounterTextInputField
                     name="maxCustomer"
@@ -761,7 +798,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                 className="flex w-[calc(100%_-_40px)] flex-wrap items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2"
                 dir={langDir}
               >
-                <Label>{t("min_quantity_per_customer")}</Label>
+                <Label translate="no">{t("min_quantity_per_customer")}</Label>
                 <div className="flex w-full gap-2 space-y-2">
                   <CounterTextInputField
                     name="minQuantityPerCustomer"
@@ -792,7 +829,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
                 className="flex w-[calc(100%_-_40px)] flex-wrap items-center justify-between border-[1px] border-[#ccc] border-[solid] p-2"
                 dir={langDir}
               >
-                <Label>{t("max_quantity_per_customer")}</Label>
+                <Label translate="no">{t("max_quantity_per_customer")}</Label>
                 <div className="flex w-full gap-2 space-y-2">
                   <CounterTextInputField
                     name="maxQuantityPerCustomer"
@@ -809,6 +846,7 @@ const ManageProductAside: React.FC<ManageProductAsideProps> = ({
             type="submit"
             disabled={isLoading}
             className="w-full !bg-[#DF2100]"
+            translate="no"
           >
             {isLoading ? (
               <LoaderWithMessage message={t("please_wait")} />

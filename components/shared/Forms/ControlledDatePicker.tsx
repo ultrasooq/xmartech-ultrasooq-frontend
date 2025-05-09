@@ -55,11 +55,12 @@ const ControlledDatePicker: React.FC<ControlledDatePickerProps> = ({
                     "!h-12 rounded border-gray-300 pl-3 text-left font-normal focus-visible:!ring-0",
                     !field.value && "text-muted-foreground",
                   )}
+                  translate="no"
                 >
                   {field.value ? (
                     format(field.value, "PPP")
                   ) : (
-                    <span>{placeholder || t("enter") + " " + (label || "Date")}</span>
+                    <span>{placeholder || t("enter") + " " + (label || t("date"))}</span>
                   )}
                   <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                 </Button>

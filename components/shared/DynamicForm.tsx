@@ -38,7 +38,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({ form }) => {
   // );
   return (
     <>
-      {formData &&
+      {formData ? 
         Object.keys(formData)
           .map((item) => formData[item])
           ?.map((item) => (
@@ -114,7 +114,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({ form }) => {
                 ))}
               </div>
             </div>
-          ))}
+          )) : null}
     </>
   );
 };

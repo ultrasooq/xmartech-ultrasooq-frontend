@@ -32,6 +32,8 @@ import Footer from "@/components/shared/Footer";
 import FactoriesCustomizedProductCard from "@/components/modules/factoriesCart/FactoriesCustomizedProductCard";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+// @ts-ignore
+import  { startDebugger }  from "remove-child-node-error-debugger";
 
 const formSchema = (t: any) => {
   return z.object({
@@ -165,6 +167,8 @@ const FactoriesCartPage = () => {
     }
   };
 
+  startDebugger();
+
   return (
     <>
       <section className="rfq_section">
@@ -181,11 +185,11 @@ const FactoriesCartPage = () => {
               >
                 <MdOutlineChevronLeft />
               </button>
-              <h3 dir={langDir}>{t("customize_cart_items")}</h3>
+              <h3 dir={langDir} translate="no">{t("customize_cart_items")}</h3>
             </div>
             <div className="bodyPart">
               <div className="add-delivery-card">
-                <h3 dir={langDir}>{t("add_delivery_address_date")}</h3>
+                <h3 dir={langDir} translate="no">{t("add_delivery_address_date")}</h3>
                 <Form {...form}>
                   <form className="grid grid-cols-2 gap-x-5 !bg-white p-5">
                     <ControlledSelectInput
@@ -195,7 +199,7 @@ const FactoriesCartPage = () => {
                     />
 
                     <div>
-                      <Label dir={langDir}>{t("date")}</Label>
+                      <Label dir={langDir} translate="no">{t("date")}</Label>
                       <ControlledDatePicker name="factoriesDate" isFuture />
                     </div>
                   </form>
@@ -203,7 +207,7 @@ const FactoriesCartPage = () => {
               </div>
 
               <div className="rfq-cart-item-lists">
-                <h4 dir={langDir}>{t("customize_cart_items")}</h4>
+                <h4 dir={langDir} translate="no">{t("customize_cart_items")}</h4>
                 <div className="rfq-cart-item-ul">
                   {memoizedFactoriseCartList.map((item: any) => (
                     <FactoriesCustomizedProductCard
@@ -229,7 +233,7 @@ const FactoriesCartPage = () => {
 
                   {!memoizedFactoriseCartList.length ? (
                     <div className="my-10 text-center">
-                      <h4 dir={langDir}>{t("no_cart_items")}</h4>
+                      <h4 dir={langDir} translate="no">{t("no_cart_items")}</h4>
                     </div>
                   ) : null}
                 </div>
@@ -240,6 +244,7 @@ const FactoriesCartPage = () => {
                   className="theme-primary-btn submit-btn"
                   onClick={form.handleSubmit(onSubmit)}
                   dir={langDir}
+                  translate="no"
                 >
                   {addFactoriesRequestQuotes.isPending ? (
                     <>

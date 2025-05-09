@@ -20,8 +20,9 @@ import { cn } from "@/lib/utils";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import { convertDate, convertTime } from "@/utils/helper";
 
-const MyOrderDetailsPage = ({}) => {
+const MyOrderDetailsPage = ({ }) => {
   const t = useTranslations();
   const { langDir, currency } = useAuth();
   const searchParams = useParams();
@@ -80,13 +81,6 @@ const MyOrderDetailsPage = ({}) => {
     return `${dayOfWeek}, ${dayWithSuffix} ${month}`;
   }
 
-  // const reviewExists = useMemo(() => {
-  //   return me?.data?.data?.user_productReview?.some(
-  //     (item: { productId: number }) =>
-  //       item.productId === Number(searchParams?.id),
-  //   );
-  // }, [me?.data?.data?.user_productReview?.length, Number(searchParams?.id)]);
-
   return (
     <>
       <div className="my-order-main">
@@ -96,10 +90,10 @@ const MyOrderDetailsPage = ({}) => {
               <div className="my-order-lists for-delivery-address">
                 <ul className="page-indicator-s1 !mb-0">
                   <li>
-                    <Link href="/home" dir={langDir}>{t("home")}</Link>
+                    <Link href="/home" dir={langDir} translate="no">{t("home")}</Link>
                   </li>
                   <li>
-                    <Link href="/my-orders" dir={langDir}>{t("my_orders")}</Link>
+                    <Link href="/my-orders" dir={langDir} translate="no">{t("my_orders")}</Link>
                   </li>
                   <li>
                     <h5>
@@ -117,7 +111,7 @@ const MyOrderDetailsPage = ({}) => {
                     <div className="my-order-card">
                       <div className="delivery-address">
                         <div className="delivery-address-col deliveryAddress">
-                          <h2 dir={langDir}>{t("delivery_address")}</h2>
+                          <h2 dir={langDir} translate="no">{t("delivery_address")}</h2>
                           <h3 dir={langDir}>
                             {shippingDetails?.firstName}{" "}
                             {shippingDetails?.lastName}
@@ -127,7 +121,7 @@ const MyOrderDetailsPage = ({}) => {
                             {shippingDetails?.postCode}
                           </address>
                           <p dir={langDir}>
-                            {t("phone_number")}{" "}
+                            <span translate="no">{t("phone_number")}{" "}</span>
                             <span className="!text-red-500" dir={langDir}>
                               {shippingDetails?.phone}
                             </span>
@@ -154,7 +148,7 @@ const MyOrderDetailsPage = ({}) => {
                         <h2>Your Rewards</h2>
                       </div> */}
                         <div className="delivery-address-col moreActions">
-                          <h2 dir={langDir}>{t("more_actions")}</h2>
+                          <h2 dir={langDir} translate="no">{t("more_actions")}</h2>
                           <figure className="downloadInvoice">
                             <figcaption>
                               <Button className="downloadInvoice-btn theme-primary-btn">
@@ -168,77 +162,163 @@ const MyOrderDetailsPage = ({}) => {
                   </div>
                 )}
 
+                {orderDetails?.orderShippingDetail && orderDetails?.orderProductType != 'SERVICE' ? (
+                  <div className="my-order-item">
+                    <div className="my-order-card">
+                      <div className="sm:grid sm:grid-cols-3 w-full gap-2 mb-2">
+                        <div className="sm:flex gap-2">
+                          <h3 className="!font-bold" translate="no">{t("shipping_mode")}:</h3>
+                          <span>{orderDetails?.orderShippingDetail?.orderShippingType}</span>
+                        </div>
+                        <div className="sm:flex gap-2">
+                          <h3 className="!font-bold" translate="no">{t("delivery_charge")}:</h3>
+                          <span>{currency.symbol}{orderDetails?.orderShippingDetail?.shippingCharge}</span>
+                        </div>
+                      </div>
+                      {orderDetails?.orderShippingDetail?.orderShippingType == "PICKUP" ? (
+                        <div className="sm:grid sm:grid-cols-3 w-full gap-2">
+                          <div className="sm:flex gap-2">
+                            <h3 className="!font-bold" translate="no">{t("shipping_date")}:</h3>
+                            <span>{convertDate(orderDetails?.orderShippingDetail?.shippingDate)}</span>
+                          </div>
+                          <div className="sm:flex gap-2">
+                            <h3 className="!font-bold" translate="no">{t("from_time")}:</h3>
+                            <span>{convertTime(orderDetails?.orderShippingDetail?.fromTime)}</span>
+                          </div>
+                          <div className="sm:flex gap-2">
+                            <h3 className="!font-bold" translate="no">{t("to_time")}:</h3>
+                            <span>{convertTime(orderDetails?.orderShippingDetail?.toTime)}</span>
+                          </div>
+                        </div>
+                      ) : null}
+                      {orderDetails?.orderShippingDetail?.receipt ? (
+                        <div className="sm:grid sm:grid-cols-3 w-full gap-2 mt-2">
+                          <Link
+                            className="text-red-500"
+                            href={orderDetails?.orderShippingDetail?.receipt}
+                            target="_blank"
+                            translate="no"
+                          >
+                            {t("download_receipt")}
+                          </Link>
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+                ) : null}
+
                 {orderByIdQuery.isLoading ? (
                   <Skeleton className="h-44" />
                 ) : (
                   <div className="my-order-item">
                     <div className="my-order-card">
-                      {/* <h5 className="mb-2">
-                        Order ID:{" "}
-                        <span className="font-semibold">
-                          {orderDetails?.orderProduct_order?.orderNo}
-                        </span>
-                      </h5> */}
                       <div className="my-order-box">
                         <Link
                           href={`/trending/${orderDetails?.orderProduct_product?.id}`}
                         >
-                          <figure>
-                            <div className="image-container rounded border border-gray-300">
-                              <Image
-                                src={
-                                  orderDetails?.orderProduct_productPrice
-                                    ?.productPrice_product?.productImages?.[0]
-                                    ?.image || PlaceholderImage
-                                }
-                                alt="preview-product"
-                                width={120}
-                                height={120}
-                                placeholder="blur"
-                                blurDataURL="/images/product-placeholder.png"
-                              />
-                            </div>
-                            <figcaption>
-                              <h3>
-                                {
-                                  orderDetails.orderProduct_productPrice
-                                    ?.productPrice_product?.productName
-                                }
-                              </h3>
-                              {/* <p>Color: B.A.E Black</p> */}
-                              <p className="mt-1">
-                                Seller:{" "}
-                                {
-                                  orderDetails?.orderProduct_productPrice
-                                    ?.adminDetail?.firstName
-                                }{" "}
-                                {
-                                  orderDetails?.orderProduct_productPrice
-                                    ?.adminDetail?.lastName
-                                }
-                              </p>
-                              <h4 className="mt-1">
-                                {currency.symbol}
-                                {orderDetails?.orderProduct_productPrice
-                                  ?.offerPrice
-                                  ? Number(
+                          {orderDetails?.orderProductType == 'SERVICE' ? (
+                            <figure>
+                              <div className="image-container rounded border border-gray-300">
+                                <Image
+                                  src={PlaceholderImage}
+                                  alt="preview-product"
+                                  width={120}
+                                  height={120}
+                                  placeholder="blur"
+                                  blurDataURL="/images/product-placeholder.png"
+                                />
+                              </div>
+                              <figcaption>
+                                {/* <h3>
+                                  {
+                                    orderDetails.orderProduct_productPrice
+                                      ?.productPrice_product?.productName
+                                  }
+                                </h3>
+                                <p className="mt-1">
+                                  Seller:{" "}
+                                  {
+                                    orderDetails?.orderProduct_productPrice
+                                      ?.adminDetail?.firstName
+                                  }{" "}
+                                  {
+                                    orderDetails?.orderProduct_productPrice
+                                      ?.adminDetail?.lastName
+                                  }
+                                </p>
+                                <h4 className="mt-1">
+                                  {currency.symbol}
+                                  {orderDetails?.orderProduct_productPrice
+                                    ?.offerPrice
+                                    ? Number(
                                       orderDetails?.orderProduct_productPrice
                                         ?.offerPrice *
-                                        orderDetails?.orderQuantity,
+                                      orderDetails?.orderQuantity,
                                     )
-                                  : 0}
-                              </h4>
-                              <p className="text-gray-500">
-                                {t("quantity")} x {orderDetails?.orderQuantity || 0}
-                              </p>
-                            </figcaption>
-                          </figure>
+                                    : 0}
+                                </h4>
+                                <p className="text-gray-500" translate="no">
+                                  {t("quantity")} x {orderDetails?.orderQuantity || 0}
+                                </p> */}
+                              </figcaption>
+                            </figure>
+                          ) : (
+                            <figure>
+                              <div className="image-container rounded border border-gray-300">
+                                <Image
+                                  src={
+                                    orderDetails?.orderProduct_productPrice
+                                      ?.productPrice_product?.productImages?.[0]
+                                      ?.image || PlaceholderImage
+                                  }
+                                  alt="preview-product"
+                                  width={120}
+                                  height={120}
+                                  placeholder="blur"
+                                  blurDataURL="/images/product-placeholder.png"
+                                />
+                              </div>
+                              <figcaption>
+                                <h3>
+                                  {
+                                    orderDetails.orderProduct_productPrice
+                                      ?.productPrice_product?.productName
+                                  }
+                                </h3>
+                                <p className="mt-1">
+                                  Seller:{" "}
+                                  {
+                                    orderDetails?.orderProduct_productPrice
+                                      ?.adminDetail?.firstName
+                                  }{" "}
+                                  {
+                                    orderDetails?.orderProduct_productPrice
+                                      ?.adminDetail?.lastName
+                                  }
+                                </p>
+                                <h4 className="mt-1">
+                                  {currency.symbol}
+                                  {orderDetails?.orderProduct_productPrice
+                                    ?.offerPrice
+                                    ? Number(
+                                      orderDetails?.orderProduct_productPrice
+                                        ?.offerPrice *
+                                      orderDetails?.orderQuantity,
+                                    )
+                                    : 0}
+                                </h4>
+                                <p className="text-gray-500" translate="no">
+                                  {t("quantity")} x {orderDetails?.orderQuantity || 0}
+                                </p>
+                              </figcaption>
+                            </figure>
+                          )}
                         </Link>
                         <div className="center-div">
                           <div className="order-delivery-progess-s1">
                             <ul>
                               <li className="complted">
-                                <div className="orderStatusText" dir={langDir}>
+                                <div className="orderStatusText" dir={langDir} translate="no">
                                   {t("order_received")}
                                 </div>
                                 <div className="dot">
@@ -253,19 +333,19 @@ const MyOrderDetailsPage = ({}) => {
                                   orderDetails?.orderProductStatus ===
                                     "CANCELLED" ||
                                     orderDetails?.orderProductStatus ===
-                                      "DELIVERED" ||
+                                    "DELIVERED" ||
                                     orderDetails?.orderProductStatus ===
-                                      "OFD" ||
+                                    "OFD" ||
                                     orderDetails?.orderProductStatus ===
-                                      "SHIPPED"
+                                    "SHIPPED"
                                     ? "complted"
                                     : orderDetails?.orderProductStatus ===
-                                        "CONFIRMED"
+                                      "CONFIRMED"
                                       ? "current"
                                       : "",
                                 )}
                               >
-                                <div className="orderStatusText" dir={langDir}>
+                                <div className="orderStatusText" dir={langDir} translate="no">
                                   {t("order_confirmed")}
                                 </div>
                                 <div className="dot">
@@ -280,22 +360,22 @@ const MyOrderDetailsPage = ({}) => {
                                   orderDetails?.orderProductStatus ===
                                     "CANCELLED" ||
                                     orderDetails?.orderProductStatus ===
-                                      "DELIVERED" ||
+                                    "DELIVERED" ||
                                     orderDetails?.orderProductStatus === "OFD"
                                     ? "complted"
                                     : orderDetails?.orderProductStatus ===
-                                        "SHIPPED"
+                                      "SHIPPED"
                                       ? "current"
                                       : "",
                                 )}
                               >
-                                <div className="orderStatusText" dir={langDir}>{t("shipped")}</div>
+                                <div className="orderStatusText" dir={langDir} translate="no">{t("shipped")}</div>
                                 <div className="dot">
                                   <small></small>
                                 </div>
                                 <div className="orderDateText">
                                   {orderDetails?.orderProductStatus ===
-                                  "SHIPPED"
+                                    "SHIPPED"
                                     ? formatDate(orderDetails?.updatedAt)
                                     : "-"}
                                 </div>
@@ -305,14 +385,14 @@ const MyOrderDetailsPage = ({}) => {
                                   orderDetails?.orderProductStatus ===
                                     "CANCELLED" ||
                                     orderDetails?.orderProductStatus ===
-                                      "DELIVERED"
+                                    "DELIVERED"
                                     ? "complted"
                                     : orderDetails?.orderProductStatus === "OFD"
                                       ? "current"
                                       : "",
                                 )}
                               >
-                                <div className="orderStatusText" dir={langDir}>
+                                <div className="orderStatusText" dir={langDir} translate="no">
                                   {t("out_for_delivery")}
                                 </div>
                                 <div className="dot">
@@ -330,7 +410,7 @@ const MyOrderDetailsPage = ({}) => {
                                     "CANCELLED"
                                     ? "complted"
                                     : orderDetails?.orderProductStatus ===
-                                        "DELIVERED"
+                                      "DELIVERED"
                                       ? "complted"
                                       : "",
                                 )}
@@ -342,9 +422,10 @@ const MyOrderDetailsPage = ({}) => {
                                       ? "orderStatusCancelledText"
                                       : "orderStatusText",
                                   )}
+                                  translate="no"
                                 >
                                   {orderDetails?.orderProductStatus ===
-                                  "CANCELLED"
+                                    "CANCELLED"
                                     ? t("cancelled")
                                     : t("delivered")}
                                 </div>
@@ -361,7 +442,7 @@ const MyOrderDetailsPage = ({}) => {
                                 <div className="orderDateText">
                                   {orderDetails?.orderProductStatus ===
                                     "CANCELLED" ||
-                                  orderDetails?.orderProductStatus ===
+                                    orderDetails?.orderProductStatus ===
                                     "DELIVERED"
                                     ? formatDate(orderDetails?.updatedAt)
                                     : "-"}
@@ -371,9 +452,9 @@ const MyOrderDetailsPage = ({}) => {
                           </div>
                         </div>
                         <div className="right-info">
-                          <h4 className="mb-2" dir={langDir}>
+                          <h4 className="mb-2" dir={langDir} translate="no">
                             {orderDetails?.orderProductStatus ===
-                            "CONFIRMED" ? (
+                              "CONFIRMED" ? (
                               <>
                                 <BiCircle color="green" />
                                 {t("placed_on")}{" "}
@@ -403,7 +484,7 @@ const MyOrderDetailsPage = ({}) => {
                             ) : null}
 
                             {orderDetails?.orderProductStatus ===
-                            "DELIVERED" ? (
+                              "DELIVERED" ? (
                               <>
                                 <BiSolidCircle color="green" /> {t("delivered_on")}{" "}
                                 {orderDetails?.updatedAt
@@ -413,7 +494,7 @@ const MyOrderDetailsPage = ({}) => {
                             ) : null}
 
                             {orderDetails?.orderProductStatus ===
-                            "CANCELLED" ? (
+                              "CANCELLED" ? (
                               <>
                                 <BiSolidCircle color="red" /> {t("cancelled_on")}{" "}
                                 {orderDetails?.updatedAt
@@ -428,12 +509,13 @@ const MyOrderDetailsPage = ({}) => {
                               href={`/trending/${orderDetails?.productId}?type=reviews`}
                               className="ratingLink"
                               dir={langDir}
+                              translate="no"
                             >
                               <PiStarFill />
                               {t("rate_n_review_product")}
                             </Link>
                           ) : null}
-                          <Button variant="ghost" className="ratingLink mt-0" dir={langDir}>
+                          <Button variant="ghost" className="ratingLink mt-0" dir={langDir} translate="no">
                             <MdHelpCenter />
                             {t("need_help")}
                           </Button>
@@ -445,13 +527,14 @@ const MyOrderDetailsPage = ({}) => {
                                   ?.adminDetail?.tradeRole === "COMPANY"
                                   ? `/company-profile-details?userId=${orderDetails?.orderProduct_productPrice?.adminDetail?.id}&productPriceId=${orderDetails?.orderProduct_productPrice?.id}&productId=${orderDetails?.orderProduct_productPrice?.productId}&type=ratings`
                                   : orderDetails?.orderProduct_productPrice
-                                        ?.adminDetail?.tradeRole ===
-                                      "FREELANCER"
+                                    ?.adminDetail?.tradeRole ===
+                                    "FREELANCER"
                                     ? `/freelancer-profile-details?userId=${orderDetails?.orderProduct_productPrice?.adminDetail?.id}&productPriceId=${orderDetails?.orderProduct_productPrice?.id}&productId=${orderDetails?.orderProduct_productPrice?.productId}&type=ratings`
                                     : "#"
                               }
                               className="ratingLink"
                               dir={langDir}
+                              translate="no"
                             >
                               <PiStarFill />
                               {t("rate_n_review_seller")}
@@ -471,11 +554,12 @@ const MyOrderDetailsPage = ({}) => {
                   <OtherItemCard
                     key={item?.id}
                     id={item?.id}
+                    orderProductType={item?.orderProductType}
                     productName={
                       item.orderProduct_productPrice?.productPrice_product
                         ?.productName
                     }
-                    offerPrice={item.orderProduct_productPrice?.offerPrice}
+                    offerPrice={item?.purchasePrice}
                     orderQuantity={item?.orderQuantity}
                     productImages={
                       item.orderProduct_productPrice?.productPrice_product

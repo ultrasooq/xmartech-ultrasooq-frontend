@@ -56,7 +56,7 @@ const ShareLinksPage = () => {
             <div className="container relative z-10 m-auto px-3">
                 <div className="flex w-full flex-wrap">
                     <div className="team_members_heading w-full" dir={langDir}>
-                        <h1>{t("share_links")}</h1>
+                        <h1 translate="no">{t("share_links")}</h1>
                     </div>
                     <div className="team_members_table w-full">
                         {!shareLinksQuery?.isLoading && shareLinks.length ? (
@@ -64,7 +64,7 @@ const ShareLinksPage = () => {
                                 <table cellPadding={0} cellSpacing={0} border={0}>
                                     <thead>
                                         <tr>
-                                            <th dir={langDir}>{t("product")}</th>
+                                            <th dir={langDir} translate="no">{t("product")}</th>
                                             <th></th>
                                         </tr>
                                     </thead>
@@ -77,7 +77,7 @@ const ShareLinksPage = () => {
                                                         {item?.productDetail?.productName}
                                                     </td>
                                                     <td>
-                                                        <button type="button" onClick={() => copyShareLink(item.id, item.productId)} dir={langDir}>
+                                                        <button type="button" onClick={() => copyShareLink(item.id, item.productId)} dir={langDir} translate="no">
                                                             {t("copy_share_link")}
                                                         </button>
                                                     </td>
@@ -90,19 +90,19 @@ const ShareLinksPage = () => {
                         ) : null}
 
                         {!shareLinksQuery?.isLoading && !shareLinks.length ? (
-                            <p className="py-10 text-center text-sm font-medium" dir={langDir}>
+                            <p className="py-10 text-center text-sm font-medium" dir={langDir} translate="no">
                                 {t("no_data_found")}
                             </p>
                         ) : null}
 
-                        {shareLinksQuery.data?.totalCount > limit && (
+                        {shareLinksQuery.data?.totalCount > limit ? (
                             <Pagination
                                 page={page}
                                 setPage={setPage}
                                 totalCount={shareLinksQuery.data?.totalCount}
                                 limit={limit}
                             />
-                        )}
+                        ) : null}
                     </div>
                 </div>
             </div>

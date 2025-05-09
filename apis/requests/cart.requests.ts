@@ -53,10 +53,39 @@ export const updateCartByDevice = (payload: {
   });
 };
 
+export const updateCartWithService = (payload: any) => {
+  return axios({
+    method: "PATCH",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/cart/updateservice/product`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
 export const deleteCartItem = (payload: { cartId: number }) => {
   return axios({
     method: "DELETE",
     url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/cart/delete`, payload),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+export const deleteServiceFromCart = (cartId: number, serviceFeatureId?: number) => {
+  let payload: any = {};
+  if (serviceFeatureId) {
+    payload.servicefeatureids = serviceFeatureId.toString();
+  }
+  return axios({
+    method: "DELETE",
+    url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/cart/deleteService/${cartId}`, payload),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -95,5 +124,18 @@ export const fetchCartCountByDeviceId = (payload: { deviceId: string }) => {
     method: "POST",
     url: `${process.env.NEXT_PUBLIC_API_URL}/cart/cartCountUnAuth`,
     data: payload,
+  });
+};
+
+export const addServiceToCartWithProduct = (payload: {[key: string]: any}) => {
+  return axios({
+    method: "PATCH",
+    url: `${process.env.NEXT_PUBLIC_API_URL}/cart/updateCartServiceWithProduct`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
   });
 };

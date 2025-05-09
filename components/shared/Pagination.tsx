@@ -49,6 +49,7 @@ const Pagination: React.FC<PaginationProps> = ({
           type="button"
           className="theme-primary-btn first"
           onClick={() => setPage(1)}
+          translate="no"
         >
           <Image
             src={FirstIcon}
@@ -104,6 +105,7 @@ const Pagination: React.FC<PaginationProps> = ({
           className="theme-primary-btn last"
           onClick={() => setPage(pageCount)}
           dir={langDir}
+          translate="no"
         >
           {t("last")}
           <Image

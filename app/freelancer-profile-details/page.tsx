@@ -60,7 +60,11 @@ export default function FreelancerProfileDetailsPage() {
         <div className="container relative z-10 m-auto px-3">
           <div className="flex flex-wrap">
             <div className="mb-7 w-full">
-              <h2 className="text-4xl font-semibold leading-10 text-color-dark" dir={langDir}>
+              <h2
+                className="text-4xl font-semibold leading-10 text-color-dark"
+                dir={langDir}
+                translate="no"
+              >
                 {t("my_profile")}
               </h2>
             </div>
@@ -76,11 +80,12 @@ export default function FreelancerProfileDetailsPage() {
 
             <div className="mt-12 w-full">
               <Tabs onValueChange={(e) => setActiveTab(e)} value={activeTab}>
-                <TabsList className="mb-1 grid min-h-[80px] w-[560px] grid-cols-3 gap-x-6 rounded-none bg-transparent px-0 pt-7">
+                <TabsList className="flex h-auto min-h-[80px] w-full grid-cols-3 flex-wrap gap-3 rounded-none bg-transparent px-0 pt-7 md:mb-1 md:grid md:w-[560px] md:gap-6">
                   <TabsTrigger
                     value="profile-info"
                     className="rounded-b-none !bg-[#d1d5db] py-4 text-base font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white"
                     dir={langDir}
+                    translate="no"
                   >
                     {t("profile_info")}
                   </TabsTrigger>
@@ -89,6 +94,7 @@ export default function FreelancerProfileDetailsPage() {
                     value="ratings"
                     className="rounded-b-none !bg-[#d1d5db] py-4 text-base font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white"
                     dir={langDir}
+                    translate="no"
                   >
                     {t("ratings_n_reviews")}
                   </TabsTrigger>
@@ -97,6 +103,7 @@ export default function FreelancerProfileDetailsPage() {
                     value="products"
                     className="rounded-b-none !bg-[#d1d5db] py-4 text-base font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white"
                     dir={langDir}
+                    translate="no"
                   >
                     {t("products")}
                   </TabsTrigger>
@@ -113,7 +120,11 @@ export default function FreelancerProfileDetailsPage() {
 
                     {!me.data?.data?.userBranch?.length ? (
                       <>
-                        <p className="pt-5 text-center text-lg font-medium text-color-dark" dir={langDir}>
+                        <p
+                          className="pt-5 text-center text-lg font-medium text-color-dark"
+                          dir={langDir}
+                          translate="no"
+                        >
                           {t("no_branch_exists")}
                         </p>
                         {!activeSellerId ? (
@@ -122,6 +133,7 @@ export default function FreelancerProfileDetailsPage() {
                               href="/freelancer-profile"
                               className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
                               dir={langDir}
+                              translate="no"
                             >
                               <PlusIcon className="mr-1 h-5 w-5" />
                               {t("add")}

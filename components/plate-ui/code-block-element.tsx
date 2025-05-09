@@ -24,14 +24,14 @@ export const CodeBlockElement = withRef<typeof PlateElement>(
           <code>{children}</code>
         </pre>
 
-        {state.syntax && (
+        {state.syntax ? (
           <div
             className="absolute right-2 top-2 z-10 select-none"
             contentEditable={false}
           >
             <CodeBlockCombobox />
           </div>
-        )}
+        ) : null}
       </PlateElement>
     );
   }

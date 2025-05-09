@@ -21,15 +21,19 @@ const customStyles = {
   control: (base: any) => ({ ...base, height: 48, minHeight: 48 }),
 };
 
-const ReactSelectInput = () => {
+const ReactSelectInput: React.FC<{
+  selectedProductType?: string
+}> = ({
+  // Set default product type as "OWNBRAND"
+  selectedProductType = "OWNBRAND"
+}) => {
   const t = useTranslations();
   const { langDir } = useAuth();
   const formContext = useFormContext();
   const { toast } = useToast();
   const [, setValue] = useState<IOption | null>();
 
-  // Set default product type as "OWNBRAND"
-  const [productType, setProductType] = useState<string>("OWNBRAND");
+  const [productType, setProductType] = useState<string>(selectedProductType);
 
   const { user } = useAuth();
 
@@ -47,8 +51,11 @@ const ReactSelectInput = () => {
 
   // Set default product type in the form
   useEffect(() => {
-    formContext.setValue("typeOfProduct", "OWNBRAND");
-  }, []);
+    if (selectedProductType) {
+      formContext.setValue("typeOfProduct", selectedProductType);
+      setProductType(selectedProductType);
+    }
+  }, [selectedProductType]);
 
   const handleCreate = async (inputValue: string) => {
     const response = await createBrand.mutateAsync({ brandName: inputValue });
@@ -81,7 +88,7 @@ const ReactSelectInput = () => {
   return (
     <>
       <div className="mt-2 flex flex-col gap-y-3">
-        <Label dir={langDir}>{t("product_type")}</Label>
+        <Label dir={langDir} translate="no">{t("product_type")}</Label>
         <Controller
           name="typeOfProduct"
           control={formContext.control}
@@ -113,13 +120,13 @@ const ReactSelectInput = () => {
       </div>
       <div className="mt-2 flex flex-col gap-y-3">
         <div className="flex w-full items-center gap-1.5">
-          <Label dir={langDir}>{t("brand")}</Label>
+          <Label dir={langDir} translate="no">{t("brand")}</Label>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Info className="h-4 w-4 cursor-pointer text-gray-500" />
               </TooltipTrigger>
-              <TooltipContent side="right" dir={langDir}>
+              <TooltipContent side="right" dir={langDir} translate="no">
                 {t("brand_input_info")}{" "}
               </TooltipContent>
             </Tooltip>

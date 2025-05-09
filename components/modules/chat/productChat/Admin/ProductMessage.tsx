@@ -48,7 +48,7 @@ const ProductMessage: React.FC<ProductMessageProps> = ({
           </h4>
         </div>
 
-        {message?.createdAt && (
+        {message?.createdAt ? (
           <div>
             <div className="flex space-x-2 p-2">
               <div className="flex items-center space-x-1">
@@ -62,7 +62,7 @@ const ProductMessage: React.FC<ProductMessageProps> = ({
                 ) : ""}
               </div>
             </div>
-            {message?.createdAt && (
+            {message?.createdAt ? (
               <div className="w-full text-right text-xs font-normal text-[#AEAFB8]">
                 <span>
                   {moment(message?.createdAt)
@@ -70,9 +70,9 @@ const ProductMessage: React.FC<ProductMessageProps> = ({
                     .fromNow()}
                 </span>
               </div>
-            )}
+            ) : null}
           </div>
-        )}
+        ) : null}
       </div>
     </button>
   );

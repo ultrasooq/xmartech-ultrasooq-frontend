@@ -79,21 +79,23 @@ const TeamMembersPage = () => {
               <Link
                 href={"/team-members"}
                 className="flex items-center border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
+                translate="no"
               >
                 {t("team_members")}
               </Link>
               <Link
                 href={"/role-settings"}
                 className="flex items-center border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
+                translate="no"
               >
                 {t("role")}
               </Link>
             </ul>
           </div>
           <div className="team_members_heading w-full" dir={langDir}>
-            <h1 dir={langDir}>{t("team_members")}</h1>
+            <h1 dir={langDir} translate="no">{t("team_members")}</h1>
             <div className="flex justify-end gap-3">
-              <button type="button" onClick={handleToggleAddModal} dir={langDir}>
+              <button type="button" onClick={handleToggleAddModal} dir={langDir} translate="no">
                 <IoMdAdd /> {t("add_new_member")}
               </button>
               {/* <Link
@@ -111,13 +113,13 @@ const TeamMembersPage = () => {
                 <table cellPadding={0} cellSpacing={0} border={0}>
                   <thead>
                     <tr>
-                      <th dir={langDir}>{t("name")}</th>
-                      <th dir={langDir}>{t("email")}</th>
-                      <th dir={langDir}>{t("phone_number")}</th>
-                      <th dir={langDir}>{t("role")}</th>
-                      <th dir={langDir}>{t("employee_id")}</th>
-                      <th dir={langDir}>{t("account_status")}</th>
-                      <th dir={langDir}>{t("action")}</th>
+                      <th dir={langDir} translate="no">{t("name")}</th>
+                      <th dir={langDir} translate="no">{t("email")}</th>
+                      <th dir={langDir} translate="no">{t("phone_number")}</th>
+                      <th dir={langDir} translate="no">{t("role")}</th>
+                      <th dir={langDir} translate="no">{t("employee_id")}</th>
+                      <th dir={langDir} translate="no">{t("account_status")}</th>
+                      <th dir={langDir} translate="no">{t("action")}</th>
                     </tr>
                   </thead>
 
@@ -149,19 +151,19 @@ const TeamMembersPage = () => {
             ) : null}
 
             {!membersQuery?.isLoading && !memoizedMember.length ? (
-              <p className="py-10 text-center text-sm font-medium" dir={langDir}>
+              <p className="py-10 text-center text-sm font-medium" dir={langDir} translate="no">
                 {t("no_members_found")}
               </p>
             ) : null}
 
-            {membersQuery.data?.totalCount > limit && (
+            {membersQuery.data?.totalCount > limit ? (
               <Pagination
                 page={page}
                 setPage={setPage}
                 totalCount={membersQuery.data?.totalCount}
                 limit={limit}
               />
-            )}
+            ) : null}
           </div>
         </div>
       </div>

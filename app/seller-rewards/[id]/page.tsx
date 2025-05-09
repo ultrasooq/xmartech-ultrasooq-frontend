@@ -50,12 +50,13 @@ const SellerRewardDetailPage = () => {
             <div className="container relative z-10 m-auto px-3">
                 <div className="flex w-full flex-wrap">
                     <div className="team_members_heading w-full">
-                        <h1 dir={langDir}>{t("share_links")}</h1>
+                        <h1 dir={langDir} translate="no">{t("share_links")}</h1>
                         <div className="flex justify-end gap-3">
                             <Link
                                 href={"/seller-rewards"}
                                 className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
                                 dir={langDir}
+                                translate="no"
                             >
                                 {t("back")}
                             </Link>
@@ -68,10 +69,10 @@ const SellerRewardDetailPage = () => {
                                 <table cellPadding={0} cellSpacing={0} border={0}>
                                     <thead>
                                         <tr>
-                                            <th dir={langDir}>{t("name")}</th>
-                                            <th dir={langDir}>{t("phone_number")}</th>
-                                            <th dir={langDir}>{t("total_sell")}</th>
-                                            <th dir={langDir}>{t("orders_placed")}</th>
+                                            <th dir={langDir} translate="no">{t("name")}</th>
+                                            <th dir={langDir} translate="no">{t("phone_number")}</th>
+                                            <th dir={langDir} translate="no">{t("total_sell")}</th>
+                                            <th dir={langDir} translate="no">{t("orders_placed")}</th>
                                         </tr>
                                     </thead>
 
@@ -92,19 +93,19 @@ const SellerRewardDetailPage = () => {
                         ) : null}
 
                         {!sharedLinksBySellerRewardQuery?.isLoading && !sharedLinks.length ? (
-                            <p className="py-10 text-center text-sm font-medium" dir={langDir}>
+                            <p className="py-10 text-center text-sm font-medium" dir={langDir} translate="no">
                                 {t("no_data_found")}
                             </p>
                         ) : null}
 
-                        {sharedLinksBySellerRewardQuery.data?.totalCount > limit && (
+                        {sharedLinksBySellerRewardQuery.data?.totalCount > limit ? (
                             <Pagination
                                 page={page}
                                 setPage={setPage}
                                 totalCount={sharedLinksBySellerRewardQuery.data?.totalCount}
                                 limit={limit}
                             />
-                        )}
+                        ) : null}
                     </div>
                 </div>
             </div>

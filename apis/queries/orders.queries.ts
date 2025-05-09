@@ -5,15 +5,18 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import {
+  createEMIPayment,
   createOrder,
   createOrderUnAuth,
   createPaymentIntent,
+  createPaymentLink,
   fetchOrderById,
   fetchOrderBySellerId,
   fetchOrders,
   fetchOrdersBySellerId,
   preOrderCalculation,
   updateCancelReason,
+  updateOrderShippingStatus,
   updateProductStatus,
 } from "../requests/orders.requests";
 import { APIResponseError } from "@/utils/types/common.types";
@@ -128,21 +131,59 @@ export const useCreateOrderUnAuth = () => {
 
 export const useCreatePaymentIntent = () => {
   return useMutation<
-  { data: any; message: string; status: boolean },
-  APIResponseError,
-  {}
->({
-  mutationFn: async (payload) => {
-    const res = await createPaymentIntent(payload);
-    return res.data;
-  },
-  onSuccess: () => {
-   console.log("Intent Created");
-  },
-  onError: (err: APIResponseError) => {
-    console.log(err);
-  },
-});
+    { data: any; message: string; status: boolean },
+    APIResponseError,
+    {}
+  >({
+    mutationFn: async (payload) => {
+      const res = await createPaymentIntent(payload);
+      return res.data;
+    },
+    onSuccess: () => {
+      console.log("Intent Created");
+    },
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
+};
+
+export const useCreatePaymentLink = () => {
+  return useMutation<
+    { data: any; message: string; success: boolean },
+    APIResponseError,
+    {}
+  >({
+    mutationFn: async (payload) => {
+      const res = await createPaymentLink(payload);
+      return res.data;
+    },
+    onSuccess: () => {
+      console.log("Intent Created");
+    },
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
+};
+
+export const useCreateEMIPayment = () => {
+  return useMutation<
+    { data: any; message: string; status: boolean },
+    APIResponseError,
+    {}
+  >({
+    mutationFn: async (payload) => {
+      const res = await createEMIPayment(payload);
+      return res.data;
+    },
+    onSuccess: () => {
+      console.log("Intent Created");
+    },
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
 };
 
 export const useOrderById = (
@@ -247,18 +288,40 @@ export const useUpdateCancelReason = () => {
   });
 };
 
+export const useUpdateOrderShippingStatus = () => {
+  const queryClient = useQueryClient();
+  return useMutation<
+    { data: any; message: string; status: boolean },
+    APIResponseError,
+    { orderShippingId: number; status: string, receipt: string; }
+  >({
+    mutationFn: async (payload) => {
+      const res = await updateOrderShippingStatus(payload);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["orders"],
+      });
+    },
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
+};
+
 export const usePreOrderCalculation = () => {
   return useMutation<
-    {[key: string]: any},
+    { [key: string]: any },
     APIResponseError,
-    { cartIds: number[]; userAddressId: number }
+    { cartIds: number[]; serviceCartIds: number[], userAddressId: number }
   >({
     mutationFn: async (payload) => {
       const res = await preOrderCalculation(payload);
       return res.data;
     },
     onSuccess: () => {
-      
+
     },
     onError: (err: APIResponseError) => {
       console.log(err);

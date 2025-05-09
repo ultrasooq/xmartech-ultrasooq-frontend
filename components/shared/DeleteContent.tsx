@@ -27,10 +27,10 @@ const DeleteContent: React.FC<DeleteContentProps> = ({
   return (
     <DialogContent className="custom-ui-alert-popup danger-alert-popup">
       <DialogHeader className="alert-popup-headerpart">
-        <h1 dir={langDir}>{t("delete")}</h1>
+        <h1 dir={langDir} translate="no">{t("delete")}</h1>
       </DialogHeader>
       <DialogDescription className="alert-popup-bodypart">
-        <h4 dir={langDir}>{t("confirm_delete")}</h4>
+        <h4 dir={langDir} translate="no">{t("confirm_delete")}</h4>
       </DialogDescription>
       <DialogFooter className="alert-actions">
         <div className="alert-actions-col">
@@ -39,6 +39,7 @@ const DeleteContent: React.FC<DeleteContentProps> = ({
             disabled={isLoading}
             className="alert--cancel-btn"
             dir={langDir}
+            translate="no"
           >
             {t("no")}
           </Button>
@@ -49,6 +50,7 @@ const DeleteContent: React.FC<DeleteContentProps> = ({
             disabled={isLoading}
             className="alert--submit-btn"
             dir={langDir}
+            translate="no"
           >
             {isLoading ? (
               <>

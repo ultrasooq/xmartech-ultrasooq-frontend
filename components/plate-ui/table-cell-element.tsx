@@ -87,13 +87,13 @@ export const TableCellElement = withRef<
           {children}
         </div>
 
-        {!isSelectingCell && (
+        {!isSelectingCell ? (
           <div
             className="group absolute top-0 size-full select-none"
             contentEditable={false}
             suppressContentEditableWarning={true}
           >
-            {!readOnly && (
+            {!readOnly ? (
               <>
                 <ResizeHandle
                   {...rightProps}
@@ -103,33 +103,33 @@ export const TableCellElement = withRef<
                   {...bottomProps}
                   className="bottom-[-5px] h-[10px]"
                 />
-                {!hiddenLeft && (
+                {!hiddenLeft ? (
                   <ResizeHandle
                     {...leftProps}
                     className="-top-3 left-[-5px] w-[10px]"
                   />
-                )}
+                ) : null}
 
-                {hovered && (
+                {hovered ? (
                   <div
                     className={cn(
                       'absolute -top-3 z-30 h-[calc(100%_+_12px)] w-1 bg-ring',
                       'right-[-1.5px]'
                     )}
                   />
-                )}
-                {hoveredLeft && (
+                ) : null}
+                {hoveredLeft ? (
                   <div
                     className={cn(
                       'absolute -top-3 z-30 h-[calc(100%_+_12px)] w-1 bg-ring',
                       'left-[-1.5px]'
                     )}
                   />
-                )}
+                ) : null}
               </>
-            )}
+            ) : null}
           </div>
-        )}
+        ) : null}
       </Cell>
     </PlateElement>
   );

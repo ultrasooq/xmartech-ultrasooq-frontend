@@ -4,27 +4,22 @@ import Link from "next/link";
 import React, { useMemo, useEffect, useState, useRef } from "react";
 import validator from "validator";
 import { Checkbox } from "@/components/ui/checkbox";
-import { FaStar } from "react-icons/fa";
-import { FaRegStar } from "react-icons/fa";
+import { FaStar, FaRegStar, FaHeart, FaRegHeart } from "react-icons/fa";
+import { FiEye } from "react-icons/fi";
+import { FaCircleCheck } from "react-icons/fa6";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { Button } from "@/components/ui/button";
-// import ShoppingIcon from "@/public/images/shopping-icon.svg";
-// import EyeIcon from "@/public/images/eye-icon.svg";
-// import CompareIcon from "@/public/images/compare-icon.svg";
-import { FaHeart } from "react-icons/fa";
-import { FaRegHeart } from "react-icons/fa";
-import { FiEye } from "react-icons/fi";
 import ShoppingIcon from "@/components/icons/ShoppingIcon";
-import { FaCircleCheck } from "react-icons/fa6";
 import { useCartStore } from "@/lib/rfqStore";
 import { toast } from "@/components/ui/use-toast";
 import {
   useDeleteCartItem,
   useUpdateCartByDevice,
   useUpdateCartWithLogin,
+  useUpdateCartWithService,
 } from "@/apis/queries/cart.queries";
 import { getOrCreateDeviceId } from "@/utils/helper";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl"; // Import useLocale
 import { useAuth } from "@/context/AuthContext";
 import { useClickOutside } from "use-events";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
@@ -32,6 +27,7 @@ import { IoCloseSharp } from "react-icons/io5";
 
 type ProductCardProps = {
   item: TrendingProduct;
+  productVariants?: any[];
   onWishlist: () => void;
   inWishlist?: boolean;
   haveAccessToken: boolean;
@@ -43,11 +39,15 @@ type ProductCardProps = {
   productVariant?: any;
   cartId?: number;
   isAddedToCart?: boolean;
+  serviceId?: number;
+  serviceCartId?: number;
+  relatedCart?: any;
   sold?: number;
 };
 
 const ProductCard: React.FC<ProductCardProps> = ({
   item,
+  productVariants = [],
   onWishlist,
   inWishlist,
   haveAccessToken,
@@ -58,13 +58,17 @@ const ProductCard: React.FC<ProductCardProps> = ({
   productQuantity = 0,
   productVariant,
   cartId,
+  serviceId,
+  serviceCartId,
+  relatedCart,
   isAddedToCart,
   sold,
 }) => {
   const t = useTranslations();
-  const { langDir, currency } = useAuth();
+  const { user, langDir, currency } = useAuth();
+  const language = useLocale(); // Get the current locale (e.g., "en" or "ar")
 
-  const [timeLeft, setTimeLeft] = useState("");
+  const [timeLeft, setTimeLeft] = useState<string | null>(null);
 
   const deviceId = getOrCreateDeviceId() || "";
 
@@ -72,21 +76,25 @@ const ProductCard: React.FC<ProductCardProps> = ({
     const price = item.productProductPrice
       ? Number(item.productProductPrice)
       : 0;
-    const discount = item.consumerDiscount || 0;
-    return Number((price - (price * discount) / 100).toFixed(2));
+    let discount = item.consumerDiscount || 0;
+    let discountType = item.consumerDiscountType;
+    if (user?.tradeRole && user?.tradeRole != "BUYER") {
+      discount = item.vendorDiscount || 0;
+      discountType = item.vendorDiscountType;
+    }
+    if (discountType == "PERCENTAGE") {
+      return Number((price - (price * discount) / 100).toFixed(2));
+    }
+    return Number((price - discount).toFixed(2));
   };
 
   const calculateAvgRating = useMemo(() => {
     const totalRating = item.productReview?.reduce(
-      (acc: number, item: { rating: number }) => {
-        return acc + item.rating;
-      },
+      (acc: number, item: { rating: number }) => acc + item.rating,
       0,
     );
-
     const result = totalRating / item.productReview?.length;
     return !isNaN(result) ? Math.floor(result) : 0;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [item.productReview?.length]);
 
   const calculateRatings = useMemo(
@@ -101,39 +109,50 @@ const ProductCard: React.FC<ProductCardProps> = ({
       }
       return stars;
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [item.productReview?.length],
   );
 
   const [quantity, setQuantity] = useState(0);
   const [selectedProductVariant, setSelectedProductVariant] = useState<any>();
 
-  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
-  const handleConfirmDialog = () => setIsConfirmDialogOpen(!isConfirmDialogOpen);
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] =
+    useState<boolean>(false);
+  const handleConfirmDialog = () =>
+    setIsConfirmDialogOpen(!isConfirmDialogOpen);
   const confirmDialogRef = useRef(null);
-  const [isClickedOutsideConfirmDialog] = useClickOutside([confirmDialogRef], (event) => { onCancelRemove() });
+  const [isClickedOutsideConfirmDialog] = useClickOutside(
+    [confirmDialogRef],
+    () => onCancelRemove(),
+  );
 
   useEffect(() => {
     setQuantity(productQuantity || 0);
   }, [productQuantity]);
 
   useEffect(() => {
-    setSelectedProductVariant(productVariant);
-  }, [productVariant]);
+    setSelectedProductVariant(productVariant || productVariants?.[0]);
+  }, [productVariants, productVariant]);
 
   const updateCartWithLogin = useUpdateCartWithLogin();
   const updateCartByDevice = useUpdateCartByDevice();
+  const updateCartWithService = useUpdateCartWithService();
   const deleteCartItem = useDeleteCartItem();
 
   const handleAddToCart = async (
     newQuantity: number,
     actionType: "add" | "remove",
+    variant?: any,
   ) => {
-    const minQuantity = item.productPrices?.length ? item.productPrices[0]?.minQuantityPerCustomer : null;
-    const maxQuantity = item.productPrices?.length ? item.productPrices[0]?.maxQuantityPerCustomer: null;
+    const minQuantity = item.productPrices?.length
+      ? item.productPrices[0]?.minQuantityPerCustomer
+      : null;
+    const maxQuantity = item.productPrices?.length
+      ? item.productPrices[0]?.maxQuantityPerCustomer
+      : null;
 
     if (actionType == "add" && newQuantity == -1) {
-      newQuantity = minQuantity && quantity < minQuantity ? minQuantity : quantity + 1;
+      newQuantity =
+        minQuantity && quantity < minQuantity ? minQuantity : quantity + 1;
     }
 
     if (actionType == "add" && minQuantity && minQuantity > newQuantity) {
@@ -166,20 +185,59 @@ const ProductCard: React.FC<ProductCardProps> = ({
         });
         return;
       }
+
+      let linkService = !!(!cartId && serviceId && serviceCartId);
+      console.log(linkService, cartId, serviceId, relatedCart);
+
+      if (linkService) {
+        const response = await updateCartWithService.mutateAsync({
+          productId: item?.id,
+          productPriceId: item?.productProductPriceId,
+          quantity: newQuantity,
+          productVariant: variant || selectedProductVariant,
+          serviceId: relatedCart?.serviceId || serviceId,
+          cartId: relatedCart?.id || serviceCartId
+        });
+  
+        if (response.success) {
+          setQuantity(
+            actionType === "add" && newQuantity === 0 ? 1 : newQuantity,
+          );
+          toast({
+            title:
+              actionType == "add"
+                ? t("item_added_to_cart")
+                : t("item_removed_from_cart"),
+            description: t("check_your_cart_for_more_details"),
+            variant: "success",
+          });
+          return response.success;
+        } else {
+          toast({
+            title: t("something_went_wrong"),
+            description: response.message,
+            variant: "danger",
+          });
+        }
+
+        return;
+      }
+
       const response = await updateCartWithLogin.mutateAsync({
         productPriceId: item?.productProductPriceId,
         quantity: newQuantity,
-        productVariant: selectedProductVariant
+        productVariant: variant || selectedProductVariant,
       });
 
       if (response.status) {
-        if (actionType === "add" && newQuantity === 0) {
-          setQuantity(1);
-        } else {
-          setQuantity(newQuantity);
-        }
+        setQuantity(
+          actionType === "add" && newQuantity === 0 ? 1 : newQuantity,
+        );
         toast({
-          title: actionType == "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
+          title:
+            actionType == "add"
+              ? t("item_added_to_cart")
+              : t("item_removed_from_cart"),
           description: t("check_your_cart_for_more_details"),
           variant: "success",
         });
@@ -191,6 +249,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           variant: "danger",
         });
       }
+
     } else {
       if (!item?.productProductPriceId) {
         toast({
@@ -204,16 +263,17 @@ const ProductCard: React.FC<ProductCardProps> = ({
         productPriceId: item?.productProductPriceId,
         quantity: newQuantity,
         deviceId,
-        productVariant: selectedProductVariant
+        productVariant: variant || selectedProductVariant,
       });
       if (response.status) {
-        if (actionType === "add" && newQuantity === 0) {
-          setQuantity(1);
-        } else {
-          setQuantity(newQuantity);
-        }
+        setQuantity(
+          actionType === "add" && newQuantity === 0 ? 1 : newQuantity,
+        );
         toast({
-          title: actionType == "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
+          title:
+            actionType == "add"
+              ? t("item_added_to_cart")
+              : t("item_removed_from_cart"),
           description: t("check_your_cart_for_more_details"),
           variant: "success",
         });
@@ -229,8 +289,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
   };
 
   const handleQuantity = (quantity: number, action: "add" | "remove") => {
-    const minQuantity = item.productPrices?.length? item.productPrices[0]?.minQuantityPerCustomer : null;
-    const maxQuantity = item.productPrices?.length ? item.productPrices[0]?.maxQuantityPerCustomer : null;
+    const minQuantity = item.productPrices?.length
+      ? item.productPrices[0]?.minQuantityPerCustomer
+      : null;
+    const maxQuantity = item.productPrices?.length
+      ? item.productPrices[0]?.maxQuantityPerCustomer
+      : null;
 
     if (maxQuantity && maxQuantity < quantity) {
       toast({
@@ -265,7 +329,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
       return;
     }
 
-    const minQuantity = item.productPrices?.length? item.productPrices[0]?.minQuantityPerCustomer : null;
+    const minQuantity = item.productPrices?.length
+      ? item.productPrices[0]?.minQuantityPerCustomer
+      : null;
     if (minQuantity && minQuantity > quantity) {
       toast({
         description: t("min_quantity_must_be_n", { n: minQuantity }),
@@ -275,7 +341,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
       return;
     }
 
-    const maxQuantity = item.productPrices?.length ? item.productPrices[0]?.maxQuantityPerCustomer : null;
+    const maxQuantity = item.productPrices?.length
+      ? item.productPrices[0]?.maxQuantityPerCustomer
+      : null;
     if (maxQuantity && maxQuantity < quantity) {
       toast({
         description: t("max_quantity_must_be_n", { n: maxQuantity }),
@@ -317,40 +385,49 @@ const ProductCard: React.FC<ProductCardProps> = ({
   };
 
   const getLocalTimestamp = (dateStr: any, timeStr: any) => {
-    const date = new Date(dateStr); // Parse date part only
-    const [hours, minutes] = (timeStr || "").split(":").map(Number); // Extract hours/minutes
-
-    date.setHours(hours, minutes || 0, 0, 0); // Set correct time in local timezone
-
-    return date.getTime(); // Return timestamp in milliseconds
+    const date = new Date(dateStr);
+    const [hours, minutes] = (timeStr || "").split(":").map(Number);
+    date.setHours(hours, minutes || 0, 0, 0);
+    return date.getTime();
   };
 
-  // ✅ Corrected formatTime function to display (Days, Hours, Minutes, Seconds)
   const formatTime = (ms: number) => {
     const totalSeconds = Math.floor(ms / 1000);
     const days = Math.floor(totalSeconds / 86400);
-    const hours = String(Math.floor((totalSeconds % 86400) / 3600)).padStart(
-      2,
-      "0",
-    );
-    const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(
-      2,
-      "0",
-    );
-    const seconds = String(totalSeconds % 60).padStart(2, "0");
-    // console.log(days, hours, minutes, seconds)
-    return `${days} Days; ${hours}:${minutes}:${seconds}`;
+    const hours = Math.floor((totalSeconds % 86400) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    const isArabic = language === "ar";
+    const numberFormatter = new Intl.NumberFormat(language, {
+      minimumIntegerDigits: 2,
+      useGrouping: false,
+    });
+
+    const formattedDays = days.toString();
+    const formattedHours = numberFormatter.format(hours);
+    const formattedMinutes = numberFormatter.format(minutes);
+    const formattedSeconds = numberFormatter.format(seconds);
+
+    const daysLabel = t("days");
+
+    const timeString = isArabic
+      ? `${formattedSeconds}:${formattedMinutes}:${formattedHours} ؛${daysLabel} ${formattedDays}`
+      : `${formattedDays} ${daysLabel}; ${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+
+    return timeString;
   };
 
   useEffect(() => {
     if (
       !item?.productPrices?.length ||
       item?.productPrices?.[0]?.sellType !== "BUYGROUP"
-    )
+    ) {
+      setTimeLeft(null);
       return;
+    }
 
     const product = item.productPrices[0];
-
     const startTimestamp = getLocalTimestamp(
       product.dateOpen,
       product.startTime,
@@ -365,7 +442,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         return;
       }
 
-      let ms = endTimestamp - now;
+      const ms = endTimestamp - now;
       if (ms <= 0) {
         setTimeLeft(t("expired"));
         return;
@@ -374,11 +451,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
       setTimeLeft(formatTime(ms));
     };
 
-    updateCountdown(); // Initial call
+    updateCountdown();
     const interval = setInterval(updateCountdown, 1000);
 
     return () => clearInterval(interval);
-  }, [item?.productPrices?.length]);
+  }, [item?.productPrices, language, t]);
 
   return (
     <div className="product-list-s1-col">
@@ -392,18 +469,19 @@ const ProductCard: React.FC<ProductCardProps> = ({
             />
           </div>
         ) : null}
-        {timeLeft && (
-          <div className="time_left">
-            <span>{timeLeft}</span>
+        {timeLeft ? (
+          <div
+            className={`time_left ${language === "ar" ? "rtl" : "ltr"}`}
+            translate="no"
+          >
+            <span dir={language === "ar" ? "rtl" : "ltr"}>{timeLeft}</span>
           </div>
-        )}
+        ) : null}
         <Link href={`/trending/${item.id}`}>
-          {item?.askForPrice !== "true" ? (
-            item.consumerDiscount ? (
-              <div className="absolute right-2.5 top-2.5 z-10 inline-block rounded bg-dark-orange px-2 py-1.5 text-xs font-medium capitalize leading-5 text-white">
-                <span>{item.consumerDiscount}%</span>
-              </div>
-            ) : null
+          {item?.askForPrice !== "true" && item.consumerDiscount ? (
+            <div className="absolute right-2.5 top-14 z-10 inline-block rounded bg-dark-orange px-2 py-1.5 text-xs font-medium capitalize leading-3 text-white">
+              <span>{item.consumerDiscount}%</span>
+            </div>
           ) : null}
           <div className="relative mx-auto mb-4 h-36 w-36">
             <Image
@@ -414,10 +492,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
               }
               alt="product-image"
               fill
-              sizes="(max-width: 768px) 100vw,
-              (max-width: 1200px) 50vw,
-              33vw"
-              className="object-contain"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              className="object-cover"
               blurDataURL="/images/product-placeholder.png"
               placeholder="blur"
             />
@@ -435,7 +511,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 <ShoppingIcon />
               </Button>
             ) : null}
-
             <Link
               href={`/trending/${item.id}`}
               className="relative flex h-8 w-8 items-center justify-center rounded-full !shadow-md"
@@ -455,19 +530,15 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 )}
               </Button>
             ) : null}
-            {/* <Button
-              variant="ghost"
-              className="relative h-8 w-8 rounded-full p-0 shadow-md"
-              onClick={copyToClipboard}
-            >
-              <ShareIcon />
-            </Button> */}
           </div>
         ) : null}
 
         <Link href={`/trending/${item.id}`}>
-          <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base">
-            <h4 className="mb-2.5 border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark">
+          <div
+            className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base"
+            dir={langDir}
+          >
+            <h4 className="mb-2.5 min-h-[43px] border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark md:min-h-max">
               {item.productName}
             </h4>
             <p title={item.shortDescription} className="truncate">
@@ -486,23 +557,57 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 type="button"
                 className="inline-block w-full rounded-sm bg-color-yellow px-3 py-1 text-sm font-bold text-white"
                 dir={langDir}
+                translate="no"
               >
                 {t("ask_vendor_for_price")}
               </button>
             </Link>
           ) : (
-            <h5 className="py-1 text-[#1D77D1]">
-              {currency.symbol}
-              {calculateDiscountedPrice()}{" "}
-              <span className="text-gray-500 !line-through">
+            <div suppressHydrationWarning>
+              <h5
+                className="py-0.5 text-[#1D77D1]"
+                dir={langDir}
+                translate="no"
+              >
                 {currency.symbol}
-                {item.productProductPrice}
-              </span>
-            </h5>
+                {calculateDiscountedPrice()}{" "}
+                <span className="text-gray-500 !line-through">
+                  {currency.symbol}
+                  {item.productProductPrice}
+                </span>
+              </h5>
+            </div>
           )}
         </div>
+        {productVariants.length > 0 ? (
+          <div className="mb-2">
+            <label dir={langDir}>{productVariants[0].type}</label>
+            <select
+              className="w-full"
+              value={selectedProductVariant?.value}
+              onChange={(e) => {
+                const value = e.target.value;
+                const selectedVariant = productVariants.find(
+                  (variant: any) => variant.value == value,
+                );
+                setSelectedProductVariant(selectedVariant);
+                if (isAddedToCart)
+                  handleAddToCart(quantity, "add", selectedVariant);
+              }}
+              dir={langDir}
+            >
+              {productVariants.map((variant: any, index: number) => (
+                <option key={index} value={variant.value} dir={langDir}>
+                  {variant.value}
+                </option>
+              ))}
+            </select>
+          </div>
+        ) : null}
         <div className="quantity_wrap mb-2">
-          <label dir={langDir}>{t("quantity")}</label>
+          <label dir={langDir} translate="no">
+            {t("quantity")}
+          </label>
           <div className="qty-up-down-s1-with-rgMenuAction">
             <div className="flex items-center gap-x-3 md:gap-x-4">
               <Button
@@ -555,40 +660,55 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </div>
 
         <div className="cart_button">
-          {isAddedToCart && (
+          {isAddedToCart ? (
             <button
               type="button"
               className="flex items-center justify-evenly gap-x-2 rounded-sm border border-[#E8E8E8] p-[10px] text-[15px] font-bold leading-5 text-[#7F818D]"
               disabled={false}
               dir={langDir}
+              translate="no"
             >
               <FaCircleCheck color="#00C48C" />
               {t("added_to_cart")}
             </button>
-          )}
-          {!isAddedToCart && (
+          ) : null}
+          {!isAddedToCart ? (
             <button
               type="button"
               className="add_to_cart_button"
               onClick={() => handleAddToCart(quantity, "add")}
               disabled={quantity == 0}
               dir={langDir}
+              translate="no"
             >
               {t("add_to_cart")}
             </button>
-          )}
+          ) : null}
         </div>
 
-        {sold !== undefined ? (
-          <>
-            <div className="mt-3 h-3 w-full bg-gray-300">
-              <div className="h-full w-4/5 bg-color-yellow"></div>
-            </div>
-            <span className="w-full text-sm font-normal capitalize text-light-gray">
-              {t("sold")}: {sold}
-            </span>
-          </>
-        ) : null}
+        {sold !== undefined && sold !== null && item.productPrices?.[0]?.stock
+          ? (() => {
+              const percentage = Number(
+                ((sold / (sold + item.productPrices[0].stock)) * 100).toFixed(),
+              );
+              return (
+                <>
+                  <div className="mt-3 h-3 w-full bg-gray-300">
+                    <div
+                      className="h-full bg-color-yellow"
+                      style={{ width: `${percentage}%` }}
+                    />
+                  </div>
+                  <span
+                    className="w-full text-sm font-normal capitalize text-light-gray"
+                    translate="no"
+                  >
+                    {t("sold")}: {sold}
+                  </span>
+                </>
+              );
+            })()
+          : null}
       </div>
       <Dialog open={isConfirmDialogOpen} onOpenChange={handleConfirmDialog}>
         <DialogContent
@@ -596,31 +716,34 @@ const ProductCard: React.FC<ProductCardProps> = ({
           ref={confirmDialogRef}
         >
           <div className="modal-header !justify-between" dir={langDir}>
-            <DialogTitle className="text-center text-xl text-dark-orange font-bold"></DialogTitle>
+            <DialogTitle className="text-center text-xl font-bold text-dark-orange" />
             <Button
               onClick={onCancelRemove}
-              className={`${langDir == 'ltr' ? 'absolute' : ''} right-2 top-2 z-10 !bg-white !text-black shadow-none`}
+              className={`${langDir == "ltr" ? "absolute" : ""} right-2 top-2 z-10 !bg-white !text-black shadow-none`}
             >
               <IoCloseSharp size={20} />
             </Button>
           </div>
-
-          <div className="text-center mt-4 mb-4">
-            <p className="text-dark-orange">Do you want to remove this item from cart?</p>
+          <div className="mb-4 mt-4 text-center">
+            <p className="text-dark-orange" translate="no">
+              {t("do_you_want_to_remove_this_item_from_cart")}
+            </p>
             <div>
               <Button
                 type="button"
-                className="bg-white text-red-500 mr-2"
+                className="mr-2 bg-white text-red-500"
                 onClick={onCancelRemove}
+                translate="no"
               >
-                Cancel
+                {t("cancel")}
               </Button>
               <Button
                 type="button"
                 className="bg-red-500"
                 onClick={onConfirmRemove}
+                translate="no"
               >
-                Remove
+                {t("remove")}
               </Button>
             </div>
           </div>

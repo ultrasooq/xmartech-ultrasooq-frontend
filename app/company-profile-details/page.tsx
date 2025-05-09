@@ -66,6 +66,7 @@ export default function CompanyProfileDetailsPage() {
               <h2
                 className="text-2xl font-semibold leading-10 text-color-dark md:text-4xl"
                 dir={langDir}
+                translate="no"
               >
                 {t("my_profile")}
               </h2>
@@ -90,6 +91,7 @@ export default function CompanyProfileDetailsPage() {
                   <TabsTrigger
                     value="profile-info"
                     className="w-auto rounded-b-none !bg-[#d1d5db] px-2 py-2 text-sm font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white sm:w-auto md:w-full md:px-3 md:py-4 md:text-base"
+                    translate="no"
                   >
                     {t("profile_info")}
                   </TabsTrigger>
@@ -97,6 +99,7 @@ export default function CompanyProfileDetailsPage() {
                   <TabsTrigger
                     value="ratings"
                     className="w-auto rounded-b-none !bg-[#d1d5db] px-2 py-2 text-sm font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white sm:w-auto md:w-full md:py-4 md:text-base"
+                    translate="no"
                   >
                     {t("ratings_n_reviews")}
                   </TabsTrigger>
@@ -104,6 +107,7 @@ export default function CompanyProfileDetailsPage() {
                   <TabsTrigger
                     value="products"
                     className="w-auto rounded-b-none !bg-[#d1d5db] px-2 py-2 text-sm font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white sm:w-auto md:w-full md:py-4 md:text-base"
+                    translate="no"
                   >
                     {t("products")}
                   </TabsTrigger>
@@ -131,6 +135,7 @@ export default function CompanyProfileDetailsPage() {
                       <p
                         className="pt-5 text-center text-lg font-medium text-color-dark"
                         dir={langDir}
+                        translate="no"
                       >
                         {t("no_branch_exists")}
                       </p>
@@ -146,13 +151,14 @@ export default function CompanyProfileDetailsPage() {
                             }
                             className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-xs font-medium capitalize leading-6 text-white sm:text-sm"
                             dir={langDir}
+                            translate="no"
                           >
                             <PlusIcon className="mr-1 h-5 w-5" />
                             {t("add")}
                           </Link>
                         </div>
                       ) : null}
-                      {!activeSellerId &&
+                      {!activeSellerId ?
                         me.data?.data?.userBranch
                           .sort(
                             (a: any, b: any) => b?.mainOffice - a?.mainOffice,
@@ -161,9 +167,9 @@ export default function CompanyProfileDetailsPage() {
                             <React.Fragment key={item.id}>
                               <BranchSection branchDetails={item} />
                             </React.Fragment>
-                          ))}
+                          )) : null}
 
-                      {activeSellerId &&
+                      {activeSellerId ?
                         vendor?.userBranch
                           .sort(
                             (a: any, b: any) => b?.mainOffice - a?.mainOffice,
@@ -172,7 +178,7 @@ export default function CompanyProfileDetailsPage() {
                             <React.Fragment key={item.id}>
                               <VendorBranchSection branchDetails={item} />
                             </React.Fragment>
-                          ))}
+                          )) : null}
                     </div>
                   </div>
                 </TabsContent>

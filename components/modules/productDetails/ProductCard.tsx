@@ -29,7 +29,10 @@ type ProductCardProps = {
   onWishlist: () => void;
   inWishlist?: boolean;
   haveAccessToken: boolean;
-  consumerDiscount: number;
+  consumerDiscount?: number;
+  consumerDiscountType?: string;
+  vendorDiscount?: number;
+  vendorDiscountType?: string;
   askForPrice?: string;
 };
 
@@ -47,15 +50,26 @@ const ProductCard: React.FC<ProductCardProps> = ({
   inWishlist,
   haveAccessToken,
   consumerDiscount,
+  consumerDiscountType,
+  vendorDiscount,
+  vendorDiscountType,
   askForPrice,
 }) => {
   const t = useTranslations();
-  const { langDir, currency } = useAuth();
+  const { user, langDir, currency } = useAuth();
 
   const calculateDiscountedPrice = () => {
     const price = productProductPrice ? Number(productProductPrice) : 0;
-    const discount = consumerDiscount || 0;
-    return Number((price - (price * discount) / 100).toFixed(2));
+    let discount = consumerDiscount || 0;
+    let discountType = consumerDiscountType;
+    if (user?.tradeRole && user.tradeRole != "BUYER") {
+      discount = vendorDiscount || 0;
+      discountType = vendorDiscountType;
+    }
+    if (discountType == "PERCENTAGE") {
+      return Number((price - (price * discount) / 100).toFixed(2));
+    }
+    return Number((price - discount).toFixed(2));
   };
 
   const calculateAvgRating = useMemo(() => {
@@ -106,7 +120,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 : PlaceholderImage
             }
             alt="preview"
-            className="object-contain"
+            className="object-cover"
             fill
           />
         </div>
@@ -180,6 +194,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               type="button"
               className="inline-block w-full rounded-sm bg-color-yellow px-3 py-1 text-sm font-bold text-white"
               dir={langDir}
+              translate="no"
             >
               {t("ask_vendor_for_price")}
             </button>

@@ -60,7 +60,7 @@ export default function MemberProfileDetailsPage() {
                 <div className="container relative z-10 m-auto px-3">
                     <div className="flex flex-wrap">
                         <div className="mb-7 w-full">
-                            <h2 className="text-4xl font-semibold leading-10 text-color-dark" dir={langDir}>
+                            <h2 className="text-4xl font-semibold leading-10 text-color-dark" dir={langDir} translate="no">
                                 {t("my_profile")}
                             </h2>
                         </div>
@@ -81,6 +81,7 @@ export default function MemberProfileDetailsPage() {
                                         value="profile-info"
                                         className="rounded-b-none !bg-[#d1d5db] py-4 text-base font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white"
                                         dir={langDir}
+                                        translate="no"
                                     >
                                         {t("profile_info")}
                                     </TabsTrigger>
@@ -89,6 +90,7 @@ export default function MemberProfileDetailsPage() {
                                         value="ratings"
                                         className="rounded-b-none !bg-[#d1d5db] py-4 text-base font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white"
                                         dir={langDir}
+                                        translate="no"
                                     >
                                         {t("ratings_n_reviews")}
                                     </TabsTrigger>
@@ -97,6 +99,7 @@ export default function MemberProfileDetailsPage() {
                                         value="products"
                                         className="rounded-b-none !bg-[#d1d5db] py-4 text-base font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white"
                                         dir={langDir}
+                                        translate="no"
                                     >
                                         {t("products")}
                                     </TabsTrigger>

@@ -128,23 +128,6 @@ const formSchema = z
           value.sat !== 0
         );
       }),
-    // tagList: z
-    //   .array(
-    //     z.object({
-    //       label: z.string().trim(),
-    //       value: z.number(),
-    //     }),
-    //   )
-    //   .min(1, {
-    //     message: "Tag is required",
-    //   })
-    //   .transform((value) => {
-    //     let temp: any = [];
-    //     value.forEach((item) => {
-    //       temp.push({ tagId: item.value });
-    //     });
-    //     return temp;
-    //   }),
     categoryList: z.any().optional(),
     mainOffice: z
       .boolean()
@@ -308,24 +291,24 @@ export default function EditBranchPage() {
 
       const businessTypeList = branch?.userBranchBusinessType
         ? branch?.userBranchBusinessType?.map((item: any) => {
-            return {
-              label: item?.userBranch_BusinessType_Tag?.tagName,
-              value: item?.userBranch_BusinessType_Tag?.id,
-            };
-          })
+          return {
+            label: item?.userBranch_BusinessType_Tag?.tagName,
+            value: item?.userBranch_BusinessType_Tag?.id,
+          };
+        })
         : [];
 
       const workingDays = branch?.workingDays
         ? JSON.parse(branch.workingDays)
         : {
-            sun: 0,
-            mon: 0,
-            tue: 0,
-            wed: 0,
-            thu: 0,
-            fri: 0,
-            sat: 0,
-          };
+          sun: 0,
+          mon: 0,
+          tue: 0,
+          wed: 0,
+          thu: 0,
+          fri: 0,
+          sat: 0,
+        };
 
       // const tagList = branch?.userBranchTags
       //   ? branch?.userBranchTags?.map((item: any) => {
@@ -338,11 +321,11 @@ export default function EditBranchPage() {
 
       const categoryList = branch?.userBranch_userBranchCategory
         ? branch?.userBranch_userBranchCategory?.map((item: any) => {
-            return {
-              categoryId: item?.categoryId,
-              categoryLocation: item?.categoryLocation,
-            };
-          })
+          return {
+            categoryId: item?.categoryId,
+            categoryLocation: item?.categoryLocation,
+          };
+        })
         : undefined;
 
       //TODO: main office prefilled but not working. API issue
@@ -389,19 +372,20 @@ export default function EditBranchPage() {
             className="m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-8 md:w-10/12 lg:w-10/12 lg:p-12"
           >
             <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
-              <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10">
+              <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10" translate="no">
                 {t("edit_branch")}
               </h2>
             </div>
 
             <div className="mb-4 w-full">
               <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
-                <label 
+                <label
                   className={cn(
                     "mb-3.5 block",
                     langDir == "rtl" ? "text-right" : "text-left",
                     "text-lg font-medium capitalize leading-5 text-color-dark"
                   )}
+                  translate="no"
                 >
                   {t("branch_information")}
                 </label>
@@ -423,7 +407,7 @@ export default function EditBranchPage() {
                   name="uploadBranchImage"
                   render={({ field }) => (
                     <FormItem className="mb-3.5 w-full" dir={langDir}>
-                      <FormLabel>{t("upload_branch_front_picture")}</FormLabel>
+                      <FormLabel translate="no">{t("upload_branch_front_picture")}</FormLabel>
                       <FormControl>
                         <div className="relative m-auto h-64 w-full border-2 border-dashed border-gray-300">
                           <div className="relative h-full w-full">
@@ -433,9 +417,9 @@ export default function EditBranchPage() {
                                   branchImageFile
                                     ? URL.createObjectURL(branchImageFile[0])
                                     : branchQueryById.data?.data
-                                          ?.branchFrontPicture
+                                      ?.branchFrontPicture
                                       ? branchQueryById.data.data
-                                          .branchFrontPicture
+                                        .branchFrontPicture
                                       : "/images/no-image.jpg"
                                 }
                                 alt="profile"
@@ -453,11 +437,11 @@ export default function EditBranchPage() {
                                     height={30}
                                     alt="camera"
                                   />
-                                  <span>
+                                  <span translate="no">
                                     {t("drop_your_branch_front_picture")}{" "}
                                   </span>
                                   <span className="text-blue-500">browse</span>
-                                  <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
+                                  <p className="text-normal mt-3 text-xs leading-4 text-gray-300" translate="no">
                                     ({t("branch_front_picture_spec")})
                                   </p>
                                 </div>
@@ -497,18 +481,18 @@ export default function EditBranchPage() {
                   name="uploadProofOfAddress"
                   render={({ field }) => (
                     <FormItem className="mb-3.5 w-full" dir={langDir}>
-                      <FormLabel>{t("address_proof")}</FormLabel>
+                      <FormLabel translate="no">{t("address_proof")}</FormLabel>
                       <FormControl>
                         <div className="relative m-auto h-64 w-full border-2 border-dashed border-gray-300">
                           <div className="relative h-full w-full">
                             {proofOfAddressImageFile ||
-                            branchQueryById.data?.data ? (
+                              branchQueryById.data?.data ? (
                               <Image
                                 src={
                                   proofOfAddressImageFile
                                     ? URL.createObjectURL(
-                                        proofOfAddressImageFile[0],
-                                      )
+                                      proofOfAddressImageFile[0],
+                                    )
                                     : branchQueryById.data?.data?.proofOfAddress
                                       ? branchQueryById.data.data.proofOfAddress
                                       : "/images/no-image.jpg"
@@ -528,11 +512,11 @@ export default function EditBranchPage() {
                                     height={30}
                                     alt="camera"
                                   />
-                                  <span>
+                                  <span translate="no">
                                     {t("drop_your_address_proof")}{" "}
                                   </span>
                                   <span className="text-blue-500">browse</span>
-                                  <p className="text-normal mt-3 text-xs leading-4 text-gray-300">
+                                  <p className="text-normal mt-3 text-xs leading-4 text-gray-300" translate="no">
                                     ({t("address_proof_spec")})
                                   </p>
                                 </div>
@@ -573,12 +557,13 @@ export default function EditBranchPage() {
               <div className="flex w-full flex-wrap">
                 <div className="mb-4 w-full">
                   <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
-                    <label 
+                    <label
                       className={cn(
                         "mb-3.5 block",
                         langDir == 'rtl' ? 'text-right' : 'text-left',
                         "text-lg font-medium capitalize leading-5 text-color-dark"
                       )}
+                      translate="no"
                     >
                       {t("branch_location")}
                     </label>
@@ -591,7 +576,9 @@ export default function EditBranchPage() {
                       label={t("address")}
                       name="address"
                       placeholder={t("address")}
+                      showLabel={true}
                       dir={langDir}
+                      translate="no"
                     />
                   </div>
 
@@ -599,7 +586,9 @@ export default function EditBranchPage() {
                     label={t("city")}
                     name="city"
                     placeholder={t("city")}
+                    showLabel={true}
                     dir={langDir}
+                    translate="no"
                   />
                 </div>
 
@@ -608,7 +597,9 @@ export default function EditBranchPage() {
                     label={t("province")}
                     name="province"
                     placeholder={t("province")}
+                    showLabel={true}
                     dir={langDir}
+                    translate="no"
                   />
 
                   {/* <ControlledSelectInput
@@ -618,7 +609,7 @@ export default function EditBranchPage() {
                   /> */}
 
                   <div className="mt-2 flex flex-col gap-y-3">
-                    <Label dir={langDir}>{t("country")}</Label>
+                    <Label dir={langDir} translate="no">{t("country")}</Label>
                     <Controller
                       name="country"
                       control={form.control}
@@ -642,18 +633,22 @@ export default function EditBranchPage() {
                 </div>
 
                 <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
-                  <ControlledPhoneInput
-                    label={t("branch_contact_number")}
-                    name="contactNumber"
-                    countryName="cc"
-                    placeholder={t("branch_contact_number")}
-                  />
+                  <div className="mt-2">
+                    <ControlledPhoneInput
+                      label={t("branch_contact_number")}
+                      name="contactNumber"
+                      countryName="cc"
+                      placeholder={t("branch_contact_number")}
+                    />
+                  </div>
 
                   <ControlledTextInput
                     label={t("branch_contact_name")}
                     name="contactName"
                     placeholder={t("branch_contact_name")}
+                    showLabel={true}
                     dir={langDir}
+                    translate="no"
                   />
                 </div>
               </div>
@@ -661,7 +656,7 @@ export default function EditBranchPage() {
               <div className="flex w-full flex-wrap">
                 <div className="mb-4 w-full">
                   <div className="mt-2.5 w-full border-b-2 border-dashed border-gray-300">
-                    <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark" dir={langDir}>
+                    <label className="mb-3.5 block text-left text-lg font-medium capitalize leading-5 text-color-dark" dir={langDir} translate="no">
                       {t("branch_working_hours")}
                     </label>
                   </div>
@@ -669,7 +664,7 @@ export default function EditBranchPage() {
                 <div className="w-full">
                   <div className="flex flex-wrap">
                     <div className="mb-4 flex w-full flex-col gap-y-3 md:w-6/12 md:pr-3.5">
-                      <Label htmlFor="startTime" className="text-color-dark" dir={langDir}>
+                      <Label htmlFor="startTime" className="text-color-dark" dir={langDir} translate="no">
                         {t("start_time")}
                       </Label>
                       <Controller
@@ -680,7 +675,7 @@ export default function EditBranchPage() {
                             {...field}
                             className="!h-12 w-full rounded border !border-gray-300 px-3 text-base focus-visible:!ring-0"
                           >
-                            <option value="" dir={langDir}>{t("select")}</option>
+                            <option value="" dir={langDir} translate="no">{t("select")}</option>
                             {HOURS_24_FORMAT.map(
                               (hour: string, index: number) => (
                                 <option key={index} value={hour} dir={langDir}>
@@ -697,7 +692,7 @@ export default function EditBranchPage() {
                     </div>
 
                     <div className="mb-4 flex w-full flex-col gap-y-3 md:w-6/12 md:pl-3.5">
-                      <Label htmlFor="endTime" className="text-color-dark" dir={langDir}>
+                      <Label htmlFor="endTime" className="text-color-dark" dir={langDir} translate="no">
                         {t("end_time")}
                       </Label>
                       <Controller
@@ -708,7 +703,7 @@ export default function EditBranchPage() {
                             {...field}
                             className="!h-12 w-full rounded border !border-gray-300 px-3 text-base focus-visible:!ring-0"
                           >
-                            <option value="" dir={langDir}>{t("select")}</option>
+                            <option value="" dir={langDir} translate="no">{t("select")}</option>
                             {HOURS_24_FORMAT.map(
                               (hour: string, index: number) => (
                                 <option key={index} value={hour} dir={langDir}>
@@ -744,7 +739,7 @@ export default function EditBranchPage() {
                                 }}
                                 checked={
                                   !!field.value[
-                                    item.value as keyof typeof field.value
+                                  item.value as keyof typeof field.value
                                   ]
                                 }
                                 className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
@@ -761,7 +756,7 @@ export default function EditBranchPage() {
                     ))}
                   </div>
                   {form.formState.errors.workingDays?.message ? (
-                    <p className="text-[13px] text-red-500" dir={langDir}>
+                    <p className="text-[13px] text-red-500" dir={langDir} translate="no">
                       {t("working_day_required")}
                     </p>
                   ) : null}
@@ -787,7 +782,7 @@ export default function EditBranchPage() {
                   name="mainOffice"
                   render={({ field }) => (
                     <FormItem className="flex flex-row items-center justify-between gap-x-2 rounded-lg">
-                      <FormLabel>{t("main_branch")}:</FormLabel>
+                      <FormLabel translate="no">{t("main_branch")}:</FormLabel>
                       <FormControl>
                         <Switch
                           checked={!!field.value}
@@ -806,8 +801,9 @@ export default function EditBranchPage() {
               type="submit"
               className="h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90"
               dir={langDir}
+              translate="no"
             >
-              
+
               {updateCompanyBranch.isPending || upload.isPending ? (
                 <>
                   <Image

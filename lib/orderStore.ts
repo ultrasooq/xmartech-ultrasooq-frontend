@@ -11,6 +11,7 @@ export type State = {
       phoneNumber: string;
     };
     cartIds: number[];
+    serviceCartIds: number[];
     firstName: string;
     lastName: string;
     email: string;
@@ -31,6 +32,8 @@ export type State = {
     stateId?: number;
     cityId?: number;
     userAddressId?: number;
+    deliveryCharge?: number;
+    shipping: any[]
   };
   total: number;
 };
@@ -48,6 +51,7 @@ export const initialOrderState: State = {
   orders: {
     guestUser: undefined,
     cartIds: [],
+    serviceCartIds: [],
     firstName: "",
     lastName: "",
     email: "",
@@ -63,6 +67,8 @@ export const initialOrderState: State = {
     shippingProvince: "",
     shippingCountry: "",
     shippingPostCode: "",
+    deliveryCharge: 0,
+    shipping: []
   },
   total: 0
 };

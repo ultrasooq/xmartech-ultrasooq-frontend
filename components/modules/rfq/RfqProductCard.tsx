@@ -117,18 +117,20 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
         </Button>
       </div>
       {/* </Link> */}
-      <div className="product_list_content">
+      <div className="product_list_content" dir={langDir}>
         <p>{productName}</p>
         {/* price For P type product */}
         {/* {productType === "P" ? (
           <>
-            <label dir={langDir}>{t("price")}:</label>
+            <label dir={langDir} translate="no">{t("price")}:</label>
             <p>{currency.symbol}{productPrice?.[0]?.offerPrice}</p>
           </>
         ) : null} */}
         {haveAccessToken ? (
           <div className="quantity_wrap mb-2">
-            <label dir={langDir}>{t("quantity")}</label>
+            <label dir={langDir} translate="no">
+              {t("quantity")}
+            </label>
             <div className="qty-up-down-s1-with-rgMenuAction">
               <div className="flex items-center gap-x-3 md:gap-x-3">
                 <Button
@@ -155,7 +157,9 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                     className="p-3"
                   />
                 </Button>
-                <p className="!mb-0 !text-black">{quantity}</p>
+                <p className="!mb-0 flex items-center !text-black">
+                  {quantity}
+                </p>
                 <Button
                   type="button"
                   variant="outline"
@@ -206,6 +210,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                 className="flex items-center justify-evenly gap-x-2 rounded-sm border border-[#E8E8E8] p-[10px] text-[15px] font-bold leading-5 text-[#7F818D]"
                 disabled={quantity < 0}
                 dir={langDir}
+                translate="no"
               >
                 <FaCircleCheck color="#00C48C" />
                 {t("added_to_rfq_cart")}
@@ -226,6 +231,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                   );
                 }}
                 dir={langDir}
+                translate="no"
               >
                 {t("add_to_rfq_cart")}
               </button>

@@ -16,7 +16,7 @@ type OfferPriceCardProps = {
   productName: string;
   productId: number;
   onRequestPrice: (productId: number, requestedPrice: number) => void;
-  priceRequest: any
+  priceRequest: any;
 };
 
 const OfferPriceCard: React.FC<OfferPriceCardProps> = ({
@@ -29,7 +29,7 @@ const OfferPriceCard: React.FC<OfferPriceCardProps> = ({
   productName,
   productId,
   onRequestPrice,
-  priceRequest
+  priceRequest,
 }) => {
   const t = useTranslations();
   const { currency, langDir } = useAuth();
@@ -37,8 +37,8 @@ const OfferPriceCard: React.FC<OfferPriceCardProps> = ({
   const [editedOfferPrice, setEditedOfferPrice] = useState("");
 
   useEffect(() => {
-    setEditedOfferPrice(offerPrice)
-  }, [offerPrice, priceRequest])
+    setEditedOfferPrice(offerPrice);
+  }, [offerPrice, priceRequest]);
 
   const handleEditClick = () => {
     setIsEditing(true);
@@ -46,16 +46,16 @@ const OfferPriceCard: React.FC<OfferPriceCardProps> = ({
 
   const handleSaveClick = () => {
     setIsEditing(false);
-    onRequestPrice(productId, parseInt(editedOfferPrice))
+    onRequestPrice(productId, parseInt(editedOfferPrice));
   };
 
   const handleCancelClick = () => {
     setIsEditing(false);
-    setEditedOfferPrice(offerPrice)
+    setEditedOfferPrice(offerPrice);
   };
 
   return (
-    <div className="w-full border-b border-solid border-gray-300 p-4">
+    <div className="w-[600px] border-b border-solid border-gray-300 p-4 md:w-full">
       <div className="flex w-full">
         <div className="w-[25%] text-xs font-normal text-gray-500">
           <div className="flex w-full flex-wrap">
@@ -71,50 +71,82 @@ const OfferPriceCard: React.FC<OfferPriceCardProps> = ({
             </div>
           </div>
         </div>
-        <div className="w-[15%] p-4 text-xs font-normal text-black">
+        <div className="w-[15%] px-1.5 py-2 text-xs font-normal text-black md:px-1.5 md:py-3">
           {formatDate(deliveryDate) || "-"}
         </div>
-        <div className="w-[10%] p-4 text-xs font-normal text-black">-</div>
-        <div className="w-[20%] p-4 text-xs font-normal text-black">
+        <div className="w-[10%] px-1.5 py-2 text-xs font-normal text-black md:px-1.5 md:py-3">
+          -
+        </div>
+        <div className="w-[15%] px-1.5 py-2 text-xs font-normal text-black md:px-1.5 md:py-3">
           {quantity}
         </div>
-        <div className="w-[10%] p-4 text-xs font-normal text-black">
+        <div className="w-[15%] px-1.5 py-2 text-xs font-normal text-black md:px-1.5 md:py-3">
           {isEditing ? (
             <div className="w-full">
               <input
                 value={editedOfferPrice}
                 onChange={(e) => setEditedOfferPrice(e.target.value)}
-                className="border rounded p-1 w-full"
+                className="w-full rounded border p-1"
                 type="number"
               />
-              <div className="flex gap-1 mt-1">
-                <button onClick={handleSaveClick} className="text-blue-500">{t("save")}</button>
-                <button onClick={handleCancelClick} className="text-red-500">{t("cancel")}</button>
+              <div className="mt-1 flex gap-1">
+                <button
+                  onClick={handleSaveClick}
+                  className="text-blue-500"
+                  translate="no"
+                >
+                  {t("save")}
+                </button>
+                <button
+                  onClick={handleCancelClick}
+                  className="text-red-500"
+                  translate="no"
+                >
+                  {t("cancel")}
+                </button>
               </div>
             </div>
           ) : (
             <div>
               {editedOfferPrice ? `${currency.symbol}${editedOfferPrice}` : "-"}
-              <button onClick={handleEditClick} className="ml-2 text-blue-500">{t("edit")}</button>
+              <button
+                onClick={handleEditClick}
+                className="ml-2 text-blue-500"
+                translate="no"
+              >
+                {t("edit")}
+              </button>
             </div>
           )}
         </div>
-        <div className="w-[20%] p-4 text-xs font-normal text-black">
+        <div className="w-[20%] px-1.5 py-2 text-xs font-normal text-black md:px-1.5 md:py-3">
           {address || "-"}
         </div>
       </div>
-      {priceRequest?.status === "PENDING" && (
+      {priceRequest?.status === "PENDING" ? (
         <div className="mt-3 flex w-full flex-wrap rounded-lg border border-solid border-gray-300 p-4">
           <p className="mb-2 text-sm font-normal text-gray-500">
-            {t("requested_offer_price")}:
-            <span className="mx-7">{t("requested_price")}: {formatPrice(priceRequest?.requestedPrice, currency.symbol)}</span>
-            <span className="mr-7">{t("status")}: {capitalizeWord(priceRequest?.status)}</span>
-            <span>{t("date")}: {moment(priceRequest?.updatedAt).format('YYYY-MM-DD HH:mm A')}</span>
+            <span translate="no">{t("requested_offer_price")}:</span>
+            <span className="mx-7">
+              <span translate="no">{t("requested_price")}:</span>&nbsp;{" "}
+              {formatPrice(priceRequest?.requestedPrice, currency.symbol)}
+            </span>
+            <span className="mr-7">
+              <span translate="no">{t("status")}:</span>{" "}
+              {capitalizeWord(priceRequest?.status)}
+            </span>
+            <span>
+              <span translate="no">{t("date")}:</span>{" "}
+              {moment(priceRequest?.updatedAt).format("YYYY-MM-DD HH:mm A")}
+            </span>
           </p>
         </div>
-      )}
-      <div className="mt-3 flex w-full flex-wrap rounded-lg border border-solid border-gray-300 p-4" dir={langDir}>
-        <span className="mb-2 text-sm font-normal text-gray-500">
+      ) : null}
+      <div
+        className="mt-3 flex w-full flex-wrap rounded-lg border border-solid border-gray-300 p-4"
+        dir={langDir}
+      >
+        <span className="mb-2 text-sm font-normal text-gray-500" translate="no">
           {t("vendor_note")}:
         </span>
         <p className="text-sm font-normal text-black"> {note || "-"}</p>

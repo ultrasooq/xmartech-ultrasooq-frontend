@@ -7,29 +7,31 @@ import ExistingProductIcon from "@/public/images/existing-product.svg";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 
-type AddProductContentProps = {};
+type AddProductContentProps = {
+  productId?: number
+};
 
-const AddProductContent: React.FC<AddProductContentProps> = () => {
+const AddProductContent: React.FC<AddProductContentProps> = ({ productId }) => {
   const t = useTranslations();
   const { langDir } = useAuth();
 
   return (
     <DialogContent className="custom-action-type-chose-picker">
       <div className="modal-headerpart">
-        <DialogTitle dir={langDir}>{t("choose_add_product_type")}</DialogTitle>
+        <DialogTitle dir={langDir} translate="no">{t("choose_add_product_type")}</DialogTitle>
       </div>
       <div className="modal-bodypart">
         <div className="import-pickup-type-selector-lists" dir={langDir}>
           <div className="import-pickup-type-selector-item">
             <Link
-              href="/product"
+              href={productId ? `/product?copy=${productId}` : '/product'}
               className="import-pickup-type-selector-box hover:!bg-gray-100"
             >
               <div className="icon-container">
                 <Image src={AddProductIcon} alt="add-product-icon" />
               </div>
               <div className="text-container">
-                <h5 dir={langDir}>{t("add_new_product")}</h5>
+                <h5 dir={langDir} translate="no">{t("add_new_product")}</h5>
               </div>
             </Link>
           </div>

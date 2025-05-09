@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import ProductCard from "./ProductCard";
 import { useMe } from "@/apis/queries/user.queries";
-import { useProducts, useVendorProducts } from "@/apis/queries/product.queries";
+import { useProductVariant, useProducts, useVendorProducts } from "@/apis/queries/product.queries";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
 import { useCartListByUserId, useUpdateCartWithLogin } from "@/apis/queries/cart.queries";
@@ -47,6 +47,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
   const [displayExpiredProducts, setDisplayExpiredProducts] = useState(false);
   const [displayHiddenProducts, setDisplayHiddenProducts] = useState(false);
   const [displayDiscountedProducts, setDisplayDiscountedProducts] = useState(false);
+  const [productVariants, setProductVariants] = useState<any[]>([]);
   const [cartList, setCartList] = useState<any[]>([]);
 
   const me = useMe();
@@ -83,6 +84,8 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
 
     return "";
   };
+
+  const fetchProductVariant = useProductVariant();
 
   const productsQuery = useProducts(
     {
@@ -188,6 +191,9 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
           productProductPriceId: item?.product_productPrice?.[0]?.id,
           productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
           consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
+          consumerDiscountType: item?.product_productPrice?.[0]?.consumerDiscountType,
+          vendorDiscount: item?.product_productPrice?.[0]?.vendorDiscount,
+          vendorDiscountType: item?.product_productPrice?.[0]?.vendorDiscountType,
           askForPrice: item?.product_productPrice?.[0]?.askForPrice,
           productPrices: item?.product_productPrice,
         };
@@ -230,6 +236,9 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
           productProductPriceId: item?.product_productPrice?.[0]?.id,
           productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
           consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
+          consumerDiscountType: item?.product_productPrice?.[0]?.consumerDiscountType,
+          vendorDiscount: item?.product_productPrice?.[0]?.vendorDiscount,
+          vendorDiscountType: item?.product_productPrice?.[0]?.vendorDiscountType,
           askForPrice: item?.product_productPrice?.[0]?.askForPrice,
           productPrices: item?.product_productPrice,
         };
@@ -247,6 +256,29 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
     displayDiscountedProducts,
     sortBy
   ]);
+
+  const getProductVariants = async () => {
+    let productPriceIds = [];
+    if (memoizedProducts.length > 0) {
+      productPriceIds = memoizedProducts
+        .filter((item: any) => item.productPrices.length > 0)
+        .map((item: any) => item.productPrices[0].id);
+    } 
+    else if (memoizedVendorProducts.length > 0) {
+      productPriceIds = memoizedVendorProducts
+        .filter((item: any) => item.productPrices.length > 0)
+        .map((item: any) => item.productPrices[0].id);
+    }
+
+    if (productPriceIds.length > 0) {
+      const response = await fetchProductVariant.mutateAsync(productPriceIds);
+      if (response.status) setProductVariants(response.data);
+    }
+  }
+
+  useEffect(() => {
+    getProductVariants();
+  }, [memoizedProducts, memoizedVendorProducts]);
 
   const cartListByUser = useCartListByUserId(
     {
@@ -326,10 +358,10 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
       <div className="container m-auto px-3">
         <div className={productFilter ? "left-filter show" : "left-filter"} dir={langDir}>
           <div className="all_select_button">
-            <button type="button" onClick={selectAll}>
+            <button type="button" onClick={selectAll} translate="no">
               {t("select_all")}
             </button>
-            <button type="button" onClick={clearFilter}>
+            <button type="button" onClick={clearFilter} translate="no">
               {t("clean_select")}
             </button>
           </div>
@@ -339,7 +371,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
             className="filter-col"
           >
             <AccordionItem value="brand">
-              <AccordionTrigger className="px-3 text-base hover:!no-underline" dir={langDir}>
+              <AccordionTrigger className="px-3 text-base hover:!no-underline" dir={langDir} translate="no">
                 {t("by_brand")}
               </AccordionTrigger>
               <AccordionContent>
@@ -350,12 +382,13 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
                     className="custom-form-control-s1 searchInput rounded-none"
                     onChange={handleDebounceBrand}
                     dir={langDir}
+                    translate="no"
                   />
                 </div>
                 <div className="filter-body-part">
                   <div className="filter-checklists">
                     {!memoizedBrands.length ? (
-                      <p className="text-center text-sm font-medium" dir={langDir}>
+                      <p className="text-center text-sm font-medium" dir={langDir} translate="no">
                         {t("no_data_found")}
                       </p>
                     ) : null}
@@ -390,7 +423,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
             className="filter-col"
           >
             <AccordionItem value="brand">
-              <AccordionTrigger className="px-3 text-base hover:!no-underline">
+              <AccordionTrigger className="px-3 text-base hover:!no-underline" translate="no">
                 {t("by_menu")}
               </AccordionTrigger>
               <AccordionContent>
@@ -410,6 +443,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
                           htmlFor="displayStoreProducts"
                           className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                           dir={langDir}
+                          translate="no"
                         >
                           {t("store")}
                         </label>
@@ -434,12 +468,13 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
                           htmlFor="displayBuyGroupProducts"
                           className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                           dir={langDir}
+                          translate="no"
                         >
                           {t("buy_group")}
                         </label>
                       </div>
                     </div>
-                    {displayBuyGroupProducts && (
+                    {displayBuyGroupProducts ? (
                       <div className="div-li">
                         <Checkbox
                           id="displayExpiredProducts"
@@ -454,13 +489,14 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
                             htmlFor="displayExpiredProducts"
                             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                             dir={langDir}
+                            translate="no"
                           >
                             {t("expired")}
                           </label>
                         </div>
                       </div>
-                    )}
-                    {!sellerId && <div className="div-li">
+                    ) : null}
+                    {!sellerId ? <div className="div-li">
                       <Checkbox
                         id="displayHiddenProducts"
                         className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
@@ -474,11 +510,12 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
                           htmlFor="displayHiddenProducts"
                           className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                           dir={langDir}
+                          translate="no"
                         >
                           {t("hidden")}
                         </label>
                       </div>
-                    </div>}
+                    </div> : null}
                     <div className="div-li">
                       <Checkbox
                         id="displayDiscountedProducts"
@@ -493,6 +530,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
                           htmlFor="displayDiscountedProducts"
                           className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                           dir={langDir}
+                          translate="no"
                         >
                           {t("discounted")}
                         </label>
@@ -518,7 +556,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
             </div>
             <div className="rg-filter">
               {!sellerId && memoizedProducts.length ? (
-                <p dir={langDir}>
+                <p dir={langDir} translate="no">
                   {t("n_products_found", {
                     n: productsQuery.data?.totalCount,
                   })}
@@ -526,7 +564,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
               ) : null}
 
               {sellerId && memoizedVendorProducts.length ? (
-                <p dir={langDir}>
+                <p dir={langDir} translate="no">
                   {t("n_products_found", {
                     n: vendorProductsQuery.data?.totalCount,
                   })}
@@ -542,20 +580,21 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
                     onChange={handleDebounce}
                     dir={langDir}
                     ref={searchInputRef}
+                    translate="no"
                   />
                 </li>
 
                 <li>
                   <Select onValueChange={(e) => setSortBy(e)}>
                     <SelectTrigger className="custom-form-control-s1 bg-white">
-                      <SelectValue placeholder={t("sort_by")} dir={langDir} />
+                      <SelectValue placeholder={t("sort_by")} dir={langDir} translate="no" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        <SelectItem value="desc" dir={langDir}>
+                        <SelectItem value="desc" dir={langDir} translate="no">
                           {t("sort_by_latest")}
                         </SelectItem>
-                        <SelectItem value="asc" dir={langDir}>
+                        <SelectItem value="asc" dir={langDir} translate="no">
                           {t("sort_by_oldest")}
                         </SelectItem>
                       </SelectGroup>
@@ -596,6 +635,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
             <p
               className="p-4 text-center text-base font-medium text-color-dark"
               dir={langDir}
+              translate="no"
             >
               {t("no_product_found")}
             </p>
@@ -605,6 +645,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
             <p
               className="p-4 text-center text-base font-medium text-color-dark"
               dir={langDir}
+              translate="no"
             >
               {t("no_product_found")}
             </p>
@@ -614,6 +655,15 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
             {!sellerId && memoizedProducts.length && !productsQuery?.isLoading ?
               memoizedProducts.map((item: any) => {
                 const cartItem = cartList?.find((el: any) => el.productId == item.id);
+                let relatedCart: any = null;
+                if (cartItem) {
+                  relatedCart = cartList
+                    ?.filter((c: any) => c.serviceId && c.cartProductServices?.length)
+                    .find((c: any) => {
+                        return !!c.cartProductServices
+                            .find((r: any) => r.relatedCartType == 'PRODUCT' && r.productId == item.id);
+                    });
+                }
                 return (
                   <ProductCard
                     key={item.id}
@@ -623,10 +673,14 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
                     }
                     inWishlist={item?.inWishlist}
                     haveAccessToken={!!me.data?.data}
+                    productVariants={
+                      productVariants.find((variant: any) => variant.productId == item.id)?.object || []
+                    }
                     isAddedToCart={cartItem ? true : false}
                     cartQuantity={cartItem?.quantity || 0}
                     productVariant={cartItem?.object}
                     cartId={cartItem?.id}
+                    relatedCart={relatedCart}
                   />
                 );
               }) : null}
@@ -634,6 +688,15 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
             {sellerId && memoizedVendorProducts.length && !vendorProductsQuery?.isLoading ?
               memoizedVendorProducts.map((item: any) => {
                 const cartItem = cartList?.find((el: any) => el.productId == item.id);
+                let relatedCart: any = null;
+                if (cartItem) {
+                  relatedCart = cartList
+                    ?.filter((c: any) => c.serviceId && c.cartProductServices?.length)
+                    .find((c: any) => {
+                        return !!c.cartProductServices
+                            .find((r: any) => r.relatedCartType == 'PRODUCT' && r.productId == item.id);
+                    });
+                }
                 return (
                   <ProductCard
                     key={item.id}
@@ -642,10 +705,14 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
                     inWishlist={item?.inWishlist}
                     haveAccessToken={!!me.data?.data}
                     isSeller
+                    productVariants={
+                      productVariants.find((variant: any) => variant.productId == item.id)?.object || []
+                    }
                     isAddedToCart={cartItem ? true : false}
                     cartQuantity={cartItem?.quantity || 0}
                     productVariant={cartItem?.object}
                     cartId={cartItem?.id}
+                    relatedCart={relatedCart}
                   />
                 );
               }) : null}

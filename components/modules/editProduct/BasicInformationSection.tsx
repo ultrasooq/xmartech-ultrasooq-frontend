@@ -157,7 +157,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
             <div className=" w-full">
               <div className="flex flex-wrap">
                 <div className="form-groups-common-sec-s1">
-                  <h3 dir={langDir}>{t("basic_information")}</h3>
+                  <h3 dir={langDir} translate="no">{t("basic_information")}</h3>
                   {!hasId ? (
                     <div className="mb-3 grid w-full grid-cols-1 gap-x-5 gap-y-3 md:grid-cols-2">
                       <div className="flex w-full flex-col justify-between gap-y-2">
@@ -210,7 +210,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                         </p>
                       </div>
 
-                      {catList.length > 0 &&
+                      {catList.length > 0 ?
                         catList.map((item, index) => (
                           <div
                             key={item?.id}
@@ -257,7 +257,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                               </select>
                             </div>
                           </div>
-                        ))}
+                        )) : null}
                     </div>
                   ) : null}
 
@@ -317,7 +317,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
 
                   <div className="relative mb-4 w-full">
                     <div className="space-y-2">
-                      <label className="text-sm font-medium leading-none text-color-dark">
+                      <label className="text-sm font-medium leading-none text-color-dark" translate="no">
                         {t("product_image")}
                       </label>
                       <div className="flex w-full flex-wrap">

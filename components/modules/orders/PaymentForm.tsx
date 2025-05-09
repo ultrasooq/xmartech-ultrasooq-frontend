@@ -139,7 +139,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
         <Accordion>
           <AccordionItem>
             <AccordionItemHeading>
-              <AccordionItemButton dir={langDir}>{t("cash")}</AccordionItemButton>
+              <AccordionItemButton dir={langDir} translate="no">{t("cash")}</AccordionItemButton>
             </AccordionItemHeading>
             <AccordionItemPanel>
               <div className="w-full bg-white">
@@ -159,6 +159,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                         disabled={isLoading}
                         className="theme-primary-btn order-btn"
                         dir={langDir}
+                        translate="no"
                       >
                         {t("confirm_order")}
                       </Button>
@@ -171,7 +172,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
 
           <AccordionItem>
             <AccordionItemHeading onClick={() => handleCardPayment('direct')}>
-              <AccordionItemButton dir={langDir}>{t("direct_payment")}</AccordionItemButton>
+              <AccordionItemButton dir={langDir} translate="no">{t("direct_payment")}</AccordionItemButton>
             </AccordionItemHeading>
             {selectedPaymentType === 'direct' ?
               <AccordionItemPanel>
@@ -183,6 +184,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                           <label
                             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                             dir={langDir}
+                            translate="no"
                           >
                             {t("card_holder_name")}
                           </label>
@@ -198,19 +200,20 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
            placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring 
            disabled:cursor-not-allowed disabled:opacity-50"
                               dir={langDir}
+                              translate="no"
                             />
                           </div>
                         </div>
 
                         <div className="mb-4 w-full space-y-2" style={{ width: '650px' }}>
-                          <label className="text-sm font-medium" dir={langDir}>{t("card_details")}</label>
+                          <label className="text-sm font-medium" dir={langDir} translate="no">{t("card_details")}</label>
                           <div className="theme-form-control-s1 border p-2">
                             <CardElement options={{ hidePostalCode: true }} onChange={handleCardChange} />
                           </div>
                         </div>
                       </div>
                       <div className="order-action-btn">
-                        <Button onClick={handlePayment} disabled={isLoading || !stripe || !name.trim() || !cardComplete} className="theme-primary-btn order-btn">
+                        <Button onClick={handlePayment} disabled={isLoading || !stripe || !name.trim() || !cardComplete} className="theme-primary-btn order-btn" translate="no">
                           {isLoading ? t("processing") : t("confirm_payment")}
                         </Button>
                       </div>
@@ -224,7 +227,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
 
           <AccordionItem>
             <AccordionItemHeading onClick={() => handleCardPayment('advance')}>
-              <AccordionItemButton dir={langDir}>{t("advance_payment")}(%)</AccordionItemButton>
+              <AccordionItemButton dir={langDir} translate="no">{t("advance_payment")}(%)</AccordionItemButton>
             </AccordionItemHeading>
             {selectedPaymentType === 'advance' ?
               <AccordionItemPanel>
@@ -232,12 +235,12 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                   <div className="bodyPart">
                     <div className="card-item card-payment-form px-5 pb-5 pt-3">
                       <div className="w-full">
-                        <Button className="theme-primary-btn order-btn mt-2 h-14 w-full p-4" dir={langDir}>
+                        <Button className="theme-primary-btn order-btn mt-2 h-14 w-full p-4" dir={langDir} translate="no">
                           {t("attached_transaction_receipt")}
                         </Button>
                         <div className="mt-3 flex w-auto flex-wrap rounded-sm bg-[#B3B3B3] px-10 py-7">
                           <div className="relative mb-3 w-[80%]">
-                            <label className="mb-2 text-lg font-semibold text-black" dir={langDir}>
+                            <label className="mb-2 text-lg font-semibold text-black" dir={langDir} translate="no">
                               {t("payment_amount")}({currency.symbol}):
                             </label>
                             <input
@@ -269,6 +272,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                               disabled={!inputValue} // Disable if inputValue is empty
                               className="flex h-[50px] w-[150px] items-center justify-center rounded-sm bg-[#FFC7C2] p-3 text-center text-lg font-semibold text-black disabled:cursor-not-allowed disabled:opacity-50"
                               dir={langDir}
+                              translate="no"
                             >
                               {t("save")}
                             </button>
@@ -282,6 +286,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                               disabled={!inputValue} // Disable if inputValue is empty
                               className="flex h-[50px] w-[150px] items-center justify-center rounded-sm bg-[#FFC7C2] p-3 text-center text-lg font-semibold text-black disabled:cursor-not-allowed disabled:opacity-50"
                               dir={langDir}
+                              translate="no"
                             >
                               {t("cancel")}
                             </button>
@@ -296,6 +301,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                             className="text-sm font-medium 
           leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                             dir={langDir}
+                            translate="no"
                           >
                             {t("card_holder_name")}
                           </label>
@@ -307,11 +313,12 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                               placeholder={t("card_holder_name")}
                               className="theme-form-control-s1 flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:ring-1"
                               dir={langDir}
+                              translate="no"
                             />
                           </div>
                         </div>
                         <div className="mb-4 w-full space-y-2" style={{ width: '650px' }}>
-                          <label className="text-sm font-medium" dir={langDir}>{t("card_details")}</label>
+                          <label className="text-sm font-medium" dir={langDir} translate="no">{t("card_details")}</label>
                           <div className="theme-form-control-s1 border p-2">
                             <CardElement options={{ hidePostalCode: true }} onChange={handleCardChange} />
                           </div>
@@ -319,10 +326,10 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                       </div>
                       <div className="order-action-btn">
                         <div className="order-action-btn">
-                          <Button onClick={handlePayment} disabled={isLoading || !stripe || !name.trim() || !cardComplete || advanceAmount === ''} className="theme-primary-btn order-btn">
+                          <Button onClick={handlePayment} disabled={isLoading || !stripe || !name.trim() || !cardComplete || advanceAmount === ''} className="theme-primary-btn order-btn" translate="no">
                             {isLoading ? t("processing") : t("confirm_payment")}
                           </Button> &nbsp;&nbsp;
-                          <Button onClick={handleAttachment} className="theme-primary-btn order-btn">
+                          <Button onClick={handleAttachment} className="theme-primary-btn order-btn" translate="no">
                             {isLoading ? t("processing") : t("send_attachment")}
                           </Button>
                         </div>
@@ -337,7 +344,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
 
           <AccordionItem>
             <AccordionItemHeading>
-              <AccordionItemButton dir={langDir}>{t("pay_it_for_me")}</AccordionItemButton>
+              <AccordionItemButton dir={langDir} translate="no">{t("pay_it_for_me")}</AccordionItemButton>
             </AccordionItemHeading>
             <AccordionItemPanel>
               <div className="w-full bg-white">
@@ -357,6 +364,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                         disabled={isLoading}
                         className="theme-primary-btn order-btn"
                         dir={langDir}
+                        translate="no"
                       >
                         {t("confirm_order")}
                       </Button>
@@ -369,7 +377,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
 
           <AccordionItem>
             <AccordionItemHeading>
-              <AccordionItemButton dir={langDir}>{t("installments")}</AccordionItemButton>
+              <AccordionItemButton dir={langDir} translate="no">{t("installments")}</AccordionItemButton>
             </AccordionItemHeading>
             <AccordionItemPanel>
               <div className="w-full bg-white">
@@ -389,6 +397,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                         disabled={isLoading}
                         className="theme-primary-btn order-btn"
                         dir={langDir}
+                        translate="no"
                       >
                         {t("confirm_order")}
                       </Button>
