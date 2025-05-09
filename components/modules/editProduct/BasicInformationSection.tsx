@@ -157,7 +157,9 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
             <div className=" w-full">
               <div className="flex flex-wrap">
                 <div className="form-groups-common-sec-s1">
-                  <h3 dir={langDir} translate="no">{t("basic_information")}</h3>
+                  <h3 dir={langDir} translate="no">
+                    {t("basic_information")}
+                  </h3>
                   {!hasId ? (
                     <div className="mb-3 grid w-full grid-cols-1 gap-x-5 gap-y-3 md:grid-cols-2">
                       <div className="flex w-full flex-col justify-between gap-y-2">
@@ -202,7 +204,10 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                             </select>
                           )}
                         />
-                        <p className="text-[13px] font-medium text-red-500" dir={langDir}>
+                        <p
+                          className="text-[13px] font-medium text-red-500"
+                          dir={langDir}
+                        >
                           {
                             formContext.formState.errors["categoryId"]
                               ?.message as string
@@ -210,54 +215,55 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                         </p>
                       </div>
 
-                      {catList.length > 0 ?
-                        catList.map((item, index) => (
-                          <div
-                            key={item?.id}
-                            className="mb-3 grid w-full grid-cols-1 gap-x-5 gap-y-3"
-                          >
-                            <div className="flex w-full flex-col justify-between gap-y-2">
-                              <Label>Sub Category</Label>
-                              <select
-                                className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
-                                onChange={(e) => {
-                                  if (e.target.value === "") {
-                                    return;
-                                  }
+                      {catList.length > 0
+                        ? catList.map((item, index) => (
+                            <div
+                              key={item?.id}
+                              className="mb-3 grid w-full grid-cols-1 gap-x-5 gap-y-3"
+                            >
+                              <div className="flex w-full flex-col justify-between gap-y-2">
+                                <Label>Sub Category</Label>
+                                <select
+                                  className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                                  onChange={(e) => {
+                                    if (e.target.value === "") {
+                                      return;
+                                    }
 
-                                  setCurrentId(e.target.value);
-                                  setCurrentIndex(index + 1);
+                                    setCurrentId(e.target.value);
+                                    setCurrentIndex(index + 1);
 
-                                  if (listIds[index + 1]) {
-                                    let tempIds = listIds;
-                                    tempIds[index + 1] = e.target.value;
-                                    tempIds = tempIds.slice(0, index + 2);
-                                    setListIds([...tempIds]);
-                                    return;
-                                  }
-                                  setListIds([...listIds, e.target.value]);
-                                }}
-                                value={item?.children
-                                  ?.find((item: any) =>
-                                    listIds.includes(item.id?.toString())
-                                      ? item
-                                      : "",
-                                  )
-                                  ?.id?.toString()}
-                              >
-                                <option value="">Select Sub Category</option>
-                                {item?.children?.map((item: any) => (
-                                  <option
-                                    value={item.id?.toString()}
-                                    key={item.id}
-                                  >
-                                    {item.name}
-                                  </option>
-                                ))}
-                              </select>
+                                    if (listIds[index + 1]) {
+                                      let tempIds = listIds;
+                                      tempIds[index + 1] = e.target.value;
+                                      tempIds = tempIds.slice(0, index + 2);
+                                      setListIds([...tempIds]);
+                                      return;
+                                    }
+                                    setListIds([...listIds, e.target.value]);
+                                  }}
+                                  value={item?.children
+                                    ?.find((item: any) =>
+                                      listIds.includes(item.id?.toString())
+                                        ? item
+                                        : "",
+                                    )
+                                    ?.id?.toString()}
+                                >
+                                  <option value="">Select Sub Category</option>
+                                  {item?.children?.map((item: any) => (
+                                    <option
+                                      value={item.id?.toString()}
+                                      key={item.id}
+                                    >
+                                      {item.name}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
                             </div>
-                          </div>
-                        )) : null}
+                          ))
+                        : null}
                     </div>
                   ) : null}
 
@@ -317,11 +323,14 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
 
                   <div className="relative mb-4 w-full">
                     <div className="space-y-2">
-                      <label className="text-sm font-medium leading-none text-color-dark" translate="no">
+                      <label
+                        className="text-sm font-medium leading-none text-color-dark"
+                        translate="no"
+                      >
                         {t("product_image")}
                       </label>
                       <div className="flex w-full flex-wrap">
-                        <div className="grid grid-cols-5">
+                        <div className="grid grid-cols-1 md:grid-cols-5">
                           {watchProductImages?.map(
                             (item: any, index: number) => (
                               <FormField
@@ -383,7 +392,10 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                                         .size > 524288000
                                                     ) {
                                                       toast({
-                                                        title: t("one_of_file_should_be_less_than_size", { size: "500MB" }),
+                                                        title: t(
+                                                          "one_of_file_should_be_less_than_size",
+                                                          { size: "500MB" },
+                                                        ),
                                                         variant: "danger",
                                                       });
                                                       return;
@@ -437,7 +449,10 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                                         .size > 524288000
                                                     ) {
                                                       toast({
-                                                        title: t("one_of_file_should_be_less_than_size", { size: "500MB" }),
+                                                        title: t(
+                                                          "one_of_file_should_be_less_than_size",
+                                                          { size: "500MB" },
+                                                        ),
                                                         variant: "danger",
                                                       });
                                                       return;
@@ -494,7 +509,10 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                     )
                                   ) {
                                     toast({
-                                      title: t("one_of_file_should_be_less_than_size", { size: "500MB" }),
+                                      title: t(
+                                        "one_of_file_should_be_less_than_size",
+                                        { size: "500MB" },
+                                      ),
                                       variant: "danger",
                                     });
                                     return;
