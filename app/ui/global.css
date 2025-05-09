@@ -731,7 +731,7 @@
 
   /* start: product-list-s1 */
   .product-list-s1 {
-    @apply -my-5 ml-[-13px] mr-[-13px] flex flex-wrap;
+    @apply my-0 ml-[-13px] mr-[-13px] flex flex-wrap;
   }
 
   .product-list-s1 .product-list-s1-col {

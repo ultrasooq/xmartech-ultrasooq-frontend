@@ -46,7 +46,7 @@ type serviceImageProps = {
 };
 
 type BasicInformationProps = {
-  editId?: string,
+  editId?: string;
   tagsList: any;
   activeProductType?: string;
 };
@@ -64,7 +64,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
   const createTag = useCreateTag();
   const [listIds, setListIds] = useState<string[]>([]);
   const [catList, setCatList] = useState<any[]>([]);
-  const [currentId, setCurrentId] = useState<string>("6");//static id for services
+  const [currentId, setCurrentId] = useState<string>("6"); //static id for services
   const [currentIndex, setCurrentIndex] = useState<number>(0);
 
   // const upload = useUploadFile();
@@ -75,7 +75,12 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
   const watchCategoryLocation = formContext.watch("categoryLocation");
   const doneOnce = useRef(false);
   useEffect(() => {
-    if (editId && watchCategoryLocation && catList.length && doneOnce.current === false) {
+    if (
+      editId &&
+      watchCategoryLocation &&
+      catList.length &&
+      doneOnce.current === false
+    ) {
       const ids = watchCategoryLocation.split(",");
       setListIds(ids);
       let foundId = "";
@@ -86,7 +91,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
         setCurrentId(foundId);
         setCurrentIndex(ids.length - 1);
       }
-      doneOnce.current = true
+      doneOnce.current = true;
     }
   }, [editId, watchCategoryLocation, catList]);
   const memoizedCategories = useMemo(() => {
@@ -175,11 +180,15 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
           <div className="flex w-full flex-wrap">
             <div className=" w-full">
               <div className="flex flex-wrap">
-                <div className="form-groups-common-sec-s1">
-                  <h3 dir={langDir} translate="no">{t("basic_information")}</h3>
+                <div className="form-groups-common-sec-s1 product-form-groups-common-sec-s1">
+                  <h3 dir={langDir} translate="no">
+                    {t("basic_information")}
+                  </h3>
                   <div className="mb-3 grid w-full grid-cols-1 gap-x-5 gap-y-3 md:grid-cols-2">
                     <div className="flex w-full flex-col justify-between gap-y-2">
-                      <Label dir={langDir} translate="no">{t("service_category")}</Label>
+                      <Label dir={langDir} translate="no">
+                        {t("service_category")}
+                      </Label>
                       <Controller
                         name="categoryId"
                         control={formContext.control}
@@ -207,7 +216,9 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                             value={catList[0]?.id || ""}
                             disabled={true} // This makes the select field disabled
                           >
-                            <option value="" dir={langDir} translate="no">{t("select_category")}</option>
+                            <option value="" dir={langDir} translate="no">
+                              {t("select_category")}
+                            </option>
                             {memoizedCategories.map((item: ISelectOptions) => (
                               <option
                                 value={item.value?.toString()}
@@ -220,7 +231,10 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                           </select>
                         )}
                       />
-                      <p className="text-[13px] font-medium text-red-500" dir={langDir}>
+                      <p
+                        className="text-[13px] font-medium text-red-500"
+                        dir={langDir}
+                      >
                         {
                           formContext.formState.errors["categoryId"]
                             ?.message as string
@@ -228,61 +242,69 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                       </p>
                     </div>
 
-                    {catList.length > 0 ?
-                      catList.map((item, index) => {
-                        return (
-                          <div
-                            key={item?.id}
-                            className="mb-3 grid w-full grid-cols-1 gap-x-5 gap-y-3"
-                          >
-                            <div className="flex w-full flex-col justify-between gap-y-2">
-                              <Label dir={langDir} translate="no">{t("sub_category")}</Label>
-                              <select
-                                className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
-                                onChange={(e) => {
-                                  if (e.target.value === "") {
-                                    return;
-                                  }
+                    {catList.length > 0
+                      ? catList.map((item, index) => {
+                          return (
+                            <div
+                              key={item?.id}
+                              className="mb-3 grid w-full grid-cols-1 gap-x-5 gap-y-3"
+                            >
+                              <div className="flex w-full flex-col justify-between gap-y-2">
+                                <Label dir={langDir} translate="no">
+                                  {t("sub_category")}
+                                </Label>
+                                <select
+                                  className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                                  onChange={(e) => {
+                                    if (e.target.value === "") {
+                                      return;
+                                    }
 
-                                  setCurrentId(e.target.value);
-                                  setCurrentIndex(index + 1);
+                                    setCurrentId(e.target.value);
+                                    setCurrentIndex(index + 1);
 
-                                  if (listIds[index]) {
-                                    let tempIds = listIds;
-                                    tempIds[index] = e.target.value;
-                                    tempIds = tempIds.slice(0, index + 1);
-                                    setListIds([...tempIds]);
-                                    return;
-                                  }
-                                  setListIds([...listIds, e.target.value]);
-                                }}
-                                value={item?.children
-                                  ?.find((item: any) =>
-                                    listIds.includes(item.id?.toString())
-                                      ? item
-                                      : "",
-                                  )
-                                  ?.id?.toString()}
-
-                              >
-                                <option value="" dir={langDir} translate="no">{t("select_sub_category")}</option>
-                                {item?.children?.map((item: any) => (
-                                  <option
-                                    value={item.id?.toString()}
-                                    key={item.id}
-                                    dir={langDir}
-                                  >
-                                    {item.name}
+                                    if (listIds[index]) {
+                                      let tempIds = listIds;
+                                      tempIds[index] = e.target.value;
+                                      tempIds = tempIds.slice(0, index + 1);
+                                      setListIds([...tempIds]);
+                                      return;
+                                    }
+                                    setListIds([...listIds, e.target.value]);
+                                  }}
+                                  value={item?.children
+                                    ?.find((item: any) =>
+                                      listIds.includes(item.id?.toString())
+                                        ? item
+                                        : "",
+                                    )
+                                    ?.id?.toString()}
+                                >
+                                  <option value="" dir={langDir} translate="no">
+                                    {t("select_sub_category")}
                                   </option>
-                                ))}
-                              </select>
+                                  {item?.children?.map((item: any) => (
+                                    <option
+                                      value={item.id?.toString()}
+                                      key={item.id}
+                                      dir={langDir}
+                                    >
+                                      {item.name}
+                                    </option>
+                                  ))}
+                                </select>
+                              </div>
                             </div>
-                          </div>
-                        )
-                      }) : null}
+                          );
+                        })
+                      : null}
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium leading-none text-color-dark" dir={langDir} translate="no">
+                    <label
+                      className="text-sm font-medium leading-none text-color-dark"
+                      dir={langDir}
+                      translate="no"
+                    >
                       {t("service_name")}
                     </label>
                     <ControlledTextInput
@@ -309,7 +331,11 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                   </div>
                   <div className="relative mb-4 w-full">
                     <div className="space-y-2">
-                      <label className="text-sm font-medium leading-none text-color-dark" dir={langDir} translate="no">
+                      <label
+                        className="text-sm font-medium leading-none text-color-dark"
+                        dir={langDir}
+                        translate="no"
+                      >
                         {t("service_image")}
                       </label>
                       <div className="flex w-full flex-wrap">
@@ -352,10 +378,10 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                                 src={
                                                   typeof item.path === "object"
                                                     ? URL.createObjectURL(
-                                                      item.path,
-                                                    )
+                                                        item.path,
+                                                      )
                                                     : typeof item.path ===
-                                                      "string"
+                                                        "string"
                                                       ? item.path
                                                       : "/images/no-image.jpg"
                                                 }
@@ -376,7 +402,10 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                                         .size > 524288000
                                                     ) {
                                                       toast({
-                                                        title: t("one_of_file_should_be_less_than_size", { size: "500MB" }),
+                                                        title: t(
+                                                          "one_of_file_should_be_less_than_size",
+                                                          { size: "500MB" },
+                                                        ),
                                                         variant: "danger",
                                                       });
                                                       return;
@@ -397,12 +426,12 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                                 <ReactPlayer
                                                   url={
                                                     typeof item.path ===
-                                                      "object"
+                                                    "object"
                                                       ? URL.createObjectURL(
-                                                        item.path,
-                                                      )
+                                                          item.path,
+                                                        )
                                                       : typeof item.path ===
-                                                        "string"
+                                                          "string"
                                                         ? item.path
                                                         : "/images/no-image.jpg"
                                                   }
@@ -414,7 +443,11 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                               </div>
 
                                               <div className="absolute h-20 w-full p-5">
-                                                <p className="rounded-lg border border-gray-300 bg-gray-100 py-2 text-sm font-semibold" dir={langDir} translate="no">
+                                                <p
+                                                  className="rounded-lg border border-gray-300 bg-gray-100 py-2 text-sm font-semibold"
+                                                  dir={langDir}
+                                                  translate="no"
+                                                >
                                                   {t("upload_video")}
                                                 </p>
                                               </div>
@@ -430,7 +463,10 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                                         .size > 524288000
                                                     ) {
                                                       toast({
-                                                        title: t("one_of_file_should_be_less_than_size", { size: "500MB" }),
+                                                        title: t(
+                                                          "one_of_file_should_be_less_than_size",
+                                                          { size: "500MB" },
+                                                        ),
                                                         variant: "danger",
                                                       });
                                                       return;
@@ -446,7 +482,9 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                               />
                                             </div>
                                           ) : (
-                                            <AddImageContent description={t("drop_your_file")} />
+                                            <AddImageContent
+                                              description={t("drop_your_file")}
+                                            />
                                           )}
                                         </div>
                                       </div>
@@ -466,7 +504,9 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                   width={29}
                                   height={28}
                                 />
-                                <span dir={langDir} translate="no">{t("add_more")}</span>
+                                <span dir={langDir} translate="no">
+                                  {t("add_more")}
+                                </span>
                               </div>
                             </div>
 
@@ -487,7 +527,10 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                     )
                                   ) {
                                     toast({
-                                      title: t("one_of_file_should_be_less_than_size", { size: "500MB" }),
+                                      title: t(
+                                        "one_of_file_should_be_less_than_size",
+                                        { size: "500MB" },
+                                      ),
                                       variant: "danger",
                                     });
                                     return;
