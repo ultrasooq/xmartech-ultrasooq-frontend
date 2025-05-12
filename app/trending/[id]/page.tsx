@@ -832,10 +832,17 @@ const ProductDetailsPage = () => {
                           )?.id
                         }
                         isChildCart={
-                          !!memoizedCartList?.filter((c: any) => c.serviceId && c.cartProductServices?.length)
+                          !!memoizedCartList
+                            ?.filter(
+                              (c: any) =>
+                                c.serviceId && c.cartProductServices?.length,
+                            )
                             ?.find((c: any) => {
-                                return !!c.cartProductServices
-                                    .find((r: any) => r.relatedCartType == 'PRODUCT' && r.productId == searchParams?.id);
+                              return !!c.cartProductServices.find(
+                                (r: any) =>
+                                  r.relatedCartType == "PRODUCT" &&
+                                  r.productId == searchParams?.id,
+                              );
                             })
                         }
                       />
@@ -856,7 +863,7 @@ const ProductDetailsPage = () => {
         </div>
 
         {isVisible ? (
-          <div className="product_cart_modal absolute right-[20px] top-[150px] w-full px-4 md:w-[300px]">
+          <div className="product_cart_modal absolute right-[20px] top-[150px] w-full px-4 lg:w-[300px]">
             <div className="card-item cart-items">
               <div className="inline-flex w-full items-center justify-center pt-5 text-center">
                 <a
@@ -919,10 +926,16 @@ const ProductDetailsPage = () => {
                 {memoizedCartList?.map((item: CartItem) => {
                   if (item.cartType == "DEFAULT") {
                     let relatedCart = memoizedCartList
-                      ?.filter((c: any) => c.serviceId && c.cartProductServices?.length)
+                      ?.filter(
+                        (c: any) =>
+                          c.serviceId && c.cartProductServices?.length,
+                      )
                       .find((c: any) => {
-                          return !!c.cartProductServices
-                              .find((r: any) => r.relatedCartType == 'PRODUCT' && r.productId == item.productId);
+                        return !!c.cartProductServices.find(
+                          (r: any) =>
+                            r.relatedCartType == "PRODUCT" &&
+                            r.productId == item.productId,
+                        );
                       });
                     return (
                       <ProductCard
@@ -978,10 +991,15 @@ const ProductDetailsPage = () => {
                   );
 
                   let relatedCart: any = memoizedCartList
-                    ?.filter((c: any) => c.productId && c.cartProductServices?.length)
+                    ?.filter(
+                      (c: any) => c.productId && c.cartProductServices?.length,
+                    )
                     .find((c: any) => {
-                        return !!c.cartProductServices
-                            .find((r: any) => r.relatedCartType == 'SERVICE' && r.serviceId == item.serviceId);
+                      return !!c.cartProductServices.find(
+                        (r: any) =>
+                          r.relatedCartType == "SERVICE" &&
+                          r.serviceId == item.serviceId,
+                      );
                     });
 
                   return item.cartServiceFeatures.map((feature: any) => {
