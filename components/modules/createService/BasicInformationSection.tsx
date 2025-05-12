@@ -49,12 +49,14 @@ type BasicInformationProps = {
   editId?: string;
   tagsList: any;
   activeProductType?: string;
+  selectedCategoryIds?: string[];
 };
 
 const BasicInformationSection: React.FC<BasicInformationProps> = ({
   editId,
   tagsList,
   activeProductType,
+  selectedCategoryIds,
 }) => {
   const t = useTranslations();
   const { langDir } = useAuth();
@@ -73,7 +75,9 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
 
   const watchServiceImages = formContext.watch("images");
   const watchCategoryLocation = formContext.watch("categoryLocation");
+
   const doneOnce = useRef(false);
+
   useEffect(() => {
     if (
       editId &&
@@ -94,6 +98,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
       doneOnce.current = true;
     }
   }, [editId, watchCategoryLocation, catList]);
+
   const memoizedCategories = useMemo(() => {
     return (
       categoryQuery?.data?.data?.children[0]?.children.map((item: any) => {
@@ -172,6 +177,16 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [listIds?.length],
   );
+
+  useEffect(() => {
+    if (selectedCategoryIds?.length && catList?.length && !listIds.length) {
+      setCurrentId(selectedCategoryIds[currentIndex]);
+      setCurrentIndex((prevIndex) => prevIndex + 1);
+      if (selectedCategoryIds.length == currentIndex + 1) {
+        setListIds(selectedCategoryIds);
+      }
+    }
+  }, [selectedCategoryIds, catList?.length]);
 
   return (
     <>

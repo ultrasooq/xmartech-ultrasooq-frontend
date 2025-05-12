@@ -239,13 +239,10 @@ const CreateServicePage = () => {
   const { toast } = useToast();
   const searchParams: any = useSearchParams();
   const editId = searchParams.get("editId");
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
   const [activeProductType, setActiveProductType] = useState<string>();
   const [states, setStates] = useState<IOption[]>([]);
   const [cities, setCities] = useState<IOption[]>([]);
-  // const [selectedCountries, setSelectedCountries] = useState<OptionType[]>([]);
-  // const [statesByCountry, setStatesByCountry] = useState<
-  //   Record<string, OptionType[]>
-  // >({});
   const form = useForm({
     resolver: zodResolver(formSchema(t)),
     defaultValues: defaultServiceValues,
@@ -476,8 +473,12 @@ const CreateServicePage = () => {
   useEffect(() => {
     if (serviceQueryById?.data?.data && !hasInitialized.current) {
       hasInitialized.current = true;
-
       const responseData = serviceQueryById.data.data;
+
+      setSelectedCategoryIds(
+        responseData?.categoryLocation?.split(',')?.filter((item: string) => item) || []
+      );
+
       const populatedFormData = {
         ...responseData,
         categoryLocation: responseData?.categoryLocation,
@@ -539,6 +540,7 @@ const CreateServicePage = () => {
                   editId={editId}
                   tagsList={memoizedTags}
                   activeProductType={activeProductType}
+                  selectedCategoryIds={selectedCategoryIds}
                 />
                 <div className="grid w-full grid-cols-4 gap-x-5">
                   <div className="col-span-4 mx-auto mb-3 w-full max-w-[950px] rounded-lg border border-solid border-gray-300 bg-white p-2 shadow-sm sm:p-3 lg:p-4">
