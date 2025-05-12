@@ -156,6 +156,20 @@ const MyOrderDetailsPage = ({ }) => {
                               </Button>
                             </figcaption>
                           </figure>
+                          {orderDetails?.orderShippingDetail?.receipt ? (
+                            <figure className="downloadInvoice mt-4">
+                              <figcaption>
+                                <Link
+                                  className="text-red-500"
+                                  href={orderDetails?.orderShippingDetail?.receipt}
+                                  target="_blank"
+                                  translate="no"
+                                >
+                                  {t("download_receipt")}
+                                </Link>
+                              </figcaption>
+                            </figure>
+                          ) : null}
                         </div>
                       </div>
                     </div>
@@ -189,18 +203,6 @@ const MyOrderDetailsPage = ({ }) => {
                             <h3 className="!font-bold" translate="no">{t("to_time")}:</h3>
                             <span>{convertTime(orderDetails?.orderShippingDetail?.toTime)}</span>
                           </div>
-                        </div>
-                      ) : null}
-                      {orderDetails?.orderShippingDetail?.receipt ? (
-                        <div className="sm:grid sm:grid-cols-3 w-full gap-2 mt-2">
-                          <Link
-                            className="text-red-500"
-                            href={orderDetails?.orderShippingDetail?.receipt}
-                            target="_blank"
-                            translate="no"
-                          >
-                            {t("download_receipt")}
-                          </Link>
                         </div>
                       ) : null}
                     </div>
@@ -310,6 +312,27 @@ const MyOrderDetailsPage = ({ }) => {
                                 <p className="text-gray-500" translate="no">
                                   {t("quantity")} x {orderDetails?.orderQuantity || 0}
                                 </p>
+                                {orderDetails?.orderProductType == 'PRODUCT' && orderDetails?.object ? (
+                                (() => {
+                                  let object = orderDetails?.object;
+
+                                  if (Array.isArray(object)) {
+                                    return object.map((obj: any, index: number) => {
+                                      return (
+                                        <p className="text-gray-500" dir={langDir} key={index}>
+                                          {obj.type}: {obj.value}
+                                        </p>
+                                      )
+                                    })
+                                  }
+
+                                  return (
+                                    <p className="text-gray-500" dir={langDir}>
+                                      {object.type}: {object.value}
+                                    </p>
+                                  );
+                                })()
+                              ) : null}
                               </figcaption>
                             </figure>
                           )}
@@ -561,6 +584,7 @@ const MyOrderDetailsPage = ({ }) => {
                     }
                     offerPrice={item?.purchasePrice}
                     orderQuantity={item?.orderQuantity}
+                    variant={item?.object}
                     productImages={
                       item.orderProduct_productPrice?.productPrice_product
                         ?.productImages

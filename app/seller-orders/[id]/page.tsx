@@ -182,6 +182,20 @@ const MyOrderDetailsPage = ({}) => {
                               </Button>
                             </figcaption>
                           </figure>
+                          {orderDetails?.orderShippingDetail?.receipt ? (
+                            <figure className="downloadInvoice mt-4">
+                              <figcaption>
+                                <Link
+                                  className="text-red-500"
+                                  href={orderDetails?.orderShippingDetail?.receipt}
+                                  target="_blank"
+                                  translate="no"
+                                >
+                                  {t("download_receipt")}
+                                </Link>
+                              </figcaption>
+                            </figure>
+                          ) : null}
                         </div>
                       </div>
                     </div>
@@ -211,17 +225,6 @@ const MyOrderDetailsPage = ({}) => {
                             {currency.symbol}
                             {orderDetails?.orderShippingDetail?.shippingCharge}
                           </span>
-                        </div>
-                        <div className="more-actions">
-                          <button
-                            type="button"
-                            className="theme-primary-btn update-status-btn px-2 py-1"
-                            onClick={handleToggleAddReceiptModal}
-                            dir={langDir}
-                            translate="no"
-                          >
-                            {t("add_receipt")}
-                          </button>
                         </div>
                       </div>
                       {orderDetails?.orderShippingDetail?.orderShippingType ==
@@ -257,18 +260,6 @@ const MyOrderDetailsPage = ({}) => {
                               )}
                             </span>
                           </div>
-                        </div>
-                      ) : null}
-                      {orderDetails?.orderShippingDetail?.receipt ? (
-                        <div className="mt-2 w-full gap-2 sm:grid sm:grid-cols-3">
-                          <Link
-                            className="text-red-500"
-                            href={orderDetails?.orderShippingDetail?.receipt}
-                            target="_blank"
-                            translate="no"
-                          >
-                            {t("download_receipt")}
-                          </Link>
                         </div>
                       ) : null}
                     </div>
@@ -336,6 +327,27 @@ const MyOrderDetailsPage = ({}) => {
                                 {t("quantity")} x{" "}
                                 {orderDetails?.orderQuantity || 0}
                               </p>
+                              {orderDetails?.orderProductType == 'PRODUCT' && orderDetails?.object ? (
+                                (() => {
+                                  let object = orderDetails?.object;
+
+                                  if (Array.isArray(object)) {
+                                    return object.map((obj: any, index: number) => {
+                                      return (
+                                        <p className="text-gray-500" dir={langDir} key={index}>
+                                          {obj.type}: {obj.value}
+                                        </p>
+                                      );
+                                    });
+                                  }
+
+                                  return (
+                                    <p className="text-gray-500" dir={langDir}>
+                                      {object.type}: {object.value}
+                                    </p>
+                                  );
+                                })()
+                              ) : null}
                             </figcaption>
                           </figure>
                         </Link>
@@ -571,6 +583,18 @@ const MyOrderDetailsPage = ({}) => {
                             </button>
                           </div>
 
+                          <div className="more-actions">
+                            <button
+                              type="button"
+                              className="theme-primary-btn update-status-btn px-2 py-1"
+                              onClick={handleToggleAddReceiptModal}
+                              dir={langDir}
+                              translate="no"
+                            >
+                              {t("add_receipt")}
+                            </button>
+                          </div>
+
                           {/* {orderDetails?.orderProductStatus === "DELIVERED" ? (
                             // <div className="more-actions">
                             //   <button
@@ -622,6 +646,7 @@ const MyOrderDetailsPage = ({}) => {
                     orderQuantity={
                       item?.orderProduct_productPrice?.orderQuantity
                     }
+                    variant={item?.object}
                     productImages={
                       item.orderProduct_productPrice?.productPrice_product
                         ?.productImages
