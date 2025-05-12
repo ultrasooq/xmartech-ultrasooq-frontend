@@ -48,9 +48,9 @@ const Shipping: React.FC<ShippingProps> = ({
     }, !!sellerId && type == "other");
 
     useEffect(() => {
-        if (servicesBySeller?.data?.data) {
+        if (servicesBySeller?.data?.data && type == 'own') {
             setServices(servicesBySeller?.data?.data?.map((item: any) => item) || []);
-        } else if (servicesByOtherSeller?.data?.data) {
+        } else if (servicesByOtherSeller?.data?.data && type == 'other') {
             setServices(servicesByOtherSeller?.data?.data?.map((item: any) => item) || []);
         } else {
             setServices([]);
@@ -60,7 +60,8 @@ const Shipping: React.FC<ShippingProps> = ({
         servicesByOtherSeller?.data?.data,
         sellerId,
         fromCityId,
-        toCityId
+        toCityId,
+        type,
     ]);
 
     return (
@@ -95,7 +96,7 @@ const Shipping: React.FC<ShippingProps> = ({
                             <tbody>
                                 {services?.map((item: any) => (
                                     <>
-                                        <tr>
+                                        <tr key={item.id}>
                                             <td>{item.serviceName}</td>
                                             <td>{currency.symbol}{item.serviceFeatures?.[0]?.serviceCost}</td>
                                             <td>

@@ -692,10 +692,10 @@ const CheckoutPage = () => {
       i++;
     }
 
-    const sellerIds = memoizedCartList.filter((item: any) => item.serviceId)
+    const serviceSellerIds = memoizedCartList.filter((item: any) => item.serviceId)
       ?.map((item: any) => item.service.sellerId) || [];
 
-    for (let sellerId of sellerIds) {
+    for (let sellerId of serviceSellerIds) {
       if (!data.find((item: any) => item.sellerId == sellerId)) {
         data[i] = {
           sellerId: sellerId,
