@@ -85,7 +85,10 @@ const FactoriesPage = () => {
     page,
     limit,
     term: searchRfqTerm,
-    adminId: me?.data?.data?.tradeRole == "MEMBER" ? me?.data?.data?.addedBy : me?.data?.data?.id,
+    adminId:
+      me?.data?.data?.tradeRole == "MEMBER"
+        ? me?.data?.data?.addedBy
+        : me?.data?.data?.id,
     sortType: sortBy,
     brandIds: selectedBrandIds.join(","),
     isOwner: displayMyProducts == "1" ? "me" : "",
@@ -140,12 +143,12 @@ const FactoriesPage = () => {
 
   const getProductVariants = async () => {
     let productPriceIds = memoizedRfqProducts
-        .filter((item: any) => item.product_productPrice.length > 0)
-        .map((item: any) => item.product_productPrice[0].id);
-      
+      .filter((item: any) => item.product_productPrice.length > 0)
+      .map((item: any) => item.product_productPrice[0].id);
+
     const response = await fetchProductVariant.mutateAsync(productPriceIds);
     if (response.status) setProductVariants(response.data);
-  }
+  };
 
   useEffect(() => {
     if (memoizedRfqProducts.length) {
@@ -244,7 +247,9 @@ const FactoriesPage = () => {
 
   return (
     <div>
-      <title dir={langDir} translate="no">{t("rfq")} | Ultrasooq</title>
+      <title dir={langDir} translate="no">
+        {t("rfq")} | Ultrasooq
+      </title>
       <section className="rfq_section">
         <div className="sec-bg relative">
           <Image src={BannerImage} alt="background-banner" fill />
@@ -270,34 +275,46 @@ const FactoriesPage = () => {
                 />
               </div>
               <div className="rfq_middle">
-                {me?.data?.data?.tradeRole != 'BUYER' ? (<RadioGroup
-                  className="mb-3 flex flex-row gap-y-3"
-                  value={displayMyProducts}
-                  onValueChange={setDisplayMyProducts}
-                  // @ts-ignore
-                  dir={langDir}
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem
-                      value="0"
-                      id="all_products"
-                      checked={displayMyProducts == "0"}
-                    />
-                    <Label htmlFor="all_products" className="text-base" dir={langDir} translate="no">
-                      {t("all_products")}
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem
-                      value="1"
-                      id="my_products"
-                      checked={displayMyProducts == "1"}
-                    />
-                    <Label htmlFor="my_products" className="text-base" dir={langDir} translate="no">
-                      {t("my_products")}
-                    </Label>
-                  </div>
-                </RadioGroup>) : null}
+                {me?.data?.data?.tradeRole != "BUYER" ? (
+                  <RadioGroup
+                    className="mb-3 flex flex-row gap-y-3"
+                    value={displayMyProducts}
+                    onValueChange={setDisplayMyProducts}
+                    // @ts-ignore
+                    dir={langDir}
+                  >
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem
+                        value="0"
+                        id="all_products"
+                        checked={displayMyProducts == "0"}
+                      />
+                      <Label
+                        htmlFor="all_products"
+                        className="text-base"
+                        dir={langDir}
+                        translate="no"
+                      >
+                        {t("all_products")}
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem
+                        value="1"
+                        id="my_products"
+                        checked={displayMyProducts == "1"}
+                      />
+                      <Label
+                        htmlFor="my_products"
+                        className="text-base"
+                        dir={langDir}
+                        translate="no"
+                      >
+                        {t("my_products")}
+                      </Label>
+                    </div>
+                  </RadioGroup>
+                ) : null}
                 <div className="rfq_middle_top">
                   <div className="rfq_search">
                     <input
@@ -324,7 +341,9 @@ const FactoriesPage = () => {
                     <div className="col-lg-12 products_sec_wrap">
                       <div className="products_sec_top">
                         <div className="products_sec_top_left">
-                          <h4 dir={langDir} translate="no">{t("trending_n_high_rate_product")}</h4>
+                          <h4 dir={langDir} translate="no">
+                            {t("trending_n_high_rate_product")}
+                          </h4>
                         </div>
                         <div className="products_sec_top_right">
                           <div className="trending_filter">
@@ -333,14 +352,26 @@ const FactoriesPage = () => {
                               defaultValue={sortBy}
                             >
                               <SelectTrigger className="custom-form-control-s1 bg-white">
-                                <SelectValue placeholder={t("sort_by")} dir={langDir} translate="no" />
+                                <SelectValue
+                                  placeholder={t("sort_by")}
+                                  dir={langDir}
+                                  translate="no"
+                                />
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectGroup>
-                                  <SelectItem value="newest" dir={langDir} translate="no">
+                                  <SelectItem
+                                    value="newest"
+                                    dir={langDir}
+                                    translate="no"
+                                  >
                                     {t("sort_by_latest")}
                                   </SelectItem>
-                                  <SelectItem value="oldest" dir={langDir} translate="no">
+                                  <SelectItem
+                                    value="oldest"
+                                    dir={langDir}
+                                    translate="no"
+                                  >
                                     {t("sort_by_oldest")}
                                   </SelectItem>
                                 </SelectGroup>
@@ -381,7 +412,11 @@ const FactoriesPage = () => {
 
                       {!factoriesProductsQuery?.data?.data?.length &&
                       !factoriesProductsQuery.isLoading ? (
-                        <p className="my-10 text-center text-sm font-medium" dir={langDir} translate="no">
+                        <p
+                          className="my-10 text-center text-sm font-medium"
+                          dir={langDir}
+                          translate="no"
+                        >
                           {t("no_data_found")}
                         </p>
                       ) : null}
@@ -399,7 +434,10 @@ const FactoriesPage = () => {
                                 productStatus={item?.status}
                                 productImages={item?.productImages}
                                 productVariants={
-                                  productVariants.find((variant: any) => variant.productId == item.id)?.object || []
+                                  productVariants.find(
+                                    (variant: any) =>
+                                      variant.productId == item.id,
+                                  )?.object || []
                                 }
                                 productQuantity={
                                   cartList.find(
@@ -434,7 +472,9 @@ const FactoriesPage = () => {
                                 isAddedToFactoryCart={
                                   factoriesCartList.find(
                                     (el: any) => el.productId == item.id,
-                                  ) ? true : false
+                                  )
+                                    ? true
+                                    : false
                                 }
                                 inWishlist={item?.product_wishlist?.find(
                                   (el: any) => el?.userId === me.data?.data?.id,
@@ -472,7 +512,7 @@ const FactoriesPage = () => {
                 onInitCart={setFactoriesCartList}
                 haveAccessToken={haveAccessToken}
               />
-              {/* <div className="product_cart_modal absolute right-[20px] top-[150px] w-full px-4 md:w-[300px]">
+              {/* <div className="product_cart_modal absolute right-[20px] top-[150px] w-full px-4 lg:w-[300px]">
                 <Cart 
                   haveAccessToken={haveAccessToken}
                   isLoadingCart={cartListByUser?.isLoading}
@@ -484,25 +524,32 @@ const FactoriesPage = () => {
         </div>
 
         {/* add to factories modal */}
-        {selectedCustomizedProduct?.id ? (<Dialog open={isAddToFactoryModalOpen} onOpenChange={handleToggleAddModal}>
-          <DialogContent
-            className="add-new-address-modal gap-0 p-0 md:!max-w-2xl"
-            ref={wrapperRef}
+        {selectedCustomizedProduct?.id ? (
+          <Dialog
+            open={isAddToFactoryModalOpen}
+            onOpenChange={handleToggleAddModal}
           >
-            <AddToCustomizeForm
-              selectedProductId={selectedCustomizedProduct?.id}
-              onClose={() => {
-                setIsAddToFactoryModalOpen(false);
-                setSelectedCustomizedProduct(undefined);
-              }}
-              onAddToFactory={() => {
-                // Refetch the listing API after a successful response
-                queryClient.invalidateQueries({ queryKey: ["factoriesProducts"], exact: false });
-              }}
-            />
-          </DialogContent>
-        </Dialog>) : null}
-
+            <DialogContent
+              className="add-new-address-modal gap-0 p-0 md:!max-w-2xl"
+              ref={wrapperRef}
+            >
+              <AddToCustomizeForm
+                selectedProductId={selectedCustomizedProduct?.id}
+                onClose={() => {
+                  setIsAddToFactoryModalOpen(false);
+                  setSelectedCustomizedProduct(undefined);
+                }}
+                onAddToFactory={() => {
+                  // Refetch the listing API after a successful response
+                  queryClient.invalidateQueries({
+                    queryKey: ["factoriesProducts"],
+                    exact: false,
+                  });
+                }}
+              />
+            </DialogContent>
+          </Dialog>
+        ) : null}
       </section>
       <Footer />
     </div>

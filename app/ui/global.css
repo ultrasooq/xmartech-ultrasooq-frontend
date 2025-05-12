@@ -5345,6 +5345,10 @@ input::-ms-clear {
     @apply max-w-[300px];
   }
 
+  
+
+  
+
 
 }
 
@@ -5479,6 +5483,17 @@ input::-ms-clear {
 
 
 
+
+  .product_cart_modal {
+    @apply flex order-1 static mr-0 ml-auto;
+  }
+
+  .product_cart_modal .card-item {
+    @apply w-full;
+  }
+
+
+
 }
 
 
@@ -5493,10 +5508,6 @@ input::-ms-clear {
 
   .product-view-s1-left-details-with-right-suggestion {
     @apply order-3 flex;
-  }
-
-  .product_cart_modal {
-    @apply flex order-1 static mr-0 ml-auto;
   }
 
   .product-view-s-9-details-more-suggestion-sliders {
