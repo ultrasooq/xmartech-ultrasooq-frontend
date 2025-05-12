@@ -301,9 +301,8 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
               );
 
               let localeKey = response.data.languages.split(",")[0];
-              if (localeKey.substr(0, 2) == "en") {
-                localeKey = "en";
-              }
+              localeKey = localeKey.split('-')[0];
+              localeKey = languages.find((language) => language.locale == localeKey)?.locale || 'en';
               window.localStorage.setItem("locale", localeKey);
               applyTranslation(localeKey);
 
