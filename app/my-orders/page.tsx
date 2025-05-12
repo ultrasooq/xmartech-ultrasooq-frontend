@@ -277,6 +277,9 @@ const MyOrdersPage = () => {
                       productImages: { id: number; image: string }[];
                     };
                   };
+                  serviceFeatures?: {
+                    serviceFeatures?: any[];
+                  };
                   orderProduct_order: {
                     orderNo: string;
                   };
@@ -288,6 +291,7 @@ const MyOrdersPage = () => {
                   <OrderCard
                     key={item.id}
                     id={item.id}
+                    orderProductType={item.orderProductType}
                     productId={item.productId}
                     purchasePrice={item.purchasePrice}
                     productName={
@@ -298,12 +302,12 @@ const MyOrdersPage = () => {
                       item.orderProduct_productPrice?.productPrice_product
                         ?.productImages
                     }
+                    serviceFeature={item.serviceFeatures?.serviceFeatures?.[0]}
                     orderQuantity={item?.orderQuantity}
                     orderId={item.orderProduct_order?.orderNo}
                     orderStatus={item.orderProductStatus}
                     orderProductDate={item.orderProductDate}
                     updatedAt={item.updatedAt}
-                    // productReview={me?.data?.data?.user_productReview}
                   />
                 ),
               )}

@@ -14,6 +14,7 @@ type OtherItemCardProps = {
   offerPrice: string;
   orderQuantity?: number;
   variant?: any;
+  serviceFeature?: any;
   productImages?: { id: number; image: string }[];
   sellerName?: string;
   orderNo: string;
@@ -29,6 +30,7 @@ const OtherItemCard: React.FC<OtherItemCardProps> = ({
   offerPrice,
   orderQuantity,
   variant,
+  serviceFeature,
   productImages,
   sellerName,
   orderNo,
@@ -61,7 +63,7 @@ const OtherItemCard: React.FC<OtherItemCardProps> = ({
                   />
                 </div>
                 <figcaption>
-                  <h3>{t("service")}</h3>
+                  <h3>{serviceFeature?.name}</h3>
                   <h4 className="mt-1">
                     {currency.symbol}{Number(offerPrice) * (orderQuantity ?? 0)}
                   </h4>

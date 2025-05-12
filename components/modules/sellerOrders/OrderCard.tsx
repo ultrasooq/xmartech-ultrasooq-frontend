@@ -23,6 +23,7 @@ type OrderCardProps = {
   sellerId?: number;
   productPriceId?: number;
   productId?: number;
+  serviceFeature?: any;
 };
 
 const OrderCard: React.FC<OrderCardProps> = ({
@@ -41,6 +42,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
   sellerId,
   productPriceId,
   productId,
+  serviceFeature
 }) => {
   const t = useTranslations();
   const { langDir, currency } = useAuth();
@@ -64,7 +66,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
               </div>
               <figcaption>
                 <h3>
-                  {t("service")}
+                  {serviceFeature?.name}
                 </h3>
               </figcaption>
             </figure>

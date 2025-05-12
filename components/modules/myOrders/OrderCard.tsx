@@ -23,7 +23,7 @@ type OrderCardProps = {
   orderStatus: string;
   orderProductDate: string;
   updatedAt: string;
-  // productReview: { productId: number }[];
+  serviceFeature?: any;
 };
 
 const OrderCard: React.FC<OrderCardProps> = ({
@@ -39,7 +39,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
   orderStatus,
   orderProductDate,
   updatedAt,
-  // productReview,
+  serviceFeature
 }) => {
   // const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   // const [reviewId, setReviewId] = useState<number>();
@@ -75,7 +75,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
               </div>
               <figcaption>
                 <h3>
-                  {t("service")}
+                  {serviceFeature?.name}
                 </h3>
               </figcaption>
             </figure>

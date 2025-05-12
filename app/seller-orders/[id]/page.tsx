@@ -28,7 +28,7 @@ import { useAuth } from "@/context/AuthContext";
 import { convertDate, convertTime } from "@/utils/helper";
 import AddReceipt from "@/components/modules/sellerOrderDetails/AddReceipt";
 
-const MyOrderDetailsPage = ({}) => {
+const MyOrderDetailsPage = ({ }) => {
   const t = useTranslations();
   const { langDir, currency } = useAuth();
   const router = useRouter();
@@ -275,81 +275,122 @@ const MyOrderDetailsPage = ({}) => {
                         <Link
                           href={`/trending/${orderDetails?.orderProduct_product?.id}`}
                         >
-                          <figure>
-                            <div className="image-container rounded border border-gray-300">
-                              <Image
-                                src={
-                                  orderDetails?.orderProduct_productPrice
-                                    ?.productPrice_product?.productImages?.[0]
-                                    ?.image || PlaceholderImage
-                                }
-                                alt="preview-product"
-                                width={120}
-                                height={120}
-                                placeholder="blur"
-                                blurDataURL="/images/product-placeholder.png"
-                              />
-                            </div>
-                            <figcaption>
-                              <h3>
-                                {
-                                  orderDetails.orderProduct_productPrice
-                                    ?.productPrice_product?.productName
-                                }
-                              </h3>
-                              <p className="mt-1" dir={langDir} translate="no">
-                                {t("seller")}:{" "}
-                                {
-                                  orderDetails?.orderProduct_productPrice
-                                    ?.adminDetail?.firstName
-                                }{" "}
-                                {
-                                  orderDetails?.orderProduct_productPrice
-                                    ?.adminDetail?.lastName
-                                }
-                              </p>
-                              <h4 className="mt-1" dir={langDir}>
-                                {currency.symbol}
-                                {orderDetails?.orderProduct_productPrice
-                                  ?.offerPrice
-                                  ? Number(
+                          {orderDetails?.orderProductType == 'SERVICE' ? (
+                            <figure>
+                              <div className="image-container rounded border border-gray-300">
+                                <Image
+                                  src={PlaceholderImage}
+                                  alt="preview-product"
+                                  width={120}
+                                  height={120}
+                                  placeholder="blur"
+                                  blurDataURL="/images/product-placeholder.png"
+                                />
+                              </div>
+                              <figcaption>
+                                <h3>
+                                  {
+                                    orderDetails?.serviceFeatures
+                                      ?.serviceFeatures?.[0]?.name
+                                  }
+                                </h3>
+                                {/* <p className="mt-1">
+                                  Seller:{" "}
+                                  {
+                                    orderDetails?.orderProduct_productPrice
+                                      ?.adminDetail?.firstName
+                                  }{" "}
+                                  {
+                                    orderDetails?.orderProduct_productPrice
+                                      ?.adminDetail?.lastName
+                                  }
+                                </p> */}
+                                <h4 className="mt-1">
+                                  {currency.symbol}
+                                  {Number(orderDetails?.purchasePrice || 0) * (orderDetails?.orderQuantity || 0)}
+                                </h4>
+                                <p className="text-gray-500" translate="no">
+                                  {t("quantity")} x {orderDetails?.orderQuantity || 0}
+                                </p>
+                              </figcaption>
+                            </figure>
+                          ) : (
+                            <figure>
+                              <div className="image-container rounded border border-gray-300">
+                                <Image
+                                  src={
+                                    orderDetails?.orderProduct_productPrice
+                                      ?.productPrice_product?.productImages?.[0]
+                                      ?.image || PlaceholderImage
+                                  }
+                                  alt="preview-product"
+                                  width={120}
+                                  height={120}
+                                  placeholder="blur"
+                                  blurDataURL="/images/product-placeholder.png"
+                                />
+                              </div>
+                              <figcaption>
+                                <h3>
+                                  {
+                                    orderDetails.orderProduct_productPrice
+                                      ?.productPrice_product?.productName
+                                  }
+                                </h3>
+                                <p className="mt-1" dir={langDir} translate="no">
+                                  {t("seller")}:{" "}
+                                  {
+                                    orderDetails?.orderProduct_productPrice
+                                      ?.adminDetail?.firstName
+                                  }{" "}
+                                  {
+                                    orderDetails?.orderProduct_productPrice
+                                      ?.adminDetail?.lastName
+                                  }
+                                </p>
+                                <h4 className="mt-1" dir={langDir}>
+                                  {currency.symbol}
+                                  {orderDetails?.orderProduct_productPrice
+                                    ?.offerPrice
+                                    ? Number(
                                       orderDetails?.orderProduct_productPrice
                                         ?.offerPrice *
-                                        orderDetails?.orderQuantity,
+                                      orderDetails?.orderQuantity,
                                     )
-                                  : 0}
-                              </h4>
-                              <p
-                                className="text-gray-500"
-                                dir={langDir}
-                                translate="no"
-                              >
-                                {t("quantity")} x{" "}
-                                {orderDetails?.orderQuantity || 0}
-                              </p>
-                              {orderDetails?.orderProductType == 'PRODUCT' && orderDetails?.object ? (
-                                (() => {
-                                  let object = orderDetails?.object;
+                                    : 0}
+                                </h4>
+                                <p
+                                  className="text-gray-500"
+                                  dir={langDir}
+                                  translate="no"
+                                >
+                                  {t("quantity")} x{" "}
+                                  {orderDetails?.orderQuantity || 0}
+                                </p>
+                                {orderDetails?.orderProductType == 'PRODUCT' && orderDetails?.object ? (
+                                  (() => {
+                                    let object = orderDetails?.object;
 
-                                  if (Array.isArray(object)) {
-                                    return object.map((obj: any, index: number) => {
-                                      return (
-                                        <p className="text-gray-500" dir={langDir} key={index}>
-                                          {obj.type}: {obj.value}
-                                        </p>
-                                      );
-                                    });
-                                  }
+                                    if (Array.isArray(object)) {
+                                      return object.map((obj: any, index: number) => {
+                                        return (
+                                          <p className="text-gray-500" dir={langDir} key={index}>
+                                            {obj.type}: {obj.value}
+                                          </p>
+                                        );
+                                      });
+                                    }
 
-                                  return (
-                                    <p className="text-gray-500" dir={langDir}>
-                                      {object.type}: {object.value}
-                                    </p>
-                                  );
-                                })()
-                              ) : null}
-                            </figcaption>
-                          </figure>
+                                    return (
+                                      <p className="text-gray-500" dir={langDir}>
+                                        {object.type}: {object.value}
+                                      </p>
+                                    );
+                                  })()
+                                ) : null}
+                              </figcaption>
+                            </figure>
+                          )}
                         </Link>
                         <div className="center-div">
                           <div className="order-delivery-progess-s1">
@@ -374,14 +415,14 @@ const MyOrderDetailsPage = ({}) => {
                                   orderDetails?.orderProductStatus ===
                                     "CANCELLED" ||
                                     orderDetails?.orderProductStatus ===
-                                      "DELIVERED" ||
+                                    "DELIVERED" ||
                                     orderDetails?.orderProductStatus ===
-                                      "OFD" ||
+                                    "OFD" ||
                                     orderDetails?.orderProductStatus ===
-                                      "SHIPPED"
+                                    "SHIPPED"
                                     ? "complted"
                                     : orderDetails?.orderProductStatus ===
-                                        "CONFIRMED"
+                                      "CONFIRMED"
                                       ? "current"
                                       : "",
                                 )}
@@ -405,11 +446,11 @@ const MyOrderDetailsPage = ({}) => {
                                   orderDetails?.orderProductStatus ===
                                     "CANCELLED" ||
                                     orderDetails?.orderProductStatus ===
-                                      "DELIVERED" ||
+                                    "DELIVERED" ||
                                     orderDetails?.orderProductStatus === "OFD"
                                     ? "complted"
                                     : orderDetails?.orderProductStatus ===
-                                        "SHIPPED"
+                                      "SHIPPED"
                                       ? "current"
                                       : "",
                                 )}
@@ -423,7 +464,7 @@ const MyOrderDetailsPage = ({}) => {
                                 </div>
                                 <div className="orderDateText">
                                   {orderDetails?.orderProductStatus ===
-                                  "SHIPPED"
+                                    "SHIPPED"
                                     ? formatDate(orderDetails?.updatedAt)
                                     : "-"}
                                 </div>
@@ -433,7 +474,7 @@ const MyOrderDetailsPage = ({}) => {
                                   orderDetails?.orderProductStatus ===
                                     "CANCELLED" ||
                                     orderDetails?.orderProductStatus ===
-                                      "DELIVERED"
+                                    "DELIVERED"
                                     ? "complted"
                                     : orderDetails?.orderProductStatus === "OFD"
                                       ? "current"
@@ -463,7 +504,7 @@ const MyOrderDetailsPage = ({}) => {
                                     "CANCELLED"
                                     ? "complted"
                                     : orderDetails?.orderProductStatus ===
-                                        "DELIVERED"
+                                      "DELIVERED"
                                       ? "complted"
                                       : "",
                                 )}
@@ -479,7 +520,7 @@ const MyOrderDetailsPage = ({}) => {
                                   translate="no"
                                 >
                                   {orderDetails?.orderProductStatus ===
-                                  "CANCELLED"
+                                    "CANCELLED"
                                     ? t("cancelled")
                                     : t("delivered")}
                                 </div>
@@ -496,7 +537,7 @@ const MyOrderDetailsPage = ({}) => {
                                 <div className="orderDateText">
                                   {orderDetails?.orderProductStatus ===
                                     "CANCELLED" ||
-                                  orderDetails?.orderProductStatus ===
+                                    orderDetails?.orderProductStatus ===
                                     "DELIVERED"
                                     ? formatDate(orderDetails?.updatedAt)
                                     : "-"}
@@ -508,7 +549,7 @@ const MyOrderDetailsPage = ({}) => {
                         <div className="right-info">
                           <h4 className="mb-2" dir={langDir} translate="no">
                             {orderDetails?.orderProductStatus ===
-                            "CONFIRMED" ? (
+                              "CONFIRMED" ? (
                               <>
                                 <BiCircle color="green" />
                                 {t("placed_on")}{" "}
@@ -539,7 +580,7 @@ const MyOrderDetailsPage = ({}) => {
                             ) : null}
 
                             {orderDetails?.orderProductStatus ===
-                            "DELIVERED" ? (
+                              "DELIVERED" ? (
                               <>
                                 <BiSolidCircle color="green" />{" "}
                                 {t("delivered_on")}{" "}
@@ -550,7 +591,7 @@ const MyOrderDetailsPage = ({}) => {
                             ) : null}
 
                             {orderDetails?.orderProductStatus ===
-                            "CANCELLED" ? (
+                              "CANCELLED" ? (
                               <>
                                 <BiSolidCircle color="red" />{" "}
                                 {t("cancelled_on")}{" "}
@@ -647,6 +688,7 @@ const MyOrderDetailsPage = ({}) => {
                       item?.orderProduct_productPrice?.orderQuantity
                     }
                     variant={item?.object}
+                    serviceFeature={item?.serviceFeatures?.serviceFeatures?.[0]}
                     productImages={
                       item.orderProduct_productPrice?.productPrice_product
                         ?.productImages

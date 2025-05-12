@@ -289,6 +289,9 @@ const SellerOrdersPage = () => {
                     };
                     productId: number;
                   };
+                  serviceFeatures?: {
+                    serviceFeatures?: any[];
+                  };
                   orderQuantity: number;
                   sellerOrderNo: string;
                   orderProductStatus: string;
@@ -298,6 +301,7 @@ const SellerOrdersPage = () => {
                   <OrderCard
                     key={item.id}
                     id={item.id}
+                    orderProductType={item.orderProductType}
                     purchasePrice={item.purchasePrice}
                     productName={
                       item.orderProduct_productPrice?.productPrice_product
@@ -318,6 +322,7 @@ const SellerOrdersPage = () => {
                     }
                     productPriceId={item.orderProduct_productPrice?.id}
                     productId={item.orderProduct_productPrice?.productId}
+                    serviceFeature={item.serviceFeatures?.serviceFeatures?.[0]}
                   />
                 ),
               )}

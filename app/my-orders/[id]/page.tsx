@@ -231,13 +231,13 @@ const MyOrderDetailsPage = ({ }) => {
                                 />
                               </div>
                               <figcaption>
-                                {/* <h3>
+                                <h3>
                                   {
-                                    orderDetails.orderProduct_productPrice
-                                      ?.productPrice_product?.productName
+                                    orderDetails?.serviceFeatures
+                                      ?.serviceFeatures?.[0]?.name
                                   }
                                 </h3>
-                                <p className="mt-1">
+                                {/* <p className="mt-1">
                                   Seller:{" "}
                                   {
                                     orderDetails?.orderProduct_productPrice
@@ -247,21 +247,14 @@ const MyOrderDetailsPage = ({ }) => {
                                     orderDetails?.orderProduct_productPrice
                                       ?.adminDetail?.lastName
                                   }
-                                </p>
+                                </p> */}
                                 <h4 className="mt-1">
                                   {currency.symbol}
-                                  {orderDetails?.orderProduct_productPrice
-                                    ?.offerPrice
-                                    ? Number(
-                                      orderDetails?.orderProduct_productPrice
-                                        ?.offerPrice *
-                                      orderDetails?.orderQuantity,
-                                    )
-                                    : 0}
+                                  {Number(orderDetails?.purchasePrice || 0) * (orderDetails?.orderQuantity || 0) }
                                 </h4>
                                 <p className="text-gray-500" translate="no">
                                   {t("quantity")} x {orderDetails?.orderQuantity || 0}
-                                </p> */}
+                                </p>
                               </figcaption>
                             </figure>
                           ) : (
@@ -585,6 +578,7 @@ const MyOrderDetailsPage = ({ }) => {
                     offerPrice={item?.purchasePrice}
                     orderQuantity={item?.orderQuantity}
                     variant={item?.object}
+                    serviceFeature={item?.serviceFeatures?.serviceFeatures?.[0]}
                     productImages={
                       item.orderProduct_productPrice?.productPrice_product
                         ?.productImages
