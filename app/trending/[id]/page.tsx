@@ -880,7 +880,7 @@ const ProductDetailsPage = () => {
                 {haveAccessToken &&
                 !cartListByUser.data?.data?.length &&
                 !cartListByUser.isLoading ? (
-                  <div className="px-3 py-6">
+                  <div className="w-full px-3 py-6">
                     <p
                       className="my-3 text-center"
                       dir={langDir}
