@@ -15,6 +15,7 @@ import { PERMISSION_ORDERS, checkPermission } from "@/helpers/permission";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import Pagination from "@/components/shared/Pagination";
 
 const SellerOrdersPage = () => {
   const t = useTranslations();
@@ -22,6 +23,8 @@ const SellerOrdersPage = () => {
   const router = useRouter();
   const hasPermission = checkPermission(PERMISSION_ORDERS);
   const searchRef = useRef<HTMLInputElement>(null);
+  const [page, setPage] = useState<number>(1);
+  const [limit] = useState<number>(40);
   const [searchTerm, setSearchTerm] = useState("");
   const [orderStatus, setOrderStatus] = useState<string>("");
   const [orderTime, setOrderTime] = useState<string>("");
@@ -67,8 +70,8 @@ const SellerOrdersPage = () => {
   };
 
   const ordersBySellerIdQuery = useOrdersBySellerId({
-    page: 1,
-    limit: 40,
+    page: page,
+    limit: limit,
     term: searchTerm !== "" ? searchTerm : undefined,
     orderProductStatus: orderStatus,
     startDate: getYearDates(orderTime).startDate,
@@ -326,6 +329,15 @@ const SellerOrdersPage = () => {
                   />
                 ),
               )}
+
+              {ordersBySellerIdQuery?.data?.totalCount > limit ? (
+                <Pagination
+                  page={page}
+                  setPage={setPage}
+                  totalCount={ordersBySellerIdQuery?.data?.totalCount}
+                  limit={limit}
+                />
+              ) : null}
             </div>
           </div>
         </div>
