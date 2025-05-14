@@ -65,9 +65,9 @@ const Operations: React.FC<OperationsProps> = ({ onSelect }) => {
             )}
             key={operation.key}
           >
-            <div className="flex w-[calc(100%-2.5rem)] flex-wrap items-center justify-start gap-y-1 whitespace-pre-wrap break-all pl-3">
+            <div className="flex w-[calc(100%-2.5rem)] flex-wrap items-center justify-start gap-y-1 whitespace-pre-wrap break-all lg:w-full xl:pl-3">
               <div className="flex w-full">
-                <h4 className="text-color-[#333333] text-left text-[14px] font-normal uppercase">
+                <h4 className="text-color-[#333333] text-left text-[13px] font-normal uppercase xl:text-[14px]">
                   {operation.label}
                 </h4>
               </div>

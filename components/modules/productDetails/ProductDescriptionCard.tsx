@@ -353,7 +353,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
               </h5>
             </div>
 
-            <div className="rgdiv flex w-full gap-x-2 sm:w-1/2">
+            <div className="rgdiv flex w-full flex-wrap gap-x-2 sm:w-1/2">
               <h5
                 className="w-20 !capitalize !text-dark-orange sm:!w-20"
                 translate="no"

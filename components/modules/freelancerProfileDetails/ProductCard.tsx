@@ -39,7 +39,7 @@ type ProductCardProps = {
   cartQuantity?: number;
   productVariant: any;
   cartId?: number;
-  relatedCart?: any
+  relatedCart?: any;
 };
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -53,7 +53,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   cartQuantity = 0,
   productVariant,
   cartId,
-  relatedCart
+  relatedCart,
 }) => {
   const t = useTranslations();
   const { user, langDir, currency } = useAuth();
@@ -340,7 +340,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               </div>
             ) : null
           ) : null}
-          <div className="relative mx-auto mb-4 h-[110px] w-full md:h-36 md:w-36">
+          <div className="relative mx-auto mb-4 h-[110px] w-full md:h-36 xl:w-36">
             <Image
               src={
                 item?.productImage && validator.isURL(item.productImage)
