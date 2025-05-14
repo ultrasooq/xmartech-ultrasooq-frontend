@@ -218,7 +218,6 @@ const formSchemaForTypeP = (t: any) => {
         })
         .trim(),
       brandId: z.number().min(1, { message: t("brand_is_required") }),
-      // productLocationId: z.number().min(1, { message: t("product_location_is_required") }),
       productCountryId: z
         .number()
         .min(1, { message: t("product_country_is_required") }),
@@ -294,48 +293,56 @@ const formSchemaForTypeP = (t: any) => {
       isStockRequired: z.boolean().optional(),
       isOfferPriceRequired: z.boolean().optional(),
       isCustomProduct: z.boolean().optional(),
-      productVariantType: z
-        .string()
-        .trim()
-        .min(3, {
-          message: t("variant_type_must_be_equal_greater_than_2_characters"),
-        })
-        .max(20, { message: t("variant_type_must_be_less_than_20_characters") })
-        .optional()
-        .or(z.literal("")),
       productVariants: z.array(
         z.object({
-          value: z
+          type: z
             .string()
             .trim()
-            .min(1, { message: t("value_is_required") })
-            .max(20, {
-              message: t("value_must_be_less_than_n_characters", { n: 20 }),
+            .min(3, {
+              message: t("variant_type_must_be_equal_greater_than_2_characters"),
             })
+            .max(20, { message: t("variant_type_must_be_less_than_20_characters") })
             .optional()
             .or(z.literal("")),
-          image: z.any().optional(),
+          variants: z.array(
+            z.object({
+              value: z
+                .string()
+                .trim()
+                .min(1, { message: t("value_is_required") })
+                .max(20, {
+                  message: t("value_must_be_less_than_n_characters", { n: 20 }),
+                })
+                .optional()
+                .or(z.literal("")),
+              image: z.any().optional(),
+            })
+          )
         }),
       ),
     })
     .superRefine((data, ctx) => {
-      const variantsCount = data.productVariants.filter((el) =>
-        el.value?.trim(),
-      ).length;
-      if (data.productVariantType?.trim() && variantsCount == 0) {
-        ctx.addIssue({
-          code: "custom",
-          message: t("value_is_required"),
-          path: ["productVariants.0.value"],
-        });
-      }
-      if (variantsCount > 0 && !data.productVariantType?.trim()) {
-        ctx.addIssue({
-          code: "custom",
-          message: t("variant_type_is_required"),
-          path: ["productVariantType"],
-        });
-      }
+      data.productVariants.forEach((productVariant, index) => {
+        const variantsCount = productVariant.variants.filter((el) =>
+          el.value?.trim(),
+        ).length;
+
+        if (productVariant.type?.trim() && variantsCount == 0) {
+          ctx.addIssue({
+            code: "custom",
+            message: t("value_is_required"),
+            path: [`productVariants.${index}.variants.0.value`],
+          });
+        }
+
+        if (variantsCount > 0 && !productVariant.type?.trim()) {
+          ctx.addIssue({
+            code: "custom",
+            message: t("variant_type_is_required"),
+            path: [`productVariants.${index}.type`],
+          });
+        }
+      });
 
       if (data.setUpPrice) {
         const result = z
@@ -453,48 +460,56 @@ const formSchemaForTypeR = (t: any) => {
       isStockRequired: z.boolean().optional(),
       isOfferPriceRequired: z.boolean().optional(),
       isCustomProduct: z.boolean().optional(),
-      productVariantType: z
-        .string()
-        .trim()
-        .min(3, {
-          message: t("variant_type_must_be_equal_greater_than_2_characters"),
-        })
-        .max(20, { message: t("variant_type_must_be_less_than_20_characters") })
-        .optional()
-        .or(z.literal("")),
       productVariants: z.array(
         z.object({
-          value: z
+          type: z
             .string()
             .trim()
-            .min(1, { message: t("value_is_required") })
-            .max(20, {
-              message: t("value_must_be_less_than_n_characters", { n: 20 }),
+            .min(3, {
+              message: t("variant_type_must_be_equal_greater_than_2_characters"),
             })
+            .max(20, { message: t("variant_type_must_be_less_than_20_characters") })
             .optional()
             .or(z.literal("")),
-          image: z.any().optional(),
+          variants: z.array(
+            z.object({
+              value: z
+                .string()
+                .trim()
+                .min(1, { message: t("value_is_required") })
+                .max(20, {
+                  message: t("value_must_be_less_than_n_characters", { n: 20 }),
+                })
+                .optional()
+                .or(z.literal("")),
+              image: z.any().optional(),
+            })
+          )
         }),
       ),
     })
     .superRefine((data, ctx) => {
-      const variantsCount = data.productVariants.filter((el) =>
-        el.value?.trim(),
-      ).length;
-      if (data.productVariantType?.trim() && variantsCount == 0) {
-        ctx.addIssue({
-          code: "custom",
-          message: t("value_is_required"),
-          path: ["productVariants.0.value"],
-        });
-      }
-      if (variantsCount > 0 && !data.productVariantType?.trim()) {
-        ctx.addIssue({
-          code: "custom",
-          message: t("variant_type_is_required"),
-          path: ["productVariantType"],
-        });
-      }
+      data.productVariants.forEach((productVariant, index) => {
+        const variantsCount = productVariant.variants.filter((el) =>
+          el.value?.trim(),
+        ).length;
+
+        if (productVariant.type?.trim() && variantsCount == 0) {
+          ctx.addIssue({
+            code: "custom",
+            message: t("value_is_required"),
+            path: [`productVariants.${index}.variants.0.value`],
+          });
+        }
+
+        if (variantsCount > 0 && !productVariant.type?.trim()) {
+          ctx.addIssue({
+            code: "custom",
+            message: t("variant_type_is_required"),
+            path: [`productVariants.${index}.type`],
+          });
+        }
+      });
 
       if (data.setUpPrice) {
         // if (data.offerPrice === 0) {
@@ -574,9 +589,14 @@ const defaultValues: { [key: string]: any } = {
   isCustomProduct: false,
   productVariants: [
     {
-      value: "",
-      image: null,
-    },
+      type: "",
+      variants: [
+        {
+          value: "",
+          image: null
+        }
+      ]
+    }
   ],
 };
 
@@ -637,12 +657,15 @@ const CreateProductPage = () => {
     const response = await getProductVariant.mutateAsync([productPriceId]);
     const variants = response?.data?.[0]?.object || [];
     if (variants.length > 0) {
-      form.setValue("productVariantType", variants[0].type);
-      form.setValue("productVariants", variants.map((variant: any) => {
+      // @ts-ignore
+      let variantTypes = [...new Set(variants.map((variant: any) => variant.type))];
+      form.setValue("productVariants", variantTypes.map((type: string) => {
         return {
-          value: variant.value,
-          image: null
-        };
+          type: type,
+          variants: variants.map((variant: any) => {
+            return { value: variant.value, image: null };
+          })
+        }
       }));
     }
   }
@@ -936,62 +959,84 @@ const CreateProductPage = () => {
       ? JSON.stringify(updatedFormData?.descriptionJson)
       : ""),
       delete updatedFormData.descriptionJson;
-    console.log(updatedFormData);
 
-    updatedFormData.productVariant = updatedFormData.productVariants
-      .filter((el: any) => el.value?.trim())
-      .map((el: any) => {
-        return {
-          type: updatedFormData.productVariantType,
-          value: el.value,
-        };
-      });
-
-    const productVariantImages = updatedFormData.productVariants
-      .filter((item: any) => item.image)
-      .map((item: any, index: number) => {
-        return { path: item.image, id: index.toString() };
-      });
-    if (productVariantImages.length > 0) {
-      const productVariantImagesArray =
-        await handleUploadedFile(productVariantImages);
-      if (productVariantImagesArray) {
-        updatedFormData.productImagesList = [
-          ...updatedFormData.productImagesList,
-          ...updatedFormData.productVariants
-            .filter((item: any) => item.image && item.value)
-            .map((item: any, index: number) => {
-              const url = productVariantImagesArray[index];
-              const extension = url.split(".").pop()?.toLowerCase();
-
-              if (extension) {
-                if (imageExtensions.includes(extension)) {
-                  const imageName: string = url.split("/").pop()!;
-                  return {
-                    image: url,
-                    imageName,
-                    variant: {
-                      type: updatedFormData.productVariantType,
-                      value: item.value,
-                    },
-                  };
-                }
-              }
-
-              return {
-                image: url,
-                imageName: url,
-                variant: {
-                  type: updatedFormData.productVariantType,
-                  value: item.value,
-                },
-              };
-            }),
-        ];
+    updatedFormData.productVariant = [];
+    for (let productVariant of updatedFormData.productVariants) {
+      if (productVariant.type) {
+        for (let variant of productVariant.variants) {
+          if (variant.value) {
+            updatedFormData.productVariant.push({
+              type: productVariant.type,
+              value: variant.value
+            })
+          } 
+        }
       }
     }
 
-    delete updatedFormData.productVariantType;
+    let productVariantImages = [];
+    for (let productVariant of updatedFormData.productVariants) {
+      if (productVariant.type) {
+        for (let variant of productVariant.variants) {
+          if (variant.image && variant.value) {
+            productVariantImages.push({ 
+              path: variant.image,
+              id: productVariant.type + '-' + variant.value,
+            });
+          }
+        }
+      }
+    }
+
+    if (productVariantImages.length > 0) {
+      const productVariantImagesArray = await handleUploadedFile(productVariantImages);
+      if (productVariantImagesArray) {
+        productVariantImages = productVariantImages.map((image: any, index: number) => {
+          image.url = productVariantImagesArray[index];
+          return image;
+        });
+
+        for (let productVariant of updatedFormData.productVariants) {
+          if (productVariant.type) {
+            for (let variant of productVariant.variants) {
+              if (variant.image && variant.value) {
+                let variantImage = productVariantImages.find(
+                  (image: any) => image.id == `${productVariant.type}-${variant.value}`
+                );
+                if (variantImage) {
+                  const url = variantImage.url;
+                  const extension = url.split(".").pop()?.toLowerCase();
+
+                  if (extension) {
+                    if (imageExtensions.includes(extension)) {
+                      const imageName: string = url.split("/").pop()!;
+                      updatedFormData.productImagesList.push({
+                        image: url,
+                        imageName,
+                        variant: {
+                          type: productVariant.type,
+                          value: variant.value,
+                        },
+                      });
+                    } else {
+                      updatedFormData.productImagesList.push({
+                        image: url,
+                        imageName: url,
+                        variant: {
+                          type: productVariant.type,
+                          value: variant.value,
+                        },
+                      });
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
     delete updatedFormData.productVariants;
 
     const response = await createProduct.mutateAsync(updatedFormData);

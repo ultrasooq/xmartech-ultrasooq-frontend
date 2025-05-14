@@ -122,23 +122,19 @@ const FactoriesPage = () => {
   };
 
   const memoizedRfqProducts = useMemo(() => {
-    if (factoriesProductsQuery.data?.data) {
-      return (
-        factoriesProductsQuery.data?.data.map((item: any) => {
-          return {
-            ...item,
-            isAddedToFactoryCart:
-              item?.product_rfqCart?.length &&
-              item?.product_rfqCart[0]?.quantity > 0,
-            factoryCartQuantity: item?.product_rfqCart?.length
-              ? item.product_rfqCart[0].quantity
-              : 0,
-          };
-        }) || []
-      );
-    } else {
-      return [];
-    }
+    return (
+      factoriesProductsQuery?.data?.data?.map((item: any) => {
+        return {
+          ...item,
+          isAddedToFactoryCart:
+            item?.product_rfqCart?.length &&
+            item?.product_rfqCart[0]?.quantity > 0,
+          factoryCartQuantity: item?.product_rfqCart?.length
+            ? item.product_rfqCart[0].quantity
+            : 0,
+        };
+      }) || []
+    );
   }, [factoriesProductsQuery.data?.data]);
 
   const getProductVariants = async () => {

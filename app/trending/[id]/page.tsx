@@ -287,10 +287,10 @@ const ProductDetailsPage = () => {
       ]);
       const variants = response?.data?.[0]?.object || [];
       if (variants.length > 0) {
-        const variantTypes = variants.map((item: any) => item.type);
-        setProductVariantTypes(Array.from(new Set(variantTypes)));
+        let variantTypes = variants.map((item: any) => item.type);
+        variantTypes = Array.from(new Set(variantTypes));
+        setProductVariantTypes(variantTypes);
         setProductVariants(variants);
-        setSelectedProductVariant(variants[0]);
       }
     };
 
@@ -310,7 +310,17 @@ const ProductDetailsPage = () => {
     setGlobalQuantity(
       getProductQuantityByUser || getProductQuantityByDevice || 0,
     );
-  }, [cartListByUser.data?.data, cartListByDeviceQuery.data?.data]);
+
+    if (getProductVariantByDevice || getProductVariantByUser) {
+      setSelectedProductVariant(
+        getProductVariantByDevice || getProductVariantByUser
+      )
+    } else {
+      setSelectedProductVariant(productVariantTypes?.map((variantType: string) => {
+        return productVariants?.find((variant: any) => variant.type == variantType);
+      }));
+    }
+  }, [cartListByUser.data?.data, cartListByDeviceQuery.data?.data, productVariants?.length]);
 
   const handleQuantity = async (quantity: number, action: "add" | "remove") => {
     setGlobalQuantity(quantity);
@@ -662,11 +672,7 @@ const ProductDetailsPage = () => {
               productPriceArr={productDetails?.product_productPrice}
               productVariantTypes={productVariantTypes}
               productVariants={productVariants}
-              selectedProductVariant={
-                getProductVariantByDevice ||
-                getProductVariantByUser ||
-                productVariants?.[0]
-              }
+              selectedProductVariant={selectedProductVariant}
               selectProductVariant={selectProductVariant}
             />
           </div>
