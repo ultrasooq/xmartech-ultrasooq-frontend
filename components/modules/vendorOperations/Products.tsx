@@ -105,7 +105,7 @@ const Products: React.FC<ProductsProps> = ({ onSelect }) => {
             type="button"
             onClick={() => selectProduct(item)}
             className={cn(
-              "flex w-full flex-wrap rounded-md px-[10px] py-[20px]",
+              "flex w-full flex-col flex-wrap rounded-md px-[10px]  py-[20px] xl:flex-row",
               selectedProduct?.productId == item.productId
                 ? "bg-dark-orange text-white shadow-lg"
                 : "",
@@ -120,9 +120,9 @@ const Products: React.FC<ProductsProps> = ({ onSelect }) => {
                 className="rounded-full"
               />
             </div>
-            <div className="flex w-[calc(100%-2.5rem)] flex-wrap items-center justify-start gap-y-1 whitespace-pre-wrap break-all pl-3">
+            <div className="flex w-full flex-wrap items-center justify-start gap-y-1 whitespace-pre-wrap break-all xl:w-[calc(100%-2.5rem)] xl:pl-3">
               <div className="flex w-full">
-                <h4 className="text-color-[#333333] text-left text-[14px] font-normal uppercase">
+                <h4 className="text-color-[#333333] text-left text-[13px] font-normal uppercase xl:text-[14px]">
                   {item.productPrice_product?.productName}
                 </h4>
               </div>
