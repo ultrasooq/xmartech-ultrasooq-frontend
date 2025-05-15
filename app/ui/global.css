@@ -735,17 +735,24 @@
   }
 
   .product-list-s1 .product-list-s1-col {
-    @apply w-full max-w-[25%] px-[13px] py-5;
+    @apply w-full max-w-[25%] px-[13px] py-5 flex;
   }
 
   .product-list-s1 .product-list-s1-box {
-    @apply relative p-[8px] pt-[50px];
-    @apply border border-solid border-transparent;
+    @apply relative p-[8px] pt-[50px] w-full border border-solid border-transparent flex flex-wrap flex-col;
     transition: 0.5s;
   }
 
   .product-list-s1 .product-list-s1-box:hover {
     @apply border-[#DBDBDB];
+  }
+
+  .product-list-s1 .product-list-s1-box a {
+    @apply w-full;
+  }
+
+  .product-list-s1 .product-list-s1-box .cart_button {
+    @apply mt-auto mb-0;
   }
 
   .product-list-s1.outline-style .product-list-s1-box {
