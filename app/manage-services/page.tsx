@@ -58,7 +58,7 @@ const ManageServices = () => {
     limit,
     sort: sortBy,
     term: searchTerm,
-    ownservice:true,
+    ownService:true,
   });
 
   const memoizedServicesList = useMemo(() => {

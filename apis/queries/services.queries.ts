@@ -54,7 +54,7 @@ export const useUpdateService = () => {
     },
   });
 };
-export const useGetAllServices = (payload: { page: number; limit: number; term?: string; sort?: string; brandIds?: string; priceMin?: number; priceMax?: number; userId?: number; categoryIds?: string; isOwner?: string; ownservice?: boolean }, enabled = true,) => useQuery({
+export const useGetAllServices = (payload: { page: number; limit: number; term?: string; sort?: string; userId?: number; ownService?: boolean }, enabled = true,) => useQuery({
   queryKey: ["all-services", payload],
   queryFn: async () => {
     const res = await fetchAllServices(payload);

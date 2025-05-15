@@ -58,7 +58,8 @@ const Services = () => {
         page,
         limit,
         term: searchTerm,
-        sort: sortBy
+        sort: sortBy,
+        ownService: false
     });
 
     const handleServiceToCartModal = () => {
