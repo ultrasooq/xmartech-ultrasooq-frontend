@@ -36,6 +36,7 @@ import { useGetAllServices } from "@/apis/queries/services.queries";
 import ServiceCard from "@/components/modules/trending/ServiceCard";
 import ServiceTable from "@/components/modules/trending/ServiceTable";
 import AddServiceToCartModal from "@/components/modules/serviceDetails/AddServiceToCartModal";
+import ListIcon from "@/components/icons/ListIcon";
 
 const Services = () => {
     const t = useTranslations();
@@ -188,6 +189,15 @@ const Services = () => {
                                             <GridIcon active={viewType === "grid"} />
                                         </button>
                                     </li>
+                                    <li>
+                                        <button
+                                            type="button"
+                                            className="view-type-btn"
+                                            onClick={() => setViewType("list")}
+                                        >
+                                            <ListIcon active={viewType === "list"} />
+                                        </button>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
@@ -225,7 +235,7 @@ const Services = () => {
 
                         {viewType === "list" && memoizedServicesList.length ? (
                             <div className="product-list-s1 p-4">
-                                <ServiceTable list={memoizedServicesList} />
+                                <ServiceTable services={memoizedServicesList} />
                             </div>
                         ) : null}
 
