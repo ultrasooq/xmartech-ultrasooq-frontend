@@ -9,10 +9,12 @@ import TrashIcon from "@/public/images/social-delete-icon.svg";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 import ProductVariantTypes from "./ProductVariantTypes";
+import { usePathname } from "next/navigation";
 
 const DescriptionAndSpecificationSection = () => {
   const t = useTranslations();
   const { langDir } = useAuth();
+  const pathname = usePathname();
   const formContext = useFormContext();
 
   const fieldArrayForSpecification = useFieldArray({
@@ -97,7 +99,7 @@ const DescriptionAndSpecificationSection = () => {
                 </div>
               ))}
               
-              <ProductVariantTypes />
+              {pathname == "/product" ? <ProductVariantTypes /> : null}
             </div>
           </div>
         </div>

@@ -88,10 +88,21 @@ const ProductVariants: React.FC<ProductVariantsTypes> = ({ index }) => {
                                         const image = formContext.getValues(
                                             `productVariants.${index}.variants.${i}.image`,
                                         );
+                                        
+                                        if (typeof image === "object") {
+                                            return (
+                                                <Image
+                                                    src={URL.createObjectURL(image)}
+                                                    alt="profile"
+                                                    fill
+                                                    priority
+                                                />
+                                            );
+                                        }
 
                                         return (
                                             <Image
-                                                src={URL.createObjectURL(image)}
+                                                src={image}
                                                 alt="profile"
                                                 fill
                                                 priority

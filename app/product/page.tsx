@@ -29,6 +29,7 @@ import { convertDate, convertTime, generateRandomSkuNoWithTimeStamp, handleDescr
 import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import { v4 as uuidv4 } from "uuid";
 
 const baseProductPriceItemSchema = (t: any) => {
   return z.object({
@@ -654,18 +655,30 @@ const CreateProductPage = () => {
   };
 
   const fetchProductVariant = async (productPriceId: number) => {
+    const product = productQueryById?.data?.data;
     const response = await getProductVariant.mutateAsync([productPriceId]);
     const variants = response?.data?.[0]?.object || [];
     if (variants.length > 0) {
+      const productSellerImages = product?.product_productPrice?.[0]?.productPrice_productSellerImage?.length
+        ? product?.product_productPrice?.[0]?.productPrice_productSellerImage
+        : product?.productImages?.length
+        ? product?.productImages
+        : [];
+
       // @ts-ignore
       let variantTypes = [...new Set(variants.map((variant: any) => variant.type))];
       form.setValue("productVariants", variantTypes.map((type: string) => {
         return {
           type: type,
-          variants: variants.map((variant: any) => {
-            return { value: variant.value, image: null };
+          variants: variants.filter((variant: any) => variant.type == type).map((variant: any) => {
+            return {
+              value: variant.value, 
+              image: productSellerImages?.find((image: any) => {
+                return image.variant && image.variant?.type == type && image.variant?.value == variant.value;
+              })?.image || null
+            };
           })
-        }
+        };
       }));
     }
   }
@@ -693,6 +706,28 @@ const CreateProductPage = () => {
           }
         }) || []
       );
+
+      const productSellerImages = product?.product_productPrice?.[0]
+        ?.productPrice_productSellerImage?.length
+        ? product?.product_productPrice?.[0]?.productPrice_productSellerImage
+        : product?.productImages?.length
+        ? product?.productImages
+        : [];
+
+      const productImages = productSellerImages?.filter((item: any) => !item.variant)?.map((item: any) => {
+        if (item?.image) {
+          return {
+            path: item?.image,
+            id: uuidv4(),
+          };
+        } else if (item?.video) {
+          return {
+            path: item?.video,
+            id: uuidv4(),
+          };
+        }
+      });
+      form.setValue('productImages', productImages);
 
       if (product.product_productPrice?.length) {
         form.setValue("productPriceList.[0].consumerType", product.product_productPrice[0]?.consumerType);
@@ -807,7 +842,13 @@ const CreateProductPage = () => {
         ? await handleUploadedFile(fileTypeArrays)
         : [];
 
-      updatedFormData.productImages = [...imageUrlArray];
+      updatedFormData.productImages = [
+        ...watchProductImages.filter(
+          (item: any) => typeof item.path === "string",
+        )
+        .map((item: any) => item.path),
+        ...imageUrlArray
+      ];
 
       if (updatedFormData.productImages.length) {
         updatedFormData.productImagesList = updatedFormData.productImages.map(
@@ -989,10 +1030,24 @@ const CreateProductPage = () => {
     }
 
     if (productVariantImages.length > 0) {
-      const productVariantImagesArray = await handleUploadedFile(productVariantImages);
-      if (productVariantImagesArray) {
+      const productVariantImagesArray = await handleUploadedFile(
+        productVariantImages.filter((item: any) => typeof item.path === 'object')
+      );
+      let updatedProductVariantImagesArray: any[] = [];
+      let i = 0;
+      productVariantImages.forEach((item: any) => {
+        if (typeof item.path === 'object') {
+          updatedProductVariantImagesArray.push(
+            productVariantImagesArray ? productVariantImagesArray[i] : null
+          );
+          i++;
+        } else {
+          updatedProductVariantImagesArray.push(item.path);
+        }
+      })
+      if (updatedProductVariantImagesArray.length) {
         productVariantImages = productVariantImages.map((image: any, index: number) => {
-          image.url = productVariantImagesArray[index];
+          image.url = updatedProductVariantImagesArray[index];
           return image;
         });
 
