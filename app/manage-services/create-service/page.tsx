@@ -447,9 +447,7 @@ const CreateServicePage = () => {
       form.setValue("renewEveryWeek", false);
     }
   };
-  useEffect(() => {
-    console.log("Current Form Errors:", form.formState.errors);
-  }, [form.formState.errors]);
+  
   useEffect(() => {
     const countryId = form.watch("countryId") as any;
     if (form.watch("countryId")) {

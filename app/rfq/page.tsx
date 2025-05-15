@@ -346,7 +346,7 @@ const RfqPage = () => {
                       />
                     </button>
                   </div>
-                  {haveAccessToken ? (
+                  {haveAccessToken && me?.data?.data?.tradeRole != 'BUYER' ? (
                     <div className="rfq_add_new_product">
                       <Link
                         href="/product?productType=R"
