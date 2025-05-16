@@ -714,19 +714,21 @@ const CreateProductPage = () => {
         ? product?.productImages
         : [];
 
-      const productImages = productSellerImages?.filter((item: any) => !item.variant)?.map((item: any) => {
-        if (item?.image) {
-          return {
-            path: item?.image,
-            id: uuidv4(),
-          };
-        } else if (item?.video) {
-          return {
-            path: item?.video,
-            id: uuidv4(),
-          };
-        }
-      });
+      const productImages = productSellerImages?.filter((item: any) => item.image)
+        ?.filter((item: any) => !item.variant)
+        ?.map((item: any) => {
+          if (item?.image) {
+            return {
+              path: item?.image,
+              id: uuidv4(),
+            };
+          } else if (item?.video) {
+            return {
+              path: item?.video,
+              id: uuidv4(),
+            };
+          }
+        });
       form.setValue('productImages', productImages);
 
       if (product.product_productPrice?.length) {
@@ -745,11 +747,11 @@ const CreateProductPage = () => {
         if (product.product_productPrice[0]?.dateOpen) {
           form.setValue("productPriceList.[0].dateOpen", product.product_productPrice[0]?.dateOpen);
         }
-        form.setValue("productPriceList.[0].startTime", product.product_productPrice[0]?.timeOpen);
+        form.setValue("productPriceList.[0].startTime", product.product_productPrice[0]?.startTime);
         if (product.product_productPrice[0]?.dateClose) {
           form.setValue("productPriceList.[0].dateClose", product.product_productPrice[0]?.dateClose);
         }
-        form.setValue("productPriceList.[0].endTime", product.product_productPrice[0]?.timeClose);
+        form.setValue("productPriceList.[0].endTime", product.product_productPrice[0]?.endTime);
         form.setValue("productPriceList.[0].deliveryAfter", product.product_productPrice[0]?.deliveryAfter);
         form.setValue("productPrice", product.product_productPrice[0]?.productPrice);
         form.setValue("offerPrice", product.product_productPrice[0]?.offerPrice);

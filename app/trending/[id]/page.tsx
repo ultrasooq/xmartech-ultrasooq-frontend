@@ -356,8 +356,7 @@ const ProductDetailsPage = () => {
     actionType: "add" | "remove",
     productVariant?: any,
   ) => {
-    const minQuantity =
-      productDetails.product_productPrice?.[0]?.minQuantityPerCustomer;
+    const minQuantity = productDetails.product_productPrice?.[0]?.minQuantityPerCustomer;
     if (actionType == "add" && minQuantity && minQuantity > quantity) {
       toast({
         description: t("min_quantity_must_be_n", { n: minQuantity }),
@@ -375,8 +374,7 @@ const ProductDetailsPage = () => {
       return;
     }
 
-    const maxQuantity =
-      productDetails.product_productPrice?.[0]?.maxQuantityPerCustomer;
+    const maxQuantity = productDetails.product_productPrice?.[0]?.maxQuantityPerCustomer;
     if (maxQuantity && maxQuantity < quantity) {
       toast({
         description: t("max_quantity_must_be_n", { n: maxQuantity }),
@@ -586,7 +584,11 @@ const ProductDetailsPage = () => {
               productDetails={productDetails}
               onProductUpdateSuccess={handleProductUpdateSuccess} // Pass to child
               onAdd={() => handleAddToCart(globalQuantity, "add")}
-              onToCart={() => handleAddToCart(globalQuantity, "add")}
+              onToCart={async () => {
+                const minQuantity = productDetails.product_productPrice?.[0]?.minQuantityPerCustomer;
+                const resp = await handleAddToCart(globalQuantity || minQuantity || 1, "add");
+                if (resp === true) router.push("/checkout");
+              }}
               onToCheckout={handleCheckoutPage}
               openCartCard={handelOpenCartLayout}
               hasItem={hasItemByUser || hasItemByDevice}
