@@ -48,14 +48,12 @@ type serviceImageProps = {
 type BasicInformationProps = {
   editId?: string;
   tagsList: any;
-  activeProductType?: string;
   selectedCategoryIds?: string[];
 };
 
 const BasicInformationSection: React.FC<BasicInformationProps> = ({
   editId,
   tagsList,
-  activeProductType,
   selectedCategoryIds,
 }) => {
   const t = useTranslations();
@@ -258,7 +256,9 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                     </div>
 
                     {catList.length > 0
-                      ? catList.map((item, index) => {
+                      ? catList
+                        .filter((item) => item.children?.length)
+                        .map((item, index) => {
                           return (
                             <div
                               key={item?.id}
@@ -574,10 +574,6 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                     </div>
                   </div>
                 </div>
-
-                {/* <PriceSection activeProductType={activeProductType} /> */}
-
-                {/* <DescriptionSection /> */}
               </div>
             </div>
           </div>

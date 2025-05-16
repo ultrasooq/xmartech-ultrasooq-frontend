@@ -677,7 +677,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                       dir={langDir}
                       translate="no"
                     >
-                      {t("add_new")}
+                      {t("copy_product")}
                     </button>
                   </div>
                 </div>
