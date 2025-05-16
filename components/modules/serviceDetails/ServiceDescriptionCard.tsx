@@ -7,6 +7,7 @@ import SecurePaymentIcon from "@/public/images/securePaymenticon.svg";
 import SupportIcon from "@/public/images/support-24hr.svg";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import moment from "moment";
 
 const ServiceDescriptionCard: React.FC<any> = ({
     selectedFeatures,
@@ -14,22 +15,12 @@ const ServiceDescriptionCard: React.FC<any> = ({
     incrementQuantity,
     updateQuantity,
     toggleFeature,
-    allDetailsService,
-    productId,
-    productName,
-    productPrice,
-    offerPrice,
-    skuNo,
-    productTags,
-    category,
-    productQuantity = 0, // Default to 1 if undefined
+    serviceDetails,
     productReview,
-    onAdd,
     isLoading,
-    userId,
 }) => {
     const t = useTranslations();
-    const { user, langDir, currency } = useAuth();
+    const { langDir, currency } = useAuth();
 
     const calculateAvgRating = useMemo(() => {
         const totalRating = productReview?.reduce(
@@ -64,7 +55,7 @@ const ServiceDescriptionCard: React.FC<any> = ({
         <div className="product-view-s1-right">
             {isLoading ? <Skeleton className="mb-2 h-10 w-full" /> : null}
             <div className="info-col">
-                <h2>{productName}</h2>
+                <h2>{serviceDetails?.serviceName}</h2>
             </div>
             {isLoading ? (
                 <Skeleton className="mb-2 h-28 w-full" />
@@ -73,7 +64,7 @@ const ServiceDescriptionCard: React.FC<any> = ({
                     <div className="space-y-4">
                         <h5 className="text-lg font-semibold" translate="no">{t("select_services")}</h5>
                         {
-                            allDetailsService?.serviceFeatures?.map((feature: any) => {
+                            serviceDetails?.serviceFeatures?.map((feature: any) => {
                                 const selectedFeature = selectedFeatures.find(
                                     (item: any) => item.id === feature.id
                                 );
@@ -152,6 +143,69 @@ const ServiceDescriptionCard: React.FC<any> = ({
                                 );
                             })
                         }
+                    </div>
+                </div>
+            )}
+
+            {isLoading ? (
+                <Skeleton className="h-44 w-full" />
+            ) : (
+                <div className="info-col">
+                    <div className="row">
+                        <div className="col-12 col-md-12">
+                            <div className="form-group mb-0">
+                                <p>
+                                    <span className="color-text" dir={langDir} translate="no">
+                                        {t("working_days")}:
+                                    </span>{" "}
+                                    <b>{serviceDetails?.workingDays}</b>
+                                </p>
+                                <p>
+                                    <span className="color-text" dir={langDir} translate="no">
+                                        {t("off_days")}:
+                                    </span>{" "}
+                                    <b>{serviceDetails?.offDays}</b>
+                                </p>
+                                <p>
+                                    <span className="color-text" dir={langDir} translate="no">
+                                        {t("service_type")}:
+                                    </span>{" "}
+                                    <b>{serviceDetails?.serviceType}</b>
+                                </p>
+                                {serviceDetails?.openTime ? (
+                                    <p>
+                                        <span className="color-text" dir={langDir} translate="no">
+                                            {t("open_time")}:
+                                        </span>{" "}
+                                        <b>{moment.utc(serviceDetails?.openTime).format('hh:mm A')}</b>
+                                    </p>
+                                ) : null}
+                                {serviceDetails?.closeTime ? (
+                                    <p>
+                                        <span className="color-text" dir={langDir} translate="no">
+                                            {t("close_time")}:
+                                        </span>{" "}
+                                        <b>{moment.utc(serviceDetails?.closeTime).format('hh:mm A')}</b>
+                                    </p>
+                                ) : null}
+                                {serviceDetails?.breakTimeFrom ? (
+                                    <p>
+                                        <span className="color-text" dir={langDir} translate="no">
+                                            {t("break_time_from")}:
+                                        </span>{" "}
+                                        <b>{moment.utc(serviceDetails?.breakTimeFrom).format('hh:mm A')}</b>
+                                    </p>
+                                ) : null}
+                                {serviceDetails?.breakTimeTo ? (
+                                    <p>
+                                        <span className="color-text" dir={langDir} translate="no">
+                                            {t("break_time_to")}:
+                                        </span>{" "}
+                                        <b>{moment.utc(serviceDetails?.breakTimeTo).format('hh:mm A')}</b>
+                                    </p>
+                                ) : null}
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}

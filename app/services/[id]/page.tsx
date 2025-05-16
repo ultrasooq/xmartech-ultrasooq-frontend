@@ -463,23 +463,9 @@ const ServiceDetailsPage = () => {
               decrementQuantity={decrementQuantity}
               incrementQuantity={incrementQuantity}
               updateQuantity={updateQuantity}
-              allDetailsService={serviceDetails}
-              productId={searchParams?.id ? (searchParams?.id as string) : ""}
-              productName={serviceDetails?.serviceName}
-              productPrice={serviceDetails?.productPrice}
-              offerPrice={serviceDetails?.product_productPrice?.[0]?.offerPrice}
-              skuNo={serviceDetails?.skuNo}
-              category={serviceDetails?.category?.name}
-              productTags={serviceDetails?.tags}
-              productQuantity={
-                globalQuantity ||
-                getProductQuantityByUser ||
-                getProductQuantityByDevice
-              }
+              serviceDetails={serviceDetails}
               productReview={serviceDetails?.productReview}
-              onAdd={handleAddToCart}
               isLoading={serviceQueryById?.isLoading}
-              userId={me.data?.data?.id}
             />
           </div>
         </div>
@@ -587,9 +573,7 @@ const ServiceDetailsPage = () => {
                   <TabsContent value="vendor" className="mt-0">
                     <div className="w-full bg-white">
                       <VendorSection
-                        adminId={
-                          serviceDetails?.product_productPrice?.[0]?.adminId
-                        }
+                        adminId={serviceDetails?.sellerId}
                       />
                     </div>
                   </TabsContent>
