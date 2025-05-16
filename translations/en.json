@@ -522,6 +522,7 @@
     "order_status": "Order Status",
     "order_received": "Order Received",
     "order_confirmed": "Order Confirmed",
+    "placed": "Order Placed",
     "confirmed": "Confirmed",
     "shipped": "Shipped",
     "on_the_way": "On the way",

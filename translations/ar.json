@@ -522,6 +522,7 @@
     "order_status": "حالة الطلب",
     "order_received": "تم استلام الطلب",
     "order_confirmed": "تأكيد الأمر",
+    "placed": "تم تقديم الطلب",
     "confirmed": "مؤكد",
     "shipped": "شحن",
     "on_the_way": "في الطريق",

@@ -335,7 +335,7 @@ const MyOrderDetailsPage = ({ }) => {
                             <ul>
                               <li className="complted">
                                 <div className="orderStatusText" dir={langDir} translate="no">
-                                  {t("order_received")}
+                                  {t("placed")}
                                 </div>
                                 <div className="dot">
                                   <small></small>
