@@ -204,21 +204,15 @@ export const useAllProducts = (payload: { page: number; limit: number; term?: st
     const res = await fetchAllProducts(payload);
     return res.data;
   },
-  // onError: (err: APIResponseError) => {
-  //   console.log(err);
-  // },
   enabled,
 });
 
 export const useAllBuyGroupProducts = (payload: { page: number; limit: number; term?: string; sort?: string; brandIds?: string; priceMin?: number; priceMax?: number; userId?: number; categoryIds?: string; isOwner?: string; }, enabled = true,) => useQuery({
-  queryKey: ["existing-products", payload],
+  queryKey: ["buygroup-products", payload],
   queryFn: async () => {
     const res = await fetchAllBuyGroupProducts(payload);
     return res.data;
   },
-  // onError: (err: APIResponseError) => {
-  //   console.log(err);
-  // },
   enabled,
 });
 

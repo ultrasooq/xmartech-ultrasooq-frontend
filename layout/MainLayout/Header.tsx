@@ -160,10 +160,10 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
     const params = new URLSearchParams(window.location.search);
     if (newTerm) {
       params.set("term", newTerm);
+      router.replace(`/search?${params.toString()}`); // Update URL dynamically
     } else {
-      params.delete("term");
+      router.replace(`/trending`); // Update URL dynamically
     }
-    router.replace(`/trending?${params.toString()}`); // Update URL dynamically
   }, 500);
 
   const handleSearch = (event: any) => {

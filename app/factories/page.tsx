@@ -47,7 +47,11 @@ import { useAuth } from "@/context/AuthContext";
 import { useProductVariant } from "@/apis/queries/product.queries";
 import Cart from "@/components/modules/cartList/Cart";
 
-const FactoriesPage = () => {
+interface FactoriesPageProps {
+  searchParams?: { term?: string };
+}
+
+const FactoriesPage = ({ searchParams }: FactoriesPageProps) => {
   const t = useTranslations();
   const { langDir } = useAuth();
   const queryClient = useQueryClient();
@@ -55,7 +59,7 @@ const FactoriesPage = () => {
   const wrapperRef = useRef(null);
   const [viewType, setViewType] = useState<"grid" | "list">("grid");
   const [sortBy, setSortBy] = useState<"newest" | "oldest">("newest");
-  const [searchRfqTerm, setSearchRfqTerm] = useState("");
+  const [searchRfqTerm, setSearchRfqTerm] = useState(searchParams?.term || "");
   const [selectedBrandIds, setSelectedBrandIds] = useState<number[]>([]);
   const [selectAllBrands, setSelectAllBrands] = useState<boolean>(false);
   const [displayMyProducts, setDisplayMyProducts] = useState("0");
@@ -319,6 +323,7 @@ const FactoriesPage = () => {
                       placeholder={t("search_product")}
                       onChange={handleRfqDebounce}
                       ref={searchInputRef}
+                      defaultValue={searchParams?.term || ""}
                       dir={langDir}
                       translate="no"
                     />

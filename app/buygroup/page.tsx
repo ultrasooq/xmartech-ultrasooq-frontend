@@ -67,7 +67,11 @@ import { useAuth } from "@/context/AuthContext";
 import { startDebugger } from "remove-child-node-error-debugger";
 import Cart from "@/components/modules/cartList/Cart";
 
-const TrendingPage = () => {
+interface TrendingPageProps {
+  searchParams?: { term?: string };
+}
+
+const TrendingPage = ({ searchParams }: TrendingPageProps) => {
   const t = useTranslations();
   const { langDir, currency } = useAuth();
   const queryClient = useQueryClient();
@@ -88,6 +92,7 @@ const TrendingPage = () => {
   const [productVariants, setProductVariants] = useState<any[]>([]);
   const [haveAccessToken, setHaveAccessToken] = useState(false);
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
+  const searchUrlTerm = searchParams?.term || "";
   const category = useCategoryStore();
 
   const minPriceInputRef = useRef<HTMLInputElement>(null);
@@ -100,6 +105,7 @@ const TrendingPage = () => {
     page,
     limit,
     sort: sortBy,
+    term: searchUrlTerm,
     priceMin:
       priceRange[0] === 0
         ? 0
@@ -242,7 +248,7 @@ const TrendingPage = () => {
   const cartListByDeviceQuery = useCartListByDevice(
     {
       page: 1,
-      limit: 20,
+      limit: 100,
       deviceId,
     },
     !haveAccessToken,
@@ -251,7 +257,7 @@ const TrendingPage = () => {
   const cartListByUser = useCartListByUserId(
     {
       page: 1,
-      limit: 20,
+      limit: 100,
     },
     haveAccessToken,
   );

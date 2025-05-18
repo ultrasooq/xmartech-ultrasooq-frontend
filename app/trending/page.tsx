@@ -242,7 +242,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
   const cartListByDeviceQuery = useCartListByDevice(
     {
       page: 1,
-      limit: 20,
+      limit: 100,
       deviceId,
     },
     !haveAccessToken,
@@ -251,7 +251,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
   const cartListByUser = useCartListByUserId(
     {
       page: 1,
-      limit: 20,
+      limit: 100,
     },
     haveAccessToken,
   );

@@ -38,13 +38,17 @@ import ServiceTable from "@/components/modules/trending/ServiceTable";
 import AddServiceToCartModal from "@/components/modules/serviceDetails/AddServiceToCartModal";
 import ListIcon from "@/components/icons/ListIcon";
 
-const Services = () => {
+interface ServicesPageProps {
+    searchParams?: { term?: string };
+}
+
+const Services = ({ searchParams }: ServicesPageProps) => {
     const t = useTranslations();
     const { langDir } = useAuth();
     const router = useRouter();
     const deviceId = getOrCreateDeviceId() || "";
     const [viewType, setViewType] = useState<"grid" | "list">("grid");
-    const [searchTerm, setSearchTerm] = useState("");
+    const [searchTerm, setSearchTerm] = useState(searchParams?.term || "");
     const [sortBy, setSortBy] = useState("desc");
     const [page, setPage] = useState(1);
     const [limit] = useState(8);
@@ -83,7 +87,7 @@ const Services = () => {
     const cartListByDeviceQuery = useCartListByDevice(
         {
             page: 1,
-            limit: 20,
+            limit: 100,
             deviceId,
         },
         !haveAccessToken,
@@ -92,7 +96,7 @@ const Services = () => {
     const cartListByUser = useCartListByUserId(
         {
             page: 1,
-            limit: 20,
+            limit: 100,
         },
         haveAccessToken,
     );
@@ -137,6 +141,7 @@ const Services = () => {
                                         placeholder={t("search_service")}
                                         className="search-box h-[40px] w-full sm:w-[160px] lg:w-80"
                                         onChange={handleSearchService}
+                                        defaultValue={searchParams?.term || ""}
                                         dir={langDir}
                                         translate="no"
                                     />

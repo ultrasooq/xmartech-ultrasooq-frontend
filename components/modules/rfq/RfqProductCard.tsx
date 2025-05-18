@@ -172,7 +172,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                       "add",
                       offerPriceFrom,
                       offerPriceTo,
-                      "",
+                      productNote || "",
                     );
                   }}
                 >
@@ -227,7 +227,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                     "add",
                     offerPriceFrom,
                     offerPriceTo,
-                    "",
+                    productNote || "",
                   );
                 }}
                 dir={langDir}
