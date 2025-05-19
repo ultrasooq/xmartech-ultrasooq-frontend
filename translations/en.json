@@ -914,6 +914,7 @@
     "each_customer_time_is_required": "Each customer time is required.",
     "each_customer_time_must_be_positive": "Each customer time must be a positive number.",
     "customer_per_period_is_required": "Customer per period is required.",
+    "customer_per_period_must_be_less_than_or_equal_to_100": "Customer per period must be less than or equal to 100",
     "customer_per_period_must_be_positive": "Customer per period must be a positive number.",
     "service_for": "Service For",
     "me": "Me",

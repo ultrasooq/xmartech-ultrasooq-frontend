@@ -914,6 +914,7 @@
     "each_customer_time_is_required": "وقت كل عميل مطلوب.",
     "each_customer_time_must_be_positive": "يجب أن يكون وقت كل عميل رقماً موجباً.",
     "customer_per_period_is_required": "عدد العملاء لكل فترة مطلوب.",
+    "customer_per_period_must_be_less_than_or_equal_to_100": "يجب أن يكون العميل لكل فترة أقل من 100",
     "customer_per_period_must_be_positive": "يجب أن يكون عدد العملاء لكل فترة رقماً موجباً.",
     "service_for": "الخدمة لـ",
     "me": "أنا",

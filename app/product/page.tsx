@@ -1098,6 +1098,10 @@ const CreateProductPage = () => {
 
     delete updatedFormData.productVariants;
 
+    if (productQueryById?.data?.data && searchParams?.get('copy') && updatedFormData.productName.trim() == productQueryById?.data?.data?.productName.trim()) {
+      updatedFormData.status = "ACTIVE";
+    }
+
     const response = await createProduct.mutateAsync(updatedFormData);
 
     if (response.status && response.data) {

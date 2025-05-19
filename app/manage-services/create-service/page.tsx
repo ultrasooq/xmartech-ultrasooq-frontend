@@ -88,10 +88,10 @@ const formSchema = (t: any) =>
         .string()
         .trim()
         .min(1, { message: t("each_customer_time_is_required") }),
-      customerPerPeiod: z
-        .string()
-        .trim()
-        .min(1, { message: t("customer_per_period_is_required") }),
+      customerPerPeiod: z.coerce
+        .number()
+        .min(1, { message: t("customer_per_period_is_required") })
+        .max(100, { message: t("customer_per_period_must_be_less_than_or_equal_to_100") }),
 
       serviceType: z.enum(["BOOKING", "MOVING"], {
         required_error: t("service_type_is_required"),
