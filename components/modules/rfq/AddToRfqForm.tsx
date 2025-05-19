@@ -42,6 +42,7 @@ type AddToRfqFormProps = {
   selectedQuantity?: number;
   offerPriceFrom?: number;
   offerPriceTo?: number;
+  note?: string;
 };
 
 const addFormSchema = (t: any) => {
@@ -111,7 +112,8 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
   selectedProductId,
   selectedQuantity,
   offerPriceFrom,
-  offerPriceTo
+  offerPriceTo,
+  note
 }) => {
   const t = useTranslations();
   const { langDir } = useAuth();
@@ -123,7 +125,8 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
       addDefaultValues, 
       { 
         offerPriceFrom: offerPriceFrom,
-        offerPriceTo: offerPriceTo
+        offerPriceTo: offerPriceTo,
+        note: note || ""
       }
     ) : editDefaultValues,
   }); 
@@ -442,7 +445,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
       const product = productQueryById?.data?.data;
 
       const productImages = product?.productImages?.length
-        ? product?.productImages?.map((item: any) => {
+        ? product?.productImages?.filter((item: any) => item.image)?.map((item: any) => {
             if (item?.image) {
               return {
                 path: item?.image,
@@ -628,25 +631,6 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
                                     />
                                   </div>
                                 ) : null}
-
-                                {/* <Input
-                                  type="file"
-                                  accept="image/*"
-                                  multiple={false}
-                                  className="!bottom-0 h-44 !w-full cursor-pointer opacity-0"
-                                  onChange={(event) =>
-                                    // handleFileChanges(event, field, item)
-                                    {
-                                      if (event.target.files) {
-                                        handleEditPreviewImage(
-                                          item?.id,
-                                          event.target.files,
-                                        );
-                                      }
-                                    }
-                                  }
-                                  id="productImages"
-                                /> */}
                               </div>
                             </div>
                           </FormControl>
