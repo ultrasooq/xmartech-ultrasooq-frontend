@@ -104,7 +104,9 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
 }) => {
   const t = useTranslations();
   const { user, langDir, currency } = useAuth();
-  const [selectedProductVariants, setSelectedProductVariants] = useState<any>(selectedProductVariant);
+  const [selectedProductVariants, setSelectedProductVariants] = useState<any>(
+    selectedProductVariant,
+  );
   const [quantity, setQuantity] = useState(productQuantity);
   const [isAddedToCart, setIsAddedToCart] = useState<boolean>(
     productQuantity > 0,
@@ -166,12 +168,16 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
       if (!selectedProductVariant) {
         let selectedVariants: any = [];
         productVariantTypes.forEach((variantType, index) => {
-          selectedVariants.push(productVariants.find((variant: any) => variant.type == variantType));
+          selectedVariants.push(
+            productVariants.find((variant: any) => variant.type == variantType),
+          );
         });
         setSelectedProductVariants(selectedVariants);
       } else {
         setSelectedProductVariants(
-          !Array.isArray(selectedProductVariant) ? [selectedProductVariant] : selectedProductVariant
+          !Array.isArray(selectedProductVariant)
+            ? [selectedProductVariant]
+            : selectedProductVariant,
         );
       }
     }
@@ -344,7 +350,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
       ) : (
         <div className="info-col mb-2">
           <div className="brand_sold_info !items-start">
-            <div className="lediv w-full sm:w-1/2">
+            <div className="lediv w-full sm:w-[40%]">
               <h5>
                 <span className="inline-block w-20 sm:!w-20" translate="no">
                   {t("brand")}:
@@ -353,7 +359,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
               </h5>
             </div>
 
-            <div className="rgdiv flex w-full flex-wrap gap-x-2 sm:w-1/2">
+            <div className="rgdiv flex w-full flex-wrap gap-x-2 sm:w-[60%]">
               <h5
                 className="w-20 !capitalize !text-dark-orange sm:!w-20"
                 translate="no"
@@ -424,35 +430,43 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
       )}
 
       {productVariantTypes?.map((type: string, index: number) => {
-        let selectedVariant = !Array.isArray(selectedProductVariant) ? [selectedProductVariant] : selectedProductVariant;
+        let selectedVariant = !Array.isArray(selectedProductVariant)
+          ? [selectedProductVariant]
+          : selectedProductVariant;
         return (
           <div className="mb-3 flex items-center gap-x-3" key={index}>
             <Label>{type}</Label>
             <select
               style={{ border: "1px solid" }}
               data-type={type}
-              value={selectedVariant?.find((variant: any) => variant?.type == type)?.value}
+              value={
+                selectedVariant?.find((variant: any) => variant?.type == type)
+                  ?.value
+              }
               onChange={(e) => {
                 let selectedVariants = [];
                 let value = e.target.value;
                 let type = e.target.dataset.type;
                 const selected = productVariants.find(
-                  (variant: any) => variant.type == type && variant.value == value
+                  (variant: any) =>
+                    variant.type == type && variant.value == value,
                 );
 
-                if (selectedProductVariants.find((variant: any) => variant.type == selected.type)) {
-                  selectedVariants = selectedProductVariants.map((variant: any) => {
-                    if (variant.type == selected.type) {
-                      return selected;
-                    }
-                    return variant;
-                  });
-
+                if (
+                  selectedProductVariants.find(
+                    (variant: any) => variant.type == selected.type,
+                  )
+                ) {
+                  selectedVariants = selectedProductVariants.map(
+                    (variant: any) => {
+                      if (variant.type == selected.type) {
+                        return selected;
+                      }
+                      return variant;
+                    },
+                  );
                 } else {
-                  selectedVariants = [
-                    ...selectedProductVariants,
-                    selected
-                  ];
+                  selectedVariants = [...selectedProductVariants, selected];
                 }
 
                 setSelectedProductVariants(selectedVariants);
@@ -465,10 +479,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                 ?.filter((item: any) => item.type == type)
                 ?.map((item: any, i: number) => {
                   return (
-                    <option
-                      key={`${index}${i}`}
-                      value={item.value}
-                    >
+                    <option key={`${index}${i}`} value={item.value}>
                       {item.value}
                     </option>
                   );

@@ -313,14 +313,22 @@ const ProductDetailsPage = () => {
 
     if (getProductVariantByDevice || getProductVariantByUser) {
       setSelectedProductVariant(
-        getProductVariantByDevice || getProductVariantByUser
-      )
+        getProductVariantByDevice || getProductVariantByUser,
+      );
     } else {
-      setSelectedProductVariant(productVariantTypes?.map((variantType: string) => {
-        return productVariants?.find((variant: any) => variant.type == variantType);
-      }));
+      setSelectedProductVariant(
+        productVariantTypes?.map((variantType: string) => {
+          return productVariants?.find(
+            (variant: any) => variant.type == variantType,
+          );
+        }),
+      );
     }
-  }, [cartListByUser.data?.data, cartListByDeviceQuery.data?.data, productVariants?.length]);
+  }, [
+    cartListByUser.data?.data,
+    cartListByDeviceQuery.data?.data,
+    productVariants?.length,
+  ]);
 
   const handleQuantity = async (quantity: number, action: "add" | "remove") => {
     setGlobalQuantity(quantity);
@@ -356,7 +364,8 @@ const ProductDetailsPage = () => {
     actionType: "add" | "remove",
     productVariant?: any,
   ) => {
-    const minQuantity = productDetails.product_productPrice?.[0]?.minQuantityPerCustomer;
+    const minQuantity =
+      productDetails.product_productPrice?.[0]?.minQuantityPerCustomer;
     if (actionType == "add" && minQuantity && minQuantity > quantity) {
       toast({
         description: t("min_quantity_must_be_n", { n: minQuantity }),
@@ -374,7 +383,8 @@ const ProductDetailsPage = () => {
       return;
     }
 
-    const maxQuantity = productDetails.product_productPrice?.[0]?.maxQuantityPerCustomer;
+    const maxQuantity =
+      productDetails.product_productPrice?.[0]?.maxQuantityPerCustomer;
     if (maxQuantity && maxQuantity < quantity) {
       toast({
         description: t("max_quantity_must_be_n", { n: maxQuantity }),
@@ -585,8 +595,13 @@ const ProductDetailsPage = () => {
               onProductUpdateSuccess={handleProductUpdateSuccess} // Pass to child
               onAdd={() => handleAddToCart(globalQuantity, "add")}
               onToCart={async () => {
-                const minQuantity = productDetails.product_productPrice?.[0]?.minQuantityPerCustomer;
-                const resp = await handleAddToCart(globalQuantity || minQuantity || 1, "add");
+                const minQuantity =
+                  productDetails.product_productPrice?.[0]
+                    ?.minQuantityPerCustomer;
+                const resp = await handleAddToCart(
+                  globalQuantity || minQuantity || 1,
+                  "add",
+                );
                 if (resp === true) router.push("/checkout");
               }}
               onToCheckout={handleCheckoutPage}
@@ -902,7 +917,7 @@ const ProductDetailsPage = () => {
                 {!haveAccessToken &&
                 !cartListByDeviceQuery.data?.data?.length &&
                 !cartListByDeviceQuery.isLoading ? (
-                  <div className="px-3 py-6">
+                  <div className="w-full px-3 py-6">
                     <p
                       className="my-3 text-center"
                       dir={langDir}
@@ -913,7 +928,7 @@ const ProductDetailsPage = () => {
                   </div>
                 ) : null}
 
-                <div className="px-3">
+                <div className="w-full px-3">
                   {cartListByUser.isLoading ? (
                     <div className="my-3 space-y-3">
                       {Array.from({ length: 2 }).map((_, i) => (
