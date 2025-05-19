@@ -627,9 +627,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
                                       id="productImages"
                                     />
                                   </div>
-                                ) : (
-                                  <AddImageContent description={t("drop_your_file")} />
-                                )}
+                                ) : null}
 
                                 {/* <Input
                                   type="file"
@@ -680,7 +678,6 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
                         {
                           if (event.target.files) {
                             const filesArray = Array.from(event.target.files);
-                            console.log(filesArray);
                             if (
                               filesArray.some((file) => file.size > 524288000)
                             ) {

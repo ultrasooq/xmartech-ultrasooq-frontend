@@ -686,6 +686,8 @@ const CreateProductPage = () => {
   useEffect(() => {
     if (productQueryById?.data?.data) {
       const product = productQueryById?.data?.data;
+
+      setActiveProductType(product.productType);
       
       form.setValue("categoryId", product.categoryId);
       form.setValue("categoryLocation", product.categoryLocation);
@@ -1152,6 +1154,12 @@ const CreateProductPage = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watchSetUpPrice, form.setValue]);
+
+  useEffect(() => {
+    if (activeProductType == "R") {
+      form.setValue("typeOfProduct", "BRAND")
+    }
+  }, [activeProductType]);
 
   useEffect(() => {
     const params = new URLSearchParams(document.location.search);

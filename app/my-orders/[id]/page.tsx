@@ -14,9 +14,6 @@ import Footer from "@/components/shared/Footer";
 import Link from "next/link";
 import { MONTHS, formattedDate } from "@/utils/constants";
 import { cn } from "@/lib/utils";
-// import { Dialog, DialogContent } from "@/components/ui/dialog";
-// import ReviewForm from "@/components/shared/ReviewForm";
-// import { useMe } from "@/apis/queries/user.queries";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
@@ -26,13 +23,7 @@ const MyOrderDetailsPage = ({ }) => {
   const t = useTranslations();
   const { langDir, currency } = useAuth();
   const searchParams = useParams();
-  // const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
-  // const [reviewId, setReviewId] = useState<number>();
 
-  // const handleToggleReviewModal = () =>
-  //   setIsReviewModalOpen(!isReviewModalOpen);
-
-  // const me = useMe();
   const orderByIdQuery = useOrderById(
     {
       orderProductId: searchParams?.id ? (searchParams.id as string) : "",
@@ -594,18 +585,6 @@ const MyOrderDetailsPage = ({ }) => {
             </div>
           </div>
         </div>
-
-        {/* <Dialog open={isReviewModalOpen} onOpenChange={handleToggleReviewModal}>
-          <DialogContent>
-            <ReviewForm
-              onClose={() => {
-                setReviewId(undefined);
-                handleToggleReviewModal();
-              }}
-              reviewId={reviewId}
-            />
-          </DialogContent>
-        </Dialog> */}
       </div>
       <Footer />
     </>

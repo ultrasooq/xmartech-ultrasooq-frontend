@@ -425,6 +425,10 @@ const FactoriesPage = ({ searchParams }: FactoriesPageProps) => {
                       {viewType === "grid" ? (
                         <div className="product_sec_list">
                           {memoizedRfqProducts.map((item: any) => {
+                            const cartItem = cartList?.find(
+                              (el: any) => el.productId == item.id,
+                            );
+
                             return (
                               <FactoriesProductCard
                                 key={item.id}
@@ -440,16 +444,8 @@ const FactoriesPage = ({ searchParams }: FactoriesPageProps) => {
                                       variant.productId == item.id,
                                   )?.object || []
                                 }
-                                productQuantity={
-                                  cartList.find(
-                                    (el: any) => el.productId == item.id,
-                                  )?.quantity || 0
-                                }
-                                productVariant={
-                                  cartList.find(
-                                    (el: any) => el.productId == item.id,
-                                  )?.object
-                                }
+                                productQuantity={cartItem?.quantity || 0}
+                                productVariant={cartItem?.object}
                                 customizeProductId={
                                   factoriesCartList.find(
                                     (el: any) => el.productId == item.id,
@@ -465,11 +461,7 @@ const FactoriesPage = ({ searchParams }: FactoriesPageProps) => {
                                 isCreatedByMe={
                                   item?.userId === me.data?.data?.id
                                 }
-                                cartId={
-                                  cartList.find(
-                                    (el: any) => el.productId == item.id,
-                                  )?.id
-                                }
+                                cartId={cartItem?.id}
                                 isAddedToFactoryCart={
                                   factoriesCartList.find(
                                     (el: any) => el.productId == item.id,

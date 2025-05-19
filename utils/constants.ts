@@ -259,6 +259,7 @@ export const SIZE_LIST: { label: string; value: string }[] = [
 ];
 
 export const DELIVERY_STATUS: { [key: string]: string } = {
+  PLACED: "order_placed",
   CONFIRMED: "order_placed",
   SHIPPED: "order_shipped",
   OFD: "order_out_for_delivery",

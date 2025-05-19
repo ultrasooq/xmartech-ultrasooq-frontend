@@ -3,6 +3,7 @@ import React from "react";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import Link from "next/link";
 
 const CheckoutCompletePage = () => {
     const t = useTranslations();
@@ -19,6 +20,14 @@ const CheckoutCompletePage = () => {
             <p className="mt-2" translate="no">{t("transaction_id")}: {searchParams?.get('id')}</p>
             <p className="mt-2" translate="no">{t("order_id")}: {searchParams?.get('order')}</p>
             <p className="mt-2" translate="no">{t("transaction_note")}</p>
+            <p className="mt-2">
+                <Link 
+                    className="cursor-pointer text-sm font-medium leading-8 text-dark-orange"
+                    href="/my-orders"
+                >
+                    {t("track_your_order")}
+                </Link>
+            </p>
         </div>
     );
 };

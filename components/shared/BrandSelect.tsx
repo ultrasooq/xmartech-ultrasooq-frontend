@@ -22,10 +22,12 @@ const customStyles = {
 };
 
 const ReactSelectInput: React.FC<{
-  selectedProductType?: string
+  selectedBrandType?: string,
+  productType?: string;
 }> = ({
   // Set default product type as "OWNBRAND"
-  selectedProductType = "OWNBRAND"
+  selectedBrandType = "OWNBRAND",
+  productType = "P"
 }) => {
   const t = useTranslations();
   const { langDir } = useAuth();
@@ -33,29 +35,29 @@ const ReactSelectInput: React.FC<{
   const { toast } = useToast();
   const [, setValue] = useState<IOption | null>();
 
-  const [productType, setProductType] = useState<string>(selectedProductType);
+  const [brandType, setBrandType] = useState<string>(selectedBrandType);
 
   const { user } = useAuth();
 
-  const brandsQuery = useBrands({ addedBy: user?.id, type: productType });
+  const brandsQuery = useBrands({ addedBy: user?.id, type: brandType });
   const createBrand = useCreateBrand();
 
   const memoizedBrands = useMemo(() => {
-    return productType
+    return brandType
       ? brandsQuery?.data?.data.map((item: IBrands) => ({
           label: item.brandName,
           value: item.id,
         })) || []
       : [];
-  }, [brandsQuery?.data?.data, productType]);
+  }, [brandsQuery?.data?.data, brandType]);
 
   // Set default product type in the form
   useEffect(() => {
-    if (selectedProductType) {
-      formContext.setValue("typeOfProduct", selectedProductType);
-      setProductType(selectedProductType);
+    if (selectedBrandType) {
+      formContext.setValue("typeOfProduct", selectedBrandType);
+      setBrandType(selectedBrandType);
     }
-  }, [selectedProductType]);
+  }, [selectedBrandType]);
 
   const handleCreate = async (inputValue: string) => {
     const response = await createBrand.mutateAsync({ brandName: inputValue });
@@ -77,10 +79,10 @@ const ReactSelectInput: React.FC<{
     }
   };
 
-  const brandType = [
+  const brandTypes = [
     { label: t("brand"), value: "BRAND" },
     { label: t("spare_part"), value: "SPAREPART" },
-    { label: t("own_brand"), value: "OWNBRAND" },
+    { label: t("own_brand"), value: "OWNBRAND" }, 
   ];
 
   const brandSelect = useRef<Select<any, false, GroupBase<any>>>(null);
@@ -95,8 +97,9 @@ const ReactSelectInput: React.FC<{
           render={({ field }) => (
             <ReactSelect
               // {...field}
-              options={brandType}
-              value={brandType.find(
+              options={brandTypes}
+              filterOption={(option) => (option.value !== "OWNBRAND" && productType == 'R') || productType != 'R'}
+              value={brandTypes.find(
                 (item: IOption) => item.value === field.value,
               )}
               styles={customStyles}
@@ -104,7 +107,7 @@ const ReactSelectInput: React.FC<{
               onChange={(newValue) => {
                 field.onChange(newValue?.value);
                 if (newValue?.value) {
-                  setProductType(newValue?.value);
+                  setBrandType(newValue?.value);
                   if (brandSelect.current) {
                     brandSelect?.current?.clearValue();
                   }

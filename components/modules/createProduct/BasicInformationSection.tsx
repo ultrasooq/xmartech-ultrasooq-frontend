@@ -312,7 +312,10 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                   />
 
                   <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
-                    <BrandSelect selectedProductType={formContext.getValues("typeOfProduct")} />
+                    <BrandSelect 
+                      selectedBrandType={formContext.getValues("typeOfProduct")} 
+                      productType={activeProductType}
+                    />
 
                     <div className="mt-2 flex flex-col gap-y-3">
                       <Label dir={langDir} translate="no">
