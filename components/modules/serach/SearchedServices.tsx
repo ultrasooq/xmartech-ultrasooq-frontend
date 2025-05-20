@@ -44,6 +44,10 @@ const SearchedServices: React.FC<SearchedServicesType> = ({
         allServicesQuery?.data?.data?.length,
     ]);
 
+    if (allServicesQuery?.isFetched && memoizedServices.length == 0) {
+        return null;
+    }
+
     return (
         <section className="w-full pb-8 pt-0">
             <div className="container m-auto">
@@ -51,7 +55,7 @@ const SearchedServices: React.FC<SearchedServicesType> = ({
                     <div className="flex w-full flex-wrap items-center justify-between border-b border-solid border-gray-300 bg-neutral-100 px-3.5 py-3.5">
                         <div className="flex flex-wrap items-center justify-start">
                             <h4 className="mr-3 whitespace-nowrap text-xl font-normal capitalize text-color-dark md:mr-6 md:text-2xl" translate="no">
-                                {t("store")}
+                                {t("services")}
                             </h4>
                         </div>
                         <div className="flex flex-wrap items-center justify-end">

@@ -192,6 +192,10 @@ const SearchedRfqProducts: React.FC<SearchedRfqProductsType> = ({
         }
     };
 
+    if (rfqProductsQuery?.isFetched && memoizedProducts.length == 0) {
+        return null;
+    }
+
     return (
         <section className="rfq_section pb-8 pt-0">
             <div className="rfq-container px-8">

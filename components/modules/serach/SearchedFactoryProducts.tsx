@@ -134,6 +134,10 @@ const SearchedFactoryProducts: React.FC<SearchedFactoryProductsType> = ({
         }
     };
 
+    if (factoriesProductsQuery?.isFetched && memoizedProducts.length == 0) {
+        return null;
+    }
+
     return (
         <section className="w-full pb-8 pt-0">
             <div className="container m-auto">

@@ -49,12 +49,14 @@ type BasicInformationProps = {
   tagsList: any;
   activeProductType?: string;
   selectedCategoryIds?: string[];
+  copy: boolean;
 };
 
 const BasicInformationSection: React.FC<BasicInformationProps> = ({
   tagsList,
   activeProductType,
   selectedCategoryIds,
+  copy
 }) => {
   const t = useTranslations();
   const { langDir } = useAuth();
@@ -307,6 +309,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                     label={t("product_name")}
                     name="productName"
                     placeholder={t("product_name")}
+                    disabled={copy}
                     dir={langDir}
                     translate="no"
                   />

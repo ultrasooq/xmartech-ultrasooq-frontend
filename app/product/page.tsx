@@ -1194,6 +1194,7 @@ const CreateProductPage = () => {
                   tagsList={memoizedTags}
                   activeProductType={activeProductType}
                   selectedCategoryIds={selectedCategoryIds}
+                  copy={searchParams?.get('copy') && productQueryById?.data?.data ? true : false}
                 />
 
                 {/* <ProductDetailsSection /> */}
