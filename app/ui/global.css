@@ -5548,7 +5548,7 @@ input::-ms-clear {
 }
 
 
-@media only screen and (min-width: 1024px) and (max-width: 1200px) {
+@media only screen and (min-width: 1024px) and (max-width: 1500px) {
 
 .rfq_section .rfq_main_box .rfq_middle .product_gray_n_box .product_sec_list .product_list_part {
   width: 50%
@@ -5573,6 +5573,12 @@ input::-ms-clear {
 .time_field h3 {
   @apply text-[36px] !important;
 }
+
+}
+
+@media only screen and (min-width: 1301px) and (max-width: 1500px) { 
+
+  
 
 }
 
