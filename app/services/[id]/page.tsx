@@ -1,9 +1,5 @@
 "use client";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import {
-  useProductById,
-  useOneWithProductPrice,
-} from "@/apis/queries/product.queries";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   useCartListByDevice,
@@ -17,7 +13,7 @@ import { getCookie } from "cookies-next";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import { getOrCreateDeviceId, handleDescriptionParse } from "@/utils/helper";
 import ReviewSection from "@/components/shared/ReviewSection";
-import QuestionsAnswersSection from "@/components/modules/productDetails/QuestionsAnswersSection";
+import QuestionsAnswersSection from "@/components/modules/serviceDetails/QuestionsAnswersSection";
 import {
   useAddToWishList,
   useDeleteFromWishList,
@@ -593,7 +589,7 @@ const ServiceDetailsPage = () => {
                     <div className="w-full border border-solid border-gray-300 bg-white p-5">
                       <QuestionsAnswersSection
                         hasAccessToken={haveAccessToken}
-                        productId={searchParams?.id as string}
+                        serviceId={searchParams?.id as string}
                       />
                     </div>
                   </TabsContent>
