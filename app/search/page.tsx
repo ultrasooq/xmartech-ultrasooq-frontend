@@ -108,7 +108,20 @@ const SearchPage = ({ searchParams }: SearchPageProps) => {
                 setRecordsCount={(count) => setServicesCount(count)}
             />) : null}
 
-            {storeProductsCount === 0 && 
+            {!haveAccessToken && 
+            storeProductsCount === 0 && 
+            buygroupProductsCount === 0 ? (
+                <p
+                    className="text-center text-sm font-medium mt-2"
+                    dir={langDir}
+                    translate="no"
+                >
+                    {t("no_data_found")}
+                </p>
+            ) : null}
+
+            {haveAccessToken && 
+            storeProductsCount === 0 && 
             buygroupProductsCount === 0 && 
             factoryProductsCount === 0 && 
             rfqProductsCount === 0 && 

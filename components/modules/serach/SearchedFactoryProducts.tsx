@@ -80,10 +80,6 @@ const SearchedFactoryProducts: React.FC<SearchedFactoryProductsType> = ({
         factoriesProductsQuery?.data?.data?.length,
     ]);
 
-    useEffect(() => {
-        setRecordsCount(memoizedProducts.length);
-    }, [memoizedProducts]);
-
     const handleDeleteFromWishlist = async (productId: number) => {
         const response = await deleteFromWishlist.mutateAsync({
             productId,
@@ -141,6 +137,7 @@ const SearchedFactoryProducts: React.FC<SearchedFactoryProductsType> = ({
     };
 
     if (factoriesProductsQuery?.isFetched && memoizedProducts.length == 0) {
+        setRecordsCount(0);
         return null;
     }
 

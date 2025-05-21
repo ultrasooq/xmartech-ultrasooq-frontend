@@ -46,11 +46,8 @@ const SearchedServices: React.FC<SearchedServicesType> = ({
         allServicesQuery?.data?.data?.length,
     ]);
 
-    useEffect(() => {
-        setRecordsCount(memoizedServices.length);
-    }, [memoizedServices]);
-
     if (allServicesQuery?.isFetched && memoizedServices.length == 0) {
+        setRecordsCount(0);
         return null;
     }
 

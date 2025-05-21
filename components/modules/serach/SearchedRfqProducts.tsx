@@ -73,10 +73,6 @@ const SearchedRfqProducts: React.FC<SearchedRfqProductsType> = ({
         }
     }, [rfqProductsQuery.data?.data]);
 
-    useEffect(() => {
-        setRecordsCount(memoizedProducts.length);
-    }, [memoizedProducts]);
-
     const rfqCartListByUser = useRfqCartListByUserId(
         {
             page: 1,
@@ -199,6 +195,7 @@ const SearchedRfqProducts: React.FC<SearchedRfqProductsType> = ({
     };
 
     if (rfqProductsQuery?.isFetched && memoizedProducts.length == 0) {
+        setRecordsCount(0);
         return null;
     }
 

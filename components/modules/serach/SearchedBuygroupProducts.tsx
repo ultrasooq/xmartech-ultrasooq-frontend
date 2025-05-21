@@ -91,10 +91,6 @@ const SearchedBuygroupProducts: React.FC<SearchedBuygroupProductsType> = ({
         allProductsQuery?.data?.data?.length,
     ]);
 
-    useEffect(() => {
-        setRecordsCount(memoizedProducts.length);
-    }, [memoizedProducts]);
-
     const handleDeleteFromWishlist = async (productId: number) => {
         const response = await deleteFromWishlist.mutateAsync({
             productId,
@@ -152,6 +148,7 @@ const SearchedBuygroupProducts: React.FC<SearchedBuygroupProductsType> = ({
     };
 
     if (allProductsQuery?.isFetched && memoizedProducts.length == 0) {
+        setRecordsCount(0);
         return null;
     }
 
