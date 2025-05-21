@@ -272,7 +272,7 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
   return (
     <div className="product_list_part">
       {/* FIXME:  link disabled due to TYPE R product. error in find one due to no price */}
-      <Link href={`/trending/${id}`}>
+      <Link href={`/factories/${id}`}>
         <div className="product_list_image relative">
           <Image
             alt="pro-5"
@@ -296,7 +296,7 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
           <ShoppingIcon />
         </Button>
         <Link
-          href={`/trending/${id}`}
+          href={`/factories/${id}`}
           className="relative flex h-8 w-8 items-center justify-center rounded-full !shadow-md"
         >
           <FiEye size={18} />
@@ -314,7 +314,7 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
         </Button>
       </div>
       <div className="product_list_content" dir={langDir}>
-        <Link href={`/trending/${id}`}>
+        <Link href={`/factories/${id}`}>
           <p>{productName}</p>
         </Link>
       </div>

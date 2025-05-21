@@ -249,59 +249,59 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
 
                     {catList.length > 0
                       ? catList
-                          .filter((item) => item.children?.length)
-                          .map((item, index) => (
-                            <div
-                              key={item?.id}
-                              className="mb-3 grid w-full grid-cols-1 gap-x-5 gap-y-3"
-                            >
-                              <div className="flex w-full flex-col justify-between gap-y-2">
-                                <Label dir={langDir} translate="no">
-                                  {t("sub_category")}
-                                </Label>
-                                <select
-                                  className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
-                                  onChange={(e) => {
-                                    if (e.target.value === "") {
-                                      return;
-                                    }
+                        .filter((item) => item.children?.length)
+                        .map((item, index) => (
+                          <div
+                            key={item?.id}
+                            className="mb-3 grid w-full grid-cols-1 gap-x-5 gap-y-3"
+                          >
+                            <div className="flex w-full flex-col justify-between gap-y-2">
+                              <Label dir={langDir} translate="no">
+                                {t("sub_category")}
+                              </Label>
+                              <select
+                                className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                                onChange={(e) => {
+                                  if (e.target.value === "") {
+                                    return;
+                                  }
 
-                                    setCurrentId(e.target.value);
-                                    setCurrentIndex(index + 1);
+                                  setCurrentId(e.target.value);
+                                  setCurrentIndex(index + 1);
 
-                                    if (listIds[index]) {
-                                      let tempIds = listIds;
-                                      tempIds[index] = e.target.value;
-                                      tempIds = tempIds.slice(0, index + 1);
-                                      setListIds([...tempIds]);
-                                      return;
-                                    }
-                                    setListIds([...listIds, e.target.value]);
-                                  }}
-                                  value={item?.children
-                                    ?.find((item: any) =>
-                                      listIds.includes(item.id?.toString())
-                                        ? item
-                                        : "",
-                                    )
-                                    ?.id?.toString()}
-                                >
-                                  <option value="" dir={langDir} translate="no">
-                                    {t("select_sub_category")}
+                                  if (listIds[index]) {
+                                    let tempIds = listIds;
+                                    tempIds[index] = e.target.value;
+                                    tempIds = tempIds.slice(0, index + 1);
+                                    setListIds([...tempIds]);
+                                    return;
+                                  }
+                                  setListIds([...listIds, e.target.value]);
+                                }}
+                                value={item?.children
+                                  ?.find((item: any) =>
+                                    listIds.includes(item.id?.toString())
+                                      ? item
+                                      : "",
+                                  )
+                                  ?.id?.toString()}
+                              >
+                                <option value="" dir={langDir} translate="no">
+                                  {t("select_sub_category")}
+                                </option>
+                                {item?.children?.map((item: any) => (
+                                  <option
+                                    value={item.id?.toString()}
+                                    key={item.id}
+                                    dir={langDir}
+                                  >
+                                    {item.name}
                                   </option>
-                                  {item?.children?.map((item: any) => (
-                                    <option
-                                      value={item.id?.toString()}
-                                      key={item.id}
-                                      dir={langDir}
-                                    >
-                                      {item.name}
-                                    </option>
-                                  ))}
-                                </select>
-                              </div>
+                                ))}
+                              </select>
                             </div>
-                          ))
+                          </div>
+                        ))
                       : null}
                   </div>
 
@@ -315,8 +315,8 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                   />
 
                   <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
-                    <BrandSelect 
-                      selectedBrandType={formContext.getValues("typeOfProduct")} 
+                    <BrandSelect
+                      selectedBrandType={formContext.getValues("typeOfProduct")}
                       productType={activeProductType}
                     />
 
@@ -411,21 +411,39 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
 
                                           {item?.path && isImage(item.path) ? (
                                             <div className="relative h-44">
-                                              <Image
+                                              <img
                                                 src={
                                                   typeof item.path === "object"
                                                     ? URL.createObjectURL(
-                                                        item.path,
-                                                      )
+                                                      item.path,
+                                                    )
                                                     : typeof item.path ===
-                                                        "string"
+                                                      "string"
+                                                      ? item.path
+                                                      : "/images/no-image.jpg"
+                                                }
+                                                style={{
+                                                  objectFit: "contain",
+                                                  width: "100%",
+                                                  height: "100%",
+                                                }}
+                                                alt="profile"
+                                              />
+                                              {/* <Image
+                                                src={
+                                                  typeof item.path === "object"
+                                                    ? URL.createObjectURL(
+                                                      item.path,
+                                                    )
+                                                    : typeof item.path ===
+                                                      "string"
                                                       ? item.path
                                                       : "/images/no-image.jpg"
                                                 }
                                                 alt="profile"
                                                 fill
                                                 priority
-                                              />
+                                              /> */}
                                               <Input
                                                 type="file"
                                                 accept="image/*"
@@ -462,12 +480,12 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                                 <ReactPlayer
                                                   url={
                                                     typeof item.path ===
-                                                    "object"
+                                                      "object"
                                                       ? URL.createObjectURL(
-                                                          item.path,
-                                                        )
+                                                        item.path,
+                                                      )
                                                       : typeof item.path ===
-                                                          "string"
+                                                        "string"
                                                         ? item.path
                                                         : "/images/no-image.jpg"
                                                   }

@@ -389,7 +389,25 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
 
                                           {item?.path && isImage(item.path) ? (
                                             <div className="relative h-44">
-                                              <Image
+                                              <img
+                                                src={
+                                                  typeof item.path === "object"
+                                                    ? URL.createObjectURL(
+                                                        item.path,
+                                                      )
+                                                    : typeof item.path ===
+                                                        "string"
+                                                      ? item.path
+                                                      : "/images/no-image.jpg"
+                                                }
+                                                style={{
+                                                  objectFit: "contain",
+                                                  width: "100%",
+                                                  height: "100%",
+                                                }}
+                                                alt="profile"
+                                              />
+                                              {/* <Image
                                                 src={
                                                   typeof item.path === "object"
                                                     ? URL.createObjectURL(
@@ -404,7 +422,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                                 fill
                                                 priority
                                                 loading="eager" // Forces eager loading instead of lazy
-                                              />
+                                              /> */}
                                               <Input
                                                 type="file"
                                                 accept="image/*"
@@ -507,7 +525,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                   </FormItem>
                                 )}
                               />
-                            ),
+                            )
                           )}
                           <div className="relative mb-3 w-full pl-2">
                             <div className="absolute m-auto flex h-48 w-full cursor-pointer flex-wrap items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-white text-center">
