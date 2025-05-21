@@ -3,7 +3,7 @@ import SkeletonProductCardLoader from "@/components/shared/SkeletonProductCardLo
 import { useAuth } from "@/context/AuthContext";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import ServiceCard from "../trending/ServiceCard";
 import AddServiceToCartModal from "../serviceDetails/AddServiceToCartModal";
 import { Dialog } from "@/components/ui/dialog";
@@ -12,17 +12,20 @@ type SearchedServicesType = {
     searchTerm?: string;
     haveAccessToken: boolean;
     cartList: any[];
+    setRecordsCount: (count: number) => void;
 };
 
 const SearchedServices: React.FC<SearchedServicesType> = ({
     searchTerm,
     haveAccessToken,
-    cartList
+    cartList,
+    setRecordsCount
 }) => {
     const t = useTranslations();
     const { langDir } = useAuth();
     const [isServiceAddToCartModalOpen, setIsServiceAddToCartModalOpen] = useState(false);
     const [selectedServiceId, setSelectedServiceId] = useState<any>(null);
+    const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
     const handleServiceToCartModal = () => {
         setIsServiceAddToCartModalOpen((prev) => !prev)
@@ -37,12 +40,19 @@ const SearchedServices: React.FC<SearchedServicesType> = ({
     }, !!searchTerm && haveAccessToken);
 
     const memoizedServices = useMemo(() => {
+        setIsLoaded(true);
         return allServicesQuery?.data?.data?.services || [];
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
         allServicesQuery?.data?.data,
         allServicesQuery?.data?.data?.length,
     ]);
+
+    useEffect(() => {
+        if (isLoaded) {
+            setRecordsCount(allServicesQuery?.data?.data?.services?.length || 0);
+        }
+    }, [isLoaded]);
 
     if (allServicesQuery?.isFetched && memoizedServices.length == 0) {
         return null;

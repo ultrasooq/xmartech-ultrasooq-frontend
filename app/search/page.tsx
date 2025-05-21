@@ -11,16 +11,22 @@ import SearchedRfqProducts from "@/components/modules/serach/SearchedRfqProducts
 import { useCartListByDevice, useCartListByUserId } from "@/apis/queries/cart.queries";
 import { getOrCreateDeviceId } from "@/utils/helper";
 import SearchedServices from "@/components/modules/serach/SearchedServices";
+import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
 
 interface SearchPageProps {
     searchParams?: { term?: string };
 }
 
 const SearchPage = ({ searchParams }: SearchPageProps) => {
+    const t = useTranslations();
+    const { langDir } = useAuth();
     const router = useRouter();
     const [haveAccessToken, setHaveAccessToken] = useState(false);
     const accessToken = getCookie(PUREMOON_TOKEN_KEY);
     const me = useMe();
+    const [count, setCount] = useState<number>(0);
+    const [recordsCount, setRecordsCount] = useState<number>(0);
     const [cartList, setCartList] = useState<any[]>([]);
     const deviceId = getOrCreateDeviceId() || '';
 
@@ -60,7 +66,7 @@ const SearchPage = ({ searchParams }: SearchPageProps) => {
     }, [accessToken]);
 
     useEffect(() => {
-        if (!searchParams?.term) router.push("/trending")
+        if (!searchParams?.term) router.push("/trending");
     }, []);
 
     return (
@@ -69,30 +75,70 @@ const SearchPage = ({ searchParams }: SearchPageProps) => {
                 searchTerm={searchParams?.term}
                 haveAccessToken={haveAccessToken}
                 cartList={cartList}
+                setRecordsCount={(count) => {
+                    setCount(prevCount => prevCount + 1);
+                    setRecordsCount(prevCount => prevCount + count);
+                }}
             />
 
             <SearchedBuygroupProducts
                 searchTerm={searchParams?.term}
                 haveAccessToken={haveAccessToken}
                 cartList={cartList}
+                setRecordsCount={(count) => {
+                    setCount(prevCount => prevCount + 1);
+                    setRecordsCount(prevCount => prevCount + count);
+                }}
             />
 
             {haveAccessToken ? (<SearchedFactoryProducts
                 searchTerm={searchParams?.term}
                 haveAccessToken={haveAccessToken}
                 cartList={cartList}
+                setRecordsCount={(count) => {
+                    setCount(prevCount => prevCount + 1);
+                    setRecordsCount(prevCount => prevCount + count);
+                }}
             />) : null}
 
             {haveAccessToken ? (<SearchedRfqProducts
                 searchTerm={searchParams?.term}
                 haveAccessToken={haveAccessToken}
+                setRecordsCount={(count) => {
+                    setCount(prevCount => prevCount + 1);
+                    setRecordsCount(prevCount => prevCount + count);
+                }}
             />) : null}
 
             {haveAccessToken ? (<SearchedServices
                 searchTerm={searchParams?.term}
                 haveAccessToken={haveAccessToken}
                 cartList={cartList}
+                setRecordsCount={(count) => {
+                    setCount(prevCount => prevCount + 1);
+                    setRecordsCount(prevCount => prevCount + count);
+                }}
             />) : null}
+
+            {!haveAccessToken && count == 2 && recordsCount == 0 ? (
+                <p
+                    className="text-center text-sm font-medium mt-2"
+                    dir={langDir}
+                    translate="no"
+                >
+                    {t("no_data_found")}
+                </p>
+            ) : null}
+
+            {haveAccessToken && count == 5 && recordsCount == 0 ? (
+                <p
+                    className="text-center text-sm font-medium mt-2"
+                    dir={langDir}
+                    translate="no"
+                >
+                    {t("no_data_found")}
+                </p>
+            ) : null}
         </>
     )
 };

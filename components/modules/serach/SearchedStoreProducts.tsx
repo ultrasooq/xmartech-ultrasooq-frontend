@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useAllProducts } from "@/apis/queries/product.queries";
 import { useTranslations } from "next-intl";
 import ProductCard from "../trending/ProductCard";
@@ -14,16 +14,19 @@ type SearchedStoreProductsType = {
     searchTerm?: string;
     haveAccessToken: boolean;
     cartList: any[];
+    setRecordsCount: (count: number) => void;
 };
 
 const SearchedStoreProducts: React.FC<SearchedStoreProductsType> = ({
     searchTerm,
     haveAccessToken,
-    cartList
+    cartList,
+    setRecordsCount
 }) => {
     const t = useTranslations();
     const { langDir } = useAuth();
     const me = useMe();
+    const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
     const addToWishlist = useAddToWishList();
     const deleteFromWishlist = useDeleteFromWishList();
@@ -37,6 +40,7 @@ const SearchedStoreProducts: React.FC<SearchedStoreProductsType> = ({
     }, !!searchTerm);
 
     const memoizedProducts = useMemo(() => {
+        setIsLoaded(true);
         return (
             allProductsQuery?.data?.data?.map((item: any) => ({
                 id: item.id,
@@ -75,6 +79,12 @@ const SearchedStoreProducts: React.FC<SearchedStoreProductsType> = ({
         allProductsQuery?.data?.data,
         allProductsQuery?.data?.data?.length,
     ]);
+
+    useEffect(() => {
+        if (isLoaded) {
+            setRecordsCount(allProductsQuery?.data?.data?.length || 0);
+        }
+    }, [isLoaded]);
 
     const handleDeleteFromWishlist = async (productId: number) => {
         const response = await deleteFromWishlist.mutateAsync({

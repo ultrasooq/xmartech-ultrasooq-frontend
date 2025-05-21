@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useAddToWishList, useDeleteFromWishList } from "@/apis/queries/wishlist.queries";
 import { toast } from "@/components/ui/use-toast";
@@ -15,17 +15,20 @@ type SearchedFactoryProductsType = {
     searchTerm?: string;
     haveAccessToken: boolean;
     cartList: any[];
+    setRecordsCount: (count: number) => void;
 };
 
 const SearchedFactoryProducts: React.FC<SearchedFactoryProductsType> = ({
     searchTerm,
     haveAccessToken,
-    cartList
+    cartList,
+    setRecordsCount
 }) => {
     const t = useTranslations();
     const { langDir } = useAuth();
     const queryClient = useQueryClient();
     const me = useMe();
+    const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
     const addToWishlist = useAddToWishList();
     const deleteFromWishlist = useDeleteFromWishList();
@@ -38,7 +41,14 @@ const SearchedFactoryProducts: React.FC<SearchedFactoryProductsType> = ({
         adminId: me?.data?.data?.tradeRole == "MEMBER" ? me?.data?.data?.addedBy : me?.data?.data?.id,
     }, !!searchTerm && haveAccessToken);
 
+    useEffect(() => {
+        if (isLoaded) {
+            setRecordsCount(factoriesProductsQuery?.data?.data?.length || 0);
+        }
+    }, [isLoaded]);
+
     const memoizedProducts = useMemo(() => {
+        setIsLoaded(true);
         return (
             factoriesProductsQuery?.data?.data?.map((item: any) => ({
                 id: item.id,

@@ -17,17 +17,20 @@ import { useRouter } from "next/navigation";
 type SearchedRfqProductsType = {
     searchTerm?: string;
     haveAccessToken: boolean;
+    setRecordsCount: (count: number) => void;
 };
 
 const SearchedRfqProducts: React.FC<SearchedRfqProductsType> = ({
     searchTerm,
-    haveAccessToken
+    haveAccessToken,
+    setRecordsCount
 }) => {
     const t = useTranslations();
     const { langDir } = useAuth();
     const queryClient = useQueryClient();
     const router = useRouter();
     const me = useMe();
+    const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
     const [selectedProductId, setSelectedProductId] = useState<number>();
     const [isAddToCartModalOpen, setIsAddToCartModalOpen] = useState(false);
@@ -52,6 +55,7 @@ const SearchedRfqProducts: React.FC<SearchedRfqProductsType> = ({
     }, !!searchTerm && haveAccessToken);
 
     const memoizedProducts = useMemo(() => {
+        setIsLoaded(true);
         if (rfqProductsQuery.data?.data) {
             return (
                 rfqProductsQuery.data?.data.map((item: any) => {
@@ -70,6 +74,12 @@ const SearchedRfqProducts: React.FC<SearchedRfqProductsType> = ({
             return [];
         }
     }, [rfqProductsQuery.data?.data]);
+
+    useEffect(() => {
+        if (isLoaded) {
+            setRecordsCount(rfqProductsQuery?.data?.data?.length || 0);
+        }
+    }, [isLoaded]);
 
     const rfqCartListByUser = useRfqCartListByUserId(
         {

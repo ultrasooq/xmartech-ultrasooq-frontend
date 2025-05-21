@@ -15,6 +15,7 @@ export function middleware(request: NextRequest) {
 
   const globalPaths = [
     "/home",
+    "/search",
     "/trending",
     "/trending/:id",
     "/cart",
