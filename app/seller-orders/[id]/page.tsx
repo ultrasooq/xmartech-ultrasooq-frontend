@@ -719,6 +719,8 @@ const MyOrderDetailsPage = ({ }) => {
             orderProductId={searchParams?.id as string}
             onClose={handleToggleStatusModal}
             orderProductStatus={orderDetails?.orderProductStatus}
+            orderProductDate={orderDetails?.orderProductDate ? orderDetails?.orderProductDate : ""}
+            deliveryAfter={orderDetails?.orderProduct_productPrice?.deliveryAfter || 1}
           />
         </DialogContent>
       </Dialog>
