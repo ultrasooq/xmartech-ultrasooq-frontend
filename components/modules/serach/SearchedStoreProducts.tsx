@@ -26,7 +26,6 @@ const SearchedStoreProducts: React.FC<SearchedStoreProductsType> = ({
     const t = useTranslations();
     const { langDir } = useAuth();
     const me = useMe();
-    const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
     const addToWishlist = useAddToWishList();
     const deleteFromWishlist = useDeleteFromWishList();
@@ -40,7 +39,6 @@ const SearchedStoreProducts: React.FC<SearchedStoreProductsType> = ({
     }, !!searchTerm);
 
     const memoizedProducts = useMemo(() => {
-        setIsLoaded(true);
         return (
             allProductsQuery?.data?.data?.map((item: any) => ({
                 id: item.id,
@@ -81,10 +79,8 @@ const SearchedStoreProducts: React.FC<SearchedStoreProductsType> = ({
     ]);
 
     useEffect(() => {
-        if (isLoaded) {
-            setRecordsCount(allProductsQuery?.data?.data?.length || 0);
-        }
-    }, [isLoaded]);
+        setRecordsCount(memoizedProducts.length);
+    }, [memoizedProducts]);
 
     const handleDeleteFromWishlist = async (productId: number) => {
         const response = await deleteFromWishlist.mutateAsync({

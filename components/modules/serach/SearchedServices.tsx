@@ -25,7 +25,6 @@ const SearchedServices: React.FC<SearchedServicesType> = ({
     const { langDir } = useAuth();
     const [isServiceAddToCartModalOpen, setIsServiceAddToCartModalOpen] = useState(false);
     const [selectedServiceId, setSelectedServiceId] = useState<any>(null);
-    const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
     const handleServiceToCartModal = () => {
         setIsServiceAddToCartModalOpen((prev) => !prev)
@@ -40,7 +39,6 @@ const SearchedServices: React.FC<SearchedServicesType> = ({
     }, !!searchTerm && haveAccessToken);
 
     const memoizedServices = useMemo(() => {
-        setIsLoaded(true);
         return allServicesQuery?.data?.data?.services || [];
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
@@ -49,10 +47,8 @@ const SearchedServices: React.FC<SearchedServicesType> = ({
     ]);
 
     useEffect(() => {
-        if (isLoaded) {
-            setRecordsCount(allServicesQuery?.data?.data?.services?.length || 0);
-        }
-    }, [isLoaded]);
+        setRecordsCount(memoizedServices.length);
+    }, [memoizedServices]);
 
     if (allServicesQuery?.isFetched && memoizedServices.length == 0) {
         return null;

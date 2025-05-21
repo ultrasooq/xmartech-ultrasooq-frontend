@@ -25,8 +25,11 @@ const SearchPage = ({ searchParams }: SearchPageProps) => {
     const [haveAccessToken, setHaveAccessToken] = useState(false);
     const accessToken = getCookie(PUREMOON_TOKEN_KEY);
     const me = useMe();
-    const [count, setCount] = useState<number>(0);
-    const [recordsCount, setRecordsCount] = useState<number>(0);
+    const [storeProductsCount, setStoreProductsCount] = useState<number>();
+    const [buygroupProductsCount, setBuygroupProductsCount] = useState<number>();
+    const [factoryProductsCount, setFactoryProductsCount] = useState<number>();
+    const [rfqProductsCount, setRfqProductsCount] = useState<number>();
+    const [servicesCount, setServicesCount] = useState<number>();
     const [cartList, setCartList] = useState<any[]>([]);
     const deviceId = getOrCreateDeviceId() || '';
 
@@ -75,62 +78,41 @@ const SearchPage = ({ searchParams }: SearchPageProps) => {
                 searchTerm={searchParams?.term}
                 haveAccessToken={haveAccessToken}
                 cartList={cartList}
-                setRecordsCount={(count) => {
-                    setCount(prevCount => prevCount + 1);
-                    setRecordsCount(prevCount => prevCount + count);
-                }}
+                setRecordsCount={(count) => setStoreProductsCount(count)}
             />
 
             <SearchedBuygroupProducts
                 searchTerm={searchParams?.term}
                 haveAccessToken={haveAccessToken}
                 cartList={cartList}
-                setRecordsCount={(count) => {
-                    setCount(prevCount => prevCount + 1);
-                    setRecordsCount(prevCount => prevCount + count);
-                }}
+                setRecordsCount={(count) => setBuygroupProductsCount(count)}
             />
 
             {haveAccessToken ? (<SearchedFactoryProducts
                 searchTerm={searchParams?.term}
                 haveAccessToken={haveAccessToken}
                 cartList={cartList}
-                setRecordsCount={(count) => {
-                    setCount(prevCount => prevCount + 1);
-                    setRecordsCount(prevCount => prevCount + count);
-                }}
+                setRecordsCount={(count) => setFactoryProductsCount(count)}
             />) : null}
 
             {haveAccessToken ? (<SearchedRfqProducts
                 searchTerm={searchParams?.term}
                 haveAccessToken={haveAccessToken}
-                setRecordsCount={(count) => {
-                    setCount(prevCount => prevCount + 1);
-                    setRecordsCount(prevCount => prevCount + count);
-                }}
+                setRecordsCount={(count) => setRfqProductsCount(count)}
             />) : null}
 
             {haveAccessToken ? (<SearchedServices
                 searchTerm={searchParams?.term}
                 haveAccessToken={haveAccessToken}
                 cartList={cartList}
-                setRecordsCount={(count) => {
-                    setCount(prevCount => prevCount + 1);
-                    setRecordsCount(prevCount => prevCount + count);
-                }}
+                setRecordsCount={(count) => setServicesCount(count)}
             />) : null}
 
-            {!haveAccessToken && count == 2 && recordsCount == 0 ? (
-                <p
-                    className="text-center text-sm font-medium mt-2"
-                    dir={langDir}
-                    translate="no"
-                >
-                    {t("no_data_found")}
-                </p>
-            ) : null}
-
-            {haveAccessToken && count == 5 && recordsCount == 0 ? (
+            {storeProductsCount === 0 && 
+            buygroupProductsCount === 0 && 
+            factoryProductsCount === 0 && 
+            rfqProductsCount === 0 && 
+            servicesCount === 0 ? (
                 <p
                     className="text-center text-sm font-medium mt-2"
                     dir={langDir}

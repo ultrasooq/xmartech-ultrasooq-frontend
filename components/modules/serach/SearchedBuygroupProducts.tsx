@@ -28,7 +28,6 @@ const SearchedBuygroupProducts: React.FC<SearchedBuygroupProductsType> = ({
     const { langDir } = useAuth();
     const queryClient = useQueryClient();
     const me = useMe();
-    const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
     const addToWishlist = useAddToWishList();
     const deleteFromWishlist = useDeleteFromWishList();
@@ -42,7 +41,6 @@ const SearchedBuygroupProducts: React.FC<SearchedBuygroupProductsType> = ({
     }, !!searchTerm);
 
     const memoizedProducts = useMemo(() => {
-        setIsLoaded(true);
         return (
             allProductsQuery?.data?.data?.map((item: any) => {
                 let sold = 0;
@@ -94,10 +92,8 @@ const SearchedBuygroupProducts: React.FC<SearchedBuygroupProductsType> = ({
     ]);
 
     useEffect(() => {
-        if (isLoaded) {
-            setRecordsCount(allProductsQuery?.data?.data?.length || 0);
-        }
-    }, [isLoaded]);
+        setRecordsCount(memoizedProducts.length);
+    }, [memoizedProducts]);
 
     const handleDeleteFromWishlist = async (productId: number) => {
         const response = await deleteFromWishlist.mutateAsync({

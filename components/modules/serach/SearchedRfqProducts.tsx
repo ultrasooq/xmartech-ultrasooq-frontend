@@ -30,7 +30,6 @@ const SearchedRfqProducts: React.FC<SearchedRfqProductsType> = ({
     const queryClient = useQueryClient();
     const router = useRouter();
     const me = useMe();
-    const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
     const [selectedProductId, setSelectedProductId] = useState<number>();
     const [isAddToCartModalOpen, setIsAddToCartModalOpen] = useState(false);
@@ -55,7 +54,6 @@ const SearchedRfqProducts: React.FC<SearchedRfqProductsType> = ({
     }, !!searchTerm && haveAccessToken);
 
     const memoizedProducts = useMemo(() => {
-        setIsLoaded(true);
         if (rfqProductsQuery.data?.data) {
             return (
                 rfqProductsQuery.data?.data.map((item: any) => {
@@ -76,10 +74,8 @@ const SearchedRfqProducts: React.FC<SearchedRfqProductsType> = ({
     }, [rfqProductsQuery.data?.data]);
 
     useEffect(() => {
-        if (isLoaded) {
-            setRecordsCount(rfqProductsQuery?.data?.data?.length || 0);
-        }
-    }, [isLoaded]);
+        setRecordsCount(memoizedProducts.length);
+    }, [memoizedProducts]);
 
     const rfqCartListByUser = useRfqCartListByUserId(
         {

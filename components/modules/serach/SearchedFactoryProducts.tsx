@@ -28,7 +28,6 @@ const SearchedFactoryProducts: React.FC<SearchedFactoryProductsType> = ({
     const { langDir } = useAuth();
     const queryClient = useQueryClient();
     const me = useMe();
-    const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
     const addToWishlist = useAddToWishList();
     const deleteFromWishlist = useDeleteFromWishList();
@@ -41,14 +40,7 @@ const SearchedFactoryProducts: React.FC<SearchedFactoryProductsType> = ({
         adminId: me?.data?.data?.tradeRole == "MEMBER" ? me?.data?.data?.addedBy : me?.data?.data?.id,
     }, !!searchTerm && haveAccessToken);
 
-    useEffect(() => {
-        if (isLoaded) {
-            setRecordsCount(factoriesProductsQuery?.data?.data?.length || 0);
-        }
-    }, [isLoaded]);
-
     const memoizedProducts = useMemo(() => {
-        setIsLoaded(true);
         return (
             factoriesProductsQuery?.data?.data?.map((item: any) => ({
                 id: item.id,
@@ -87,6 +79,10 @@ const SearchedFactoryProducts: React.FC<SearchedFactoryProductsType> = ({
         factoriesProductsQuery?.data?.data,
         factoriesProductsQuery?.data?.data?.length,
     ]);
+
+    useEffect(() => {
+        setRecordsCount(memoizedProducts.length);
+    }, [memoizedProducts]);
 
     const handleDeleteFromWishlist = async (productId: number) => {
         const response = await deleteFromWishlist.mutateAsync({
