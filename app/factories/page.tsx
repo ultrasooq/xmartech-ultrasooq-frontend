@@ -10,6 +10,7 @@ import Pagination from "@/components/shared/Pagination";
 import GridIcon from "@/components/icons/GridIcon";
 import ListIcon from "@/components/icons/ListIcon";
 import RfqProductTable from "@/components/modules/rfq/RfqProductTable";
+import FilterMenuIcon from "@/components/icons/FilterMenuIcon";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useMe } from "@/apis/queries/user.queries";
 import { useToast } from "@/components/ui/use-toast";
@@ -61,6 +62,7 @@ const FactoriesPage = ({ searchParams }: FactoriesPageProps) => {
   const [sortBy, setSortBy] = useState<"newest" | "oldest">("newest");
   const [searchRfqTerm, setSearchRfqTerm] = useState(searchParams?.term || "");
   const [selectedBrandIds, setSelectedBrandIds] = useState<number[]>([]);
+  const [productFilter, setProductFilter] = useState(false);
   const [selectAllBrands, setSelectAllBrands] = useState<boolean>(false);
   const [displayMyProducts, setDisplayMyProducts] = useState("0");
   const [haveAccessToken, setHaveAccessToken] = useState(false);
@@ -257,7 +259,10 @@ const FactoriesPage = ({ searchParams }: FactoriesPageProps) => {
         <div className="rfq-container px-3">
           <div className="row">
             <div className="rfq_main_box !justify-center">
-              <div className="rfq_left" dir={langDir}>
+              <div
+                className={productFilter ? "rfq_left show" : "rfq_left"}
+                dir={langDir}
+              >
                 <div className="all_select_button">
                   <button type="button" onClick={selectAll} translate="no">
                     {t("select_all")}
@@ -274,6 +279,10 @@ const FactoriesPage = ({ searchParams }: FactoriesPageProps) => {
                   }
                 />
               </div>
+              <div
+                className="left-filter-overlay"
+                onClick={() => setProductFilter(false)}
+              ></div>
               <div className="rfq_middle">
                 {me?.data?.data?.tradeRole != "BUYER" ? (
                   <RadioGroup
@@ -395,6 +404,15 @@ const FactoriesPage = ({ searchParams }: FactoriesPageProps) => {
                                   onClick={() => setViewType("list")}
                                 >
                                   <ListIcon active={viewType === "list"} />
+                                </button>
+                              </li>
+                              <li className="block md:hidden">
+                                <button
+                                  type="button"
+                                  className="view-type-btn"
+                                  onClick={() => setProductFilter(true)}
+                                >
+                                  <FilterMenuIcon />
                                 </button>
                               </li>
                             </ul>
