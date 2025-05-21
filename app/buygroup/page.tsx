@@ -113,12 +113,14 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
     priceMax: priceRange[1] || Number(maxPriceInput) || undefined,
     brandIds:
       selectedBrandIds.map((item) => item.toString()).join(",") || undefined,
-    userId:
-      me?.data?.data?.tradeRole == "MEMBER"
-        ? me?.data?.data?.addedBy
-        : me?.data?.data?.id,
+    userId: me?.data?.data?.tradeRole == "BUYER"
+      ? undefined 
+      : me?.data?.data?.tradeRole == "MEMBER"
+      ? me?.data?.data?.addedBy
+      : me?.data?.data?.id,
     categoryIds: category.categoryIds ? category.categoryIds : undefined,
     isOwner: displayMyProducts == "1" ? "me" : "",
+    userType: me?.data?.data?.tradeRole == "BUYER" ? "BUYER" : ""
   });
   const fetchProductVariant = useProductVariant();
   const brandsQuery = useBrands({
