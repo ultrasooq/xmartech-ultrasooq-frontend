@@ -194,8 +194,11 @@ const SearchedRfqProducts: React.FC<SearchedRfqProductsType> = ({
         }
     };
 
+    useEffect(() => {
+        setRecordsCount(memoizedProducts.length);
+    }, [rfqProductsQuery?.isFetched, memoizedProducts.length]);
+
     if (rfqProductsQuery?.isFetched && memoizedProducts.length == 0) {
-        setRecordsCount(0);
         return null;
     }
 

@@ -35,7 +35,12 @@ const SearchedStoreProducts: React.FC<SearchedStoreProductsType> = ({
         limit: 4,
         sort: "desc",
         term: searchTerm,
-        userId: me?.data?.data?.tradeRole == "MEMBER" ? me?.data?.data?.addedBy : me?.data?.data?.id,
+        userId: me?.data?.data?.tradeRole == "BUYER"
+            ? undefined 
+            : me?.data?.data?.tradeRole == "MEMBER" 
+            ? me?.data?.data?.addedBy 
+            : me?.data?.data?.id,
+        userType: me?.data?.data?.tradeRole == "BUYER" ? "BUYER" : ""
     }, !!searchTerm);
 
     const memoizedProducts = useMemo(() => {
@@ -128,8 +133,11 @@ const SearchedStoreProducts: React.FC<SearchedStoreProductsType> = ({
         }
     };
 
+    useEffect(() => {
+        setRecordsCount(memoizedProducts.length);
+    }, [allProductsQuery?.isFetched, memoizedProducts.length]);
+
     if (allProductsQuery?.isFetched && memoizedProducts.length == 0) {
-        setRecordsCount(0);
         return null;
     }
 

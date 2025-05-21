@@ -136,8 +136,11 @@ const SearchedFactoryProducts: React.FC<SearchedFactoryProductsType> = ({
         }
     };
 
+    useEffect(() => {
+        setRecordsCount(memoizedProducts.length);
+    }, [factoriesProductsQuery?.isFetched, memoizedProducts.length]);
+
     if (factoriesProductsQuery?.isFetched && memoizedProducts.length == 0) {
-        setRecordsCount(0);
         return null;
     }
 
