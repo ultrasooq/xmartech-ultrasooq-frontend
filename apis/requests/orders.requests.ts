@@ -171,7 +171,6 @@ export const updateCancelReason = (payload: {
 
 export const updateOrderShippingStatus = (payload: {
   orderShippingId: number;
-  status: string;
   receipt: string;
 }) => {
   return axios({
