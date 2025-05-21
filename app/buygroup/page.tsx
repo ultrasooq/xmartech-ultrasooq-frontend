@@ -630,7 +630,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
                         <ListIcon active={viewType === "list"} />
                       </button>
                     </li>
-                    <li>
+                    <li className="block md:hidden">
                       <button
                         type="button"
                         className="view-type-btn"

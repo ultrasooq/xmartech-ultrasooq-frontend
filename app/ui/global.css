@@ -747,9 +747,9 @@
     @apply border-[#DBDBDB];
   }
 
-  .product-list-s1 .product-list-s1-box a {
+  /* .product-list-s1 .product-list-s1-box a {
     @apply w-full;
-  }
+  } */
 
   .product-list-s1 .product-list-s1-box .cart_button {
     @apply mt-auto mb-0;
@@ -4465,7 +4465,7 @@
     }
 
     .trending-search-sec .left-filter {
-      @apply fixed left-0 top-0 z-[999] h-full -translate-x-full bg-white transition-[0.5s];
+      @apply fixed left-0 top-0 z-[999] h-full -translate-x-full bg-white transition-[0.5s] p-[15px] max-w-[250px];
       height: 100%;
       overflow-x: hidden;
       overflow-y: auto;
