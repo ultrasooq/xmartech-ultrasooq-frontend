@@ -291,7 +291,10 @@ export const useUpdateOrderShippingStatus = () => {
   return useMutation<
     { data: any; message: string; status: boolean },
     APIResponseError,
-    { orderShippingId: number; status: string, receipt: string; }
+    { 
+      orderShippingId: number;
+      receipt: string; 
+    }
   >({
     mutationFn: async (payload) => {
       const res = await updateOrderShippingStatus(payload);

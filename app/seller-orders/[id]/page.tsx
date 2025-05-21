@@ -738,7 +738,6 @@ const MyOrderDetailsPage = ({ }) => {
             <AddReceipt
               orderProductId={Number(searchParams?.id)}
               orderShippingId={orderDetails.orderShippingDetail.id}
-              orderShippingStatus={orderDetails.orderShippingDetail.status}
               onClose={handleToggleAddReceiptModal}
             />
           </DialogContent>

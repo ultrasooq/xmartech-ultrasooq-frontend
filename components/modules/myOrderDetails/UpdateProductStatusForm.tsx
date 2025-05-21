@@ -60,14 +60,8 @@ const UpdateProductStatusForm: React.FC<UpdateProductStatusFormProps> = ({
   const updateCancelReason = useUpdateCancelReason();
 
   const watchStatus = form.watch("status");
-  console.log(form.formState.errors);
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log({
-      orderProductId,
-      status: values.status,
-      cancelReason: values.cancelReason,
-    });
-    // return;
     if (values.status === "") return;
 
     const updatedData = {
@@ -133,39 +127,25 @@ const UpdateProductStatusForm: React.FC<UpdateProductStatusFormProps> = ({
   };
 
   const formattedStatusList = useMemo(
-    () =>
-      STATUS_LIST.map((item) => ({
-        label: item.label,
-        value: item.value,
-        disabled:
-          orderProductStatus === "SHIPPED" && item.value === "CONFIRMED"
-            ? true
-            : (orderProductStatus === "OFD" && item.value === "SHIPPED") ||
-                (orderProductStatus === "OFD" && item.value === "CONFIRMED")
-              ? true
-              : (orderProductStatus === "DELIVERED" && item.value === "OFD") ||
-                  (orderProductStatus === "DELIVERED" &&
-                    item.value === "SHIPPED") ||
-                  (orderProductStatus === "DELIVERED" &&
-                    item.value === "CONFIRMED")
-                ? true
-                : (orderProductStatus === "CANCELLED" &&
-                      item.value === "DELIVERED") ||
-                    (orderProductStatus === "CANCELLED" &&
-                      item.value === "OFD") ||
-                    (orderProductStatus === "CANCELLED" &&
-                      item.value === "SHIPPED") ||
-                    (orderProductStatus === "CANCELLED" &&
-                      item.value === "CONFIRMED")
-                  ? true
-                  : false,
-      })),
-    [orderProductStatus],
+    () => {
+      if (orderProductStatus == "CONFIRMED") {
+        return STATUS_LIST.filter((item) => item.value == "SHIPPED" || item.value == "CANCELLED");
+      }
+
+      if (orderProductStatus == "SHIPPED") {
+        return STATUS_LIST.filter((item) => item.value == "OFD" || item.value == "CANCELLED");
+      }
+
+      if (orderProductStatus == "OFD") {
+        return STATUS_LIST.filter((item) => item.value == "DELIVERED" || item.value == "CANCELLED");
+      }
+
+      return STATUS_LIST.filter((item) => item.value == "CONFIRMED" || item.value == "CANCELLED");
+    }, [orderProductStatus],
   );
 
   useEffect(() => {
     if (orderProductStatus) {
-      console.log(orderProductStatus);
       form.reset({
         status: orderProductStatus,
       });
@@ -196,7 +176,6 @@ const UpdateProductStatusForm: React.FC<UpdateProductStatusFormProps> = ({
                   <option
                     key={item.value}
                     value={item.value}
-                    disabled={item.disabled}
                   >
                     {item.label}
                   </option>

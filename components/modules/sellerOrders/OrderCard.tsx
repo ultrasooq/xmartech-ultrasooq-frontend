@@ -95,11 +95,17 @@ const OrderCard: React.FC<OrderCardProps> = ({
         </div>
         <div className="right-info">
           <h4 dir={langDir} translate="no">
-            {orderStatus === "CONFIRMED" ? (
+            {orderStatus === "RECEIVED" || orderStatus === "PLACED" ? (
               <>
                 <BiCircle color="green" />
-                {t("placed_on")}{" "}
+                {t("received_on")}{" "}
                 {orderProductDate ? formattedDate(orderProductDate) : ""}
+              </>
+            ) : null}
+            {orderStatus === "CONFIRMED" ? (
+              <>
+                <BiCircle color="green" /> {t("confirmed_on")}{" "}
+                {updatedAt ? formattedDate(updatedAt) : ""}
               </>
             ) : null}
             {orderStatus === "SHIPPED" ? (
@@ -127,7 +133,15 @@ const OrderCard: React.FC<OrderCardProps> = ({
               </>
             ) : null}
           </h4>
-          <p dir={langDir}>{t(SELLER_DELIVERY_STATUS[orderStatus])}</p>
+          <p dir={langDir}>
+            {orderStatus === "RECEIVED" || orderStatus === "PLACED" ? (
+              t("order_received_info")
+            ) : orderStatus === "CONFIRMED" ? (
+              t("order_confirmed_info")
+            ) : (
+              t(SELLER_DELIVERY_STATUS[orderStatus])
+            )}
+          </p>
 
           {/* {orderStatus === "DELIVERED" ? (
             <Link
