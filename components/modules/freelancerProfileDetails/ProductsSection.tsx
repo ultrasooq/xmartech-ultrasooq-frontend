@@ -643,7 +643,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
                   </Select>
                 </li>
 
-                <li>
+                <li className="block md:hidden">
                   <button
                     type="button"
                     className="view-type-btn"

@@ -197,7 +197,7 @@ export default function CompanyProfileDetailsPage() {
                   </div>
                 </TabsContent>
                 <TabsContent value="products" className="mt-0">
-                  <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white px-2 py-2 shadow-md sm:px-6 sm:pb-4 sm:pt-8 md:px-4 md:pb-7 md:pt-12 xl:px-9">
+                  <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white px-2 py-2 shadow-md sm:px-6 sm:pb-4 sm:pt-8 md:px-4 md:pb-7 lg:pt-12 xl:px-9">
                     {/* importing from freelancer details module */}
                     <ProductsSection sellerId={activeSellerId as string} />
                   </div>

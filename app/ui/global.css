@@ -4464,18 +4464,21 @@
       @apply max-w-[unset];
     }
 
-    .trending-search-sec .left-filter {
+    .trending-search-sec .left-filter,
+    .rfq_section .rfq_main_box .rfq_left {
       @apply fixed left-0 top-0 z-[999] h-full -translate-x-full bg-white transition-[0.5s] p-[15px] max-w-[250px];
       height: 100%;
       overflow-x: hidden;
       overflow-y: auto;
     }
 
-    .trending-search-sec .left-filter.show {
+    .trending-search-sec .left-filter.show,
+    .rfq_section .rfq_main_box .rfq_left.show {
       transform: translate(0);
     }
 
-    .trending-search-sec .left-filter.show ~ .left-filter-overlay {
+    .trending-search-sec .left-filter.show ~ .left-filter-overlay,
+    .rfq_section .rfq_main_box .rfq_left.show ~ .left-filter-overlay {
       @apply fixed left-0 top-0 z-[998] block h-full w-full;
     }
 
