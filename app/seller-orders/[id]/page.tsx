@@ -612,17 +612,19 @@ const MyOrderDetailsPage = ({ }) => {
                             {t("need_help")}
                           </a>
 
-                          <div className="more-actions">
-                            <button
-                              type="button"
-                              className="theme-primary-btn update-status-btn"
-                              onClick={handleToggleStatusModal}
-                              dir={langDir}
-                              translate="no"
-                            >
-                              {t("update_status")}
-                            </button>
-                          </div>
+                          {orderDetails?.orderProductStatus != 'DELIVERED' ? (
+                            <div className="more-actions">
+                              <button
+                                type="button"
+                                className="theme-primary-btn update-status-btn"
+                                onClick={handleToggleStatusModal}
+                                dir={langDir}
+                                translate="no"
+                              >
+                                {t("update_status")}
+                              </button>
+                            </div>
+                          ) : null}
 
                           <div className="more-actions">
                             <button

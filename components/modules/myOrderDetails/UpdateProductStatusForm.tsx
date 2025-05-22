@@ -21,7 +21,8 @@ type UpdateProductStatusFormProps = {
   onClose: () => void;
   orderProductStatus?: string;
   orderProductDate: string;
-  deliveryAfter: number
+  deliveryAfter: number;
+  tradeRole?: string;
 };
 
 const formSchema = z
@@ -48,7 +49,8 @@ const UpdateProductStatusForm: React.FC<UpdateProductStatusFormProps> = ({
   onClose,
   orderProductStatus,
   orderProductDate,
-  deliveryAfter
+  deliveryAfter,
+  tradeRole
 }) => {
   const t = useTranslations();
   const { langDir } = useAuth();
@@ -69,7 +71,7 @@ const UpdateProductStatusForm: React.FC<UpdateProductStatusFormProps> = ({
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     if (values.status === "") return;
 
-    if (values.status === "DELIVERED") {
+    if (values.status === "DELIVERED" && tradeRole != 'BUYER') {
       if (moment().diff(moment(orderProductDate), 'days') <= deliveryAfter) {
         return;
       }
@@ -83,6 +85,9 @@ const UpdateProductStatusForm: React.FC<UpdateProductStatusFormProps> = ({
       onSuccess: () => {
         queryClient.invalidateQueries({
           queryKey: ["order-by-seller-id", { orderProductId }],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["order-by-id", { orderProductId }],
         });
       },
     });
@@ -140,6 +145,10 @@ const UpdateProductStatusForm: React.FC<UpdateProductStatusFormProps> = ({
 
   const formattedStatusList = useMemo(
     () => {
+      if (tradeRole == "BUYER") {
+        return STATUS_LIST.filter((item) => item.value == "DELIVERED");
+      }
+
       if (orderProductStatus == "CANCELLED") {
         return [];
       }

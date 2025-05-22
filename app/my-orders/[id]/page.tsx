@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { BiSolidCircle, BiCircle } from "react-icons/bi";
 import { PiStarFill } from "react-icons/pi";
 import { LiaFileInvoiceSolid } from "react-icons/lia";
@@ -18,11 +18,17 @@ import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 import { convertDate, convertTime } from "@/utils/helper";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import UpdateProductStatusForm from "@/components/modules/myOrderDetails/UpdateProductStatusForm";
 
-const MyOrderDetailsPage = ({ }) => {
+const MyOrderDetailsPage = () => {
   const t = useTranslations();
   const { langDir, currency } = useAuth();
   const searchParams = useParams();
+
+  const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
+  const handleToggleStatusModal = () =>
+    setIsStatusModalOpen(!isStatusModalOpen);
 
   const orderByIdQuery = useOrderById(
     {
@@ -527,6 +533,20 @@ const MyOrderDetailsPage = ({ }) => {
                             {t("need_help")}
                           </Button>
 
+                          {orderDetails?.orderProductStatus != 'DELIVERED' ? (
+                            <div className="more-actions">
+                              <button
+                                type="button"
+                                className="theme-primary-btn update-status-btn"
+                                onClick={handleToggleStatusModal}
+                                dir={langDir}
+                                translate="no"
+                              >
+                                {t("update_status")}
+                              </button>
+                            </div>
+                          ) : null}
+
                           {orderDetails?.orderProductStatus === "DELIVERED" ? (
                             <Link
                               href={
@@ -586,7 +606,27 @@ const MyOrderDetailsPage = ({ }) => {
           </div>
         </div>
       </div>
+
       <Footer />
+
+      <Dialog open={isStatusModalOpen} onOpenChange={handleToggleStatusModal}>
+        <DialogContent className="customModal-s1">
+          <DialogHeader className="modal-header">
+            <DialogTitle className="modal-title" translate="no">
+              {t("update_delivery_status")}
+            </DialogTitle>
+          </DialogHeader>
+
+          <UpdateProductStatusForm
+            orderProductId={searchParams?.id as string}
+            onClose={handleToggleStatusModal}
+            orderProductStatus={orderDetails?.orderProductStatus}
+            orderProductDate={orderDetails?.orderProductDate ? orderDetails?.orderProductDate : ""}
+            deliveryAfter={orderDetails?.orderProduct_productPrice?.deliveryAfter || 1}
+            tradeRole="BUYER"
+          />
+        </DialogContent>
+      </Dialog>
     </>
   );
 };
