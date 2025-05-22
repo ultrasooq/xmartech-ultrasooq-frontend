@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { memo, useEffect, useMemo, useRef, useState } from "react";
 import AccordionMultiSelectV2 from "@/components/shared/AccordionMultiSelectV2";
 import { Label } from "@/components/ui/label";
 import { Controller, useFormContext } from "react-hook-form";
@@ -50,7 +50,87 @@ type BasicInformationProps = {
   tagsList: any;
   selectedCategoryIds?: string[];
 };
+const VideoPreviewCompo = ({
+  item,
+  handleEditPreviewImage
+}: any) => {
+  const t = useTranslations();
+  const { langDir } = useAuth();
+  const { toast } = useToast();
+  const [videoUrl, setVideoUrl] = React.useState<string | null>(
+    null,
+  );
+  React.useEffect(() => {
+    if (typeof item.path === "object") {
+      const url = URL.createObjectURL(
+        item.path,
+      );
+      setVideoUrl(url);
+      return () => {
+        URL.revokeObjectURL(url);
+      };
+    } else if (typeof item.path === "string") {
+      setVideoUrl(item.path);
+    } else {
+      setVideoUrl("/images/no-image.jpg");
+    }
+  }, [item.path]);
 
+  return (
+    <div className="relative h-44">
+      <div className="player-wrapper px-2">
+        <video
+          src={videoUrl || ''}
+          width="100%"
+          height="100%"
+          controls
+          style={{
+            objectFit: "contain",
+            width: "100%",
+            height: "100%",
+          }}
+        />
+      </div>
+      <div className="absolute h-20 w-full p-5">
+        <p
+          className="rounded-lg border border-gray-300 bg-gray-100 py-2 text-sm font-semibold"
+          dir={langDir}
+          translate="no"
+        >
+          {t("upload_video")}
+        </p>
+      </div>
+      <Input
+        type="file"
+        accept="video/*"
+        multiple={false}
+        className="!bottom-0 h-20 !w-full cursor-pointer opacity-0"
+        onChange={(event) => {
+          if (event.target.files) {
+            if (
+              event.target.files[0]
+                .size > 524288000
+            ) {
+              toast({
+                title: t(
+                  "one_of_file_should_be_less_than_size",
+                  { size: "500MB" },
+                ),
+                variant: "danger",
+              });
+              return;
+            }
+            handleEditPreviewImage(
+              item?.id,
+              event.target.files,
+            );
+          }
+        }}
+        id="images"
+      />
+    </div>
+  );
+}
 const BasicInformationSection: React.FC<BasicInformationProps> = ({
   editId,
   tagsList,
@@ -454,67 +534,10 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                             </div>
                                           ) : item?.path &&
                                             isVideo(item.path) ? (
-                                            <div className="relative h-44">
-                                              <div className="player-wrapper px-2">
-                                                <ReactPlayer
-                                                  url={
-                                                    typeof item.path ===
-                                                      "object"
-                                                      ? URL.createObjectURL(
-                                                        item.path,
-                                                      )
-                                                      : typeof item.path ===
-                                                        "string"
-                                                        ? item.path
-                                                        : "/images/no-image.jpg"
-                                                  }
-                                                  width="100%"
-                                                  height="100%"
-                                                  // playing
-                                                  controls
-                                                />
-                                              </div>
-
-                                              <div className="absolute h-20 w-full p-5">
-                                                <p
-                                                  className="rounded-lg border border-gray-300 bg-gray-100 py-2 text-sm font-semibold"
-                                                  dir={langDir}
-                                                  translate="no"
-                                                >
-                                                  {t("upload_video")}
-                                                </p>
-                                              </div>
-                                              <Input
-                                                type="file"
-                                                accept="video/*"
-                                                multiple={false}
-                                                className="!bottom-0 h-20 !w-full cursor-pointer opacity-0"
-                                                onChange={(event) => {
-                                                  if (event.target.files) {
-                                                    if (
-                                                      event.target.files[0]
-                                                        .size > 524288000
-
-                                                    ) {
-                                                      toast({
-                                                        title: t(
-                                                          "one_of_file_should_be_less_than_size",
-                                                          { size: "500MB" },
-                                                        ),
-                                                        variant: "danger",
-                                                      });
-                                                      return;
-                                                    }
-
-                                                    handleEditPreviewImage(
-                                                      item?.id,
-                                                      event.target.files,
-                                                    );
-                                                  }
-                                                }}
-                                                id="images"
-                                              />
-                                            </div>
+                                            <VideoPreviewCompo
+                                              item={item}
+                                              handleEditPreviewImage={handleEditPreviewImage}
+                                            />
                                           ) : (
                                             <AddImageContent
                                               description={t("drop_your_file")}
