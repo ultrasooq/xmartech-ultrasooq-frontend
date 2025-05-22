@@ -701,9 +701,9 @@ const CheckoutPage = () => {
         data[i] = {
           sellerId: sellerId,
           orderShippingType: "PICKUP",
-          shippingDate: convertDateTimeToUTC(new Date().toLocaleString()),
-          fromTime: convertDateTimeToUTC(new Date().toLocaleString()),
-          toTime: convertDateTimeToUTC(new Date().toLocaleString()),
+          shippingDate: null,
+          fromTime: null,
+          toTime: null,
           shippingCharge: 0,
           serviceId: null,
         };
