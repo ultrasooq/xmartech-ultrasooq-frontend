@@ -531,8 +531,28 @@ const ServiceCard: React.FC<any> = ({
             <h4 className="mb-2.5 border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark">
               {item.serviceName}
             </h4>
-            <p title={getPlainText(item.description)} className="truncate">
-              {getPlainText(item.description)}
+            <p
+              title={getPlainText(item.description)}
+              className="overflow-hidden block text-ellipsis"
+              style={{
+                display: '-webkit-box',
+                WebkitLineClamp: 2, // Show up to 2 lines
+                WebkitBoxOrient: 'vertical',
+                maxWidth: '220px',
+                minHeight: '1.5em',
+                whiteSpace: 'normal',
+                textOverflow: 'ellipsis',
+                overflow: 'hidden',
+              }}
+            >
+              {(() => {
+                const text = getPlainText(item.description);
+                const lines = text.split(/\r?\n/);
+                if (lines.length > 2) {
+                  return lines.slice(0, 2).join(' ') + '...';
+                }
+                return text;
+              })()}
             </p>
             {/* <div className="my-1 flex">
                             {calculateRatings(calculateAvgRating)}

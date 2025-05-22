@@ -17,7 +17,6 @@ import {
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import AddImageContent from "../profile/AddImageContent";
 import CloseWhiteIcon from "@/public/images/close-white.svg";
-import ReactPlayer from "react-player/lazy";
 import BrandSelect from "@/components/shared/BrandSelect";
 import { PRODUCT_CATEGORY_ID, PRODUCT_CONDITION_LIST } from "@/utils/constants";
 import ReactSelect from "react-select";
@@ -475,66 +474,73 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                             </div>
                                           ) : item?.path &&
                                             isVideo(item.path) ? (
-                                            <div className="relative h-44">
-                                              <div className="player-wrapper px-2">
-                                                <ReactPlayer
-                                                  url={
-                                                    typeof item.path ===
-                                                      "object"
-                                                      ? URL.createObjectURL(
-                                                        item.path,
-                                                      )
-                                                      : typeof item.path ===
-                                                        "string"
-                                                        ? item.path
-                                                        : "/images/no-image.jpg"
-                                                  }
-                                                  width="100%"
-                                                  height="100%"
-                                                  // playing
-                                                  controls
-                                                />
-                                              </div>
+                                            (() => {
+                                              const [videoUrl, setVideoUrl] = React.useState<string | null>(null);
+                                              React.useEffect(() => {
+                                                if (typeof item.path === "object") {
+                                                  const url = URL.createObjectURL(item.path);
+                                                  setVideoUrl(url);
+                                                  return () => {
+                                                    URL.revokeObjectURL(url);
+                                                  };
+                                                } else if (typeof item.path === "string") {
+                                                  setVideoUrl(item.path);
+                                                } else {
+                                                  setVideoUrl("/images/no-image.jpg");
+                                                }
+                                              }, [item.path]);
 
-                                              <div className="absolute h-20 w-full p-5">
-                                                <p
-                                                  className="rounded-lg border border-gray-300 bg-gray-100 py-2 text-sm font-semibold"
-                                                  dir={langDir}
-                                                  translate="no"
-                                                >
-                                                  {t("upload_video")}
-                                                </p>
-                                              </div>
-                                              <Input
-                                                type="file"
-                                                accept="video/*"
-                                                multiple={false}
-                                                className="!bottom-0 h-20 !w-full cursor-pointer opacity-0"
-                                                onChange={(event) => {
-                                                  if (event.target.files) {
-                                                    if (
-                                                      event.target.files[0]
-                                                        .size > 524288000
-                                                    ) {
-                                                      toast({
-                                                        title: t(
-                                                          "one_of_file_should_be_less_than_size",
-                                                          { size: "500MB" },
-                                                        ),
-                                                        variant: "danger",
-                                                      });
-                                                      return;
-                                                    }
-
-                                                    handleEditPreviewImage(
-                                                      item?.id,
-                                                      event.target.files,
-                                                    );
-                                                  }
-                                                }}
-                                                id="productImages"
-                                              />
-                                            </div>
+                                              return (
+                                                <div className="relative h-44">
+                                                  <div className="player-wrapper px-2">
+                                                    <video
+                                                      src={videoUrl || ''}
+                                                      width="100%"
+                                                      height="100%"
+                                                      controls
+                                                      style={{ objectFit: "contain", width: "100%", height: "100%" }}
+                                                    />
+                                                  </div>
+                                                  <div className="absolute h-20 w-full p-5">
+                                                    <p
+                                                      className="rounded-lg border border-gray-300 bg-gray-100 py-2 text-sm font-semibold"
+                                                      dir={langDir}
+                                                      translate="no"
+                                                    >
+                                                      {t("upload_video")}
+                                                    </p>
+                                                  </div>
+                                                  <Input
+                                                    type="file"
+                                                    accept="video/*"
+                                                    multiple={false}
+                                                    className="!bottom-0 h-20 !w-full cursor-pointer opacity-0"
+                                                    onChange={(event) => {
+                                                      if (event.target.files) {
+                                                        if (
+                                                          event.target.files[0]
+                                                            .size > 524288000
+                                                        ) {
+                                                          toast({
+                                                            title: t(
+                                                              "one_of_file_should_be_less_than_size",
+                                                              { size: "500MB" },
+                                                            ),
+                                                            variant: "danger",
+                                                          });
+                                                          return;
+                                                        }
+                                                        handleEditPreviewImage(
+                                                          item?.id,
+                                                          event.target.files,
+                                                        );
+                                                      }
+                                                    }}
+                                                    id="productImages"
+                                                  />
+                                                </div>
+                                              );
+                                            })()
                                           ) : (
                                             <AddImageContent
                                               description={t("drop_your_file")}
