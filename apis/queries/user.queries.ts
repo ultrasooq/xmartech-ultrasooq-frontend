@@ -3,6 +3,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   fetchMe,
   fetchUniqueUser,
+  fetchUserBusinessCategories,
   updateUserProfile,
 } from "../requests/user.requests";
 import { IBuyer, IBuyerRequest } from "@/utils/types/user.types";
@@ -40,9 +41,6 @@ export const useMe = (enabled = true) =>
       const res = await fetchMe();
       return res.data;
     },
-    // onError: (err: APIResponseError) => {
-    //   console.log(err);
-    // },
     enabled,
   });
 
@@ -54,6 +52,16 @@ export const useUniqueUser = (
     queryKey: ["unique-user", payload],
     queryFn: async () => {
       const res = await fetchUniqueUser(payload);
+      return res.data;
+    },
+    enabled,
+  });
+
+export const useUserBusinessCategories = (enabled = true) =>
+  useQuery({
+    queryKey: ["user-busienss-categories"],
+    queryFn: async () => {
+      const res = await fetchUserBusinessCategories();
       return res.data;
     },
     enabled,

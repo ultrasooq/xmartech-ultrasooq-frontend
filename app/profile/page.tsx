@@ -1,5 +1,5 @@
 "use client";
-import { useMe, useUpdateProfile } from "@/apis/queries/user.queries";
+import { useMe, useUniqueUser, useUpdateProfile, useUserBusinessCategories } from "@/apis/queries/user.queries";
 import {
   Accordion,
   AccordionContent,
@@ -29,7 +29,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 import { getCookie } from "cookies-next";
@@ -44,6 +44,7 @@ import ClostIcon from "@/public/images/close-white.svg";
 import BackgroundImage from "@/public/images/before-login-bg.png";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import AccordionMultiSelectV2 from "@/components/shared/AccordionMultiSelectV2";
 
 const formSchema = (t: any) => {
   return z.object({
@@ -111,12 +112,13 @@ const formSchema = (t: any) => {
       }),
     ),
     dateOfBirth: z.date({ required_error: t("dob_required") }),
+    userBusinessCategoryList: z.any().optional()
   });
 };
 
 export default function ProfilePage() {
   const t = useTranslations();
-  const { langDir } = useAuth();
+  const { langDir, user } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const frontIdentityRef = useRef<HTMLInputElement>(null);
@@ -148,6 +150,7 @@ export default function ProfilePage() {
           link: "",
         },
       ],
+      userBusinessCategoryList: []
     },
   });
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
@@ -157,8 +160,32 @@ export default function ProfilePage() {
   const [identityBackImageFile, setIdentityBackImageFile] =
     useState<FileList | null>();
   const me = useMe(!!accessToken);
+  const uniqueUser = useUniqueUser(
+    { userId: user?.id ? Number(user.id) : undefined },
+    !!user?.id,
+  );
+  const businessCategoriesQuery = useUserBusinessCategories();
   const upload = useUploadFile();
   const updateProfile = useUpdateProfile();
+
+  useEffect(() => {
+    if (uniqueUser?.data?.data) {
+      form.setValue(
+        'userBusinessCategoryList',
+        uniqueUser?.data?.data?.userBusinesCategoryDetail?.map((category: any) => {
+          return { label: category.categoryDetail?.name, value: category.categoryId }
+        }) || []
+      )
+    }
+  }, [uniqueUser?.data?.data]);
+
+  const memoizedBusinessCategories = useMemo(() => {
+    return (
+      businessCategoriesQuery?.data?.data?.map((item: any) => {
+        return { label: item.name, value: item.id }
+      }) || []
+    );
+  }, [businessCategoriesQuery?.data?.data]);
 
   const fieldArrayForPhoneNumber = useFieldArray({
     control: form.control,
@@ -200,6 +227,9 @@ export default function ProfilePage() {
   };
 
   const onSubmit = async (formData: any) => {
+    formData.userBusinessCategoryList = formData.userBusinessCategoryList?.map((item: any) => {
+      return { categoryId: item.value, categoryLocation: '' }
+    }) || [];
     const data = {
       ...formData,
       phoneNumber: formData.phoneNumberList[0].phoneNumber,
@@ -355,6 +385,7 @@ export default function ProfilePage() {
         phoneNumberList: phoneNumberList,
         dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : undefined,
         socialLinkList: socialLinkList,
+        userBusinessCategoryList: form.getValues('userBusinessCategoryList')
       });
       setIdentityFrontImageFile(identityProof || "");
       setIdentityBackImageFile(identityProofBack || "");
@@ -933,6 +964,16 @@ export default function ProfilePage() {
                   <p className="mb-3 text-[13px] text-red-500" dir={langDir}>
                     {form.formState.errors.socialLinkList?.message}
                   </p>
+
+                  <AccordionMultiSelectV2
+                    label={t("category")}
+                    name="userBusinessCategoryList"
+                    options={memoizedBusinessCategories || []}
+                    placeholder={t("category")}
+                    error={
+                      form.formState.errors["userBusinessCategoryList"]?.message as string
+                    }
+                  />
 
                   <Button
                     disabled={updateProfile.isPending || upload.isPending}
