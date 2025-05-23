@@ -33,7 +33,7 @@ const generateTimeOptions = () => {
   return times;
 };
 
-const timeOptions = generateTimeOptions();
+export const timeOptions = generateTimeOptions();
 
 const ControlledTimePicker: React.FC<ControlledTimePickerProps> = ({
   label,

@@ -5,6 +5,9 @@ import { useAuth } from "@/context/AuthContext";
 import { useAddServiceToCart, useServiceById } from "@/apis/queries/services.queries";
 import { useToast } from "@/components/ui/use-toast";
 import { useAddServiceToCartWithProduct } from "@/apis/queries/cart.queries";
+import { DatePicker, TimePicker } from "./service-features/CommanUtils";
+
+
 
 type AddServiceToCartModalProps = {
     id?: number;
@@ -18,12 +21,12 @@ type AddServiceToCartModalProps = {
     handleClose: () => void;
 };
 
-const AddServiceToCartModal: React.FC<AddServiceToCartModalProps> = ({ 
-    id, 
-    open, 
-    features, 
-    cartId, 
-    handleClose, 
+const AddServiceToCartModal: React.FC<AddServiceToCartModalProps> = ({
+    id,
+    open,
+    features,
+    cartId,
+    handleClose,
     productId,
     productPriceId,
     productCartId,
@@ -54,14 +57,29 @@ const AddServiceToCartModal: React.FC<AddServiceToCartModalProps> = ({
                         item.id === id ? { ...item, quantity: Math.max(1, quantity) } : item
                     );
                 }
-                return [...prev, { id, quantity: Math.max(1, quantity) }];
+                // return [...prev, { id, quantity: Math.max(1, quantity) }];
+                return [
+                    ...prev,
+                    {
+                        id,
+                        quantity: Math.max(1, quantity),
+                        date: "", // or new Date() if you want to default to today
+                        time: "",
+                    },
+                ];
             } else {
                 // Remove the feature if unchecked
                 return prev.filter((item) => item.id !== id);
             }
         });
     };
-
+    const updateFeatureField = (id: number, field: string, value: any) => {
+        setSelectedFeatures((prev) =>
+            prev.map((item) =>
+                item.id === id ? { ...item, [field]: value } : item
+            )
+        );
+    };
     const updateQuantity = (id: number, quantity: number) => {
         setSelectedFeatures((prev) =>
             prev.map((item) =>
@@ -94,6 +112,7 @@ const AddServiceToCartModal: React.FC<AddServiceToCartModalProps> = ({
     }, [serviceQueryById?.data?.data]);
 
     useEffect(() => {
+        console.log("features", features);
         setSelectedFeatures(features);
     }, [features]);
 
@@ -117,7 +136,13 @@ const AddServiceToCartModal: React.FC<AddServiceToCartModalProps> = ({
                     features: selectedFeatures.map((f) => {
                         return {
                             serviceFeatureId: f.id,
-                            quantity: f.quantity
+                            quantity: f.quantity,
+                            bookingDateTime:
+                                f.date && f.time
+                                    ? new Date(
+                                        `${f.date instanceof Date ? f.date.toISOString().split('T')[0] : f.date}T${f.time}:00Z`
+                                      ).toISOString()
+                                    : undefined,
                         }
                     }),
                     productId: relatedCart?.productId || productId,
@@ -126,6 +151,7 @@ const AddServiceToCartModal: React.FC<AddServiceToCartModalProps> = ({
                     cartType: "PRODUCT",
                     relatedCartType: "SERVICE"
                 };
+                
                 const response = await addServiceToCartWithProduct.mutateAsync(payload);
                 if (response.success) {
                     toast({
@@ -148,7 +174,13 @@ const AddServiceToCartModal: React.FC<AddServiceToCartModalProps> = ({
                     features: selectedFeatures.map((f) => {
                         return {
                             serviceFeatureId: f.id,
-                            quantity: f.quantity
+                            quantity: f.quantity,
+                            bookingDateTime:
+                                f.date && f.time
+                                    ? new Date(
+                                        `${f.date instanceof Date ? f.date.toISOString().split('T')[0] : f.date}T${f.time}:00Z`
+                                      ).toISOString()
+                                    : undefined,
                         }
                     })
                 };
@@ -177,7 +209,7 @@ const AddServiceToCartModal: React.FC<AddServiceToCartModalProps> = ({
             });
         }
     };
-
+    console.log("selectedFeatures", selectedFeatures);
     return (
         <DialogContent className="custom-action-type-chose-picker">
             <div className="modal-headerpart">
@@ -267,6 +299,26 @@ const AddServiceToCartModal: React.FC<AddServiceToCartModalProps> = ({
                                                 >
                                                     +
                                                 </button>
+                                                {/* Date Picker */}
+                                                <div className="ml-4">
+                                                    <DatePicker
+                                                        selectedFeature={selectedFeature}
+                                                        updateFeatureField={updateFeatureField}
+                                                        feature={feature}
+                                                        langDir={langDir}
+                                                        t={t}
+                                                    />
+                                                </div>
+                                                {/* Time Picker */}
+                                                <div className="ml-2">
+                                                    <TimePicker
+                                                        selectedFeature={selectedFeature}
+                                                        updateFeatureField={updateFeatureField}
+                                                        feature={feature}
+                                                        langDir={langDir}
+                                                        t={t}
+                                                    />
+                                                </div>
                                             </div>
                                         ) : null}
                                     </div>
@@ -277,32 +329,33 @@ const AddServiceToCartModal: React.FC<AddServiceToCartModalProps> = ({
                 </div>
                 {
                     !serviceQueryById.isLoading ? (
-                    <div
-                        className="modal-footerpart cart_button"
-                        style={{ marginTop: "1rem", textAlign: "center", justifyContent: "center" }}
-                    >
-                        <button
-                            onClick={handleAddToCart}
-                            className="add_to_cart_button"
-                            disabled={selectedFeatures.length === 0 || 
-                                addServiceToCart.isPending || 
-                                addServiceToCartWithProduct?.isPending
-                            }
-                            dir={langDir}
-                            translate="no"
+                        <div
+                            className="modal-footerpart cart_button"
+                            style={{ marginTop: "1rem", textAlign: "center", justifyContent: "center" }}
                         >
-                            {
-                                addServiceToCart.isPending || addServiceToCartWithProduct?.isPending ?
-                                    t("please_wait")+"..."
-                                    :
-                                    t("add_to_cart")
-                            }
-                        </button>
-                    </div>) : null
+                            <button
+                                onClick={handleAddToCart}
+                                className="add_to_cart_button"
+                                disabled={
+                                    selectedFeatures.length === 0 ||
+                                    addServiceToCart.isPending ||
+                                    addServiceToCartWithProduct?.isPending
+                                }
+                                dir={langDir}
+                                translate="no"
+                            >
+                                {
+                                    addServiceToCart.isPending || addServiceToCartWithProduct?.isPending ?
+                                        t("please_wait") + "..."
+                                        :
+                                        t("add_to_cart")
+                                }
+                            </button>
+                        </div>) : null
                 }
 
             </div>
-        </DialogContent>
+        </DialogContent >
     );
 };
 
