@@ -80,7 +80,7 @@ const ServiceDescriptionCard: React.FC<any> = ({
                                         style={{ maxWidth: "100%" }}
                                     >
                                         <div
-                                            className={`import-pickup-type-selector-box flex items-center gap-3 p-4 border rounded-xl cursor-pointer ${isSelected
+                                            className={`import-pickup-type-selector-box flex flex-wrap items-center gap-3 p-4 border rounded-xl cursor-pointer ${isSelected
                                                 ? "bg-green-50 border-green-500"
                                                 : "bg-white border-gray-200"
                                                 }`}
@@ -89,6 +89,8 @@ const ServiceDescriptionCard: React.FC<any> = ({
                                                 display: "flex",
                                                 flexDirection: "row",
                                                 justifyContent: "start",
+                                                flexWrap: "wrap", // allow wrapping
+                                                overflow: "visible", // prevent clipping
                                             }}
                                         >
                                             <input
@@ -99,8 +101,8 @@ const ServiceDescriptionCard: React.FC<any> = ({
                                                 }
                                                 className="h-5 w-5 text-green-600 focus:ring-green-500"
                                             />
-                                            <div className="text-container flex-1">
-                                                <h5 dir={langDir} className="text-sm text-gray-800">
+                                            <div className="text-container flex-1 min-w-0">
+                                                <h5 dir={langDir} className="text-sm text-gray-800 truncate">
                                                     {feature.name}
                                                 </h5>
                                                 <p className="text-xs text-gray-500" dir={langDir}>
@@ -112,7 +114,7 @@ const ServiceDescriptionCard: React.FC<any> = ({
                                                 </p>
                                             </div>
                                             {isSelected ? (
-                                                <div className="quantity-container flex items-center gap-2">
+                                                <div className="quantity-container flex flex-wrap items-center gap-2 min-w-0">
                                                     <label className="text-sm text-gray-600">Qty:</label>
                                                     <button
                                                         onClick={() => decrementQuantity(feature.id)}
@@ -131,6 +133,7 @@ const ServiceDescriptionCard: React.FC<any> = ({
                                                             )
                                                         }
                                                         className="w-16 p-1 border rounded-md text-center"
+                                                        style={{ minWidth: "3rem" }}
                                                     />
                                                     <button
                                                         onClick={() => incrementQuantity(feature.id)}
@@ -139,7 +142,7 @@ const ServiceDescriptionCard: React.FC<any> = ({
                                                         +
                                                     </button>
                                                     {/* Date Picker */}
-                                                    <div className="ml-4">
+                                                    <div className="ml-4 min-w-[140px]">
                                                         <DatePicker
                                                             selectedFeature={selectedFeature}
                                                             updateFeatureField={updateFeatureField}
@@ -149,7 +152,7 @@ const ServiceDescriptionCard: React.FC<any> = ({
                                                         />
                                                     </div>
                                                     {/* Time Picker */}
-                                                    <div className="ml-2">
+                                                    <div className="ml-2 min-w-[90px]">
                                                         <TimePicker
                                                             selectedFeature={selectedFeature}
                                                             updateFeatureField={updateFeatureField}

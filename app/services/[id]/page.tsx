@@ -292,11 +292,25 @@ const ServiceDetailsPage = () => {
         (item: any) =>
           item.cartType == "SERVICE" && item.serviceId == serviceId,
       )?.cartServiceFeatures || [];
+
     setSelectedFeatures(
-      features.map((item: any) => ({
-        id: item.serviceFeatureId,
-        quantity: item.quantity,
-      })),
+      features.map((item: any) => {
+        const bookingDateTime = item?.bookingDateTime;
+        let date: any = "";
+        let time = "";
+
+        if (bookingDateTime) {
+          const dateObj = new Date(bookingDateTime);
+          date = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
+          time = dateObj.toISOString().split("T")[1]?.substring(0, 5); // 'HH:MM'
+        }
+        return {
+          id: item.serviceFeatureId,
+          quantity: item.quantity,
+          date,
+          time
+        }
+      })
     );
   }, [cartListByUser.data?.data, cartListByDeviceQuery.data?.data]);
 
