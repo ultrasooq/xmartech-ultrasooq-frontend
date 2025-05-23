@@ -19,6 +19,8 @@ export function middleware(request: NextRequest) {
     "/trending",
     "/trending/:id",
     "/cart",
+    "/complete-order/:id",
+    "/checkout-complete",
     "/orders",
     "/rfq",
   ];
@@ -27,7 +29,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/home", request.url));
   }
 
-  const dynamicPathRegex = /^\/trending\/\d+$/;
+  const dynamicPathRegex = /^\/trending|complete-order\/\d+$/;
 
   if (publicPaths.includes(request.nextUrl.pathname)) {
     return authToken
