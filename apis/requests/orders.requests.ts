@@ -197,3 +197,17 @@ export const preOrderCalculation = (payload: any) => {
     },
   });
 };
+
+export const fetchOrderByIdUnAuth = (payload: { orderId: number }) => {
+  return axios({
+    method: "GET",
+    url: urlcat(
+      `${process.env.NEXT_PUBLIC_API_URL}/order/getOneOrderUnAuth`,
+      payload,
+    ),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+  });
+};

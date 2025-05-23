@@ -11,6 +11,7 @@ import {
   createPaymentIntent,
   createPaymentLink,
   fetchOrderById,
+  fetchOrderByIdUnAuth,
   fetchOrderBySellerId,
   fetchOrders,
   fetchOrdersBySellerId,
@@ -291,9 +292,9 @@ export const useUpdateOrderShippingStatus = () => {
   return useMutation<
     { data: any; message: string; status: boolean },
     APIResponseError,
-    { 
+    {
       orderShippingId: number;
-      receipt: string; 
+      receipt: string;
     }
   >({
     mutationFn: async (payload) => {
@@ -329,3 +330,20 @@ export const usePreOrderCalculation = () => {
     },
   });
 };
+
+export const useOrderByIdUnAuth = (
+  payload: {
+    orderId: number;
+  },
+  enabled = true,
+) =>
+  useQuery({
+    queryKey: ["order-by-id", payload],
+    queryFn: async () => {
+      const res: {
+        data: { data: any; message: string; status: boolean; };
+      } = await fetchOrderByIdUnAuth(payload);
+      return res.data;
+    },
+    enabled,
+  });
