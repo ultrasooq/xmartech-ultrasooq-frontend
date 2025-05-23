@@ -15,6 +15,7 @@ import {
   fetchAllRfqQuotesUsersBySellerId,
   fetchFactoriesCartByUserId,
   fetchFactoriesProducts,
+  fetchFactoriesProductsByUserBusinessCategory,
   fetchOneRfqQuotesUsersByBuyerID,
   fetchRfqCartByUserId,
   fetchRfqProductById,
@@ -58,6 +59,7 @@ export const useRfqProducts = (
       sortType?: "newest" | "oldest";
       brandIds?: string;
       isOwner?: string;
+      related?: boolean;
     },
     enabled = true,
   ) =>
@@ -72,6 +74,30 @@ export const useRfqProducts = (
       // },
       enabled,
     });
+
+    export const useFactoriesProductsByUserBusinessCategory = (
+      payload: {
+        page: number;
+        limit: number;
+        term?: string;
+        adminId?: string;
+        sortType?: "newest" | "oldest";
+        brandIds?: string;
+        isOwner?: string;
+      },
+      enabled = true,
+    ) =>
+      useQuery({
+        queryKey: ["factoriesProducts", payload],
+        queryFn: async () => {
+          const res = await fetchFactoriesProductsByUserBusinessCategory(payload);
+          return res.data;
+        },
+        // onError: (err: APIResponseError) => {
+        //   console.log(err);
+        // },
+        enabled,
+      });
 
 export const useRfqProductById = (id: string, enabled = true) =>
   useQuery({

@@ -87,6 +87,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
   const [sortBy, setSortBy] = useState("desc");
   const [productFilter, setProductFilter] = useState(false);
   const [displayMyProducts, setDisplayMyProducts] = useState("0");
+  const [displayRelatedProducts, setDisplayRelatedProducts] = useState(false);
   const [page, setPage] = useState(1);
   const [limit] = useState(8);
   const [productVariants, setProductVariants] = useState<any[]>([]);
@@ -120,6 +121,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
       : me?.data?.data?.id,
     categoryIds: category.categoryIds ? category.categoryIds : undefined,
     isOwner: displayMyProducts == "1" ? "me" : "",
+    related: displayRelatedProducts,
     userType: me?.data?.data?.tradeRole == "BUYER" ? "BUYER" : ""
   });
   const fetchProductVariant = useProductVariant();
@@ -582,6 +584,16 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
                     })}
                   </p>
                   <ul>
+                    <li>
+                      {haveAccessToken ? (
+                        <>
+                          <Checkbox 
+                            onClick={(e) => setDisplayRelatedProducts(!displayRelatedProducts)}
+                          />
+                          <label className="ml-2" translate="no" dir={langDir}>{t("recommended")}</label>
+                        </>
+                      ) : null}
+                    </li>
                     <li>
                       <Select onValueChange={(e) => setSortBy(e)}>
                         <SelectTrigger className="custom-form-control-s1 bg-white">

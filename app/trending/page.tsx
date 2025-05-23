@@ -89,6 +89,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
   const [sortBy, setSortBy] = useState("desc");
   const [productFilter, setProductFilter] = useState(false);
   const [displayMyProducts, setDisplayMyProducts] = useState("0");
+  const [displayRelatedProducts, setDisplayRelatedProducts] = useState(false);
   const [page, setPage] = useState(1);
   const [limit] = useState(8);
   const [productVariants, setProductVariants] = useState<any[]>([]);
@@ -118,12 +119,13 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
     brandIds:
       selectedBrandIds.map((item) => item.toString()).join(",") || undefined,
     userId: me?.data?.data?.tradeRole == "BUYER"
-        ? undefined 
-        : me?.data?.data?.tradeRole == "MEMBER"
+      ? undefined
+      : me?.data?.data?.tradeRole == "MEMBER"
         ? me?.data?.data?.addedBy
         : me?.data?.data?.id,
     categoryIds: category.categoryIds ? category.categoryIds : undefined,
     isOwner: displayMyProducts == "1" ? "me" : "",
+    related: displayRelatedProducts,
     userType: me?.data?.data?.tradeRole == "BUYER" ? "BUYER" : ""
   });
   const fetchProductVariant = useProductVariant();
@@ -183,7 +185,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
         productImage: item?.product_productPrice?.[0]
           ?.productPrice_productSellerImage?.length
           ? item?.product_productPrice?.[0]
-              ?.productPrice_productSellerImage?.[0]?.image
+            ?.productPrice_productSellerImage?.[0]?.image
           : item?.productImages?.[0]?.image,
         categoryName: item?.category?.name || "-",
         skuNo: item?.skuNo,
@@ -580,6 +582,16 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
                     })}
                   </p>
                   <ul>
+                    <li>
+                      {haveAccessToken ? (
+                        <>
+                          <Checkbox 
+                            onClick={(e) => setDisplayRelatedProducts(!displayRelatedProducts)}
+                          />
+                          <label className="ml-2" translate="no" dir={langDir}>{t("recommended")}</label>
+                        </>
+                      ) : null}
+                    </li>
                     <li>
                       <Select onValueChange={(e) => setSortBy(e)}>
                         <SelectTrigger className="custom-form-control-s1 bg-white">

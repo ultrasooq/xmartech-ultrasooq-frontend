@@ -47,6 +47,7 @@ import AddToCustomizeForm from "@/components/modules/factories/AddToCustomizeFor
 import { useAuth } from "@/context/AuthContext";
 import { useProductVariant } from "@/apis/queries/product.queries";
 import Cart from "@/components/modules/cartList/Cart";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface FactoriesPageProps {
   searchParams?: { term?: string };
@@ -65,6 +66,7 @@ const FactoriesPage = ({ searchParams }: FactoriesPageProps) => {
   const [productFilter, setProductFilter] = useState(false);
   const [selectAllBrands, setSelectAllBrands] = useState<boolean>(false);
   const [displayMyProducts, setDisplayMyProducts] = useState("0");
+  const [displayRelatedProducts, setDisplayRelatedProducts] = useState(false);
   const [haveAccessToken, setHaveAccessToken] = useState(false);
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
   const [page, setPage] = useState(1);
@@ -98,6 +100,7 @@ const FactoriesPage = ({ searchParams }: FactoriesPageProps) => {
     sortType: sortBy,
     brandIds: selectedBrandIds.join(","),
     isOwner: displayMyProducts == "1" ? "me" : "",
+    related: displayRelatedProducts
   });
   const fetchProductVariant = useProductVariant();
   const cartListByUser = useCartListByUserId(
@@ -356,6 +359,16 @@ const FactoriesPage = ({ searchParams }: FactoriesPageProps) => {
                           </h4>
                         </div>
                         <div className="products_sec_top_right">
+                          <div className="mr-2">
+                            {haveAccessToken ? (
+                              <>
+                                <Checkbox 
+                                  onClick={(e) => setDisplayRelatedProducts(!displayRelatedProducts)}
+                                />
+                                <label className="ml-2" translate="no" dir={langDir}>{t("recommended")}</label>
+                              </>
+                            ) : null}
+                          </div>
                           <div className="trending_filter">
                             <Select
                               onValueChange={(e: any) => setSortBy(e)}

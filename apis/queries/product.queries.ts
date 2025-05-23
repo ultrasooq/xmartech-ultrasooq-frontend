@@ -6,6 +6,7 @@ import {
   deleteProduct,
   fetchAllBuyGroupProducts,
   fetchAllProducts,
+  fetchAllProductsByUserBusinessCategory,
   fetchExistingProducts,
   fetchProductById,
   fetchProductVariant,
@@ -198,7 +199,7 @@ export const useExistingProduct = (payload: { page: number; limit: number; term?
 });
 
 
-export const useAllProducts = (payload: { page: number; limit: number; term?: string; sort?: string; brandIds?: string; priceMin?: number; priceMax?: number; userId?: number; categoryIds?: string; isOwner?: string; userType?: string; }, enabled = true,) => useQuery({
+export const useAllProducts = (payload: { page: number; limit: number; term?: string; sort?: string; brandIds?: string; priceMin?: number; priceMax?: number; userId?: number; categoryIds?: string; isOwner?: string; userType?: string; related?: boolean; }, enabled = true,) => useQuery({
   queryKey: ["existing-products", payload],
   queryFn: async () => {
     const res = await fetchAllProducts(payload);
@@ -207,7 +208,25 @@ export const useAllProducts = (payload: { page: number; limit: number; term?: st
   enabled,
 });
 
-export const useAllBuyGroupProducts = (payload: { page: number; limit: number; term?: string; sort?: string; brandIds?: string; priceMin?: number; priceMax?: number; userId?: number; categoryIds?: string; isOwner?: string; userType?: string; }, enabled = true,) => useQuery({
+export const useAllProductsByUserBusinessCategory = (payload: { page: number; limit: number; term?: string; sort?: string; brandIds?: string; priceMin?: number; priceMax?: number; userId?: number; categoryIds?: string; isOwner?: string; userType?: string; related?: boolean; }, enabled = true,) => useQuery({
+  queryKey: ["existing-products", payload],
+  queryFn: async () => {
+    const res = await fetchAllProductsByUserBusinessCategory(payload);
+    return res.data;
+  },
+  enabled,
+});
+
+export const useAllBuyGroupProducts = (payload: { page: number; limit: number; term?: string; sort?: string; brandIds?: string; priceMin?: number; priceMax?: number; userId?: number; categoryIds?: string; isOwner?: string; userType?: string; related?: boolean; }, enabled = true,) => useQuery({
+  queryKey: ["buygroup-products", payload],
+  queryFn: async () => {
+    const res = await fetchAllBuyGroupProducts(payload);
+    return res.data;
+  },
+  enabled,
+});
+
+export const useAllBuyGroupProductsByUserBusinessCategory = (payload: { page: number; limit: number; term?: string; sort?: string; brandIds?: string; priceMin?: number; priceMax?: number; userId?: number; categoryIds?: string; isOwner?: string; userType?: string; }, enabled = true,) => useQuery({
   queryKey: ["buygroup-products", payload],
   queryFn: async () => {
     const res = await fetchAllBuyGroupProducts(payload);
