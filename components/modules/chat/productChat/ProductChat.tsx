@@ -399,7 +399,7 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
           {productDetails ? (
             <a
               target="_blank"
-              href={`/trending/${productDetails?.id}`}
+              href={`/rfq/${productDetails?.id}`}
               className="max-h-[720px] w-full overflow-y-auto p-2"
             >
               <div className="px-4">

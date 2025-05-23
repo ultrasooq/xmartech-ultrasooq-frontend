@@ -31,7 +31,7 @@ export const updateService = (payload: any) => {
   });
 };
 
-export const fetchAllServices = (payload: { page: number; limit: number; term?: string; sort?: string; brandIds?: string; priceMin?: number; priceMax?: number; userId?: number; categoryIds?: string; isOwner?: string; ownservice?: boolean }) => {
+export const fetchAllServices = (payload: { page: number; limit: number; term?: string; sort?: string; userId?: number; ownService?: boolean }) => {
   return axios({
     method: "GET",
     url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/service/list`, payload),

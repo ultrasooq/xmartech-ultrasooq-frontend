@@ -318,7 +318,7 @@ function HomePage() {
   const cartListByDeviceQuery = useCartListByDevice(
     {
       page: 1,
-      limit: 20,
+      limit: 100,
       deviceId,
     },
     !haveAccessToken,
@@ -327,7 +327,7 @@ function HomePage() {
   const cartListByUser = useCartListByUserId(
     {
       page: 1,
-      limit: 20,
+      limit: 100,
     },
     haveAccessToken,
   );

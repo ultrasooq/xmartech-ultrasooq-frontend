@@ -160,10 +160,10 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
     const params = new URLSearchParams(window.location.search);
     if (newTerm) {
       params.set("term", newTerm);
+      router.replace(`/search?${params.toString()}`); // Update URL dynamically
     } else {
-      params.delete("term");
+      router.replace(`/trending`); // Update URL dynamically
     }
-    router.replace(`/trending?${params.toString()}`); // Update URL dynamically
   }, 500);
 
   const handleSearch = (event: any) => {
@@ -301,9 +301,8 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
               );
 
               let localeKey = response.data.languages.split(",")[0];
-              if (localeKey.substr(0, 2) == "en") {
-                localeKey = "en";
-              }
+              localeKey = localeKey.split('-')[0];
+              localeKey = languages.find((language) => language.locale == localeKey)?.locale || 'en';
               window.localStorage.setItem("locale", localeKey);
               applyTranslation(localeKey);
 
@@ -372,11 +371,13 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
               </div>
               <div className="flex justify-end py-4 text-sm font-normal text-white md:w-8/12 lg:w-8/12">
                 <ul className="flex justify-end">
-                  <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
-                    <a href="#" dir={langDir} translate="no">
-                      {t("store_location")}
-                    </a>
-                  </li>
+                  {me?.data?.data?.tradeRole != "BUYER" ? (
+                    <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
+                      <a href="#" dir={langDir} translate="no">
+                        {t("store_location")}
+                      </a>
+                    </li>
+                  ) : null}
                   {/* {me?.data?.data?.tradeRole === "BUYER" ? ( */}
                   <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
                     <Link href="/my-orders" dir={langDir} translate="no">

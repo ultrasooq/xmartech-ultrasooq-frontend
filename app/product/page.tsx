@@ -29,6 +29,7 @@ import { convertDate, convertTime, generateRandomSkuNoWithTimeStamp, handleDescr
 import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import { v4 as uuidv4 } from "uuid";
 
 const baseProductPriceItemSchema = (t: any) => {
   return z.object({
@@ -218,7 +219,6 @@ const formSchemaForTypeP = (t: any) => {
         })
         .trim(),
       brandId: z.number().min(1, { message: t("brand_is_required") }),
-      // productLocationId: z.number().min(1, { message: t("product_location_is_required") }),
       productCountryId: z
         .number()
         .min(1, { message: t("product_country_is_required") }),
@@ -294,48 +294,56 @@ const formSchemaForTypeP = (t: any) => {
       isStockRequired: z.boolean().optional(),
       isOfferPriceRequired: z.boolean().optional(),
       isCustomProduct: z.boolean().optional(),
-      productVariantType: z
-        .string()
-        .trim()
-        .min(3, {
-          message: t("variant_type_must_be_equal_greater_than_2_characters"),
-        })
-        .max(20, { message: t("variant_type_must_be_less_than_20_characters") })
-        .optional()
-        .or(z.literal("")),
       productVariants: z.array(
         z.object({
-          value: z
+          type: z
             .string()
             .trim()
-            .min(1, { message: t("value_is_required") })
-            .max(20, {
-              message: t("value_must_be_less_than_n_characters", { n: 20 }),
+            .min(3, {
+              message: t("variant_type_must_be_equal_greater_than_2_characters"),
             })
+            .max(20, { message: t("variant_type_must_be_less_than_20_characters") })
             .optional()
             .or(z.literal("")),
-          image: z.any().optional(),
+          variants: z.array(
+            z.object({
+              value: z
+                .string()
+                .trim()
+                .min(1, { message: t("value_is_required") })
+                .max(20, {
+                  message: t("value_must_be_less_than_n_characters", { n: 20 }),
+                })
+                .optional()
+                .or(z.literal("")),
+              image: z.any().optional(),
+            })
+          )
         }),
       ),
     })
     .superRefine((data, ctx) => {
-      const variantsCount = data.productVariants.filter((el) =>
-        el.value?.trim(),
-      ).length;
-      if (data.productVariantType?.trim() && variantsCount == 0) {
-        ctx.addIssue({
-          code: "custom",
-          message: t("value_is_required"),
-          path: ["productVariants.0.value"],
-        });
-      }
-      if (variantsCount > 0 && !data.productVariantType?.trim()) {
-        ctx.addIssue({
-          code: "custom",
-          message: t("variant_type_is_required"),
-          path: ["productVariantType"],
-        });
-      }
+      data.productVariants.forEach((productVariant, index) => {
+        const variantsCount = productVariant.variants.filter((el) =>
+          el.value?.trim(),
+        ).length;
+
+        if (productVariant.type?.trim() && variantsCount == 0) {
+          ctx.addIssue({
+            code: "custom",
+            message: t("value_is_required"),
+            path: [`productVariants.${index}.variants.0.value`],
+          });
+        }
+
+        if (variantsCount > 0 && !productVariant.type?.trim()) {
+          ctx.addIssue({
+            code: "custom",
+            message: t("variant_type_is_required"),
+            path: [`productVariants.${index}.type`],
+          });
+        }
+      });
 
       if (data.setUpPrice) {
         const result = z
@@ -453,48 +461,56 @@ const formSchemaForTypeR = (t: any) => {
       isStockRequired: z.boolean().optional(),
       isOfferPriceRequired: z.boolean().optional(),
       isCustomProduct: z.boolean().optional(),
-      productVariantType: z
-        .string()
-        .trim()
-        .min(3, {
-          message: t("variant_type_must_be_equal_greater_than_2_characters"),
-        })
-        .max(20, { message: t("variant_type_must_be_less_than_20_characters") })
-        .optional()
-        .or(z.literal("")),
       productVariants: z.array(
         z.object({
-          value: z
+          type: z
             .string()
             .trim()
-            .min(1, { message: t("value_is_required") })
-            .max(20, {
-              message: t("value_must_be_less_than_n_characters", { n: 20 }),
+            .min(3, {
+              message: t("variant_type_must_be_equal_greater_than_2_characters"),
             })
+            .max(20, { message: t("variant_type_must_be_less_than_20_characters") })
             .optional()
             .or(z.literal("")),
-          image: z.any().optional(),
+          variants: z.array(
+            z.object({
+              value: z
+                .string()
+                .trim()
+                .min(1, { message: t("value_is_required") })
+                .max(20, {
+                  message: t("value_must_be_less_than_n_characters", { n: 20 }),
+                })
+                .optional()
+                .or(z.literal("")),
+              image: z.any().optional(),
+            })
+          )
         }),
       ),
     })
     .superRefine((data, ctx) => {
-      const variantsCount = data.productVariants.filter((el) =>
-        el.value?.trim(),
-      ).length;
-      if (data.productVariantType?.trim() && variantsCount == 0) {
-        ctx.addIssue({
-          code: "custom",
-          message: t("value_is_required"),
-          path: ["productVariants.0.value"],
-        });
-      }
-      if (variantsCount > 0 && !data.productVariantType?.trim()) {
-        ctx.addIssue({
-          code: "custom",
-          message: t("variant_type_is_required"),
-          path: ["productVariantType"],
-        });
-      }
+      data.productVariants.forEach((productVariant, index) => {
+        const variantsCount = productVariant.variants.filter((el) =>
+          el.value?.trim(),
+        ).length;
+
+        if (productVariant.type?.trim() && variantsCount == 0) {
+          ctx.addIssue({
+            code: "custom",
+            message: t("value_is_required"),
+            path: [`productVariants.${index}.variants.0.value`],
+          });
+        }
+
+        if (variantsCount > 0 && !productVariant.type?.trim()) {
+          ctx.addIssue({
+            code: "custom",
+            message: t("variant_type_is_required"),
+            path: [`productVariants.${index}.type`],
+          });
+        }
+      });
 
       if (data.setUpPrice) {
         // if (data.offerPrice === 0) {
@@ -574,9 +590,14 @@ const defaultValues: { [key: string]: any } = {
   isCustomProduct: false,
   productVariants: [
     {
-      value: "",
-      image: null,
-    },
+      type: "",
+      variants: [
+        {
+          value: "",
+          image: null
+        }
+      ]
+    }
   ],
 };
 
@@ -634,14 +655,29 @@ const CreateProductPage = () => {
   };
 
   const fetchProductVariant = async (productPriceId: number) => {
+    const product = productQueryById?.data?.data;
     const response = await getProductVariant.mutateAsync([productPriceId]);
     const variants = response?.data?.[0]?.object || [];
     if (variants.length > 0) {
-      form.setValue("productVariantType", variants[0].type);
-      form.setValue("productVariants", variants.map((variant: any) => {
+      const productSellerImages = product?.product_productPrice?.[0]?.productPrice_productSellerImage?.length
+        ? product?.product_productPrice?.[0]?.productPrice_productSellerImage
+        : product?.productImages?.length
+        ? product?.productImages
+        : [];
+
+      // @ts-ignore
+      let variantTypes = [...new Set(variants.map((variant: any) => variant.type))];
+      form.setValue("productVariants", variantTypes.map((type: string) => {
         return {
-          value: variant.value,
-          image: null
+          type: type,
+          variants: variants.filter((variant: any) => variant.type == type).map((variant: any) => {
+            return {
+              value: variant.value, 
+              image: productSellerImages?.find((image: any) => {
+                return image.variant && image.variant?.type == type && image.variant?.value == variant.value;
+              })?.image || null
+            };
+          })
         };
       }));
     }
@@ -650,6 +686,8 @@ const CreateProductPage = () => {
   useEffect(() => {
     if (productQueryById?.data?.data) {
       const product = productQueryById?.data?.data;
+
+      setActiveProductType(product.productType);
       
       form.setValue("categoryId", product.categoryId);
       form.setValue("categoryLocation", product.categoryLocation);
@@ -671,6 +709,30 @@ const CreateProductPage = () => {
         }) || []
       );
 
+      const productSellerImages = product?.product_productPrice?.[0]
+        ?.productPrice_productSellerImage?.length
+        ? product?.product_productPrice?.[0]?.productPrice_productSellerImage
+        : product?.productImages?.length
+        ? product?.productImages
+        : [];
+
+      const productImages = productSellerImages?.filter((item: any) => item.image)
+        ?.filter((item: any) => !item.variant)
+        ?.map((item: any) => {
+          if (item?.image) {
+            return {
+              path: item?.image,
+              id: uuidv4(),
+            };
+          } else if (item?.video) {
+            return {
+              path: item?.video,
+              id: uuidv4(),
+            };
+          }
+        });
+      form.setValue('productImages', productImages);
+
       if (product.product_productPrice?.length) {
         form.setValue("productPriceList.[0].consumerType", product.product_productPrice[0]?.consumerType);
         form.setValue("productPriceList.[0].consumerDiscount", product.product_productPrice[0]?.consumerDiscount);
@@ -687,11 +749,11 @@ const CreateProductPage = () => {
         if (product.product_productPrice[0]?.dateOpen) {
           form.setValue("productPriceList.[0].dateOpen", product.product_productPrice[0]?.dateOpen);
         }
-        form.setValue("productPriceList.[0].startTime", product.product_productPrice[0]?.timeOpen);
+        form.setValue("productPriceList.[0].startTime", product.product_productPrice[0]?.startTime);
         if (product.product_productPrice[0]?.dateClose) {
           form.setValue("productPriceList.[0].dateClose", product.product_productPrice[0]?.dateClose);
         }
-        form.setValue("productPriceList.[0].endTime", product.product_productPrice[0]?.timeClose);
+        form.setValue("productPriceList.[0].endTime", product.product_productPrice[0]?.endTime);
         form.setValue("productPriceList.[0].deliveryAfter", product.product_productPrice[0]?.deliveryAfter);
         form.setValue("productPrice", product.product_productPrice[0]?.productPrice);
         form.setValue("offerPrice", product.product_productPrice[0]?.offerPrice);
@@ -784,7 +846,13 @@ const CreateProductPage = () => {
         ? await handleUploadedFile(fileTypeArrays)
         : [];
 
-      updatedFormData.productImages = [...imageUrlArray];
+      updatedFormData.productImages = [
+        ...watchProductImages.filter(
+          (item: any) => typeof item.path === "string",
+        )
+        .map((item: any) => item.path),
+        ...imageUrlArray
+      ];
 
       if (updatedFormData.productImages.length) {
         updatedFormData.productImagesList = updatedFormData.productImages.map(
@@ -936,63 +1004,103 @@ const CreateProductPage = () => {
       ? JSON.stringify(updatedFormData?.descriptionJson)
       : ""),
       delete updatedFormData.descriptionJson;
-    console.log(updatedFormData);
 
-    updatedFormData.productVariant = updatedFormData.productVariants
-      .filter((el: any) => el.value?.trim())
-      .map((el: any) => {
-        return {
-          type: updatedFormData.productVariantType,
-          value: el.value,
-        };
-      });
-
-    const productVariantImages = updatedFormData.productVariants
-      .filter((item: any) => item.image)
-      .map((item: any, index: number) => {
-        return { path: item.image, id: index.toString() };
-      });
-    if (productVariantImages.length > 0) {
-      const productVariantImagesArray =
-        await handleUploadedFile(productVariantImages);
-      if (productVariantImagesArray) {
-        updatedFormData.productImagesList = [
-          ...updatedFormData.productImagesList,
-          ...updatedFormData.productVariants
-            .filter((item: any) => item.image && item.value)
-            .map((item: any, index: number) => {
-              const url = productVariantImagesArray[index];
-              const extension = url.split(".").pop()?.toLowerCase();
-
-              if (extension) {
-                if (imageExtensions.includes(extension)) {
-                  const imageName: string = url.split("/").pop()!;
-                  return {
-                    image: url,
-                    imageName,
-                    variant: {
-                      type: updatedFormData.productVariantType,
-                      value: item.value,
-                    },
-                  };
-                }
-              }
-
-              return {
-                image: url,
-                imageName: url,
-                variant: {
-                  type: updatedFormData.productVariantType,
-                  value: item.value,
-                },
-              };
-            }),
-        ];
+    updatedFormData.productVariant = [];
+    for (let productVariant of updatedFormData.productVariants) {
+      if (productVariant.type) {
+        for (let variant of productVariant.variants) {
+          if (variant.value) {
+            updatedFormData.productVariant.push({
+              type: productVariant.type,
+              value: variant.value
+            })
+          } 
+        }
       }
     }
 
-    delete updatedFormData.productVariantType;
+    let productVariantImages = [];
+    for (let productVariant of updatedFormData.productVariants) {
+      if (productVariant.type) {
+        for (let variant of productVariant.variants) {
+          if (variant.image && variant.value) {
+            productVariantImages.push({ 
+              path: variant.image,
+              id: productVariant.type + '-' + variant.value,
+            });
+          }
+        }
+      }
+    }
+
+    if (productVariantImages.length > 0) {
+      const productVariantImagesArray = await handleUploadedFile(
+        productVariantImages.filter((item: any) => typeof item.path === 'object')
+      );
+      let updatedProductVariantImagesArray: any[] = [];
+      let i = 0;
+      productVariantImages.forEach((item: any) => {
+        if (typeof item.path === 'object') {
+          updatedProductVariantImagesArray.push(
+            productVariantImagesArray ? productVariantImagesArray[i] : null
+          );
+          i++;
+        } else {
+          updatedProductVariantImagesArray.push(item.path);
+        }
+      })
+      if (updatedProductVariantImagesArray.length) {
+        productVariantImages = productVariantImages.map((image: any, index: number) => {
+          image.url = updatedProductVariantImagesArray[index];
+          return image;
+        });
+
+        for (let productVariant of updatedFormData.productVariants) {
+          if (productVariant.type) {
+            for (let variant of productVariant.variants) {
+              if (variant.image && variant.value) {
+                let variantImage = productVariantImages.find(
+                  (image: any) => image.id == `${productVariant.type}-${variant.value}`
+                );
+                if (variantImage) {
+                  const url = variantImage.url;
+                  const extension = url.split(".").pop()?.toLowerCase();
+
+                  if (extension) {
+                    if (imageExtensions.includes(extension)) {
+                      const imageName: string = url.split("/").pop()!;
+                      updatedFormData.productImagesList.push({
+                        image: url,
+                        imageName,
+                        variant: {
+                          type: productVariant.type,
+                          value: variant.value,
+                        },
+                      });
+                    } else {
+                      updatedFormData.productImagesList.push({
+                        image: url,
+                        imageName: url,
+                        variant: {
+                          type: productVariant.type,
+                          value: variant.value,
+                        },
+                      });
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
     delete updatedFormData.productVariants;
+
+    if (productQueryById?.data?.data && searchParams?.get('copy') && updatedFormData.productName.trim() == productQueryById?.data?.data?.productName.trim()) {
+      updatedFormData.status = "ACTIVE";
+    }
 
     const response = await createProduct.mutateAsync(updatedFormData);
 
@@ -1052,6 +1160,12 @@ const CreateProductPage = () => {
   }, [watchSetUpPrice, form.setValue]);
 
   useEffect(() => {
+    if (activeProductType == "R") {
+      form.setValue("typeOfProduct", "BRAND")
+    }
+  }, [activeProductType]);
+
+  useEffect(() => {
     const params = new URLSearchParams(document.location.search);
     let activeProductType = params.get("productType");
 
@@ -1080,6 +1194,7 @@ const CreateProductPage = () => {
                   tagsList={memoizedTags}
                   activeProductType={activeProductType}
                   selectedCategoryIds={selectedCategoryIds}
+                  copy={searchParams?.get('copy') && productQueryById?.data?.data ? true : false}
                 />
 
                 {/* <ProductDetailsSection /> */}

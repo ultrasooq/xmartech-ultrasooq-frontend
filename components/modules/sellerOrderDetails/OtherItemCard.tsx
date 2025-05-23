@@ -13,6 +13,8 @@ type OtherItemCardProps = {
   productName: string;
   offerPrice: string;
   orderQuantity?: number;
+  variant?: any;
+  serviceFeature?: any;
   productImages?: { id: number; image: string }[];
   sellerName?: string;
   orderNo: string;
@@ -27,6 +29,8 @@ const OtherItemCard: React.FC<OtherItemCardProps> = ({
   productName,
   offerPrice,
   orderQuantity,
+  variant,
+  serviceFeature,
   productImages,
   sellerName,
   orderNo,
@@ -59,7 +63,7 @@ const OtherItemCard: React.FC<OtherItemCardProps> = ({
                   />
                 </div>
                 <figcaption>
-                  <h3>{t("service")}</h3>
+                  <h3>{serviceFeature?.name}</h3>
                   <h4 className="mt-1">{currency.symbol}{offerPrice}</h4>
                 </figcaption>
               </figure>
@@ -79,6 +83,26 @@ const OtherItemCard: React.FC<OtherItemCardProps> = ({
                   <h3>{productName}</h3>
                   <p className="mt-1">Seller: {sellerName}</p>
                   <h4 className="mt-1">{currency.symbol}{offerPrice}</h4>
+                  <p className="text-gray-500">Quantity x {orderQuantity || 0}</p>
+                  {orderProductType == 'PRODUCT' && variant ? (
+                    (() => {
+                      if (Array.isArray(variant)) {
+                        return variant.map((obj: any, index: number) => {
+                          return (
+                            <p className="text-gray-500" dir={langDir} key={index}>
+                              {obj.type}: {obj.value}
+                            </p>
+                          );
+                        });
+                      }
+
+                      return (
+                        <p className="text-gray-500" dir={langDir}>
+                          {variant.type}: {variant.value}
+                        </p>
+                      );
+                    })()
+                  ) : null}
                 </figcaption>
               </figure>
             )}

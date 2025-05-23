@@ -731,21 +731,28 @@
 
   /* start: product-list-s1 */
   .product-list-s1 {
-    @apply -my-5 ml-[-13px] mr-[-13px] flex flex-wrap;
+    @apply my-0 ml-[-13px] mr-[-13px] flex flex-wrap;
   }
 
   .product-list-s1 .product-list-s1-col {
-    @apply w-full max-w-[25%] px-[13px] py-5;
+    @apply w-full max-w-[25%] px-[13px] py-5 flex;
   }
 
   .product-list-s1 .product-list-s1-box {
-    @apply relative p-[8px] pt-[50px];
-    @apply border border-solid border-transparent;
+    @apply relative p-[8px] pt-[50px] w-full border border-solid border-transparent flex flex-wrap flex-col;
     transition: 0.5s;
   }
 
   .product-list-s1 .product-list-s1-box:hover {
     @apply border-[#DBDBDB];
+  }
+
+  /* .product-list-s1 .product-list-s1-box a {
+    @apply w-full;
+  } */
+
+  .product-list-s1 .product-list-s1-box .cart_button {
+    @apply mt-auto mb-0;
   }
 
   .product-list-s1.outline-style .product-list-s1-box {
@@ -1034,7 +1041,7 @@
   }
 
   .product-view-s1-left-right.type2 .product-view-s1-right {
-    @apply border-0;
+    @apply border-0 lg:pr-[100px];
   }
 
   .product-view-s1-left-right.type2 .brand_sold_info {
@@ -1484,7 +1491,7 @@
     figure
     figcaption
     h4 {
-    @apply text-[15px] font-normal leading-[23px] text-[#1D77D1];
+    @apply text-[15px] font-normal leading-[23px] text-[#1D77D1] whitespace-pre-wrap break-all;
   }
 
   .card-item.cart-items
@@ -4457,18 +4464,21 @@
       @apply max-w-[unset];
     }
 
-    .trending-search-sec .left-filter {
-      @apply fixed left-0 top-0 z-[999] h-full -translate-x-full bg-white transition-[0.5s];
+    .trending-search-sec .left-filter,
+    .rfq_section .rfq_main_box .rfq_left {
+      @apply fixed left-0 top-0 z-[999] h-full -translate-x-full bg-white transition-[0.5s] p-[15px] max-w-[250px];
       height: 100%;
       overflow-x: hidden;
       overflow-y: auto;
     }
 
-    .trending-search-sec .left-filter.show {
+    .trending-search-sec .left-filter.show,
+    .rfq_section .rfq_main_box .rfq_left.show {
       transform: translate(0);
     }
 
-    .trending-search-sec .left-filter.show ~ .left-filter-overlay {
+    .trending-search-sec .left-filter.show ~ .left-filter-overlay,
+    .rfq_section .rfq_main_box .rfq_left.show ~ .left-filter-overlay {
       @apply fixed left-0 top-0 z-[998] block h-full w-full;
     }
 
@@ -5345,6 +5355,10 @@ input::-ms-clear {
     @apply max-w-[300px];
   }
 
+  
+
+  
+
 
 }
 
@@ -5479,24 +5493,25 @@ input::-ms-clear {
 
 
 
-}
 
+  .product_cart_modal {
+    @apply flex order-1 static mr-0 ml-auto;
+  }
 
-@media only screen and (min-width: 768px) and (max-width: 991px) {
+  .product_cart_modal .card-item {
+    @apply w-full;
+  }
 
   .body-content-s1 {
     @apply flex flex-wrap;
   }
+
   .product-view-s1-left-right {
-    @apply order-2 flex flex-wrap px-3 box-border max-w-full;
+    @apply order-2 flex flex-wrap px-3 box-border max-w-full w-full;
   }
 
   .product-view-s1-left-details-with-right-suggestion {
     @apply order-3 flex;
-  }
-
-  .product_cart_modal {
-    @apply flex order-1 static mr-0 ml-auto;
   }
 
   .product-view-s-9-details-more-suggestion-sliders {
@@ -5515,14 +5530,58 @@ input::-ms-clear {
     @apply max-w-[50%]
   }
 
+  .product_cart_modal .card-item.cart-items .cart-item-lists {
+    @apply flex-row flex-wrap;
+  }
+
+  .card-item.cart-items .cart-item-lists .cart-item-list-col {
+    @apply w-[50%];
+  }
+
+
+
 }
 
 
-@media only screen and (min-width: 1024px) and (max-width: 1200px) {
+@media only screen and (min-width: 768px) and (max-width: 991px) {
+
+  
+  
+
+}
+
+
+@media only screen and (min-width: 1024px) and (max-width: 1500px) {
 
 .rfq_section .rfq_main_box .rfq_middle .product_gray_n_box .product_sec_list .product_list_part {
   width: 50%
 }
+
+.product-view-s1-left-right {
+  @apply pr-[280px];
+}
+
+.product-view-s1-left-right .product-view-s1-left {
+  @apply max-w-[60%];
+}
+
+.product-view-s1-left-right .product-view-s1-right {
+  @apply max-w-[40%];
+}
+
+.time_wrap {
+  @apply gap-[16px]
+}
+
+.time_field h3 {
+  @apply text-[36px] !important;
+}
+
+}
+
+@media only screen and (min-width: 1301px) and (max-width: 1500px) { 
+
+  
 
 }
 

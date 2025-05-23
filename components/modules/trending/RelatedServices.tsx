@@ -11,7 +11,7 @@ type RelatedServicesProps = {
     productCategoryId: string;
     cartList: any[];
     isChildCart: boolean;
-    productCartId?: number; 
+    productCartId?: number;
 };
 
 const RelatedServices: React.FC<RelatedServicesProps> = ({
@@ -69,7 +69,7 @@ const RelatedServices: React.FC<RelatedServicesProps> = ({
                 totalCount={servicesByProductCategory.data?.totalCount}
                 limit={limit}
             />) : null}
-            
+
             {selectedServiceId ? (<Dialog open={isServiceAddToCartModalOpen} onOpenChange={handleServiceToCartModal}>
                 {(() => {
                     let relatedCart: any = null;
@@ -86,13 +86,37 @@ const RelatedServices: React.FC<RelatedServicesProps> = ({
                         <AddServiceToCartModal
                             id={selectedServiceId}
                             open={isServiceAddToCartModalOpen}
+                            // features={
+                            //     cartList.find((item: any) => item.serviceId == selectedServiceId)
+                            //         ?.cartServiceFeatures
+                            //         ?.map((feature: any) => ({
+                            //             id: feature.serviceFeatureId,
+                            //             quantity: feature.quantity,
+                            //             date: feature?.date || "",
+                            //             time: feature?.time || "",
+                            //         })) || []
+                            // }
                             features={
                                 cartList.find((item: any) => item.serviceId == selectedServiceId)
                                     ?.cartServiceFeatures
-                                    ?.map((feature: any) => ({
-                                        id: feature.serviceFeatureId,
-                                        quantity: feature.quantity
-                                    })) || []
+                                    ?.map((feature: any) => {
+                                        const bookingDateTime = feature.bookingDateTime;
+                                        let date: any = "";
+                                        let time = "";
+
+                                        if (bookingDateTime) {
+                                            const dateObj = new Date(bookingDateTime);
+                                            date = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
+                                            time = dateObj.toISOString().split("T")[1]?.substring(0, 5); // 'HH:MM'
+                                        }
+
+                                        return {
+                                            id: feature.serviceFeatureId,
+                                            quantity: feature.quantity,
+                                            date,
+                                            time,
+                                        };
+                                    }) || []
                             }
                             cartId={cartList.find((item: any) => item.serviceId == selectedServiceId)?.id}
                             productId={!isChildCart ? productId : undefined}

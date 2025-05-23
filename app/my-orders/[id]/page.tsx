@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { BiSolidCircle, BiCircle } from "react-icons/bi";
 import { PiStarFill } from "react-icons/pi";
 import { LiaFileInvoiceSolid } from "react-icons/lia";
@@ -14,25 +14,22 @@ import Footer from "@/components/shared/Footer";
 import Link from "next/link";
 import { MONTHS, formattedDate } from "@/utils/constants";
 import { cn } from "@/lib/utils";
-// import { Dialog, DialogContent } from "@/components/ui/dialog";
-// import ReviewForm from "@/components/shared/ReviewForm";
-// import { useMe } from "@/apis/queries/user.queries";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 import { convertDate, convertTime } from "@/utils/helper";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import UpdateProductStatusForm from "@/components/modules/myOrderDetails/UpdateProductStatusForm";
 
-const MyOrderDetailsPage = ({ }) => {
+const MyOrderDetailsPage = () => {
   const t = useTranslations();
   const { langDir, currency } = useAuth();
   const searchParams = useParams();
-  // const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
-  // const [reviewId, setReviewId] = useState<number>();
 
-  // const handleToggleReviewModal = () =>
-  //   setIsReviewModalOpen(!isReviewModalOpen);
+  const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
+  const handleToggleStatusModal = () =>
+    setIsStatusModalOpen(!isStatusModalOpen);
 
-  // const me = useMe();
   const orderByIdQuery = useOrderById(
     {
       orderProductId: searchParams?.id ? (searchParams.id as string) : "",
@@ -156,6 +153,20 @@ const MyOrderDetailsPage = ({ }) => {
                               </Button>
                             </figcaption>
                           </figure>
+                          {orderDetails?.orderShippingDetail?.receipt ? (
+                            <figure className="downloadInvoice mt-4">
+                              <figcaption>
+                                <Link
+                                  className="text-red-500"
+                                  href={orderDetails?.orderShippingDetail?.receipt}
+                                  target="_blank"
+                                  translate="no"
+                                >
+                                  {t("download_receipt")}
+                                </Link>
+                              </figcaption>
+                            </figure>
+                          ) : null}
                         </div>
                       </div>
                     </div>
@@ -191,18 +202,6 @@ const MyOrderDetailsPage = ({ }) => {
                           </div>
                         </div>
                       ) : null}
-                      {orderDetails?.orderShippingDetail?.receipt ? (
-                        <div className="sm:grid sm:grid-cols-3 w-full gap-2 mt-2">
-                          <Link
-                            className="text-red-500"
-                            href={orderDetails?.orderShippingDetail?.receipt}
-                            target="_blank"
-                            translate="no"
-                          >
-                            {t("download_receipt")}
-                          </Link>
-                        </div>
-                      ) : null}
                     </div>
                   </div>
                 ) : null}
@@ -229,13 +228,13 @@ const MyOrderDetailsPage = ({ }) => {
                                 />
                               </div>
                               <figcaption>
-                                {/* <h3>
+                                <h3>
                                   {
-                                    orderDetails.orderProduct_productPrice
-                                      ?.productPrice_product?.productName
+                                    orderDetails?.serviceFeatures
+                                      ?.serviceFeatures?.[0]?.name
                                   }
                                 </h3>
-                                <p className="mt-1">
+                                {/* <p className="mt-1">
                                   Seller:{" "}
                                   {
                                     orderDetails?.orderProduct_productPrice
@@ -245,21 +244,14 @@ const MyOrderDetailsPage = ({ }) => {
                                     orderDetails?.orderProduct_productPrice
                                       ?.adminDetail?.lastName
                                   }
-                                </p>
+                                </p> */}
                                 <h4 className="mt-1">
                                   {currency.symbol}
-                                  {orderDetails?.orderProduct_productPrice
-                                    ?.offerPrice
-                                    ? Number(
-                                      orderDetails?.orderProduct_productPrice
-                                        ?.offerPrice *
-                                      orderDetails?.orderQuantity,
-                                    )
-                                    : 0}
+                                  {Number(orderDetails?.purchasePrice || 0) * (orderDetails?.orderQuantity || 0) }
                                 </h4>
                                 <p className="text-gray-500" translate="no">
                                   {t("quantity")} x {orderDetails?.orderQuantity || 0}
-                                </p> */}
+                                </p>
                               </figcaption>
                             </figure>
                           ) : (
@@ -310,6 +302,27 @@ const MyOrderDetailsPage = ({ }) => {
                                 <p className="text-gray-500" translate="no">
                                   {t("quantity")} x {orderDetails?.orderQuantity || 0}
                                 </p>
+                                {orderDetails?.orderProductType == 'PRODUCT' && orderDetails?.object ? (
+                                (() => {
+                                  let object = orderDetails?.object;
+
+                                  if (Array.isArray(object)) {
+                                    return object.map((obj: any, index: number) => {
+                                      return (
+                                        <p className="text-gray-500" dir={langDir} key={index}>
+                                          {obj.type}: {obj.value}
+                                        </p>
+                                      )
+                                    })
+                                  }
+
+                                  return (
+                                    <p className="text-gray-500" dir={langDir}>
+                                      {object.type}: {object.value}
+                                    </p>
+                                  );
+                                })()
+                              ) : null}
                               </figcaption>
                             </figure>
                           )}
@@ -319,7 +332,7 @@ const MyOrderDetailsPage = ({ }) => {
                             <ul>
                               <li className="complted">
                                 <div className="orderStatusText" dir={langDir} translate="no">
-                                  {t("order_received")}
+                                  {t("placed")}
                                 </div>
                                 <div className="dot">
                                   <small></small>
@@ -520,6 +533,20 @@ const MyOrderDetailsPage = ({ }) => {
                             {t("need_help")}
                           </Button>
 
+                          {orderDetails?.orderProductStatus != 'DELIVERED' ? (
+                            <div className="more-actions">
+                              <button
+                                type="button"
+                                className="theme-primary-btn update-status-btn"
+                                onClick={handleToggleStatusModal}
+                                dir={langDir}
+                                translate="no"
+                              >
+                                {t("update_status")}
+                              </button>
+                            </div>
+                          ) : null}
+
                           {orderDetails?.orderProductStatus === "DELIVERED" ? (
                             <Link
                               href={
@@ -561,6 +588,8 @@ const MyOrderDetailsPage = ({ }) => {
                     }
                     offerPrice={item?.purchasePrice}
                     orderQuantity={item?.orderQuantity}
+                    variant={item?.object}
+                    serviceFeature={item?.serviceFeatures?.serviceFeatures?.[0]}
                     productImages={
                       item.orderProduct_productPrice?.productPrice_product
                         ?.productImages
@@ -576,20 +605,28 @@ const MyOrderDetailsPage = ({ }) => {
             </div>
           </div>
         </div>
-
-        {/* <Dialog open={isReviewModalOpen} onOpenChange={handleToggleReviewModal}>
-          <DialogContent>
-            <ReviewForm
-              onClose={() => {
-                setReviewId(undefined);
-                handleToggleReviewModal();
-              }}
-              reviewId={reviewId}
-            />
-          </DialogContent>
-        </Dialog> */}
       </div>
+
       <Footer />
+
+      <Dialog open={isStatusModalOpen} onOpenChange={handleToggleStatusModal}>
+        <DialogContent className="customModal-s1">
+          <DialogHeader className="modal-header">
+            <DialogTitle className="modal-title" translate="no">
+              {t("update_delivery_status")}
+            </DialogTitle>
+          </DialogHeader>
+
+          <UpdateProductStatusForm
+            orderProductId={searchParams?.id as string}
+            onClose={handleToggleStatusModal}
+            orderProductStatus={orderDetails?.orderProductStatus}
+            orderProductDate={orderDetails?.orderProductDate ? orderDetails?.orderProductDate : ""}
+            deliveryAfter={orderDetails?.orderProduct_productPrice?.deliveryAfter || 1}
+            tradeRole="BUYER"
+          />
+        </DialogContent>
+      </Dialog>
     </>
   );
 };

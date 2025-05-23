@@ -102,6 +102,7 @@ const CheckoutPage = () => {
   const [guestEmail, setGuestEmail] = useState("");
   const [itemsTotal, setItemsTotal] = useState<number>(0);
   const [fee, setFee] = useState<number>(0);
+  const [subTotal, setSubTotal] = useState<number>(0);
   const [totalAmount, setTotalAmount] = useState<number>(0);
   const [sellerIds, setSellerIds] = useState<number[]>([]);
   const [shippingInfo, setShippingInfo] = useState<any[]>([]);
@@ -520,7 +521,7 @@ const CheckoutPage = () => {
 
     calculateTotalAmount();
 
-    setTotalAmount(response?.totalCustomerPay || 0)
+    setSubTotal(response?.totalCustomerPay || 0)
   };
 
   useEffect(() => {
@@ -585,8 +586,8 @@ const CheckoutPage = () => {
   }, [cartListByUser.data?.data, cartListByDeviceQuery?.data?.data, invalidProducts, notAvailableProducts]);
 
   useEffect(() => {
-    setTotalAmount(prevAmount => (prevAmount || itemsTotal) + shippingCharge);
-  }, [itemsTotal, shippingCharge]);
+    setTotalAmount(subTotal + shippingCharge);
+  }, [itemsTotal, subTotal, shippingCharge]);
 
   useEffect(() => {
     let charge = 0;
@@ -692,17 +693,17 @@ const CheckoutPage = () => {
       i++;
     }
 
-    const sellerIds = memoizedCartList.filter((item: any) => item.serviceId)
+    const serviceSellerIds = memoizedCartList.filter((item: any) => item.serviceId)
       ?.map((item: any) => item.service.sellerId) || [];
 
-    for (let sellerId of sellerIds) {
+    for (let sellerId of serviceSellerIds) {
       if (!data.find((item: any) => item.sellerId == sellerId)) {
         data[i] = {
           sellerId: sellerId,
           orderShippingType: "PICKUP",
-          shippingDate: convertDateTimeToUTC(new Date().toLocaleString()),
-          fromTime: convertDateTimeToUTC(new Date().toLocaleString()),
-          toTime: convertDateTimeToUTC(new Date().toLocaleString()),
+          shippingDate: null,
+          fromTime: null,
+          toTime: null,
           shippingCharge: 0,
           serviceId: null,
         };

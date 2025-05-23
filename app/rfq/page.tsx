@@ -51,7 +51,11 @@ import { useAuth } from "@/context/AuthContext";
 // @ts-ignore
 import  { startDebugger }  from "remove-child-node-error-debugger";
 
-const RfqPage = () => {
+interface RfqPageProps {
+  searchParams?: { term?: string };
+}
+
+const RfqPage = ({ searchParams }: RfqPageProps) => {
   const t = useTranslations();
   const { langDir } = useAuth();
   const queryClient = useQueryClient();
@@ -60,7 +64,7 @@ const RfqPage = () => {
   const wrapperRef = useRef(null);
   const [viewType, setViewType] = useState<"grid" | "list">("grid");
   const [sortBy, setSortBy] = useState<"newest" | "oldest">("newest");
-  const [searchRfqTerm, setSearchRfqTerm] = useState("");
+  const [searchRfqTerm, setSearchRfqTerm] = useState(searchParams?.term || "");
   const [selectedBrandIds, setSelectedBrandIds] = useState<number[]>([]);
   const [selectAllBrands, setSelectAllBrands] = useState<boolean>(false);
   const [displayMyProducts, setDisplayMyProducts] = useState("0");
@@ -334,6 +338,7 @@ const RfqPage = () => {
                       placeholder={t("search_product")}
                       onChange={handleRfqDebounce}
                       ref={searchInputRef}
+                      defaultValue={searchParams?.term || ""}
                       dir={langDir}
                       translate="no"
                     />
@@ -346,7 +351,7 @@ const RfqPage = () => {
                       />
                     </button>
                   </div>
-                  {haveAccessToken ? (
+                  {haveAccessToken && me?.data?.data?.tradeRole != 'BUYER' ? (
                     <div className="rfq_add_new_product">
                       <Link
                         href="/product?productType=R"
@@ -434,7 +439,11 @@ const RfqPage = () => {
                               id={item.id}
                               productType={item?.productType || "-"}
                               productName={item?.productName || "-"}
-                              productNote={item?.productNote || "-"}
+                              productNote={
+                                cartList?.find(
+                                  (el: any) => el.productId == item.id,
+                                )?.note || ""
+                              }
                               productStatus={item?.status}
                               productImages={item?.productImages}
                               productQuantity={item?.quantity || 0}

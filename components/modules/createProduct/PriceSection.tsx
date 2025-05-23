@@ -242,7 +242,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
   }, [watchSellStateIds]);
 
   useEffect(() => {
-    setSelectedCities([...watchSellCityIds])
+    setSelectedCities([...watchSellCityIds]);
   }, [watchSellCityIds]);
 
   const fetchCities = async (stateId: number) => {
@@ -561,7 +561,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
           ) : null}
 
           <div className="mb-4 grid w-full grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-4">
-            <div className="col-span-1 grid w-full grid-cols-2 gap-x-5 gap-y-4 md:col-span-2">
+            <div className="col-span-1 grid w-full grid-cols-1 gap-x-5 gap-y-4 md:col-span-2 md:grid-cols-2">
               {watchConsumerType === "EVERYONE" ||
               watchConsumerType === "CONSUMER" ? (
                 <>
@@ -859,7 +859,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                     </FormLabel>
                     <FormControl>
                       <div className="relative">
-                        <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]">
+                        <div className="absolute bottom-0 left-2 top-0 m-auto flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]">
                           {currency.symbol}
                         </div>
                         <Input

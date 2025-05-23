@@ -14,23 +14,16 @@ import { useUpdateOrderShippingStatus } from "@/apis/queries/orders.queries";
 type AddReceiptProps = {
     orderProductId: number;
     orderShippingId: number;
-    orderShippingStatus: string;
     onClose: () => void;
 }
 
 const formSchema = z.object({
-    status: z
-        .string()
-        .trim()
-        .min(2, { message: "Status is required" })
-        .max(50, { message: "Status must be less than 50 characters" }),
     receipt: z.string().trim().optional(),
 });
 
 const AddReceipt: React.FC<AddReceiptProps> = ({
     orderProductId,
     orderShippingId,
-    orderShippingStatus,
     onClose
 }) => {
     const t = useTranslations();
@@ -40,7 +33,6 @@ const AddReceipt: React.FC<AddReceiptProps> = ({
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            status: "",
             receipt: ""
         },
     });
@@ -51,31 +43,7 @@ const AddReceipt: React.FC<AddReceiptProps> = ({
     const allowedFileExtensions = ["png", "jpg", "jpeg", "pdf"];
     const upload = useUploadFile();
 
-    const statusList = [
-        {
-            label: "Pending",
-            value: "PENDING",
-            disabled: ["PENDING", "SHIPPED", "DELIVERED"].includes(orderShippingStatus)
-        },
-        {
-            label: "Shipped",
-            value: "SHIPPED",
-            disabled: ["SHIPPED", "DELIVERED"].includes(orderShippingStatus)
-        },
-        {
-            label: "Delivered",
-            value: "DELIVERED",
-            disabled: ["DELIVERED"].includes(orderShippingStatus)
-        }
-    ];
-
     const updateOrderShippingStatus = useUpdateOrderShippingStatus();
-
-    useEffect(() => {
-        if (orderShippingStatus) {
-            form.setValue('status', orderShippingStatus);
-        }
-    }, [orderShippingStatus]);
 
     const onCloseModal = () => {
         if (fileInputRef.current) fileInputRef.current.value = '';
@@ -129,32 +97,6 @@ const AddReceipt: React.FC<AddReceiptProps> = ({
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
                 <div className="modal-body">
-                    <Controller
-                        name="status"
-                        control={form.control}
-                        render={({ field }) => (
-                            <select
-                                {...field}
-                                className="custom-form-control-s1 select1"
-                                name="status"
-                            >
-                                <option value="">Select Status</option>
-                                {statusList.map((item) => (
-                                    <option
-                                        key={item.value}
-                                        value={item.value}
-                                        disabled={item.disabled}
-                                    >
-                                        {item.label}
-                                    </option>
-                                ))}
-                            </select>
-                        )}
-                    />
-                    <p className="text-[13px] text-red-500" dir={langDir}>
-                        {form.formState.errors.status?.message}
-                    </p>
-                    <div className="mb-4"></div>
                     <Input
                         type="file"
                         accept={allowedFileTypes.join(", ")}
@@ -174,7 +116,7 @@ const AddReceipt: React.FC<AddReceiptProps> = ({
                                     toast({
                                         description: "Allowed file types: " + allowedFileExtensions.join(", "),
                                         variant: "danger",
-                                    })
+                                    });
                                     if (fileInputRef?.current) fileInputRef.current.value = '';
                                     return;
                                 }

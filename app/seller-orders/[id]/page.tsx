@@ -28,7 +28,7 @@ import { useAuth } from "@/context/AuthContext";
 import { convertDate, convertTime } from "@/utils/helper";
 import AddReceipt from "@/components/modules/sellerOrderDetails/AddReceipt";
 
-const MyOrderDetailsPage = ({}) => {
+const MyOrderDetailsPage = ({ }) => {
   const t = useTranslations();
   const { langDir, currency } = useAuth();
   const router = useRouter();
@@ -182,6 +182,20 @@ const MyOrderDetailsPage = ({}) => {
                               </Button>
                             </figcaption>
                           </figure>
+                          {orderDetails?.orderShippingDetail?.receipt ? (
+                            <figure className="downloadInvoice mt-4">
+                              <figcaption>
+                                <Link
+                                  className="text-red-500"
+                                  href={orderDetails?.orderShippingDetail?.receipt}
+                                  target="_blank"
+                                  translate="no"
+                                >
+                                  {t("download_receipt")}
+                                </Link>
+                              </figcaption>
+                            </figure>
+                          ) : null}
                         </div>
                       </div>
                     </div>
@@ -211,17 +225,6 @@ const MyOrderDetailsPage = ({}) => {
                             {currency.symbol}
                             {orderDetails?.orderShippingDetail?.shippingCharge}
                           </span>
-                        </div>
-                        <div className="more-actions">
-                          <button
-                            type="button"
-                            className="theme-primary-btn update-status-btn px-2 py-1"
-                            onClick={handleToggleAddReceiptModal}
-                            dir={langDir}
-                            translate="no"
-                          >
-                            {t("add_receipt")}
-                          </button>
                         </div>
                       </div>
                       {orderDetails?.orderShippingDetail?.orderShippingType ==
@@ -259,18 +262,6 @@ const MyOrderDetailsPage = ({}) => {
                           </div>
                         </div>
                       ) : null}
-                      {orderDetails?.orderShippingDetail?.receipt ? (
-                        <div className="mt-2 w-full gap-2 sm:grid sm:grid-cols-3">
-                          <Link
-                            className="text-red-500"
-                            href={orderDetails?.orderShippingDetail?.receipt}
-                            target="_blank"
-                            translate="no"
-                          >
-                            {t("download_receipt")}
-                          </Link>
-                        </div>
-                      ) : null}
                     </div>
                   </div>
                 ) : null}
@@ -284,60 +275,122 @@ const MyOrderDetailsPage = ({}) => {
                         <Link
                           href={`/trending/${orderDetails?.orderProduct_product?.id}`}
                         >
-                          <figure>
-                            <div className="image-container rounded border border-gray-300">
-                              <Image
-                                src={
-                                  orderDetails?.orderProduct_productPrice
-                                    ?.productPrice_product?.productImages?.[0]
-                                    ?.image || PlaceholderImage
-                                }
-                                alt="preview-product"
-                                width={120}
-                                height={120}
-                                placeholder="blur"
-                                blurDataURL="/images/product-placeholder.png"
-                              />
-                            </div>
-                            <figcaption>
-                              <h3>
-                                {
-                                  orderDetails.orderProduct_productPrice
-                                    ?.productPrice_product?.productName
-                                }
-                              </h3>
-                              <p className="mt-1" dir={langDir} translate="no">
-                                {t("seller")}:{" "}
-                                {
-                                  orderDetails?.orderProduct_productPrice
-                                    ?.adminDetail?.firstName
-                                }{" "}
-                                {
-                                  orderDetails?.orderProduct_productPrice
-                                    ?.adminDetail?.lastName
-                                }
-                              </p>
-                              <h4 className="mt-1" dir={langDir}>
-                                {currency.symbol}
-                                {orderDetails?.orderProduct_productPrice
-                                  ?.offerPrice
-                                  ? Number(
+                          {orderDetails?.orderProductType == 'SERVICE' ? (
+                            <figure>
+                              <div className="image-container rounded border border-gray-300">
+                                <Image
+                                  src={PlaceholderImage}
+                                  alt="preview-product"
+                                  width={120}
+                                  height={120}
+                                  placeholder="blur"
+                                  blurDataURL="/images/product-placeholder.png"
+                                />
+                              </div>
+                              <figcaption>
+                                <h3>
+                                  {
+                                    orderDetails?.serviceFeatures
+                                      ?.serviceFeatures?.[0]?.name
+                                  }
+                                </h3>
+                                {/* <p className="mt-1">
+                                  Seller:{" "}
+                                  {
+                                    orderDetails?.orderProduct_productPrice
+                                      ?.adminDetail?.firstName
+                                  }{" "}
+                                  {
+                                    orderDetails?.orderProduct_productPrice
+                                      ?.adminDetail?.lastName
+                                  }
+                                </p> */}
+                                <h4 className="mt-1">
+                                  {currency.symbol}
+                                  {Number(orderDetails?.purchasePrice || 0) * (orderDetails?.orderQuantity || 0)}
+                                </h4>
+                                <p className="text-gray-500" translate="no">
+                                  {t("quantity")} x {orderDetails?.orderQuantity || 0}
+                                </p>
+                              </figcaption>
+                            </figure>
+                          ) : (
+                            <figure>
+                              <div className="image-container rounded border border-gray-300">
+                                <Image
+                                  src={
+                                    orderDetails?.orderProduct_productPrice
+                                      ?.productPrice_product?.productImages?.[0]
+                                      ?.image || PlaceholderImage
+                                  }
+                                  alt="preview-product"
+                                  width={120}
+                                  height={120}
+                                  placeholder="blur"
+                                  blurDataURL="/images/product-placeholder.png"
+                                />
+                              </div>
+                              <figcaption>
+                                <h3>
+                                  {
+                                    orderDetails.orderProduct_productPrice
+                                      ?.productPrice_product?.productName
+                                  }
+                                </h3>
+                                <p className="mt-1" dir={langDir} translate="no">
+                                  {t("seller")}:{" "}
+                                  {
+                                    orderDetails?.orderProduct_productPrice
+                                      ?.adminDetail?.firstName
+                                  }{" "}
+                                  {
+                                    orderDetails?.orderProduct_productPrice
+                                      ?.adminDetail?.lastName
+                                  }
+                                </p>
+                                <h4 className="mt-1" dir={langDir}>
+                                  {currency.symbol}
+                                  {orderDetails?.orderProduct_productPrice
+                                    ?.offerPrice
+                                    ? Number(
                                       orderDetails?.orderProduct_productPrice
                                         ?.offerPrice *
-                                        orderDetails?.orderQuantity,
+                                      orderDetails?.orderQuantity,
                                     )
-                                  : 0}
-                              </h4>
-                              <p
-                                className="text-gray-500"
-                                dir={langDir}
-                                translate="no"
-                              >
-                                {t("quantity")} x{" "}
-                                {orderDetails?.orderQuantity || 0}
-                              </p>
-                            </figcaption>
-                          </figure>
+                                    : 0}
+                                </h4>
+                                <p
+                                  className="text-gray-500"
+                                  dir={langDir}
+                                  translate="no"
+                                >
+                                  {t("quantity")} x{" "}
+                                  {orderDetails?.orderQuantity || 0}
+                                </p>
+                                {orderDetails?.orderProductType == 'PRODUCT' && orderDetails?.object ? (
+                                  (() => {
+                                    let object = orderDetails?.object;
+
+                                    if (Array.isArray(object)) {
+                                      return object.map((obj: any, index: number) => {
+                                        return (
+                                          <p className="text-gray-500" dir={langDir} key={index}>
+                                            {obj.type}: {obj.value}
+                                          </p>
+                                        );
+                                      });
+                                    }
+
+                                    return (
+                                      <p className="text-gray-500" dir={langDir}>
+                                        {object.type}: {object.value}
+                                      </p>
+                                    );
+                                  })()
+                                ) : null}
+                              </figcaption>
+                            </figure>
+                          )}
                         </Link>
                         <div className="center-div">
                           <div className="order-delivery-progess-s1">
@@ -362,14 +415,14 @@ const MyOrderDetailsPage = ({}) => {
                                   orderDetails?.orderProductStatus ===
                                     "CANCELLED" ||
                                     orderDetails?.orderProductStatus ===
-                                      "DELIVERED" ||
+                                    "DELIVERED" ||
                                     orderDetails?.orderProductStatus ===
-                                      "OFD" ||
+                                    "OFD" ||
                                     orderDetails?.orderProductStatus ===
-                                      "SHIPPED"
+                                    "SHIPPED"
                                     ? "complted"
                                     : orderDetails?.orderProductStatus ===
-                                        "CONFIRMED"
+                                      "CONFIRMED"
                                       ? "current"
                                       : "",
                                 )}
@@ -393,11 +446,11 @@ const MyOrderDetailsPage = ({}) => {
                                   orderDetails?.orderProductStatus ===
                                     "CANCELLED" ||
                                     orderDetails?.orderProductStatus ===
-                                      "DELIVERED" ||
+                                    "DELIVERED" ||
                                     orderDetails?.orderProductStatus === "OFD"
                                     ? "complted"
                                     : orderDetails?.orderProductStatus ===
-                                        "SHIPPED"
+                                      "SHIPPED"
                                       ? "current"
                                       : "",
                                 )}
@@ -411,7 +464,7 @@ const MyOrderDetailsPage = ({}) => {
                                 </div>
                                 <div className="orderDateText">
                                   {orderDetails?.orderProductStatus ===
-                                  "SHIPPED"
+                                    "SHIPPED"
                                     ? formatDate(orderDetails?.updatedAt)
                                     : "-"}
                                 </div>
@@ -421,7 +474,7 @@ const MyOrderDetailsPage = ({}) => {
                                   orderDetails?.orderProductStatus ===
                                     "CANCELLED" ||
                                     orderDetails?.orderProductStatus ===
-                                      "DELIVERED"
+                                    "DELIVERED"
                                     ? "complted"
                                     : orderDetails?.orderProductStatus === "OFD"
                                       ? "current"
@@ -451,7 +504,7 @@ const MyOrderDetailsPage = ({}) => {
                                     "CANCELLED"
                                     ? "complted"
                                     : orderDetails?.orderProductStatus ===
-                                        "DELIVERED"
+                                      "DELIVERED"
                                       ? "complted"
                                       : "",
                                 )}
@@ -467,7 +520,7 @@ const MyOrderDetailsPage = ({}) => {
                                   translate="no"
                                 >
                                   {orderDetails?.orderProductStatus ===
-                                  "CANCELLED"
+                                    "CANCELLED"
                                     ? t("cancelled")
                                     : t("delivered")}
                                 </div>
@@ -484,7 +537,7 @@ const MyOrderDetailsPage = ({}) => {
                                 <div className="orderDateText">
                                   {orderDetails?.orderProductStatus ===
                                     "CANCELLED" ||
-                                  orderDetails?.orderProductStatus ===
+                                    orderDetails?.orderProductStatus ===
                                     "DELIVERED"
                                     ? formatDate(orderDetails?.updatedAt)
                                     : "-"}
@@ -496,7 +549,7 @@ const MyOrderDetailsPage = ({}) => {
                         <div className="right-info">
                           <h4 className="mb-2" dir={langDir} translate="no">
                             {orderDetails?.orderProductStatus ===
-                            "CONFIRMED" ? (
+                              "CONFIRMED" ? (
                               <>
                                 <BiCircle color="green" />
                                 {t("placed_on")}{" "}
@@ -527,7 +580,7 @@ const MyOrderDetailsPage = ({}) => {
                             ) : null}
 
                             {orderDetails?.orderProductStatus ===
-                            "DELIVERED" ? (
+                              "DELIVERED" ? (
                               <>
                                 <BiSolidCircle color="green" />{" "}
                                 {t("delivered_on")}{" "}
@@ -538,7 +591,7 @@ const MyOrderDetailsPage = ({}) => {
                             ) : null}
 
                             {orderDetails?.orderProductStatus ===
-                            "CANCELLED" ? (
+                              "CANCELLED" ? (
                               <>
                                 <BiSolidCircle color="red" />{" "}
                                 {t("cancelled_on")}{" "}
@@ -559,15 +612,29 @@ const MyOrderDetailsPage = ({}) => {
                             {t("need_help")}
                           </a>
 
+                          {orderDetails?.orderProductStatus != 'DELIVERED' ? (
+                            <div className="more-actions">
+                              <button
+                                type="button"
+                                className="theme-primary-btn update-status-btn"
+                                onClick={handleToggleStatusModal}
+                                dir={langDir}
+                                translate="no"
+                              >
+                                {t("update_status")}
+                              </button>
+                            </div>
+                          ) : null}
+
                           <div className="more-actions">
                             <button
                               type="button"
-                              className="theme-primary-btn update-status-btn"
-                              onClick={handleToggleStatusModal}
+                              className="theme-primary-btn update-status-btn px-2 py-1"
+                              onClick={handleToggleAddReceiptModal}
                               dir={langDir}
                               translate="no"
                             >
-                              {t("update_status")}
+                              {t("add_receipt")}
                             </button>
                           </div>
 
@@ -622,6 +689,8 @@ const MyOrderDetailsPage = ({}) => {
                     orderQuantity={
                       item?.orderProduct_productPrice?.orderQuantity
                     }
+                    variant={item?.object}
+                    serviceFeature={item?.serviceFeatures?.serviceFeatures?.[0]}
                     productImages={
                       item.orderProduct_productPrice?.productPrice_product
                         ?.productImages
@@ -652,6 +721,8 @@ const MyOrderDetailsPage = ({}) => {
             orderProductId={searchParams?.id as string}
             onClose={handleToggleStatusModal}
             orderProductStatus={orderDetails?.orderProductStatus}
+            orderProductDate={orderDetails?.orderProductDate ? orderDetails?.orderProductDate : ""}
+            deliveryAfter={orderDetails?.orderProduct_productPrice?.deliveryAfter || 1}
           />
         </DialogContent>
       </Dialog>
@@ -671,7 +742,6 @@ const MyOrderDetailsPage = ({}) => {
             <AddReceipt
               orderProductId={Number(searchParams?.id)}
               orderShippingId={orderDetails.orderShippingDetail.id}
-              orderShippingStatus={orderDetails.orderShippingDetail.status}
               onClose={handleToggleAddReceiptModal}
             />
           </DialogContent>

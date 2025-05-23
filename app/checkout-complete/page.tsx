@@ -1,13 +1,24 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import Link from "next/link";
+import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
+import { getCookie } from "cookies-next";
 
 const CheckoutCompletePage = () => {
     const t = useTranslations();
     const { langDir } = useAuth();
     const searchParams = useSearchParams();
+    const accessToken = getCookie(PUREMOON_TOKEN_KEY);
+    const [haveAccessToken, setHaveAccessToken] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (accessToken) {
+            setHaveAccessToken(true);
+        }
+    }, [accessToken]);
 
     const success = searchParams?.get('success');
 
@@ -19,6 +30,16 @@ const CheckoutCompletePage = () => {
             <p className="mt-2" translate="no">{t("transaction_id")}: {searchParams?.get('id')}</p>
             <p className="mt-2" translate="no">{t("order_id")}: {searchParams?.get('order')}</p>
             <p className="mt-2" translate="no">{t("transaction_note")}</p>
+            {haveAccessToken ? (
+                <p className="mt-2">
+                    <Link 
+                        className="cursor-pointer text-sm font-medium leading-8 text-dark-orange"
+                        href="/my-orders"
+                    >
+                        {t("track_your_order")}
+                    </Link>
+                </p>
+            ) : null}
         </div>
     );
 };

@@ -7,6 +7,8 @@ import SecurePaymentIcon from "@/public/images/securePaymenticon.svg";
 import SupportIcon from "@/public/images/support-24hr.svg";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import moment from "moment";
+import { DatePicker, TimePicker } from "./service-features/CommanUtils";
 
 const ServiceDescriptionCard: React.FC<any> = ({
     selectedFeatures,
@@ -14,22 +16,13 @@ const ServiceDescriptionCard: React.FC<any> = ({
     incrementQuantity,
     updateQuantity,
     toggleFeature,
-    allDetailsService,
-    productId,
-    productName,
-    productPrice,
-    offerPrice,
-    skuNo,
-    productTags,
-    category,
-    productQuantity = 0, // Default to 1 if undefined
+    updateFeatureField,
+    serviceDetails,
     productReview,
-    onAdd,
     isLoading,
-    userId,
 }) => {
     const t = useTranslations();
-    const { user, langDir, currency } = useAuth();
+    const { langDir, currency } = useAuth();
 
     const calculateAvgRating = useMemo(() => {
         const totalRating = productReview?.reduce(
@@ -64,7 +57,7 @@ const ServiceDescriptionCard: React.FC<any> = ({
         <div className="product-view-s1-right">
             {isLoading ? <Skeleton className="mb-2 h-10 w-full" /> : null}
             <div className="info-col">
-                <h2>{productName}</h2>
+                <h2>{serviceDetails?.serviceName}</h2>
             </div>
             {isLoading ? (
                 <Skeleton className="mb-2 h-28 w-full" />
@@ -73,7 +66,7 @@ const ServiceDescriptionCard: React.FC<any> = ({
                     <div className="space-y-4">
                         <h5 className="text-lg font-semibold" translate="no">{t("select_services")}</h5>
                         {
-                            allDetailsService?.serviceFeatures?.map((feature: any) => {
+                            serviceDetails?.serviceFeatures?.map((feature: any) => {
                                 const selectedFeature = selectedFeatures.find(
                                     (item: any) => item.id === feature.id
                                 );
@@ -87,7 +80,7 @@ const ServiceDescriptionCard: React.FC<any> = ({
                                         style={{ maxWidth: "100%" }}
                                     >
                                         <div
-                                            className={`import-pickup-type-selector-box flex items-center gap-3 p-4 border rounded-xl cursor-pointer ${isSelected
+                                            className={`import-pickup-type-selector-box flex flex-wrap items-center gap-3 p-4 border rounded-xl cursor-pointer ${isSelected
                                                 ? "bg-green-50 border-green-500"
                                                 : "bg-white border-gray-200"
                                                 }`}
@@ -96,6 +89,8 @@ const ServiceDescriptionCard: React.FC<any> = ({
                                                 display: "flex",
                                                 flexDirection: "row",
                                                 justifyContent: "start",
+                                                flexWrap: "wrap", // allow wrapping
+                                                overflow: "visible", // prevent clipping
                                             }}
                                         >
                                             <input
@@ -106,8 +101,8 @@ const ServiceDescriptionCard: React.FC<any> = ({
                                                 }
                                                 className="h-5 w-5 text-green-600 focus:ring-green-500"
                                             />
-                                            <div className="text-container flex-1">
-                                                <h5 dir={langDir} className="text-sm text-gray-800">
+                                            <div className="text-container flex-1 min-w-0">
+                                                <h5 dir={langDir} className="text-sm text-gray-800 truncate">
                                                     {feature.name}
                                                 </h5>
                                                 <p className="text-xs text-gray-500" dir={langDir}>
@@ -119,7 +114,7 @@ const ServiceDescriptionCard: React.FC<any> = ({
                                                 </p>
                                             </div>
                                             {isSelected ? (
-                                                <div className="quantity-container flex items-center gap-2">
+                                                <div className="quantity-container flex flex-wrap items-center gap-2 min-w-0">
                                                     <label className="text-sm text-gray-600">Qty:</label>
                                                     <button
                                                         onClick={() => decrementQuantity(feature.id)}
@@ -138,6 +133,7 @@ const ServiceDescriptionCard: React.FC<any> = ({
                                                             )
                                                         }
                                                         className="w-16 p-1 border rounded-md text-center"
+                                                        style={{ minWidth: "3rem" }}
                                                     />
                                                     <button
                                                         onClick={() => incrementQuantity(feature.id)}
@@ -145,6 +141,26 @@ const ServiceDescriptionCard: React.FC<any> = ({
                                                     >
                                                         +
                                                     </button>
+                                                    {/* Date Picker */}
+                                                    <div className="ml-4 min-w-[140px]">
+                                                        <DatePicker
+                                                            selectedFeature={selectedFeature}
+                                                            updateFeatureField={updateFeatureField}
+                                                            feature={feature}
+                                                            langDir={langDir}
+                                                            t={t}
+                                                        />
+                                                    </div>
+                                                    {/* Time Picker */}
+                                                    <div className="ml-2 min-w-[90px]">
+                                                        <TimePicker
+                                                            selectedFeature={selectedFeature}
+                                                            updateFeatureField={updateFeatureField}
+                                                            feature={feature}
+                                                            langDir={langDir}
+                                                            t={t}
+                                                        />
+                                                    </div>
                                                 </div>
                                             ) : null}
                                         </div>
@@ -152,6 +168,69 @@ const ServiceDescriptionCard: React.FC<any> = ({
                                 );
                             })
                         }
+                    </div>
+                </div>
+            )}
+
+            {isLoading ? (
+                <Skeleton className="h-44 w-full" />
+            ) : (
+                <div className="info-col">
+                    <div className="row">
+                        <div className="col-12 col-md-12">
+                            <div className="form-group mb-0">
+                                <p>
+                                    <span className="color-text" dir={langDir} translate="no">
+                                        {t("working_days")}:
+                                    </span>{" "}
+                                    <b>{serviceDetails?.workingDays}</b>
+                                </p>
+                                <p>
+                                    <span className="color-text" dir={langDir} translate="no">
+                                        {t("off_days")}:
+                                    </span>{" "}
+                                    <b>{serviceDetails?.offDays}</b>
+                                </p>
+                                <p>
+                                    <span className="color-text" dir={langDir} translate="no">
+                                        {t("service_type")}:
+                                    </span>{" "}
+                                    <b>{serviceDetails?.serviceType}</b>
+                                </p>
+                                {serviceDetails?.openTime ? (
+                                    <p>
+                                        <span className="color-text" dir={langDir} translate="no">
+                                            {t("open_time")}:
+                                        </span>{" "}
+                                        <b>{moment.utc(serviceDetails?.openTime).format('hh:mm A')}</b>
+                                    </p>
+                                ) : null}
+                                {serviceDetails?.closeTime ? (
+                                    <p>
+                                        <span className="color-text" dir={langDir} translate="no">
+                                            {t("close_time")}:
+                                        </span>{" "}
+                                        <b>{moment.utc(serviceDetails?.closeTime).format('hh:mm A')}</b>
+                                    </p>
+                                ) : null}
+                                {serviceDetails?.breakTimeFrom ? (
+                                    <p>
+                                        <span className="color-text" dir={langDir} translate="no">
+                                            {t("break_time_from")}:
+                                        </span>{" "}
+                                        <b>{moment.utc(serviceDetails?.breakTimeFrom).format('hh:mm A')}</b>
+                                    </p>
+                                ) : null}
+                                {serviceDetails?.breakTimeTo ? (
+                                    <p>
+                                        <span className="color-text" dir={langDir} translate="no">
+                                            {t("break_time_to")}:
+                                        </span>{" "}
+                                        <b>{moment.utc(serviceDetails?.breakTimeTo).format('hh:mm A')}</b>
+                                    </p>
+                                ) : null}
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}

@@ -15,11 +15,14 @@ import { v4 as uuidv4 } from "uuid";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import Pagination from "@/components/shared/Pagination";
 // import { useMe } from "@/apis/queries/user.queries";
 
 const MyOrdersPage = () => {
   const t = useTranslations();
   const { langDir } = useAuth();
+  const [page, setPage] = useState<number>(1);
+  const [limit] = useState<number>(40);
   const searchRef = useRef<HTMLInputElement>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [orderStatus, setOrderStatus] = useState<string>("");
@@ -65,10 +68,9 @@ const MyOrdersPage = () => {
     };
   };
 
-  // const me = useMe();
   const ordersQuery = useOrders({
-    page: 1,
-    limit: 40,
+    page: page,
+    limit: limit,
     term: searchTerm !== "" ? searchTerm : undefined,
     orderProductStatus: orderStatus,
     startDate: getYearDates(orderTime).startDate,
@@ -277,6 +279,9 @@ const MyOrdersPage = () => {
                       productImages: { id: number; image: string }[];
                     };
                   };
+                  serviceFeatures?: {
+                    serviceFeatures?: any[];
+                  };
                   orderProduct_order: {
                     orderNo: string;
                   };
@@ -288,6 +293,7 @@ const MyOrdersPage = () => {
                   <OrderCard
                     key={item.id}
                     id={item.id}
+                    orderProductType={item.orderProductType}
                     productId={item.productId}
                     purchasePrice={item.purchasePrice}
                     productName={
@@ -298,15 +304,24 @@ const MyOrdersPage = () => {
                       item.orderProduct_productPrice?.productPrice_product
                         ?.productImages
                     }
+                    serviceFeature={item.serviceFeatures?.serviceFeatures?.[0]}
                     orderQuantity={item?.orderQuantity}
                     orderId={item.orderProduct_order?.orderNo}
                     orderStatus={item.orderProductStatus}
                     orderProductDate={item.orderProductDate}
                     updatedAt={item.updatedAt}
-                    // productReview={me?.data?.data?.user_productReview}
                   />
                 ),
               )}
+
+              {ordersQuery?.data?.totalCount > limit ? (
+                <Pagination
+                  page={page}
+                  setPage={setPage}
+                  totalCount={ordersQuery?.data?.totalCount}
+                  limit={limit}
+                />
+              ) : null}
             </div>
           </div>
         </div>

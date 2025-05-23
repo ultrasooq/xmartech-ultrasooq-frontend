@@ -99,7 +99,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
           <ShoppingIcon />
         </Button>
         <Link
-          href={`/trending/${id}`}
+          href={`/rfq/${id}`}
           className="relative flex h-8 w-8 items-center justify-center rounded-full !shadow-md"
         >
           <FiEye size={18} />
@@ -119,13 +119,6 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
       {/* </Link> */}
       <div className="product_list_content" dir={langDir}>
         <p>{productName}</p>
-        {/* price For P type product */}
-        {/* {productType === "P" ? (
-          <>
-            <label dir={langDir} translate="no">{t("price")}:</label>
-            <p>{currency.symbol}{productPrice?.[0]?.offerPrice}</p>
-          </>
-        ) : null} */}
         {haveAccessToken ? (
           <div className="quantity_wrap mb-2">
             <label dir={langDir} translate="no">
@@ -172,7 +165,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                       "add",
                       offerPriceFrom,
                       offerPriceTo,
-                      "",
+                      productNote || "",
                     );
                   }}
                 >
@@ -227,7 +220,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                     "add",
                     offerPriceFrom,
                     offerPriceTo,
-                    "",
+                    productNote || "",
                   );
                 }}
                 dir={langDir}

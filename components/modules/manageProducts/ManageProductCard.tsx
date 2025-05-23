@@ -4,9 +4,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import Image from "next/image";
 import validator from "validator";
-// import { cn } from "@/lib/utils";
 import EditIcon from "@/public/images/edit-rfq.png";
-// import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { IoIosEyeOff, IoIosEye } from "react-icons/io";
 import {
@@ -16,8 +14,6 @@ import {
 } from "@/apis/queries/product.queries";
 import CounterTextInputField from "../createProduct/CounterTextInputField";
 import { useToast } from "@/components/ui/use-toast";
-import { Dialog } from "@/components/ui/dialog";
-import AddProductContent from "../products/AddProductContent";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 
@@ -358,12 +354,6 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
     }
   };
 
-  // For Add new product
-  const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false);
-
-  const handleAddProductModal = () =>
-    setIsAddProductModalOpen(!isAddProductModalOpen);
-
   // For remove product
   const productRemove = useRemoveProduct(); // Get the mutation function
   const handleRemoveProduct = async () => {
@@ -670,15 +660,16 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                     </button>
                   </div>
                   <div className="flex flex-wrap space-y-1">
-                    <button
-                      type="button"
-                      className="flex h-[50px] w-full items-center justify-center border-none bg-[#5a82ca] text-[12px] text-white"
-                      onClick={handleAddProductModal}
-                      dir={langDir}
-                      translate="no"
-                    >
-                      {t("add_new")}
-                    </button>
+                    <Link href={`/product?copy=${productId}`}>
+                      <button
+                        type="button"
+                        className="flex h-[50px] w-full items-center justify-center border-none bg-[#5a82ca] text-[12px] text-white"
+                        dir={langDir}
+                        translate="no"
+                      >
+                        {t("copy_product")}
+                      </button>
+                    </Link>
                   </div>
                 </div>
                 <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
@@ -1185,10 +1176,6 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
           </div>
         </div>
       </div>
-
-      <Dialog open={isAddProductModalOpen} onOpenChange={handleAddProductModal}>
-        <AddProductContent productId={productId} />
-      </Dialog>
     </>
   );
 };

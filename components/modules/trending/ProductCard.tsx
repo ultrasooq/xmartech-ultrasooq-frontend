@@ -112,8 +112,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
     [item.productReview?.length],
   );
 
+  const [productVariantTypes, setProductVariantTypes] = useState<string[]>([]);
   const [quantity, setQuantity] = useState(0);
-  const [selectedProductVariant, setSelectedProductVariant] = useState<any>();
+  const [selectedProductVariant, setSelectedProductVariant] = useState<any>(productVariant);
 
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] =
     useState<boolean>(false);
@@ -130,8 +131,24 @@ const ProductCard: React.FC<ProductCardProps> = ({
   }, [productQuantity]);
 
   useEffect(() => {
-    setSelectedProductVariant(productVariant || productVariants?.[0]);
-  }, [productVariants, productVariant]);
+    if (productVariants.length > 0) {
+      // @ts-ignore
+      const variantTypes: string[] = [...new Set(productVariants.map((variant: any) => variant.type))];
+      setProductVariantTypes(variantTypes);
+
+      if (!productVariant) {
+        let selectedVariant: any[] = [];
+        variantTypes.forEach((variantType, index) => {
+          selectedVariant.push(productVariants.find((variant: any) => variant.type == variantType));
+        });
+        setSelectedProductVariant(selectedVariant);
+      } else {
+        setSelectedProductVariant(
+          !Array.isArray(productVariant) ? [productVariant] : productVariant
+        );
+      }
+    }
+  }, [productVariants.length, productVariant]);
 
   const updateCartWithLogin = useUpdateCartWithLogin();
   const updateCartByDevice = useUpdateCartByDevice();
@@ -187,7 +204,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
       }
 
       let linkService = !!(!cartId && serviceId && serviceCartId);
-      console.log(linkService, cartId, serviceId, relatedCart);
 
       if (linkService) {
         const response = await updateCartWithService.mutateAsync({
@@ -579,30 +595,49 @@ const ProductCard: React.FC<ProductCardProps> = ({
             </div>
           )}
         </div>
-        {productVariants.length > 0 ? (
-          <div className="mb-2">
-            <label dir={langDir}>{productVariants[0].type}</label>
-            <select
-              className="w-full"
-              value={selectedProductVariant?.value}
-              onChange={(e) => {
-                const value = e.target.value;
-                const selectedVariant = productVariants.find(
-                  (variant: any) => variant.value == value,
-                );
-                setSelectedProductVariant(selectedVariant);
-                if (isAddedToCart)
-                  handleAddToCart(quantity, "add", selectedVariant);
-              }}
-              dir={langDir}
-            >
-              {productVariants.map((variant: any, index: number) => (
-                <option key={index} value={variant.value} dir={langDir}>
-                  {variant.value}
-                </option>
-              ))}
-            </select>
-          </div>
+        {productVariantTypes.length > 0 ? (
+          productVariantTypes.map((variantType: string, index: number) => {
+            return (
+              <div className="mb-2" dir={langDir} key={index}>
+                <label htmlFor={variantType}>{variantType}</label>
+                <select
+                  className="w-full"
+                  value={selectedProductVariant?.find((variant: any) => variant.type == variantType)?.value}
+                  onChange={(e) => {
+                    let selectedVariants = [];
+                    let value = e.target.value;
+                    const selected = productVariants.find(
+                      (variant: any) => variant.type == variantType && variant.value == value
+                    );
+
+                    if (selectedProductVariant.find((variant: any) => variant.type == selected.type)) {
+                      selectedVariants = selectedProductVariant.map((variant: any) => {
+                        if (variant.type == selected.type) {
+                          return selected;
+                        }
+                        return variant;
+                      });
+
+                    } else {
+                      selectedVariants = [
+                        ...selectedProductVariant,
+                        selected
+                      ];
+                    }
+
+                    setSelectedProductVariant(selectedVariants);
+
+                    if (cartId) handleAddToCart(quantity, "add", selectedVariants);
+                  }}
+                >
+                  {productVariants.filter((variant: any) => variant.type == variantType)
+                    .map((variant: any, i: number) => {
+                    return <option key={`${index}${i}`} value={variant.value} dir={langDir}>{variant.value}</option>;
+                  })}
+                </select>
+              </div>
+            );
+          })
         ) : null}
         <div className="quantity_wrap mb-2">
           <label dir={langDir} translate="no">
@@ -689,7 +724,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         {sold !== undefined && sold !== null && item.productPrices?.[0]?.stock
           ? (() => {
               const percentage = Number(
-                ((sold / (sold + item.productPrices[0].stock)) * 100).toFixed(),
+                (100 - (sold / (sold + item.productPrices[0].stock)) * 100).toFixed(),
               );
               return (
                 <>

@@ -14,11 +14,15 @@ import { STATUS_LIST } from "@/utils/constants";
 import ControlledTextareaInput from "@/components/shared/Forms/ControlledTextareaInput";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import moment from "moment";
 
 type UpdateProductStatusFormProps = {
   orderProductId: string;
   onClose: () => void;
   orderProductStatus?: string;
+  orderProductDate: string;
+  deliveryAfter: number;
+  tradeRole?: string;
 };
 
 const formSchema = z
@@ -44,6 +48,9 @@ const UpdateProductStatusForm: React.FC<UpdateProductStatusFormProps> = ({
   orderProductId,
   onClose,
   orderProductStatus,
+  orderProductDate,
+  deliveryAfter,
+  tradeRole
 }) => {
   const t = useTranslations();
   const { langDir } = useAuth();
@@ -60,15 +67,15 @@ const UpdateProductStatusForm: React.FC<UpdateProductStatusFormProps> = ({
   const updateCancelReason = useUpdateCancelReason();
 
   const watchStatus = form.watch("status");
-  console.log(form.formState.errors);
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log({
-      orderProductId,
-      status: values.status,
-      cancelReason: values.cancelReason,
-    });
-    // return;
     if (values.status === "") return;
+
+    if (values.status === "DELIVERED" && tradeRole != 'BUYER') {
+      if (moment().diff(moment(orderProductDate), 'days') <= deliveryAfter) {
+        return;
+      }
+    }
 
     const updatedData = {
       orderProductId: Number(orderProductId),
@@ -78,6 +85,9 @@ const UpdateProductStatusForm: React.FC<UpdateProductStatusFormProps> = ({
       onSuccess: () => {
         queryClient.invalidateQueries({
           queryKey: ["order-by-seller-id", { orderProductId }],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["order-by-id", { orderProductId }],
         });
       },
     });
@@ -99,6 +109,7 @@ const UpdateProductStatusForm: React.FC<UpdateProductStatusFormProps> = ({
         variant: "danger",
       });
     }
+
     if (values.status === "CANCELLED") {
       const response = await updateCancelReason.mutateAsync(
         {
@@ -133,45 +144,37 @@ const UpdateProductStatusForm: React.FC<UpdateProductStatusFormProps> = ({
   };
 
   const formattedStatusList = useMemo(
-    () =>
-      STATUS_LIST.map((item) => ({
-        label: item.label,
-        value: item.value,
-        disabled:
-          orderProductStatus === "SHIPPED" && item.value === "CONFIRMED"
-            ? true
-            : (orderProductStatus === "OFD" && item.value === "SHIPPED") ||
-                (orderProductStatus === "OFD" && item.value === "CONFIRMED")
-              ? true
-              : (orderProductStatus === "DELIVERED" && item.value === "OFD") ||
-                  (orderProductStatus === "DELIVERED" &&
-                    item.value === "SHIPPED") ||
-                  (orderProductStatus === "DELIVERED" &&
-                    item.value === "CONFIRMED")
-                ? true
-                : (orderProductStatus === "CANCELLED" &&
-                      item.value === "DELIVERED") ||
-                    (orderProductStatus === "CANCELLED" &&
-                      item.value === "OFD") ||
-                    (orderProductStatus === "CANCELLED" &&
-                      item.value === "SHIPPED") ||
-                    (orderProductStatus === "CANCELLED" &&
-                      item.value === "CONFIRMED")
-                  ? true
-                  : false,
-      })),
-    [orderProductStatus],
-  );
+    () => {
+      if (tradeRole == "BUYER") {
+        return STATUS_LIST.filter((item) => item.value == "DELIVERED");
+      }
 
-  useEffect(() => {
-    if (orderProductStatus) {
-      console.log(orderProductStatus);
-      form.reset({
-        status: orderProductStatus,
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [orderProductStatus]);
+      if (orderProductStatus == "CANCELLED") {
+        return [];
+      }
+
+      if (orderProductStatus == "CONFIRMED") {
+        return STATUS_LIST.filter((item) => item.value == "SHIPPED" || item.value == "CANCELLED");
+      }
+
+      if (orderProductStatus == "SHIPPED") {
+        return STATUS_LIST.filter((item) => item.value == "OFD" || item.value == "CANCELLED");
+      }
+
+      if (orderProductStatus == "OFD") {
+        if (moment().diff(moment(orderProductDate), 'days') <= deliveryAfter) {
+          return STATUS_LIST.filter((item) => item.value == "CANCELLED");
+        }
+        return STATUS_LIST.filter((item) => item.value == "DELIVERED" || item.value == "CANCELLED");
+      }
+
+      if (orderProductStatus == "DELIVERED") {
+        return STATUS_LIST.filter((item) => item.value == "CANCELLED");
+      }
+
+      return STATUS_LIST.filter((item) => item.value == "CONFIRMED" || item.value == "CANCELLED");
+    }, [orderProductStatus],
+  );
 
   return (
     <Form {...form}>
@@ -196,7 +199,6 @@ const UpdateProductStatusForm: React.FC<UpdateProductStatusFormProps> = ({
                   <option
                     key={item.value}
                     value={item.value}
-                    disabled={item.disabled}
                   >
                     {item.label}
                   </option>
@@ -216,7 +218,13 @@ const UpdateProductStatusForm: React.FC<UpdateProductStatusFormProps> = ({
           ) : null}
         </div>
         <div className="modal-footer">
-          <button type="submit" className="theme-primary-btn submit-btn" dir={langDir} translate="no">
+          <button 
+            type="submit" 
+            className="theme-primary-btn submit-btn" 
+            disabled={updateProductStatusQuery?.isPending || updateCancelReason?.isPending}
+            dir={langDir} 
+            translate="no"
+          >
             {t("save")}
           </button>
         </div>

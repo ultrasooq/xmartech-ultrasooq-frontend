@@ -35,11 +35,40 @@ export const fetchFactoriesProducts = (payload: {
   sortType?: "newest" | "oldest";
   brandIds?: string;
   isOwner?: string;
+  related?: boolean;
 }) => {
+  const related = payload.related;
+  delete payload?.related;
+  if (related) {
+    return fetchFactoriesProductsByUserBusinessCategory(payload);
+  }
   return axios({
     method: "GET",
     url: urlcat(
       `${process.env.NEXT_PUBLIC_API_URL}/product/getAllFactoriesProduct`,
+      payload,
+    ),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+export const fetchFactoriesProductsByUserBusinessCategory = (payload: {
+  page: number;
+  limit: number;
+  term?: string;
+  adminId?: string;
+  sortType?: "newest" | "oldest";
+  brandIds?: string;
+  isOwner?: string;
+}) => {
+  return axios({
+    method: "GET",
+    url: urlcat(
+      `${process.env.NEXT_PUBLIC_API_URL}/product/getAllFactoriesProductByUserBusinessCategory`,
       payload,
     ),
     headers: {

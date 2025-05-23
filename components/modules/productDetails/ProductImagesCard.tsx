@@ -146,7 +146,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
   return (
     <div className="product-view-s1-left">
       <div className="mb-3 flex flex-col-reverse md:mb-3 lg:mb-0 lg:grid lg:grid-cols-4 lg:gap-4">
-        <div className="relative order-2 col-span-3 flex items-center space-y-4 bg-gray-100 md:max-h-[500px]">
+        <div className="relative order-2 col-span-3 flex items-center space-y-4 bg-gray-100 pl-3 md:max-h-[500px] lg:pl-0">
           {!isLoading && haveAccessToken ? (
             <button
               type="button"
@@ -213,7 +213,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
           {isLoading ? <Skeleton className="min-h-[250px] w-full" /> : null}
         </div>
 
-        <div className="col-span-1 m-auto flex !h-full w-full flex-wrap gap-4 self-start sm:w-auto sm:flex-col">
+        <div className="col-span-1 m-auto flex !h-full w-full flex-wrap gap-4 self-start lg:w-auto lg:flex-col">
           {isLoading
             ? Array.from({ length: 3 }).map((_, index) => (
                 <Skeleton className="h-28 w-28" key={index} />

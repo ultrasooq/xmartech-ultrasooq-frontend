@@ -191,28 +191,32 @@ const CompleteOrderPage = () => {
   };
 
   const handleCreatePaymentLink = async (orderId: number) => {
-    let data = {
-      amountCents: orderStore.total * 1000,
-      referenceId: referenceOrderId(orderId),
-      email: orderStore.orders.email,
-      isLive: false,
-      fullName: `${orderStore.orders.firstName} ${orderStore.orders.lastName}`,
-      description: `orderId=${orderId}`
-    }
+    // let data = {
+    //   amountCents: orderStore.total * 1000,
+    //   referenceId: referenceOrderId(orderId),
+    //   email: orderStore.orders.email,
+    //   isLive: false,
+    //   fullName: `${orderStore.orders.firstName} ${orderStore.orders.lastName}`,
+    //   description: `orderId=${orderId}`
+    // }
 
-    const response = await createPaymentLink.mutateAsync(data);
+    // const response = await createPaymentLink.mutateAsync(data);
 
-    if (response?.success) {
-      setPaymentLink(response?.data?.client_url);
-      orderStore.resetOrders();
-      orderStore.setTotal(0);
-    } else {
-      toast({
-        title: t("something_went_wrong"),
-        description: response.message,
-        variant: "danger",
-      });
-    }
+    // if (response?.success) {
+    //   setPaymentLink(response?.data?.client_url);
+    //   orderStore.resetOrders();
+    //   orderStore.setTotal(0);
+    // } else {
+    //   toast({
+    //     title: t("something_went_wrong"),
+    //     description: response.message,
+    //     variant: "danger",
+    //   });
+    // }
+
+    setPaymentLink(window.location.origin + `/complete-order/${orderId}`);
+    orderStore.resetOrders();
+    orderStore.setTotal(0);
   };
 
   const handleCreateEmiPayment = async (orderId: number) => {

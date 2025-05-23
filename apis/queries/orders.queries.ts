@@ -11,6 +11,7 @@ import {
   createPaymentIntent,
   createPaymentLink,
   fetchOrderById,
+  fetchOrderByIdUnAuth,
   fetchOrderBySellerId,
   fetchOrders,
   fetchOrdersBySellerId,
@@ -35,8 +36,7 @@ export const useOrders = (
   useQuery({
     queryKey: ["orders", payload],
     queryFn: async () => {
-      const res: { data: { data: any; message: string; status: boolean } } =
-        await fetchOrders(payload);
+      const res: any = await fetchOrders(payload);
       return res.data;
     },
     // onError: (err: APIResponseError) => {
@@ -234,8 +234,7 @@ export const useOrdersBySellerId = (
   useQuery({
     queryKey: ["orders-by-seller-id", payload],
     queryFn: async () => {
-      const res: { data: { data: any; message: string; status: boolean } } =
-        await fetchOrdersBySellerId(payload);
+      const res: any = await fetchOrdersBySellerId(payload);
       return res.data;
     },
     // onError: (err: APIResponseError) => {
@@ -293,7 +292,10 @@ export const useUpdateOrderShippingStatus = () => {
   return useMutation<
     { data: any; message: string; status: boolean },
     APIResponseError,
-    { orderShippingId: number; status: string, receipt: string; }
+    {
+      orderShippingId: number;
+      receipt: string;
+    }
   >({
     mutationFn: async (payload) => {
       const res = await updateOrderShippingStatus(payload);
@@ -328,3 +330,20 @@ export const usePreOrderCalculation = () => {
     },
   });
 };
+
+export const useOrderByIdUnAuth = (
+  payload: {
+    orderId: number;
+  },
+  enabled = true,
+) =>
+  useQuery({
+    queryKey: ["order-by-id", payload],
+    queryFn: async () => {
+      const res: {
+        data: { data: any; message: string; status: boolean; };
+      } = await fetchOrderByIdUnAuth(payload);
+      return res.data;
+    },
+    enabled,
+  });

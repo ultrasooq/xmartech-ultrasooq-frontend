@@ -158,27 +158,29 @@ export default function CompanyProfileDetailsPage() {
                           </Link>
                         </div>
                       ) : null}
-                      {!activeSellerId ?
-                        me.data?.data?.userBranch
-                          .sort(
-                            (a: any, b: any) => b?.mainOffice - a?.mainOffice,
-                          )
-                          .map((item: any) => (
-                            <React.Fragment key={item.id}>
-                              <BranchSection branchDetails={item} />
-                            </React.Fragment>
-                          )) : null}
+                      {!activeSellerId
+                        ? me.data?.data?.userBranch
+                            .sort(
+                              (a: any, b: any) => b?.mainOffice - a?.mainOffice,
+                            )
+                            .map((item: any) => (
+                              <React.Fragment key={item.id}>
+                                <BranchSection branchDetails={item} />
+                              </React.Fragment>
+                            ))
+                        : null}
 
-                      {activeSellerId ?
-                        vendor?.userBranch
-                          .sort(
-                            (a: any, b: any) => b?.mainOffice - a?.mainOffice,
-                          )
-                          .map((item: any) => (
-                            <React.Fragment key={item.id}>
-                              <VendorBranchSection branchDetails={item} />
-                            </React.Fragment>
-                          )) : null}
+                      {activeSellerId
+                        ? vendor?.userBranch
+                            .sort(
+                              (a: any, b: any) => b?.mainOffice - a?.mainOffice,
+                            )
+                            .map((item: any) => (
+                              <React.Fragment key={item.id}>
+                                <VendorBranchSection branchDetails={item} />
+                              </React.Fragment>
+                            ))
+                        : null}
                     </div>
                   </div>
                 </TabsContent>
@@ -195,7 +197,7 @@ export default function CompanyProfileDetailsPage() {
                   </div>
                 </TabsContent>
                 <TabsContent value="products" className="mt-0">
-                  <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white px-2 py-2 shadow-md sm:px-6 sm:pb-4 sm:pt-8 md:px-9 md:pb-7 md:pt-12">
+                  <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white px-2 py-2 shadow-md sm:px-6 sm:pb-4 sm:pt-8 md:px-4 md:pb-7 lg:pt-12 xl:px-9">
                     {/* importing from freelancer details module */}
                     <ProductsSection sellerId={activeSellerId as string} />
                   </div>

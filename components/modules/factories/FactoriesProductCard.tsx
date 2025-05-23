@@ -30,11 +30,11 @@ type RfqProductCardProps = {
   productQuantity: number;
   productVariant?: any;
   customizeProductId?: number;
-  onAdd: () => void;
+  onAdd?: () => void;
   onWishlist: () => void;
   isCreatedByMe: boolean;
   cartId?: number;
-  isAddedToFactoryCart: boolean;
+  isAddedToFactoryCart?: boolean;
   inWishlist?: boolean;
   haveAccessToken: boolean;
   productPrices?: any[];
@@ -62,8 +62,9 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
 }) => {
   const t = useTranslations();
   const { user, langDir, currency } = useAuth();
+  const [productVariantTypes, setProductVariantTypes] = useState<string[]>([]);
   const [quantity, setQuantity] = useState(0);
-  const [selectedProductVariant, setSelectedProductVariant] = useState<any>();
+  const [selectedProductVariant, setSelectedProductVariant] = useState<any>(productVariant);
 
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState<boolean>(false);
   const handleConfirmDialog = () => setIsConfirmDialogOpen(!isConfirmDialogOpen);
@@ -75,7 +76,23 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
   }, [productQuantity]);
 
   useEffect(() => {
-    setSelectedProductVariant(productVariant || productVariants?.[0]);
+    if (productVariants.length > 0) {
+      // @ts-ignore
+      const variantTypes: string[] = [...new Set(productVariants.map((variant: any) => variant.type))];
+      setProductVariantTypes(variantTypes);
+
+      if (!productVariant) {
+        let selectedVariant: any[] = [];
+        variantTypes.forEach((variantType, index) => {
+          selectedVariant.push(productVariants.find((variant: any) => variant.type == variantType));
+        });
+        setSelectedProductVariant(selectedVariant);
+      } else {
+        setSelectedProductVariant(
+          !Array.isArray(productVariant) ? [productVariant] : productVariant
+        );
+      }
+    }
   }, [productVariants, productVariant]);
 
   useEffect(() => {
@@ -255,7 +272,7 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
   return (
     <div className="product_list_part">
       {/* FIXME:  link disabled due to TYPE R product. error in find one due to no price */}
-      <Link href={`/trending/${id}`}>
+      <Link href={`/factories/${id}`}>
         <div className="product_list_image relative">
           <Image
             alt="pro-5"
@@ -279,7 +296,7 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
           <ShoppingIcon />
         </Button>
         <Link
-          href={`/trending/${id}`}
+          href={`/factories/${id}`}
           className="relative flex h-8 w-8 items-center justify-center rounded-full !shadow-md"
         >
           <FiEye size={18} />
@@ -297,7 +314,7 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
         </Button>
       </div>
       <div className="product_list_content" dir={langDir}>
-        <Link href={`/trending/${id}`}>
+        <Link href={`/factories/${id}`}>
           <p>{productName}</p>
         </Link>
       </div>
@@ -311,24 +328,50 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
           </span>
         </h5>
       ) : null}
-      {productVariants.length > 0 ? (
-        <div className="mb-2" dir={langDir}>
-          <label htmlFor="">{productVariants[0].type}</label>
-          <select
-            className="w-full"
-            value={selectedProductVariant?.value}
-            onChange={(e) => {
-              let value = e.target.value;
-              const selectedVariant = productVariants.find((variant: any) => variant.value == value);
-              setSelectedProductVariant(selectedVariant);
-              if (cartId) handleAddToCart(quantity, "add", selectedVariant)
-            }}
-          >
-            {productVariants.map((variant: any, index: number) => {
-              return <option key={index} value={variant.value} dir={langDir}>{variant.value}</option>;
-            })}
-          </select>
-        </div>) : null}
+      {productVariantTypes.length > 0 ? (
+        productVariantTypes.map((variantType: string, index: number) => {
+          return (
+            <div className="mb-2" dir={langDir} key={index}>
+              <label htmlFor={variantType}>{variantType}</label>
+              <select
+                className="w-full"
+                value={selectedProductVariant?.find((variant: any) => variant.type == variantType)?.value}
+                onChange={(e) => {
+                  let selectedVariants = [];
+                  let value = e.target.value;
+                  const selected = productVariants.find(
+                    (variant: any) => variant.type == variantType && variant.value == value
+                  );
+
+                  if (selectedProductVariant.find((variant: any) => variant.type == selected.type)) {
+                    selectedVariants = selectedProductVariant.map((variant: any) => {
+                      if (variant.type == selected.type) {
+                        return selected;
+                      }
+                      return variant;
+                    });
+
+                  } else {
+                    selectedVariants = [
+                      ...selectedProductVariant,
+                      selected
+                    ];
+                  }
+
+                  setSelectedProductVariant(selectedVariants);
+
+                  if (cartId) handleAddToCart(quantity, "add", selectedVariants);
+                }}
+              >
+                {productVariants.filter((variant: any) => variant.type == variantType)
+                  .map((variant: any, i: number) => {
+                  return <option key={`${index}${i}`} value={variant.value} dir={langDir}>{variant.value}</option>;
+                })}
+              </select>
+            </div>
+          );
+        })
+      ) : null}
       <div className="quantity_wrap mb-2" dir={langDir}>
         <label translate="no">{t("quantity")}</label>
         <div className="qty-up-down-s1-with-rgMenuAction">
@@ -374,7 +417,9 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
             {/* {!isAddedToFactoryCart && <Button
               type="button"
               variant="ghost"
-              onClick={onAdd}
+              onClick={() => {
+                onAdd?.();
+              }}
             >
               <div className="relative h-6 w-6">
                 <Image

@@ -23,7 +23,7 @@ type OrderCardProps = {
   orderStatus: string;
   orderProductDate: string;
   updatedAt: string;
-  // productReview: { productId: number }[];
+  serviceFeature?: any;
 };
 
 const OrderCard: React.FC<OrderCardProps> = ({
@@ -39,7 +39,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
   orderStatus,
   orderProductDate,
   updatedAt,
-  // productReview,
+  serviceFeature
 }) => {
   // const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   // const [reviewId, setReviewId] = useState<number>();
@@ -75,7 +75,7 @@ const OrderCard: React.FC<OrderCardProps> = ({
               </div>
               <figcaption>
                 <h3>
-                  {t("service")}
+                  {serviceFeature?.name}
                 </h3>
               </figcaption>
             </figure>
@@ -104,11 +104,17 @@ const OrderCard: React.FC<OrderCardProps> = ({
         </div>
         <div className="right-info" dir={langDir}>
           <h4 translate="no">
-            {orderStatus === "CONFIRMED" ? (
+            {orderStatus === "RECEIVED" || orderStatus === "PLACED" ? (
               <>
                 <BiCircle color="green" />
                 {t("placed_on")}{" "}
                 {orderProductDate ? formattedDate(orderProductDate) : ""}
+              </>
+            ) : null}
+            {orderStatus === "CONFIRMED" ? (
+              <>
+                <BiCircle color="green" /> {t("confirmed_on")}{" "}
+                {updatedAt ? formattedDate(updatedAt) : ""}
               </>
             ) : null}
             {orderStatus === "SHIPPED" ? (
@@ -136,7 +142,15 @@ const OrderCard: React.FC<OrderCardProps> = ({
               </>
             ) : null}
           </h4>
-          <p dir={langDir}>{t(DELIVERY_STATUS[orderStatus])}</p>
+          <p dir={langDir}>
+            {orderStatus == 'RECEIVED' || orderStatus == 'PLACED' ? (
+              t("order_placed")
+            ) : orderStatus == 'CONFIRMED' ? (
+              t("order_confirmed_info")
+            ) : (
+              t(DELIVERY_STATUS[orderStatus])
+            )}
+          </p>
 
           {orderStatus === "DELIVERED" ? (
             <Link

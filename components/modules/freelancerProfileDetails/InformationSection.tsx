@@ -71,7 +71,7 @@ const InformationSection: React.FC<InformationSectionProps> = ({
       <div className="w-full">
         <div className="w-full">
           <div className="flex w-full flex-wrap py-3.5">
-            <div className="mr-1 flex w-2/12 items-center justify-start sm:mr-0">
+            <div className="mr-1 flex w-4/12 items-center justify-start sm:mr-0 md:w-2/12">
               <span
                 className="text-sm font-normal capitalize leading-4 text-gray-500"
                 dir={langDir}
@@ -81,7 +81,7 @@ const InformationSection: React.FC<InformationSectionProps> = ({
               </span>
             </div>
             <div
-              className="mr-0 flex  w-10/12 items-center justify-start"
+              className="mr-0 flex w-8/12 items-center justify-start md:w-10/12"
               dir={langDir}
             >
               <p className="text-base font-medium leading-4 text-color-dark">

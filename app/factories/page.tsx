@@ -10,6 +10,7 @@ import Pagination from "@/components/shared/Pagination";
 import GridIcon from "@/components/icons/GridIcon";
 import ListIcon from "@/components/icons/ListIcon";
 import RfqProductTable from "@/components/modules/rfq/RfqProductTable";
+import FilterMenuIcon from "@/components/icons/FilterMenuIcon";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useMe } from "@/apis/queries/user.queries";
 import { useToast } from "@/components/ui/use-toast";
@@ -45,8 +46,14 @@ import { Label } from "@/components/ui/label";
 import AddToCustomizeForm from "@/components/modules/factories/AddToCustomizeForm";
 import { useAuth } from "@/context/AuthContext";
 import { useProductVariant } from "@/apis/queries/product.queries";
+import Cart from "@/components/modules/cartList/Cart";
+import { Checkbox } from "@/components/ui/checkbox";
 
-const FactoriesPage = () => {
+interface FactoriesPageProps {
+  searchParams?: { term?: string };
+}
+
+const FactoriesPage = ({ searchParams }: FactoriesPageProps) => {
   const t = useTranslations();
   const { langDir } = useAuth();
   const queryClient = useQueryClient();
@@ -54,10 +61,12 @@ const FactoriesPage = () => {
   const wrapperRef = useRef(null);
   const [viewType, setViewType] = useState<"grid" | "list">("grid");
   const [sortBy, setSortBy] = useState<"newest" | "oldest">("newest");
-  const [searchRfqTerm, setSearchRfqTerm] = useState("");
+  const [searchRfqTerm, setSearchRfqTerm] = useState(searchParams?.term || "");
   const [selectedBrandIds, setSelectedBrandIds] = useState<number[]>([]);
+  const [productFilter, setProductFilter] = useState(false);
   const [selectAllBrands, setSelectAllBrands] = useState<boolean>(false);
   const [displayMyProducts, setDisplayMyProducts] = useState("0");
+  const [displayRelatedProducts, setDisplayRelatedProducts] = useState(false);
   const [haveAccessToken, setHaveAccessToken] = useState(false);
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
   const [page, setPage] = useState(1);
@@ -84,10 +93,14 @@ const FactoriesPage = () => {
     page,
     limit,
     term: searchRfqTerm,
-    adminId: me?.data?.data?.tradeRole == "MEMBER" ? me?.data?.data?.addedBy : me?.data?.data?.id,
+    adminId:
+      me?.data?.data?.tradeRole == "MEMBER"
+        ? me?.data?.data?.addedBy
+        : me?.data?.data?.id,
     sortType: sortBy,
     brandIds: selectedBrandIds.join(","),
     isOwner: displayMyProducts == "1" ? "me" : "",
+    related: displayRelatedProducts
   });
   const fetchProductVariant = useProductVariant();
   const cartListByUser = useCartListByUserId(
@@ -118,33 +131,29 @@ const FactoriesPage = () => {
   };
 
   const memoizedRfqProducts = useMemo(() => {
-    if (factoriesProductsQuery.data?.data) {
-      return (
-        factoriesProductsQuery.data?.data.map((item: any) => {
-          return {
-            ...item,
-            isAddedToFactoryCart:
-              item?.product_rfqCart?.length &&
-              item?.product_rfqCart[0]?.quantity > 0,
-            factoryCartQuantity: item?.product_rfqCart?.length
-              ? item.product_rfqCart[0].quantity
-              : 0,
-          };
-        }) || []
-      );
-    } else {
-      return [];
-    }
+    return (
+      factoriesProductsQuery?.data?.data?.map((item: any) => {
+        return {
+          ...item,
+          isAddedToFactoryCart:
+            item?.product_rfqCart?.length &&
+            item?.product_rfqCart[0]?.quantity > 0,
+          factoryCartQuantity: item?.product_rfqCart?.length
+            ? item.product_rfqCart[0].quantity
+            : 0,
+        };
+      }) || []
+    );
   }, [factoriesProductsQuery.data?.data]);
 
   const getProductVariants = async () => {
     let productPriceIds = memoizedRfqProducts
-        .filter((item: any) => item.product_productPrice.length > 0)
-        .map((item: any) => item.product_productPrice[0].id);
-      
+      .filter((item: any) => item.product_productPrice.length > 0)
+      .map((item: any) => item.product_productPrice[0].id);
+
     const response = await fetchProductVariant.mutateAsync(productPriceIds);
     if (response.status) setProductVariants(response.data);
-  }
+  };
 
   useEffect(() => {
     if (memoizedRfqProducts.length) {
@@ -243,7 +252,9 @@ const FactoriesPage = () => {
 
   return (
     <div>
-      <title dir={langDir} translate="no">{t("rfq")} | Ultrasooq</title>
+      <title dir={langDir} translate="no">
+        {t("rfq")} | Ultrasooq
+      </title>
       <section className="rfq_section">
         <div className="sec-bg relative">
           <Image src={BannerImage} alt="background-banner" fill />
@@ -251,7 +262,10 @@ const FactoriesPage = () => {
         <div className="rfq-container px-3">
           <div className="row">
             <div className="rfq_main_box !justify-center">
-              <div className="rfq_left" dir={langDir}>
+              <div
+                className={productFilter ? "rfq_left show" : "rfq_left"}
+                dir={langDir}
+              >
                 <div className="all_select_button">
                   <button type="button" onClick={selectAll} translate="no">
                     {t("select_all")}
@@ -268,35 +282,51 @@ const FactoriesPage = () => {
                   }
                 />
               </div>
+              <div
+                className="left-filter-overlay"
+                onClick={() => setProductFilter(false)}
+              ></div>
               <div className="rfq_middle">
-                {me?.data?.data?.tradeRole != 'BUYER' ? (<RadioGroup
-                  className="mb-3 flex flex-row gap-y-3"
-                  value={displayMyProducts}
-                  onValueChange={setDisplayMyProducts}
-                  // @ts-ignore
-                  dir={langDir}
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem
-                      value="0"
-                      id="all_products"
-                      checked={displayMyProducts == "0"}
-                    />
-                    <Label htmlFor="all_products" className="text-base" dir={langDir} translate="no">
-                      {t("all_products")}
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem
-                      value="1"
-                      id="my_products"
-                      checked={displayMyProducts == "1"}
-                    />
-                    <Label htmlFor="my_products" className="text-base" dir={langDir} translate="no">
-                      {t("my_products")}
-                    </Label>
-                  </div>
-                </RadioGroup>) : null}
+                {me?.data?.data?.tradeRole != "BUYER" ? (
+                  <RadioGroup
+                    className="mb-3 flex flex-row gap-y-3"
+                    value={displayMyProducts}
+                    onValueChange={setDisplayMyProducts}
+                    // @ts-ignore
+                    dir={langDir}
+                  >
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem
+                        value="0"
+                        id="all_products"
+                        checked={displayMyProducts == "0"}
+                      />
+                      <Label
+                        htmlFor="all_products"
+                        className="text-base"
+                        dir={langDir}
+                        translate="no"
+                      >
+                        {t("all_products")}
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem
+                        value="1"
+                        id="my_products"
+                        checked={displayMyProducts == "1"}
+                      />
+                      <Label
+                        htmlFor="my_products"
+                        className="text-base"
+                        dir={langDir}
+                        translate="no"
+                      >
+                        {t("my_products")}
+                      </Label>
+                    </div>
+                  </RadioGroup>
+                ) : null}
                 <div className="rfq_middle_top">
                   <div className="rfq_search">
                     <input
@@ -305,6 +335,7 @@ const FactoriesPage = () => {
                       placeholder={t("search_product")}
                       onChange={handleRfqDebounce}
                       ref={searchInputRef}
+                      defaultValue={searchParams?.term || ""}
                       dir={langDir}
                       translate="no"
                     />
@@ -323,23 +354,47 @@ const FactoriesPage = () => {
                     <div className="col-lg-12 products_sec_wrap">
                       <div className="products_sec_top">
                         <div className="products_sec_top_left">
-                          <h4 dir={langDir} translate="no">{t("trending_n_high_rate_product")}</h4>
+                          <h4 dir={langDir} translate="no">
+                            {t("trending_n_high_rate_product")}
+                          </h4>
                         </div>
                         <div className="products_sec_top_right">
+                          <div className="mr-2">
+                            {haveAccessToken ? (
+                              <>
+                                <Checkbox 
+                                  onClick={(e) => setDisplayRelatedProducts(!displayRelatedProducts)}
+                                />
+                                <label className="ml-2" translate="no" dir={langDir}>{t("recommended")}</label>
+                              </>
+                            ) : null}
+                          </div>
                           <div className="trending_filter">
                             <Select
                               onValueChange={(e: any) => setSortBy(e)}
                               defaultValue={sortBy}
                             >
                               <SelectTrigger className="custom-form-control-s1 bg-white">
-                                <SelectValue placeholder={t("sort_by")} dir={langDir} translate="no" />
+                                <SelectValue
+                                  placeholder={t("sort_by")}
+                                  dir={langDir}
+                                  translate="no"
+                                />
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectGroup>
-                                  <SelectItem value="newest" dir={langDir} translate="no">
+                                  <SelectItem
+                                    value="newest"
+                                    dir={langDir}
+                                    translate="no"
+                                  >
                                     {t("sort_by_latest")}
                                   </SelectItem>
-                                  <SelectItem value="oldest" dir={langDir} translate="no">
+                                  <SelectItem
+                                    value="oldest"
+                                    dir={langDir}
+                                    translate="no"
+                                  >
                                     {t("sort_by_oldest")}
                                   </SelectItem>
                                 </SelectGroup>
@@ -364,6 +419,15 @@ const FactoriesPage = () => {
                                   <ListIcon active={viewType === "list"} />
                                 </button>
                               </li>
+                              <li className="block md:hidden">
+                                <button
+                                  type="button"
+                                  className="view-type-btn"
+                                  onClick={() => setProductFilter(true)}
+                                >
+                                  <FilterMenuIcon />
+                                </button>
+                              </li>
                             </ul>
                           </div>
                         </div>
@@ -380,7 +444,11 @@ const FactoriesPage = () => {
 
                       {!factoriesProductsQuery?.data?.data?.length &&
                       !factoriesProductsQuery.isLoading ? (
-                        <p className="my-10 text-center text-sm font-medium" dir={langDir} translate="no">
+                        <p
+                          className="my-10 text-center text-sm font-medium"
+                          dir={langDir}
+                          translate="no"
+                        >
                           {t("no_data_found")}
                         </p>
                       ) : null}
@@ -388,6 +456,10 @@ const FactoriesPage = () => {
                       {viewType === "grid" ? (
                         <div className="product_sec_list">
                           {memoizedRfqProducts.map((item: any) => {
+                            const cartItem = cartList?.find(
+                              (el: any) => el.productId == item.id,
+                            );
+
                             return (
                               <FactoriesProductCard
                                 key={item.id}
@@ -398,18 +470,13 @@ const FactoriesPage = () => {
                                 productStatus={item?.status}
                                 productImages={item?.productImages}
                                 productVariants={
-                                  productVariants.find((variant: any) => variant.productId == item.id)?.object || []
+                                  productVariants.find(
+                                    (variant: any) =>
+                                      variant.productId == item.id,
+                                  )?.object || []
                                 }
-                                productQuantity={
-                                  cartList.find(
-                                    (el: any) => el.productId == item.id,
-                                  )?.quantity || 0
-                                }
-                                productVariant={
-                                  cartList.find(
-                                    (el: any) => el.productId == item.id,
-                                  )?.object
-                                }
+                                productQuantity={cartItem?.quantity || 0}
+                                productVariant={cartItem?.object}
                                 customizeProductId={
                                   factoriesCartList.find(
                                     (el: any) => el.productId == item.id,
@@ -425,15 +492,13 @@ const FactoriesPage = () => {
                                 isCreatedByMe={
                                   item?.userId === me.data?.data?.id
                                 }
-                                cartId={
-                                  cartList.find(
-                                    (el: any) => el.productId == item.id,
-                                  )?.id
-                                }
+                                cartId={cartItem?.id}
                                 isAddedToFactoryCart={
                                   factoriesCartList.find(
                                     (el: any) => el.productId == item.id,
-                                  ) ? true : false
+                                  )
+                                    ? true
+                                    : false
                                 }
                                 inWishlist={item?.product_wishlist?.find(
                                   (el: any) => el?.userId === me.data?.data?.id,
@@ -471,30 +536,44 @@ const FactoriesPage = () => {
                 onInitCart={setFactoriesCartList}
                 haveAccessToken={haveAccessToken}
               />
+              {/* <div className="product_cart_modal absolute right-[20px] top-[150px] w-full px-4 lg:w-[300px]">
+                <Cart 
+                  haveAccessToken={haveAccessToken}
+                  isLoadingCart={cartListByUser?.isLoading}
+                  cartItems={cartList}
+                />
+              </div> */}
             </div>
           </div>
         </div>
 
         {/* add to factories modal */}
-        {selectedCustomizedProduct?.id ? (<Dialog open={isAddToFactoryModalOpen} onOpenChange={handleToggleAddModal}>
-          <DialogContent
-            className="add-new-address-modal gap-0 p-0 md:!max-w-2xl"
-            ref={wrapperRef}
+        {selectedCustomizedProduct?.id ? (
+          <Dialog
+            open={isAddToFactoryModalOpen}
+            onOpenChange={handleToggleAddModal}
           >
-            <AddToCustomizeForm
-              selectedProductId={selectedCustomizedProduct?.id}
-              onClose={() => {
-                setIsAddToFactoryModalOpen(false);
-                setSelectedCustomizedProduct(undefined);
-              }}
-              onAddToFactory={() => {
-                // Refetch the listing API after a successful response
-                queryClient.invalidateQueries({ queryKey: ["factoriesProducts"], exact: false });
-              }}
-            />
-          </DialogContent>
-        </Dialog>) : null}
-
+            <DialogContent
+              className="add-new-address-modal gap-0 p-0 md:!max-w-2xl"
+              ref={wrapperRef}
+            >
+              <AddToCustomizeForm
+                selectedProductId={selectedCustomizedProduct?.id}
+                onClose={() => {
+                  setIsAddToFactoryModalOpen(false);
+                  setSelectedCustomizedProduct(undefined);
+                }}
+                onAddToFactory={() => {
+                  // Refetch the listing API after a successful response
+                  queryClient.invalidateQueries({
+                    queryKey: ["factoriesProducts"],
+                    exact: false,
+                  });
+                }}
+              />
+            </DialogContent>
+          </Dialog>
+        ) : null}
       </section>
       <Footer />
     </div>
