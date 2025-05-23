@@ -91,7 +91,16 @@ const ServiceDetailsPage = () => {
               : item,
           );
         }
-        return [...prev, { id, quantity: Math.max(1, quantity) }];
+        // return [...prev, { id, quantity: Math.max(1, quantity) }];
+        return [
+          ...prev,
+          {
+            id,
+            quantity: Math.max(1, quantity),
+            date: "", // or new Date() if you want to default to today
+            time: "",
+          },
+        ];
       } else {
         // Remove the feature if unchecked
         return prev.filter((item) => item.id !== id);
@@ -99,7 +108,13 @@ const ServiceDetailsPage = () => {
     });
     setIsUpdatingCart(true);
   };
-
+  const updateFeatureField = (id: number, field: string, value: any) => {
+    setSelectedFeatures((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, [field]: value } : item
+      )
+    );
+  };
   const updateQuantity = (id: number, quantity: number) => {
     setSelectedFeatures((prev) =>
       prev.map((item) =>
@@ -292,6 +307,12 @@ const ServiceDetailsPage = () => {
         return {
           serviceFeatureId: f.id,
           quantity: f.quantity,
+          bookingDateTime:
+            f.date && f.time
+              ? new Date(
+                `${f.date instanceof Date ? f.date.toISOString().split('T')[0] : f.date}T${f.time}:00Z`
+              ).toISOString()
+              : undefined,
         };
       }),
     };
@@ -456,6 +477,7 @@ const ServiceDetailsPage = () => {
             <ServiceDescriptionCard
               selectedFeatures={selectedFeatures}
               toggleFeature={toggleFeature}
+              updateFeatureField={updateFeatureField}
               decrementQuantity={decrementQuantity}
               incrementQuantity={incrementQuantity}
               updateQuantity={updateQuantity}
@@ -652,8 +674,8 @@ const ServiceDetailsPage = () => {
               </div>
               <div className="cart-item-lists">
                 {haveAccessToken &&
-                !cartListByUser.data?.data?.length &&
-                !cartListByUser.isLoading ? (
+                  !cartListByUser.data?.data?.length &&
+                  !cartListByUser.isLoading ? (
                   <div className="px-3 py-6">
                     <p
                       className="my-3 text-center"
@@ -666,8 +688,8 @@ const ServiceDetailsPage = () => {
                 ) : null}
 
                 {!haveAccessToken &&
-                !cartListByDeviceQuery.data?.data?.length &&
-                !cartListByDeviceQuery.isLoading ? (
+                  !cartListByDeviceQuery.data?.data?.length &&
+                  !cartListByDeviceQuery.isLoading ? (
                   <div className="px-3 py-6">
                     <p
                       className="my-3 text-center"

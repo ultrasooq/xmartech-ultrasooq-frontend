@@ -8,6 +8,7 @@ import SupportIcon from "@/public/images/support-24hr.svg";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 import moment from "moment";
+import { DatePicker, TimePicker } from "./service-features/CommanUtils";
 
 const ServiceDescriptionCard: React.FC<any> = ({
     selectedFeatures,
@@ -15,6 +16,7 @@ const ServiceDescriptionCard: React.FC<any> = ({
     incrementQuantity,
     updateQuantity,
     toggleFeature,
+    updateFeatureField,
     serviceDetails,
     productReview,
     isLoading,
@@ -136,6 +138,26 @@ const ServiceDescriptionCard: React.FC<any> = ({
                                                     >
                                                         +
                                                     </button>
+                                                    {/* Date Picker */}
+                                                    <div className="ml-4">
+                                                        <DatePicker
+                                                            selectedFeature={selectedFeature}
+                                                            updateFeatureField={updateFeatureField}
+                                                            feature={feature}
+                                                            langDir={langDir}
+                                                            t={t}
+                                                        />
+                                                    </div>
+                                                    {/* Time Picker */}
+                                                    <div className="ml-2">
+                                                        <TimePicker
+                                                            selectedFeature={selectedFeature}
+                                                            updateFeatureField={updateFeatureField}
+                                                            feature={feature}
+                                                            langDir={langDir}
+                                                            t={t}
+                                                        />
+                                                    </div>
                                                 </div>
                                             ) : null}
                                         </div>
