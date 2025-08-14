@@ -32,7 +32,7 @@ export const useCreateCompanyProfile = () => {
         queryKey: ["me"],
       });
       queryClient.invalidateQueries({
-        queryKey: ["unique-user"]
+        queryKey: ["unique-user"],
       });
     },
     onError: (err: APIResponseError) => {
@@ -53,12 +53,17 @@ export const useUpdateCompanyProfile = () => {
       return res.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["me"],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["unique-user"]
-      });
+      // Remove queries from cache completely
+      queryClient.removeQueries({ queryKey: ["me"] });
+      queryClient.removeQueries({ queryKey: ["unique-user"] });
+
+      // Then invalidate and force refetch
+      queryClient.invalidateQueries({ queryKey: ["me"] });
+      queryClient.invalidateQueries({ queryKey: ["unique-user"] });
+
+      // Force immediate refetch
+      queryClient.refetchQueries({ queryKey: ["me"] });
+      queryClient.refetchQueries({ queryKey: ["unique-user"] });
     },
     onError: (err: APIResponseError) => {
       console.log(err);
@@ -82,7 +87,7 @@ export const useUpdateCompanyBranch = () => {
         queryKey: ["me"],
       });
       queryClient.invalidateQueries({
-        queryKey: ["unique-user"]
+        queryKey: ["unique-user"],
       });
     },
     onError: (err: APIResponseError) => {
@@ -103,12 +108,21 @@ export const useCreateCompanyBranch = () => {
       return res.data;
     },
     onSuccess: () => {
+      // Remove queries from cache completely
+      queryClient.removeQueries({ queryKey: ["me"] });
+      queryClient.removeQueries({ queryKey: ["unique-user"] });
+
+      // Then invalidate and force refetch
       queryClient.invalidateQueries({
         queryKey: ["me"],
       });
       queryClient.invalidateQueries({
-        queryKey: ["unique-user"]
+        queryKey: ["unique-user"],
       });
+
+      // Force immediate refetch
+      queryClient.refetchQueries({ queryKey: ["me"] });
+      queryClient.refetchQueries({ queryKey: ["unique-user"] });
     },
     onError: (err: APIResponseError) => {
       console.log(err);

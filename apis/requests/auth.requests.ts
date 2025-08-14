@@ -3,21 +3,24 @@ import {
   IChangeEmailRequest,
   IChangeEmailVerifyRequest,
   IChangePasswordRequest,
+  ICreateAccountRequest,
   IForgotPasswordRequest,
   ILoginRequest,
   IPasswordResetVerifyOtpRequest,
   IRegisterRequest,
   IResendOtpRequest,
   IResetPasswordRequest,
+  ISwitchAccountRequest,
   IVerifyOtpRequest,
 } from "@/utils/types/auth.types";
 import axios from "axios";
 import { getCookie } from "cookies-next";
+import { getApiUrl } from "@/config/api";
 
 export const register = (payload: IRegisterRequest) => {
   return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/user/register`,
+    url: `${getApiUrl()}/user/register`,
     data: payload,
   });
 };
@@ -25,7 +28,7 @@ export const register = (payload: IRegisterRequest) => {
 export const verifyOtp = (payload: IVerifyOtpRequest) => {
   return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/user/registerValidateOtp`,
+    url: `${getApiUrl()}/user/registerValidateOtp`,
     data: payload,
   });
 };
@@ -33,7 +36,7 @@ export const verifyOtp = (payload: IVerifyOtpRequest) => {
 export const resendOtp = (payload: IResendOtpRequest) => {
   return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/user/resendOtp`,
+    url: `${getApiUrl()}/user/resendOtp`,
     data: payload,
   });
 };
@@ -41,7 +44,7 @@ export const resendOtp = (payload: IResendOtpRequest) => {
 export const login = (payload: ILoginRequest) => {
   return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/user/login`,
+    url: `${getApiUrl()}/user/login`,
     data: payload,
   });
 };
@@ -49,7 +52,7 @@ export const login = (payload: ILoginRequest) => {
 export const forgotPassword = (payload: IForgotPasswordRequest) => {
   return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/user/forgetPassword`,
+    url: `${getApiUrl()}/user/forgetPassword`,
     data: payload,
   });
 };
@@ -57,7 +60,7 @@ export const forgotPassword = (payload: IForgotPasswordRequest) => {
 export const resetPassword = (payload: IResetPasswordRequest) => {
   return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/user/resetPassword`,
+    url: `${getApiUrl()}/user/resetPassword`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -72,7 +75,7 @@ export const passwordResetVerify = (
 ) => {
   return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/user/verifyOtp`,
+    url: `${getApiUrl()}/user/verifyOtp`,
     data: payload,
   });
 };
@@ -80,7 +83,7 @@ export const passwordResetVerify = (
 export const changePassword = (payload: IChangePasswordRequest) => {
   return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/user/changePassword`,
+    url: `${getApiUrl()}/user/changePassword`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -93,7 +96,7 @@ export const changePassword = (payload: IChangePasswordRequest) => {
 export const changeEmail = (payload: IChangeEmailRequest) => {
   return axios({
     method: "PATCH",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/user/changeEmail`,
+    url: `${getApiUrl()}/user/changeEmail`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -106,7 +109,7 @@ export const changeEmail = (payload: IChangeEmailRequest) => {
 export const emailChangeVerify = (payload: IChangeEmailVerifyRequest) => {
   return axios({
     method: "PATCH",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/user/verifyEmail`,
+    url: `${getApiUrl()}/user/verifyEmail`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -119,7 +122,63 @@ export const emailChangeVerify = (payload: IChangeEmailVerifyRequest) => {
 export const socialLogin = (payload: any) => {
   return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/user/socialLogin`,
+    url: `${getApiUrl()}/user/socialLogin`,
     data: payload,
+  });
+};
+
+// Multi-Account System Requests
+export const myAccounts = () => {
+  return axios({
+    method: "GET",
+    url: `${getApiUrl()}/user/myAccounts`,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+      "Cache-Control": "no-cache",
+      Pragma: "no-cache",
+    },
+    params: {
+      _t: Date.now(), // Cache busting parameter
+    },
+  });
+};
+
+export const createAccount = (payload: ICreateAccountRequest) => {
+  return axios({
+    method: "POST",
+    url: `${getApiUrl()}/user/createAccount`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+export const switchAccount = (payload: ISwitchAccountRequest) => {
+  return axios({
+    method: "POST",
+    url: `${getApiUrl()}/user/switchAccount`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+export const currentAccount = () => {
+  return axios({
+    method: "GET",
+    url: `${getApiUrl()}/user/currentAccount`,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
   });
 };

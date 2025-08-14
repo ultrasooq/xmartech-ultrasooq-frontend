@@ -2,11 +2,12 @@ import axios from "axios";
 import { getCookie } from "cookies-next";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import urlcat from "urlcat";
+import { getApiUrl } from "@/config/api";
 
 export const fetchCartByUserId = (payload: { page: number; limit: number }) => {
   return axios({
     method: "GET",
-    url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/cart/list`, payload),
+    url: urlcat(`${getApiUrl()}/cart/list`, payload),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -22,14 +23,14 @@ export const fetchCartByDevice = (payload: {
 }) => {
   return axios({
     method: "GET",
-    url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/cart/listUnAuth`, payload),
+    url: urlcat(`${getApiUrl()}/cart/listUnAuth`, payload),
   });
 };
 
 export const updateCartWithLogin = (payload: any) => {
   return axios({
     method: "PATCH",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/cart/update`,
+    url: `${getApiUrl()}/cart/update`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -48,7 +49,7 @@ export const updateCartByDevice = (payload: {
 }) => {
   return axios({
     method: "PATCH",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/cart/updateUnAuth`,
+    url: `${getApiUrl()}/cart/updateUnAuth`,
     data: payload,
   });
 };
@@ -56,7 +57,7 @@ export const updateCartByDevice = (payload: {
 export const updateCartWithService = (payload: any) => {
   return axios({
     method: "PATCH",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/cart/updateservice/product`,
+    url: `${getApiUrl()}/cart/updateservice/product`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -69,7 +70,7 @@ export const updateCartWithService = (payload: any) => {
 export const deleteCartItem = (payload: { cartId: number }) => {
   return axios({
     method: "DELETE",
-    url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/cart/delete`, payload),
+    url: urlcat(`${getApiUrl()}/cart/delete`, payload),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -78,14 +79,17 @@ export const deleteCartItem = (payload: { cartId: number }) => {
   });
 };
 
-export const deleteServiceFromCart = (cartId: number, serviceFeatureId?: number) => {
+export const deleteServiceFromCart = (
+  cartId: number,
+  serviceFeatureId?: number,
+) => {
   let payload: any = {};
   if (serviceFeatureId) {
     payload.servicefeatureids = serviceFeatureId.toString();
   }
   return axios({
     method: "DELETE",
-    url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/cart/deleteService/${cartId}`, payload),
+    url: urlcat(`${getApiUrl()}/cart/deleteService/${cartId}`, payload),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -97,7 +101,7 @@ export const deleteServiceFromCart = (cartId: number, serviceFeatureId?: number)
 export const updateUserCartByDeviceId = (payload: { deviceId: string }) => {
   return axios({
     method: "PATCH",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/cart/updateUserIdBydeviceId`,
+    url: `${getApiUrl()}/cart/updateUserIdBydeviceId`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -110,7 +114,7 @@ export const updateUserCartByDeviceId = (payload: { deviceId: string }) => {
 export const fetchCartCountWithLogin = () => {
   return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/cart/cartCount`,
+    url: `${getApiUrl()}/cart/cartCount`,
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -122,15 +126,17 @@ export const fetchCartCountWithLogin = () => {
 export const fetchCartCountByDeviceId = (payload: { deviceId: string }) => {
   return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/cart/cartCountUnAuth`,
+    url: `${getApiUrl()}/cart/cartCountUnAuth`,
     data: payload,
   });
 };
 
-export const addServiceToCartWithProduct = (payload: {[key: string]: any}) => {
+export const addServiceToCartWithProduct = (payload: {
+  [key: string]: any;
+}) => {
   return axios({
     method: "PATCH",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/cart/updateCartServiceWithProduct`,
+    url: `${getApiUrl()}/cart/updateCartServiceWithProduct`,
     data: payload,
     headers: {
       "Content-Type": "application/json",

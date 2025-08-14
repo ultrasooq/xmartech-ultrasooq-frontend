@@ -3,11 +3,12 @@ import axios from "axios";
 import { getCookie } from "cookies-next";
 import { isEmpty } from "lodash";
 import urlcat from "urlcat";
+import { getApiUrl } from "@/config/api";
 
 export const fetchCategory = (payload: { categoryId?: string }) => {
   return axios({
     method: "GET",
-    url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/category/findOne`, payload),
+    url: urlcat(`${getApiUrl()}/category/findOne`, payload),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -21,7 +22,7 @@ export const fetchCategory = (payload: { categoryId?: string }) => {
 export const fetchCategories = () => {
   return axios({
     method: "GET",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/category/findAll?page=1&limit=10`,
+    url: `${getApiUrl()}/category/findAll?page=1&limit=10`,
   });
 };
 
@@ -34,7 +35,7 @@ export const fetchSubCategoriesById = (payload: { categoryId: string }) => {
 
   return axios({
     method: "GET",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/category/findOne?${query}`,
+    url: `${getApiUrl()}/category/findOne?${query}`,
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",

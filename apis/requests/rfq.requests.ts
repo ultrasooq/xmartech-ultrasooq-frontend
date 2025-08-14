@@ -2,7 +2,11 @@ import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import { getCookie } from "cookies-next";
 import axios from "axios";
 import urlcat from "urlcat";
-import { AddRfqQuotesRequest, AddFactoriesQuotesRequest } from "@/utils/types/rfq.types";
+import { getApiUrl } from "@/config/api";
+import {
+  AddRfqQuotesRequest,
+  AddFactoriesQuotesRequest,
+} from "@/utils/types/rfq.types";
 
 export const fetchRfqProducts = (payload: {
   page: number;
@@ -15,10 +19,7 @@ export const fetchRfqProducts = (payload: {
 }) => {
   return axios({
     method: "GET",
-    url: urlcat(
-      `${process.env.NEXT_PUBLIC_API_URL}/product/getAllRfqProduct`,
-      payload,
-    ),
+    url: urlcat(`${getApiUrl()}/product/getAllRfqProduct`, payload),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -44,10 +45,7 @@ export const fetchFactoriesProducts = (payload: {
   }
   return axios({
     method: "GET",
-    url: urlcat(
-      `${process.env.NEXT_PUBLIC_API_URL}/product/getAllFactoriesProduct`,
-      payload,
-    ),
+    url: urlcat(`${getApiUrl()}/product/getAllFactoriesProduct`, payload),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -68,7 +66,7 @@ export const fetchFactoriesProductsByUserBusinessCategory = (payload: {
   return axios({
     method: "GET",
     url: urlcat(
-      `${process.env.NEXT_PUBLIC_API_URL}/product/getAllFactoriesProductByUserBusinessCategory`,
+      `${getApiUrl()}/product/getAllFactoriesProductByUserBusinessCategory`,
       payload,
     ),
     headers: {
@@ -86,7 +84,7 @@ export const addRfqProduct = (payload: {
 }) => {
   return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/product/addRfqProduct`,
+    url: `${getApiUrl()}/product/addRfqProduct`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -104,7 +102,7 @@ export const updateRfqProduct = (payload: {
 }) => {
   return axios({
     method: "PATCH",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/product/editRfqProduct`,
+    url: `${getApiUrl()}/product/editRfqProduct`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -117,10 +115,7 @@ export const updateRfqProduct = (payload: {
 export const fetchRfqProductById = (payload: { rfqProductId: string }) => {
   return axios({
     method: "GET",
-    url: urlcat(
-      `${process.env.NEXT_PUBLIC_API_URL}/product/getOneRfqProduct`,
-      payload,
-    ),
+    url: urlcat(`${getApiUrl()}/product/getOneRfqProduct`, payload),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -135,7 +130,7 @@ export const fetchRfqCartByUserId = (payload: {
 }) => {
   return axios({
     method: "GET",
-    url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/cart/rfqCartlist`, payload),
+    url: urlcat(`${getApiUrl()}/cart/rfqCartlist`, payload),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -150,7 +145,7 @@ export const fetchFactoriesCartByUserId = (payload: {
 }) => {
   return axios({
     method: "GET",
-    url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/cart/getAllFactoriesCart`, payload),
+    url: urlcat(`${getApiUrl()}/cart/getAllFactoriesCart`, payload),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -168,7 +163,7 @@ export const updateRfqCartWithLogin = (payload: {
 }) => {
   return axios({
     method: "PATCH",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/cart/updateRfqCart`,
+    url: `${getApiUrl()}/cart/updateRfqCart`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -185,7 +180,7 @@ export const updateFactoriesCartWithLogin = (payload: {
 }) => {
   return axios({
     method: "PATCH",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/cart/updateFactoriesCart`,
+    url: `${getApiUrl()}/cart/updateFactoriesCart`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -195,12 +190,10 @@ export const updateFactoriesCartWithLogin = (payload: {
   });
 };
 
-export const addFactoriesProductApi = (payload: {
-  productId: number;
-}) => {
+export const addFactoriesProductApi = (payload: { productId: number }) => {
   return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/product/addProductDuplicateFactories`,
+    url: `${getApiUrl()}/product/addProductDuplicateFactories`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -214,11 +207,11 @@ export const addCustomizeProductApi = (payload: {
   productId: number;
   note: string;
   fromPrice: number;
-  toPrice: number
+  toPrice: number;
 }) => {
   return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/product/addCustomizeProduct`,
+    url: `${getApiUrl()}/product/addCustomizeProduct`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -231,10 +224,7 @@ export const addCustomizeProductApi = (payload: {
 export const deleteRfqCartItem = (payload: { rfqCartId: number }) => {
   return axios({
     method: "DELETE",
-    url: urlcat(
-      `${process.env.NEXT_PUBLIC_API_URL}/cart/rfqCartDelete`,
-      payload,
-    ),
+    url: urlcat(`${getApiUrl()}/cart/rfqCartDelete`, payload),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -243,13 +233,12 @@ export const deleteRfqCartItem = (payload: { rfqCartId: number }) => {
   });
 };
 
-export const deleteFactoriesCartItem = (payload: { factoriesCartId: number }) => {
+export const deleteFactoriesCartItem = (payload: {
+  factoriesCartId: number;
+}) => {
   return axios({
     method: "DELETE",
-    url: urlcat(
-      `${process.env.NEXT_PUBLIC_API_URL}/cart/deleteFactoriesCart`,
-      payload,
-    ),
+    url: urlcat(`${getApiUrl()}/cart/deleteFactoriesCart`, payload),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -264,10 +253,7 @@ export const fetchAllRfqQuotesByBuyerId = (payload: {
 }) => {
   return axios({
     method: "GET",
-    url: urlcat(
-      `${process.env.NEXT_PUBLIC_API_URL}/product/getAllRfqQuotesByBuyerID`,
-      payload,
-    ),
+    url: urlcat(`${getApiUrl()}/product/getAllRfqQuotesByBuyerID`, payload),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -284,7 +270,7 @@ export const fetchAllRfqQuotesUsersByBuyerId = (payload: {
   return axios({
     method: "GET",
     url: urlcat(
-      `${process.env.NEXT_PUBLIC_API_URL}/product/getAllRfqQuotesUsersByBuyerID`,
+      `${getApiUrl()}/product/getAllRfqQuotesUsersByBuyerID`,
       payload,
     ),
     headers: {
@@ -301,7 +287,7 @@ export const fetchOneRfqQuotesUsersByBuyerID = (payload: {
   return axios({
     method: "GET",
     url: urlcat(
-      `${process.env.NEXT_PUBLIC_API_URL}/product/getOneRfqQuotesUsersByBuyerID`,
+      `${getApiUrl()}/product/getOneRfqQuotesUsersByBuyerID`,
       payload,
     ),
     headers: {
@@ -319,7 +305,7 @@ export const fetchAllRfqQuotesUsersBySellerId = (payload: {
   return axios({
     method: "GET",
     url: urlcat(
-      `${process.env.NEXT_PUBLIC_API_URL}/product/getAllRfqQuotesUsersBySellerID`,
+      `${getApiUrl()}/product/getAllRfqQuotesUsersBySellerID`,
       payload,
     ),
     headers: {
@@ -333,7 +319,7 @@ export const fetchAllRfqQuotesUsersBySellerId = (payload: {
 export const addRfqQuotes = (payload: AddRfqQuotesRequest) => {
   return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/product/addRfqQuotes`,
+    url: `${getApiUrl()}/product/addRfqQuotes`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -346,7 +332,7 @@ export const addRfqQuotes = (payload: AddRfqQuotesRequest) => {
 export const addFactoriesQuotes = (payload: AddFactoriesQuotesRequest) => {
   return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/product/createFactoriesRequest`,
+    url: `${getApiUrl()}/product/createFactoriesRequest`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -359,7 +345,7 @@ export const addFactoriesQuotes = (payload: AddFactoriesQuotesRequest) => {
 export const addProductDuplicateRfq = (payload: { productId: number }) => {
   return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/product/addProductDuplicateRfq`,
+    url: `${getApiUrl()}/product/addProductDuplicateRfq`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -372,10 +358,7 @@ export const addProductDuplicateRfq = (payload: { productId: number }) => {
 export const deleteRfqQuote = (payload: { rfqQuotesId: number }) => {
   return axios({
     method: "DELETE",
-    url: urlcat(
-      `${process.env.NEXT_PUBLIC_API_URL}/product/deleteOneRfqQuote`,
-      payload,
-    ),
+    url: urlcat(`${getApiUrl()}/product/deleteOneRfqQuote`, payload),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",

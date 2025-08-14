@@ -27,6 +27,7 @@ import {
 import Image from "next/image";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMe } from "@/apis/queries/user.queries";
+import { useCurrentAccount } from "@/apis/queries/auth.queries";
 import { getInitials, getOrCreateDeviceId } from "@/utils/helper";
 import { useCategory } from "@/apis/queries/category.queries";
 import { Button } from "@/components/ui/button";
@@ -48,19 +49,23 @@ import { signOut } from "next-auth/react";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
+import { useSidebar } from "@/context/SidebarContext";
+import { MenuIcon } from "lucide-react";
 import { MdOutlineImageNotSupported } from "react-icons/md";
 import { useCategoryStore } from "@/lib/categoryStore";
 import GoogleTranslate from "@/components/GoogleTranslate";
 import { IoCloseOutline, IoCloseSharp } from "react-icons/io5";
-import { IoIosMenu } from "react-icons/io";
 import {
+  PERMISSION_DASHBOARD,
   PERMISSION_ORDERS,
   PERMISSION_PRODUCTS,
+  PERMISSION_SERVICES,
   PERMISSION_RFQ_QUOTES,
   PERMISSION_RFQ_SELLER_REQUESTS,
   PERMISSION_SELLER_REWARDS,
   PERMISSION_SHARE_LINKS,
   PERMISSION_TEAM_MEMBERS,
+  PERMISSION_MESSAGE_SYSTEM,
   getPermissions,
 } from "@/helpers/permission";
 import QueryForm from "@/components/modules/QueryForm";
@@ -116,6 +121,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
   const { toast } = useToast();
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { openSidebar } = useSidebar();
   const [menuId, setMenuId] = useState<string | number>();
   const [categoryId, setCategoryId] = useState();
   const [assignedToId, setAssignedToId] = useState();
@@ -134,11 +140,19 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
   );
   const category = useCategoryStore();
   const me = useMe(!!accessToken);
+  const currentAccount = useCurrentAccount();
   const categoryQuery = useCategory("7");
+  
   const subCategoryQuery = useCategory(
     PRODUCT_CATEGORY_ID.toString(), //categoryId ? categoryId : "",
     true, //!!categoryId,
   );
+
+  // Get the current active account's trade role
+  const currentTradeRole = currentAccount?.data?.data?.account?.tradeRole || me?.data?.data?.tradeRole;
+  console.log("Header - currentTradeRole:", currentTradeRole);
+  console.log("Header - currentAccount data:", currentAccount?.data?.data);
+  console.log("Header - me data:", me?.data?.data);
 
   const [searchTerm, setSearchTerm] = useState(searchParams?.get("term") || "");
 
@@ -179,8 +193,36 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
   };
 
   const memoizedInitials = useMemo(
-    () => getInitials(me.data?.data?.firstName, me.data?.data?.lastName),
-    [me.data?.data?.firstName, me.data?.data?.lastName],
+    () => {
+      let firstName, lastName;
+      
+      if (currentAccount?.data?.data?.isMainAccount) {
+        // Main account - get from currentAccount
+        const account = currentAccount.data.data.account;
+        if ('firstName' in account) {
+          firstName = account.firstName;
+          lastName = account.lastName;
+        }
+      } else if (currentAccount?.data?.data?.account) {
+        // Sub-account - use me data for user info
+        firstName = me.data?.data?.firstName;
+        lastName = me.data?.data?.lastName;
+      } else {
+        // Fallback to me data
+        firstName = me.data?.data?.firstName;
+        lastName = me.data?.data?.lastName;
+      }
+      
+      const initials = getInitials(firstName, lastName);
+      console.log("Header - memoizedInitials:", initials);
+      console.log("Header - currentAccount data:", currentAccount?.data?.data);
+      console.log("Header - me.data?.data:", me.data?.data);
+      console.log("Header - firstName:", firstName);
+      console.log("Header - lastName:", lastName);
+      console.log("Header - isMainAccount:", currentAccount?.data?.data?.isMainAccount);
+      return initials;
+    },
+    [currentAccount?.data?.data, me.data?.data?.firstName, me.data?.data?.lastName],
   );
 
   const memoizedMenu = useMemo(() => {
@@ -220,7 +262,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
   }, [subCategoryQuery.data?.data, categoryId]);
 
   const handleProfile = () => {
-    switch (me?.data?.data?.tradeRole) {
+    switch (currentTradeRole) {
       case "BUYER":
         return "/buyer-profile-details";
       case "FREELANCER":
@@ -350,7 +392,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
 
   const hideMenu = (permissionName: string): boolean => {
     if (
-      me?.data?.data?.tradeRole === "MEMBER" &&
+      currentTradeRole === "MEMBER" &&
       !permissions.includes(permissionName)
     ) {
       return false;
@@ -358,11 +400,92 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
     return true;
   };
 
+  // Dynamic header options based on current account role
+  const getRoleBasedHeaderOptions = () => {
+    switch (currentTradeRole) {
+      case "BUYER":
+        return (
+          <>
+            <li className="py-1.5 text-sm font-normal capitalize text-light-gray sm:text-base md:text-lg">
+              <Link href="/my-orders" className="text-light-gray" translate="no">
+                {t("my_orders")}
+              </Link>
+            </li>
+            <li className="py-1.5 text-sm font-normal capitalize text-light-gray sm:text-base md:text-lg">
+              <Link href="/wishlist" className="text-light-gray" translate="no">
+                {t("wishlist")}
+              </Link>
+            </li>
+            <li className="py-1.5 text-sm font-normal capitalize text-light-gray sm:text-base md:text-lg">
+              <Link href="/rfq-cart" className="text-light-gray" translate="no">
+                {t("rfq_cart")}
+              </Link>
+            </li>
+          </>
+        );
+      case "FREELANCER":
+        return (
+          <>
+            <li className="py-1.5 text-sm font-normal capitalize text-light-gray sm:text-base md:text-lg">
+              <Link href="/manage-services" className="text-light-gray" translate="no">
+                {t("my_services")}
+              </Link>
+            </li>
+            <li className="py-1.5 text-sm font-normal capitalize text-light-gray sm:text-base md:text-lg">
+              <Link href="/rfq-quotes" className="text-light-gray" translate="no">
+                {t("rfq_quotes")}
+              </Link>
+            </li>
+            <li className="py-1.5 text-sm font-normal capitalize text-light-gray sm:text-base md:text-lg">
+              <Link href="/seller-rewards" className="text-light-gray" translate="no">
+                {t("rewards")}
+              </Link>
+            </li>
+          </>
+        );
+      case "COMPANY":
+        return (
+          <>
+            <li className="py-1.5 text-sm font-normal capitalize text-light-gray sm:text-base md:text-lg">
+              <Link href="/manage-products" className="text-light-gray" translate="no">
+                {t("my_products")}
+              </Link>
+            </li>
+            <li className="py-1.5 text-sm font-normal capitalize text-light-gray sm:text-base md:text-lg">
+              <Link href="/seller-orders" className="text-light-gray" translate="no">
+                {t("orders")}
+              </Link>
+            </li>
+            <li className="py-1.5 text-sm font-normal capitalize text-light-gray sm:text-base md:text-lg">
+              <Link href="/rfq-seller-requests" className="text-light-gray" translate="no">
+                {t("rfq_requests")}
+              </Link>
+            </li>
+            <li className="py-1.5 text-sm font-normal capitalize text-light-gray sm:text-base md:text-lg">
+              <Link href="/seller-rewards" className="text-light-gray" translate="no">
+                {t("rewards")}
+              </Link>
+            </li>
+          </>
+        );
+      default:
+        return (
+          <>
+            <li className="py-1.5 text-sm font-normal capitalize text-light-gray sm:text-base md:text-lg">
+              <a href="#" className="text-light-gray" translate="no">
+                {t("buyer_central")}
+              </a>
+            </li>
+          </>
+        );
+    }
+  };
+
   return (
     <>
-      <header className="relative w-full">
+      <header className="relative w-full" key={`header-${currentTradeRole}-${currentAccount?.data?.data?.account?.id}`}>
         <div className="w-full bg-dark-cyan">
-          <div className="container m-auto px-3 pt-3">
+          <div className="container m-auto px-3 pt-5">
             <div className="hidden sm:hidden md:flex md:gap-x-2.5">
               <div className="py-4 text-sm font-normal text-white md:w-4/12 lg:w-4/12">
                 <p dir={langDir} translate="no">
@@ -371,14 +494,14 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
               </div>
               <div className="flex justify-end py-4 text-sm font-normal text-white md:w-8/12 lg:w-8/12">
                 <ul className="flex justify-end">
-                  {me?.data?.data?.tradeRole != "BUYER" ? (
+                  {currentTradeRole != "BUYER" ? (
                     <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
                       <a href="#" dir={langDir} translate="no">
                         {t("store_location")}
                       </a>
                     </li>
                   ) : null}
-                  {/* {me?.data?.data?.tradeRole === "BUYER" ? ( */}
+                  {/* {currentTradeRole === "BUYER" ? ( */}
                   <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
                     <Link href="/my-orders" dir={langDir} translate="no">
                       {t("track_your_order")}
@@ -478,10 +601,21 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
             </div>
 
             <div className="flex flex-wrap items-center">
-              <div className="order-1 !flex !w-5/12 flex-1 !items-center !py-4 md:!w-2/12 lg:!w-1/6">
-                <Link href="/home">
-                  <Image src={LogoIcon} alt="logo" />
-                </Link>
+              <div className="order-1 flex w-5/12 flex-1 items-center py-4 md:w-2/12 lg:w-1/6">
+                <div className="flex items-center">
+                  {isLoggedIn && (
+                    <button
+                      onClick={openSidebar}
+                      className="mr-3 flex h-8 w-8 items-center justify-center rounded hover:bg-gray-100 transition-colors"
+                      title="Open Menu"
+                    >
+                      <MenuIcon className="h-5 w-5 text-gray-700" />
+                    </button>
+                  )}
+                  <Link href="/home" className="flex items-center">
+                    <Image src={LogoIcon} alt="logo" />
+                  </Link>
+                </div>
               </div>
               <div className="order-3 flex w-[80%] items-center py-4 md:order-2 md:w-7/12 md:px-3 lg:w-4/6">
                 {/* <div className="h-11 w-24 md:w-24 lg:w-auto">
@@ -561,7 +695,8 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                   </li>
                   <li className="relative flex">
                     {isLoggedIn ? (
-                      <DropdownMenu>
+                      <div className="flex items-center gap-2">
+                        <DropdownMenu>
                         <DropdownMenuTrigger className="h-[44px] w-[44px]">
                           {me?.data?.data?.profilePicture ? (
                             <Image
@@ -589,8 +724,20 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                               {t("profile_information")}
                             </DropdownMenuItem>
                           </Link>
-                          {/* <DropdownMenuSeparator /> */}
-                          {me?.data?.data?.tradeRole !== "BUYER" ? (
+                          
+                          {/* Dashboard - Available for all logged-in users */}
+                          <Link href="/vendor-dashboard">
+                            <DropdownMenuItem
+                              className="cursor-pointer"
+                              dir={langDir}
+                              translate="no"
+                            >
+                              {t("dashboard")}
+                            </DropdownMenuItem>
+                          </Link>
+                          
+                          {/* Company-specific options */}
+                          {currentTradeRole !== "BUYER" ? (
                             <>
                               {hideMenu(PERMISSION_TEAM_MEMBERS) ? (
                                 <Link href="/team-members">
@@ -602,6 +749,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                                   </DropdownMenuItem>
                                 </Link>
                               ) : null}
+                              
                               {hideMenu(PERMISSION_PRODUCTS) ? (
                                 <Link href="/manage-products">
                                   <DropdownMenuItem
@@ -612,7 +760,8 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                                   </DropdownMenuItem>
                                 </Link>
                               ) : null}
-                              {hideMenu(PERMISSION_PRODUCTS) ? (
+                              
+                              {hideMenu(PERMISSION_SERVICES) ? (
                                 <Link href="/manage-services">
                                   <DropdownMenuItem
                                     dir={langDir}
@@ -622,7 +771,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                                   </DropdownMenuItem>
                                 </Link>
                               ) : null}
-                              {/* <DropdownMenuSeparator /> */}
+                              
                               {hideMenu(PERMISSION_ORDERS) ? (
                                 <Link href="/seller-orders">
                                   <DropdownMenuItem
@@ -633,7 +782,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                                   </DropdownMenuItem>
                                 </Link>
                               ) : null}
-                              {/* <DropdownMenuSeparator /> */}
+                              
                               {hideMenu(PERMISSION_RFQ_QUOTES) ? (
                                 <Link href="/rfq-quotes">
                                   <DropdownMenuItem
@@ -644,7 +793,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                                   </DropdownMenuItem>
                                 </Link>
                               ) : null}
-                              {/* <DropdownMenuSeparator /> */}
+                              
                               {hideMenu(PERMISSION_RFQ_SELLER_REQUESTS) ? (
                                 <Link href="/seller-rfq-request">
                                   <DropdownMenuItem
@@ -655,6 +804,18 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                                   </DropdownMenuItem>
                                 </Link>
                               ) : null}
+                              
+                              {hideMenu(PERMISSION_MESSAGE_SYSTEM) ? (
+                                <Link href="/seller-rfq-request">
+                                  <DropdownMenuItem
+                                    dir={langDir}
+                                    translate="no"
+                                  >
+                                    {t("Message System")}
+                                  </DropdownMenuItem>
+                                </Link>
+                              ) : null}
+                              
                               {hideMenu(PERMISSION_SELLER_REWARDS) ? (
                                 <Link href="/seller-rewards">
                                   <DropdownMenuItem
@@ -665,9 +826,9 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                                   </DropdownMenuItem>
                                 </Link>
                               ) : null}
-                              {/* <DropdownMenuSeparator /> */}
                             </>
                           ) : null}
+                          
                           {hideMenu(PERMISSION_SHARE_LINKS) ? (
                             <Link href="/share-links">
                               <DropdownMenuItem dir={langDir} translate="no">
@@ -675,23 +836,29 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                               </DropdownMenuItem>
                             </Link>
                           ) : null}
+                          
                           <Link href="/my-settings/address">
                             <DropdownMenuItem dir={langDir} translate="no">
                               {t("my_settings")}
                             </DropdownMenuItem>
                           </Link>
+                          
                           <Link href="/transactions">
                             <DropdownMenuItem dir={langDir} translate="no">
                               {t("transactions")}
                             </DropdownMenuItem>
                           </Link>
+                          
                           <Link href="/queries">
-                            <DropdownMenuItem dir={langDir} translate="no">
+                            <DropdownMenuItem
+                              dir={langDir} translate="no"
+                            >
                               {t("queries")}
                             </DropdownMenuItem>
                           </Link>
+                          
                           <DropdownMenuSeparator />
-                          {/* <DropdownMenuSeparator /> */}
+                          
                           <DropdownMenuItem
                             onClick={handleLogout}
                             className="cursor-pointer"
@@ -702,6 +869,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
+                      </div>
                     ) : (
                       <div dir={langDir}>
                         <Image
@@ -733,12 +901,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                   </li>
                 </ul>
               </div>
-              <div
-                className="humberger sm:w-7/12md:w-3/12 flex w-[20%] justify-end md:py-4 lg:w-1/6"
-                onClick={handleClick}
-              >
-                <IoIosMenu />
-              </div>
+
             </div>
 
             <div
@@ -813,7 +976,8 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                                 ? "/factories"
                                 : item.name.toLowerCase().includes("service")
                                   ? "/services"
-                                  : item.name
+                                  : item
+                                        .name
                                         .toLowerCase()
                                         .includes("buy group")
                                     ? "/buygroup"
@@ -1117,11 +1281,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
 
               <div className="flex w-full items-center justify-end md:w-auto">
                 <ul className="flex items-center justify-end gap-x-4">
-                  <li className="py-1.5 text-sm font-normal capitalize text-light-gray sm:text-base md:text-lg">
-                    <a href="#" className="text-light-gray" translate="no">
-                      {t("buyer_central")}
-                    </a>
-                  </li>
+                  {getRoleBasedHeaderOptions()}
                   <li className="py-1.5 text-sm font-normal capitalize text-light-gray sm:text-base md:text-lg">
                     <a
                       href="#"

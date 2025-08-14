@@ -21,12 +21,17 @@ export const useUpdateProfile = () => {
       return res.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["me"],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["unique-user"]
-      });
+      // Remove queries from cache completely
+      queryClient.removeQueries({ queryKey: ["me"] });
+      queryClient.removeQueries({ queryKey: ["unique-user"] });
+
+      // Then invalidate and force refetch
+      queryClient.invalidateQueries({ queryKey: ["me"] });
+      queryClient.invalidateQueries({ queryKey: ["unique-user"] });
+
+      // Force immediate refetch
+      queryClient.refetchQueries({ queryKey: ["me"] });
+      queryClient.refetchQueries({ queryKey: ["unique-user"] });
     },
     onError: (err: APIResponseError) => {
       console.log(err);
@@ -39,9 +44,15 @@ export const useMe = (enabled = true) =>
     queryKey: ["me"],
     queryFn: async () => {
       const res = await fetchMe();
+      console.log("fetchMe response:", res.data); // Debug log
       return res.data;
     },
     enabled,
+    staleTime: 0, // Data is always considered stale
+    gcTime: 0, // Don't cache the data
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    refetchInterval: false,
   });
 
 export const useUniqueUser = (
@@ -55,6 +66,10 @@ export const useUniqueUser = (
       return res.data;
     },
     enabled,
+    staleTime: 0, // Data is always considered stale
+    gcTime: 0, // Don't cache the data
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   });
 
 export const useUserBusinessCategories = (enabled = true) =>

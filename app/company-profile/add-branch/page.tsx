@@ -251,7 +251,8 @@ const AddBranchPage = () => {
         variant: "success",
       });
       form.reset();
-      router.push("/company-profile-details");
+      // Force a full page reload to ensure fresh data is fetched
+      window.location.href = "/company-profile-details";
     } else {
       toast({
         title: t("branch_add_failed"),

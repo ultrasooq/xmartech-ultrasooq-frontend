@@ -6,6 +6,7 @@ import {
   AddressCreateRequest,
   AddressUpdateRequest,
 } from "@/utils/types/address.types";
+import { getApiUrl } from "@/config/api";
 
 export const fetchAllUserAddress = (payload: {
   page: number;
@@ -13,10 +14,7 @@ export const fetchAllUserAddress = (payload: {
 }) => {
   return axios({
     method: "GET",
-    url: urlcat(
-      `${process.env.NEXT_PUBLIC_API_URL}/user/getAllUserAddress`,
-      payload,
-    ),
+    url: urlcat(`${getApiUrl()}/user/getAllUserAddress`, payload),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -28,7 +26,7 @@ export const fetchAllUserAddress = (payload: {
 export const addAddress = (payload: AddressCreateRequest) => {
   return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/user/addUserAddress`,
+    url: `${getApiUrl()}/user/addUserAddress`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -41,7 +39,7 @@ export const addAddress = (payload: AddressCreateRequest) => {
 export const updateAddress = (payload: AddressUpdateRequest) => {
   return axios({
     method: "PATCH",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/user/updateUserAddress`,
+    url: `${getApiUrl()}/user/updateUserAddress`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -54,10 +52,7 @@ export const updateAddress = (payload: AddressUpdateRequest) => {
 export const fetchAddressById = (payload: { userAddressId: string }) => {
   return axios({
     method: "GET",
-    url: urlcat(
-      `${process.env.NEXT_PUBLIC_API_URL}/user/getOneUserAddress`,
-      payload,
-    ),
+    url: urlcat(`${getApiUrl()}/user/getOneUserAddress`, payload),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -69,10 +64,7 @@ export const fetchAddressById = (payload: { userAddressId: string }) => {
 export const deleteAddress = (payload: { userAddressId: number }) => {
   return axios({
     method: "DELETE",
-    url: urlcat(
-      `${process.env.NEXT_PUBLIC_API_URL}/user/deleteUserAddress`,
-      payload,
-    ),
+    url: urlcat(`${getApiUrl()}/user/deleteUserAddress`, payload),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",

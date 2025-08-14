@@ -47,7 +47,6 @@ const InformationSection: React.FC<InformationSectionProps> = ({
         </h2>
         <div className="w-auto">
           <Link
-            // href="/profile"
             href={`/company-profile/edit-profile?userId=${userDetails?.id}`}
             className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
             dir={langDir}
@@ -64,6 +63,8 @@ const InformationSection: React.FC<InformationSectionProps> = ({
           </Link>
         </div>
       </div>
+      
+      {/* Registration Address Section */}
       <div className="w-full">
         <div className="w-full">
           <div className="mb-4 w-full">
@@ -109,7 +110,7 @@ const InformationSection: React.FC<InformationSectionProps> = ({
                 </div>
                 <div className="mr-1 flex w-8/12  items-center justify-start sm:mr-0">
                   <div className="flex gap-x-3 text-base font-medium capitalize leading-4 text-color-dark" dir={langDir}>
-                    {getSocialLinks}
+                    {getSocialLinks || "N/A"}
                   </div>
                 </div>
               </div>

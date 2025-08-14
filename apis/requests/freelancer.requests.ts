@@ -2,11 +2,12 @@ import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import { IFreelancerStatusRequest } from "@/utils/types/user.types";
 import axios from "axios";
 import { getCookie } from "cookies-next";
+import { getApiUrl } from "@/config/api";
 
 export const createFreelancerProfile = (payload: any) => {
   return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/user/userProfile`,
+    url: `${getApiUrl()}/user/userProfile`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -19,7 +20,7 @@ export const createFreelancerProfile = (payload: any) => {
 export const updateFreelancerProfile = (payload: any) => {
   return axios({
     method: "PATCH",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/user/updateUserProfile`,
+    url: `${getApiUrl()}/user/updateUserProfile`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -32,7 +33,7 @@ export const updateFreelancerProfile = (payload: any) => {
 export const updateFreelancerBranch = (payload: any) => {
   return axios({
     method: "PATCH",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/user/updateBranch`,
+    url: `${getApiUrl()}/user/updateBranch`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -47,7 +48,7 @@ export const updateFreelancerActiveStatus = (
 ) => {
   return axios({
     method: "PATCH",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/user/onlineoffline`,
+    url: `${getApiUrl()}/user/onlineoffline`,
     data: payload,
     headers: {
       "Content-Type": "application/json",

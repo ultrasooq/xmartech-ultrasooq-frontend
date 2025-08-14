@@ -2,6 +2,7 @@ import axios from "axios";
 import { getCookie } from "cookies-next";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import urlcat from "urlcat";
+import { getApiUrl } from "@/config/api";
 
 export const fetchQuestions = (payload: {
   page: number;
@@ -12,10 +13,7 @@ export const fetchQuestions = (payload: {
 }) => {
   return axios({
     method: "GET",
-    url: urlcat(
-      `${process.env.NEXT_PUBLIC_API_URL}/product/getAllQuestion`,
-      payload,
-    ),
+    url: urlcat(`${getApiUrl()}/product/getAllQuestion`, payload),
   });
 };
 
@@ -25,7 +23,7 @@ export const addQuestion = (payload: {
 }) => {
   return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/product/askQuestion`,
+    url: `${getApiUrl()}/product/askQuestion`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -41,7 +39,7 @@ export const updateAnswer = (payload: {
 }) => {
   return axios({
     method: "PATCH",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/product/giveAnswer`,
+    url: `${getApiUrl()}/product/giveAnswer`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -60,10 +58,7 @@ export const fetchServiceQuestions = (payload: {
 }) => {
   return axios({
     method: "GET",
-    url: urlcat(
-      `${process.env.NEXT_PUBLIC_API_URL}/service/getAllQuestion`,
-      payload,
-    ),
+    url: urlcat(`${getApiUrl()}/service/getAllQuestion`, payload),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -78,7 +73,7 @@ export const addServiceQuestion = (payload: {
 }) => {
   return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/service/ask-question`,
+    url: `${getApiUrl()}/service/ask-question`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -95,7 +90,7 @@ export const updateServiceAnswer = (payload: {
 }) => {
   return axios({
     method: "PATCH",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/service/giveAnswer`,
+    url: `${getApiUrl()}/service/giveAnswer`,
     data: payload,
     headers: {
       "Content-Type": "application/json",

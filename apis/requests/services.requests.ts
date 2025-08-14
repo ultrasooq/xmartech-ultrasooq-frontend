@@ -2,13 +2,13 @@ import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import { getCookie } from "cookies-next";
 import axios from "axios";
 import urlcat from "urlcat";
-import {
-} from "@/utils/types/product.types";
+import { getApiUrl } from "@/config/api";
+import {} from "@/utils/types/product.types";
 
 export const createService = (payload: any) => {
   return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/service/create`,
+    url: `${getApiUrl()}/service/create`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -21,7 +21,7 @@ export const createService = (payload: any) => {
 export const updateService = (payload: any) => {
   return axios({
     method: "PATCH",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/service/${payload?.serviceId}`,
+    url: `${getApiUrl()}/service/${payload?.serviceId}`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -31,10 +31,17 @@ export const updateService = (payload: any) => {
   });
 };
 
-export const fetchAllServices = (payload: { page: number; limit: number; term?: string; sort?: string; userId?: number; ownService?: boolean }) => {
+export const fetchAllServices = (payload: {
+  page: number;
+  limit: number;
+  term?: string;
+  sort?: string;
+  userId?: number;
+  ownService?: boolean;
+}) => {
   return axios({
     method: "GET",
-    url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/service/list`, payload),
+    url: urlcat(`${getApiUrl()}/service/list`, payload),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -50,7 +57,7 @@ export const fetchServiceById = (payload: {
 }) => {
   return axios({
     method: "GET",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/service/${payload.serviceid}`,
+    url: `${getApiUrl()}/service/${payload.serviceid}`,
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -62,7 +69,7 @@ export const fetchServiceById = (payload: {
 export const addServiceToCart = (payload: any) => {
   return axios({
     method: "PATCH",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/cart/updateservice`,
+    url: `${getApiUrl()}/cart/updateservice`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -77,11 +84,11 @@ export const fetchServicesBySeller = (payload: {
   limit: number;
   sellerId: number;
   fromCityId?: number;
-  toCityId?: number
+  toCityId?: number;
 }) => {
   return axios({
     method: "GET",
-    url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/service/getAllServiceBySeller`, payload),
+    url: urlcat(`${getApiUrl()}/service/getAllServiceBySeller`, payload),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -95,11 +102,11 @@ export const fetchServicesByOtherSeller = (payload: {
   limit: number;
   sellerId: number;
   fromCityId?: number;
-  toCityId?: number
+  toCityId?: number;
 }) => {
   return axios({
     method: "GET",
-    url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/service/getAllServiceOfOtherSeller`, payload),
+    url: urlcat(`${getApiUrl()}/service/getAllServiceOfOtherSeller`, payload),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -115,11 +122,14 @@ export const fetchServicesByProductCategory = (payload: {
 }) => {
   return axios({
     method: "GET",
-    url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/service/getAllServiceRelatedProductCategoryId`, payload),
+    url: urlcat(
+      `${getApiUrl()}/service/getAllServiceRelatedProductCategoryId`,
+      payload,
+    ),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
       Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
     },
   });
-}
+};

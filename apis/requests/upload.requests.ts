@@ -1,11 +1,12 @@
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import axios from "axios";
 import { getCookie } from "cookies-next";
+import { getApiUrl } from "@/config/api";
 
 export const uploadFile = (payload: any) => {
   return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/user/presignedUrlUpload`,
+    url: `${getApiUrl()}/user/presignedUrlUpload`,
     data: payload,
     headers: {
       "Content-Type": "multipart/form-data",
@@ -18,7 +19,7 @@ export const uploadFile = (payload: any) => {
 export const uploadMultipleFile = (payload: any) => {
   return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/user/presignedUrlUploadMultiple`,
+    url: `${getApiUrl()}/user/presignedUrlUploadMultiple`,
     data: payload,
     headers: {
       "Content-Type": "multipart/form-data",
@@ -31,7 +32,7 @@ export const uploadMultipleFile = (payload: any) => {
 export const deleteFile = (payload: any) => {
   return axios({
     method: "DELETE",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/user/presignedUrlDelete`,
+    url: `${getApiUrl()}/user/presignedUrlDelete`,
     data: payload,
     headers: {
       "Content-Type": "application/json",

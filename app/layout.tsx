@@ -14,9 +14,10 @@ import { AuthProvider } from "@/context/AuthContext";
 import { SocketProvider } from "@/context/SocketContext";
 import { NextIntlClientProvider } from 'next-intl';
 import { useEffect, useState } from "react";
-import { getLocale } from "next-intl/server";
+import { getLocale, getMessages } from "next-intl/server";
 import { getUserLocale } from "@/src/services/locale";
 import DisableRouteAnnouncer from "@/components/DisableRouteAnnouncer";
+import { SidebarProvider } from "@/context/SidebarContext";
 
 export const metadata: Metadata = {
   title: {
@@ -89,6 +90,7 @@ export default async function RootLayout({
   const permissions = await getUserPermissions();
 
   const locale = await getLocale();
+  const messages = await getMessages();
 
   return (
     <SessionWrapper>
@@ -102,15 +104,17 @@ export default async function RootLayout({
               locale={locale}
             >
               <SocketProvider>
-                <main className="overflow-x-visible">
-                  <NextIntlClientProvider>
-                    <Sidebar />
-                    <Header locale={locale} />
-                    <NextTopLoader color="#DB2302" showSpinner={false} />
-                    {children}
-                    <Toaster />
-                  </NextIntlClientProvider>
-                </main>
+                <SidebarProvider>
+                  <main className="overflow-x-visible">
+                    <NextIntlClientProvider messages={messages}>
+                      <Sidebar />
+                      <Header locale={locale} />
+                      <NextTopLoader color="#DB2302" showSpinner={false} />
+                      {children}
+                      <Toaster />
+                    </NextIntlClientProvider>
+                  </main>
+                </SidebarProvider>
               </SocketProvider>
             </AuthProvider>
           </ReactQueryProvider>

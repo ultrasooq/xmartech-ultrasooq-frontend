@@ -2,14 +2,12 @@ import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import { getCookie } from "cookies-next";
 import axios from "axios";
 import urlcat from "urlcat";
+import { getApiUrl } from "@/config/api";
 
 export const fetchWishList = (payload: { page: number; limit: number }) => {
   return axios({
     method: "GET",
-    url: urlcat(
-      `${process.env.NEXT_PUBLIC_API_URL}/wishlist/getAllWishListByUser`,
-      payload,
-    ),
+    url: urlcat(`${getApiUrl()}/wishlist/getAllWishListByUser`, payload),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -21,7 +19,7 @@ export const fetchWishList = (payload: { page: number; limit: number }) => {
 export const addToWishList = (payload: { productId: number }) => {
   return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/wishlist/create`,
+    url: `${getApiUrl()}/wishlist/create`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -34,7 +32,7 @@ export const addToWishList = (payload: { productId: number }) => {
 export const deleteFromWishList = (payload: { productId: number }) => {
   return axios({
     method: "DELETE",
-    url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/wishlist/delete`, payload),
+    url: urlcat(`${getApiUrl()}/wishlist/delete`, payload),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -46,7 +44,7 @@ export const deleteFromWishList = (payload: { productId: number }) => {
 export const fetchWishlistCount = () => {
   return axios({
     method: "GET",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/wishlist/wishlistCount`,
+    url: `${getApiUrl()}/wishlist/wishlistCount`,
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",

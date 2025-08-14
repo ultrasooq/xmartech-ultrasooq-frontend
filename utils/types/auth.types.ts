@@ -113,3 +113,102 @@ export interface IChangeEmailVerify {
   message: string;
   status: boolean;
 }
+
+// Multi-Account System Types
+export interface IUserAccount {
+  id: number;
+  userId: number;
+  tradeRole: "BUYER" | "COMPANY" | "FREELANCER";
+  accountName: string;
+  isActive: boolean;
+  isCurrent: boolean;
+  createdAt: string;
+  updatedAt: string;
+  isCurrentAccount?: boolean;
+
+  // Company-specific fields
+  companyName?: string;
+  companyAddress?: string;
+  companyPhone?: string;
+  companyWebsite?: string;
+  companyTaxId?: string;
+
+  // Account statistics and status
+  messages?: number;
+  orders?: number;
+  rfq?: number;
+  tracking?: number;
+  status?: "active" | "bended" | "inactive";
+}
+
+export interface IMainAccount {
+  id: number;
+  email: string;
+  firstName: string;
+  lastName: string;
+  tradeRole: "BUYER" | "COMPANY" | "FREELANCER";
+  accountName: string;
+  isMainAccount: boolean;
+  isCurrentAccount?: boolean;
+
+  // Account statistics and status
+  messages?: number;
+  orders?: number;
+  rfq?: number;
+  tracking?: number;
+  status?: "active" | "bended" | "inactive";
+}
+
+export interface ICreateAccountRequest {
+  tradeRole: "COMPANY" | "FREELANCER"; // BUYER is not allowed for sub-accounts
+  accountName: string;
+
+  // Company-specific fields
+  companyName?: string;
+  companyAddress?: string;
+  companyPhone?: string;
+  companyWebsite?: string;
+  companyTaxId?: string;
+}
+
+export interface ICreateAccount {
+  message: string;
+  status: boolean;
+  data: IUserAccount;
+}
+
+export interface IMyAccounts {
+  message: string;
+  status: boolean;
+  data: {
+    mainAccount: IMainAccount;
+    accountsByType: {
+      company: IUserAccount[];
+      buyer: IUserAccount[];
+      freelancer: IUserAccount[];
+    };
+    allAccounts: IUserAccount[];
+  };
+}
+
+export interface ISwitchAccountRequest {
+  userAccountId: number; // 0 for main account, >0 for sub-accounts
+}
+
+export interface ISwitchAccount {
+  message: string;
+  status: boolean;
+  data: {
+    accessToken: string;
+    account: IUserAccount | IMainAccount;
+  };
+}
+
+export interface ICurrentAccount {
+  message: string;
+  status: boolean;
+  data: {
+    account: IUserAccount | IMainAccount;
+    isMainAccount: boolean;
+  };
+}

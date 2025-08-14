@@ -1,11 +1,12 @@
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import axios from "axios";
 import { getCookie } from "cookies-next";
+import { getApiUrl } from "@/config/api";
 
 export const updateUserProfile = (payload: any) => {
   return axios({
     method: "PATCH",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/user/updateProfile`,
+    url: `${getApiUrl()}/user/updateProfile`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -18,7 +19,7 @@ export const updateUserProfile = (payload: any) => {
 export const fetchMe = () => {
   return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/user/me`,
+    url: `${getApiUrl()}/user/me`,
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -30,7 +31,7 @@ export const fetchMe = () => {
 export const fetchUniqueUser = (payload: { userId: number | undefined }) => {
   return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/user/findUnique`,
+    url: `${getApiUrl()}/user/findUnique`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -43,7 +44,7 @@ export const fetchUniqueUser = (payload: { userId: number | undefined }) => {
 export const fetchUserPermissions = () => {
   return axios({
     method: "GET",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/user/get-perrmision`,
+    url: `${getApiUrl()}/user/get-perrmision`,
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -55,7 +56,7 @@ export const fetchUserPermissions = () => {
 export const fetchUserBusinessCategories = () => {
   return axios({
     method: "GET",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/user/bussiness-category/get-all`,
+    url: `${getApiUrl()}/user/bussiness-category/get-all`,
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",

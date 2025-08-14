@@ -1,5 +1,6 @@
 "use client";
 import { useMe, useUpdateProfile } from "@/apis/queries/user.queries";
+import { useCurrentAccount } from "@/apis/queries/auth.queries";
 import React, { useState } from "react";
 import Image from "next/image";
 import ProfileCard from "@/components/modules/buyerProfileDetails/ProfileCard";
@@ -32,8 +33,36 @@ const BuyerProfileDetailsPage = () => {
   };
 
   const me = useMe();
+  const currentAccount = useCurrentAccount();
   const updateProfile = useUpdateProfile();
   const handleTradeRole = (role: "COMPANY" | "FREELANCER") => setRole(role);
+
+  // Get the current account data
+  const currentAccountData = currentAccount?.data?.data?.account;
+  const currentTradeRole = currentAccountData?.tradeRole;
+
+  // Redirect if user is not on a BUYER account
+  React.useEffect(() => {
+    if (currentTradeRole && currentTradeRole !== 'BUYER') {
+      if (currentTradeRole === 'FREELANCER') {
+        router.replace("/freelancer-profile");
+      } else if (currentTradeRole === 'COMPANY') {
+        router.replace("/company-profile");
+      }
+    }
+  }, [currentTradeRole, router]);
+
+  // Show loading while account data is being fetched
+  if (currentAccount.isLoading || !currentTradeRole) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900 mx-auto"></div>
+          <p className="mt-4 text-lg">Loading account information...</p>
+        </div>
+      </div>
+    );
+  }
 
   const onSubmit = async () => {
     if (!role) return;
@@ -105,7 +134,7 @@ const BuyerProfileDetailsPage = () => {
                 {t("update")}
               </button>
             </div>
-            <ProfileCard userDetails={me.data?.data} />
+            <ProfileCard userDetails={currentAccountData || me.data?.data} />
             <div className="mt-12 w-full">
               <Tabs defaultValue="profile-info">
                 <TabsList className="mb-1 grid min-h-[80px] w-[560px] max-w-full grid-cols-3 gap-x-6 rounded-none bg-transparent px-0 pt-7">
@@ -120,7 +149,7 @@ const BuyerProfileDetailsPage = () => {
                 </TabsList>
                 <TabsContent value="profile-info" className="mt-0">
                   <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white p-4 shadow-md sm:px-6 sm:pb-4 sm:pt-8 md:px-9 md:pb-7 md:pt-12">
-                    <InformationSection userDetails={me.data?.data} />
+                    <InformationSection userDetails={currentAccountData || me.data?.data} />
                   </div>
                 </TabsContent>
               </Tabs>

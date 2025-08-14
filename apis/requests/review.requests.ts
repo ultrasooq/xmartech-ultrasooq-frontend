@@ -2,6 +2,7 @@ import axios from "axios";
 import { getCookie } from "cookies-next";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import urlcat from "urlcat";
+import { getApiUrl } from "@/config/api";
 
 export const fetchReviews = (payload: {
   page: number;
@@ -11,10 +12,7 @@ export const fetchReviews = (payload: {
 }) => {
   return axios({
     method: "GET",
-    url: urlcat(
-      `${process.env.NEXT_PUBLIC_API_URL}/product/getAllProductReview`,
-      payload,
-    ),
+    url: urlcat(`${getApiUrl()}/product/getAllProductReview`, payload),
   });
 };
 
@@ -26,7 +24,7 @@ export const addReview = (payload: {
 }) => {
   return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/product/addProductReview`,
+    url: `${getApiUrl()}/product/addProductReview`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -44,7 +42,7 @@ export const updateReview = (payload: {
 }) => {
   return axios({
     method: "PATCH",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/product/editProductReview`,
+    url: `${getApiUrl()}/product/editProductReview`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -57,10 +55,7 @@ export const updateReview = (payload: {
 export const fetchReviewById = (payload: { productReviewId: number }) => {
   return axios({
     method: "GET",
-    url: urlcat(
-      `${process.env.NEXT_PUBLIC_API_URL}/product/getOneProductReview`,
-      payload,
-    ),
+    url: urlcat(`${getApiUrl()}/product/getOneProductReview`, payload),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -77,7 +72,7 @@ export const fetchReviewById = (payload: { productReviewId: number }) => {
 //   return axios({
 //     method: "GET",
 //     url: urlcat(
-//       `${process.env.NEXT_PUBLIC_API_URL}/product/getAllProductReviewBySellerId`,
+//       `${getApiUrl()}/product/getAllProductReviewBySellerId`,
 //       payload,
 //     ),
 //     headers: {
@@ -98,7 +93,7 @@ export const addSellerReview = (payload: {
 }) => {
   return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/product/addProductPriceReview`,
+    url: `${getApiUrl()}/product/addProductPriceReview`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -116,7 +111,7 @@ export const updateSellerReview = (payload: {
 }) => {
   return axios({
     method: "PATCH",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/product/updateOneProductPriceReview`,
+    url: `${getApiUrl()}/product/updateOneProductPriceReview`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -131,10 +126,7 @@ export const fetchSellerReviewById = (payload: {
 }) => {
   return axios({
     method: "GET",
-    url: urlcat(
-      `${process.env.NEXT_PUBLIC_API_URL}/product/getOneProductPriceReview`,
-      payload,
-    ),
+    url: urlcat(`${getApiUrl()}/product/getOneProductPriceReview`, payload),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -152,7 +144,7 @@ export const fetchAllProductPriceReviewBySellerId = (payload: {
   return axios({
     method: "GET",
     url: urlcat(
-      `${process.env.NEXT_PUBLIC_API_URL}/product/getAllProductPriceReviewBySellerId`,
+      `${getApiUrl()}/product/getAllProductPriceReviewBySellerId`,
       payload,
     ),
     headers: {

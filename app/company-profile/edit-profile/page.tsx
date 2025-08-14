@@ -1,7 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import React, { useEffect, useMemo, useState } from "react";
-import { useUpdateCompanyProfile } from "@/apis/queries/company.queries";
+import { useUpdateCompanyProfile, useCreateCompanyProfile } from "@/apis/queries/company.queries";
 import { useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -31,30 +31,32 @@ const formSchema = (t: any) => {
   return z.object({
     uploadImage: z.any().optional(),
     logo: z.string().trim().optional(),
-    companyName: z.string().trim()
-      .min(2, { message: t("company_name_required") })
-      .max(50, { message: t("company_name_must_be_less_than_50_chars") }),
-    businessTypeList: z.string().transform((value) => [{ businessTypeId: Number(value) }]),
-    annualPurchasingVolume: z.string().trim()
-      .min(2, { message: t("annual_purchasing_volume_required") })
-      .max(50, { message: t("annual_purchasing_volume_must_be_less_than_20_digits") }),
-    address: z.string().trim()
-      .min(2, { message: t("address_required") })
-      .max(50, { message: t("address_must_be_less_than_n_chars", { n: 50 }) }),
-    city: z.string().trim().min(2, { message: t("city_required") }),
-    province: z.string().trim().min(2, { message: t("province_required") }),
-    country: z.string().trim().min(2, { message: t("country_required") }),
-    yearOfEstablishment: z.string().trim()
-      .min(2, { message: t("year_of_establishment_required") })
-      .transform((value) => Number(value)),
-    totalNoOfEmployee: z.string().trim().min(2, { message: t("total_no_of_employees_required") }),
+    companyName: z.string().trim().optional()
+      .refine((val) => !val || val.length >= 2, { message: t("company_name_must_be_50_chars_only") })
+      .refine((val) => !val || val.length <= 50, { message: t("company_name_must_be_less_than_50_chars") }),
+    businessTypeList: z.string().optional().transform((value) => value ? [{ businessTypeId: Number(value) }] : []),
+    annualPurchasingVolume: z.string().trim().optional()
+      .refine((val) => !val || val.length >= 2, { message: t("annual_purchasing_volume_required") })
+      .refine((val) => !val || val.length <= 50, { message: t("annual_purchasing_volume_must_be_less_than_20_digits") }),
+    address: z.string().trim().optional()
+      .refine((val) => !val || val.length >= 2, { message: t("address_must_be_less_than_n_chars", { n: 50 }) })
+      .refine((val) => !val || val.length <= 50, { message: t("address_must_be_less_than_n_chars", { n: 50 }) }),
+    city: z.string().trim().optional()
+      .refine((val) => !val || val.length >= 2, { message: t("city_required") }),
+    province: z.string().trim().optional()
+      .refine((val) => !val || val.length >= 2, { message: t("province_required") }),
+    country: z.string().trim().optional()
+      .refine((val) => !val || val.length >= 2, { message: t("country_required") }),
+    yearOfEstablishment: z.string().trim().optional()
+      .transform((value) => value ? Number(value) : undefined),
+    totalNoOfEmployee: z.string().trim().optional()
+      .refine((val) => !val || val.length >= 2, { message: t("total_no_of_employees_required") }),
     aboutUs: z.string().trim().optional(),
     aboutUsJson: z.any().optional(),
-    cc: z.string().trim(),
-    phoneNumber: z.string().trim()
-      .min(2, { message: t("phone_number_required"), })
-      .min(8, { message: t("phone_number_must_be_min_8_digits"), })
-      .max(20, { message: t("phone_number_cant_be_more_than_20_digits"), }),
+    cc: z.string().trim().optional(),
+    phoneNumber: z.string().trim().optional()
+      .refine((val) => !val || val.length >= 8, { message: t("phone_number_must_be_min_8_digits") })
+      .refine((val) => !val || val.length <= 20, { message: t("phone_number_cant_be_more_than_20_digits") }),
   });
 };
 
@@ -99,6 +101,7 @@ export default function EditProfilePage() {
   const tagsQuery = useTags();
   const upload = useUploadFile();
   const updateCompanyProfile = useUpdateCompanyProfile();
+  const createCompanyProfile = useCreateCompanyProfile();
 
   const memoizedLastTwoHundredYears = useMemo(() => {
     return getLastTwoHundredYears() || [];
@@ -134,7 +137,37 @@ export default function EditProfilePage() {
   };
 
   const onSubmit = async (formData: any) => {
-    let data = { ...formData, aboutUs: JSON.stringify(formData.aboutUsJson || ''), profileType: "COMPANY", userProfileId: uniqueUser.data?.data?.userProfile?.[0]?.id as number, };
+    console.log('Form submission - formData:', formData);
+    console.log('Form submission - uniqueUser data:', uniqueUser.data?.data);
+    
+    const existingProfile = uniqueUser.data?.data?.userProfile?.[0];
+    console.log('Form submission - existing profile:', existingProfile);
+    
+    let data = { ...formData, aboutUs: JSON.stringify(formData.aboutUsJson || ''), profileType: "COMPANY" };
+    
+    // Clean up empty strings and convert them to null for the backend
+    Object.keys(data).forEach(key => {
+      if (data[key] === '' || data[key] === undefined) {
+        data[key] = null;
+      }
+    });
+    
+    // Handle businessTypeList specially
+    if (data.businessTypeList && Array.isArray(data.businessTypeList) && data.businessTypeList.length === 0) {
+      data.businessTypeList = null;
+    }
+
+    // If there's no existing profile, we need to create one first
+    if (!existingProfile) {
+      console.log('Form submission - no existing profile, will create new one');
+      // Remove userProfileId since we're creating a new profile
+      delete data.userProfileId;
+    } else {
+      console.log('Form submission - updating existing profile with ID:', existingProfile.id);
+      data.userProfileId = existingProfile.id;
+    }
+
+    console.log('Form submission - processed data:', data);
 
     formData.uploadImage = imageFile;
     let getImageUrl;
@@ -147,34 +180,62 @@ export default function EditProfilePage() {
     delete data.uploadImage;
     delete data.aboutUsJson;
 
-    const response = await updateCompanyProfile.mutateAsync(data);
-    if (response.status && response.data) {
-      toast({ title: t("profile_edit_successful"), description: response.message, variant: "success", });
-      form.reset();
-      router.push("/company-profile-details");
-    } else {
-      toast({ title: t("profile_edit_failed"), description: response.message, variant: "danger", });
+    console.log('Form submission - final data to send:', data);
+
+    try {
+      let response;
+      
+      if (!existingProfile) {
+        // Create new profile
+        console.log('Form submission - creating new profile');
+        response = await createCompanyProfile.mutateAsync(data);
+      } else {
+        // Update existing profile
+        console.log('Form submission - updating existing profile');
+        response = await updateCompanyProfile.mutateAsync(data);
+      }
+      
+      console.log('Form submission - response:', response);
+      
+      if (response.status && response.data) {
+        toast({ title: t("profile_edit_successful"), description: response.message, variant: "success", });
+        form.reset();
+        router.push("/company-profile-details");
+      } else {
+        toast({ title: t("profile_edit_failed"), description: response.message, variant: "danger", });
+      }
+    } catch (error) {
+      console.error('Form submission - error:', error);
+      toast({ title: t("profile_edit_failed"), description: "An error occurred while updating the profile", variant: "danger", });
     }
   };
 
   useEffect(() => {
     const params = new URLSearchParams(document.location.search);
     let userId = params.get("userId");
+    console.log('useEffect - URL params userId:', userId);
     setActiveUserId(userId);
   }, []);
 
   useEffect(() => {
+    console.log('useEffect - uniqueUser data:', uniqueUser.data?.data);
+    console.log('useEffect - uniqueUser isLoading:', uniqueUser.isLoading);
+    console.log('useEffect - uniqueUser error:', uniqueUser.error);
+    
     if (uniqueUser.data?.data) {
       const userProfile = uniqueUser.data?.data?.userProfile?.[0];
+      console.log('useEffect - userProfile:', userProfile);
+      
       let abountUsJson = "";
       if (userProfile?.aboutUs) {
         try {
           abountUsJson = JSON.parse(userProfile?.aboutUs);
         } catch (error) {
-
+          console.error('useEffect - error parsing aboutUs:', error);
         }
       }
-      form.reset({
+      
+      const formData = {
         logo: userProfile?.logo || "",
         address: userProfile?.address || "",
         city: userProfile?.city || "",
@@ -189,7 +250,10 @@ export default function EditProfilePage() {
         businessTypeList: userProfile?.userProfileBusinessType?.[0]?.businessTypeId?.toString() || undefined,
         cc: userProfile?.cc,
         phoneNumber: userProfile?.phoneNumber,
-      });
+      };
+      
+      console.log('useEffect - form data to set:', formData);
+      form.reset(formData);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uniqueUser.data?.data?.userProfile?.length, memoizedTags?.length, memoizedCountries?.length, memoizedLastTwoHundredYears?.length]);

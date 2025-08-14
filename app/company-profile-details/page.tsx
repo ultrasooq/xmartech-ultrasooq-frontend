@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PlusIcon } from "@radix-ui/react-icons";
 import ProductsSection from "@/components/modules/freelancerProfileDetails/ProductsSection";
 import Footer from "@/components/shared/Footer";
+
 import { useVendorDetails } from "@/apis/queries/product.queries";
 import VendorCard from "@/components/modules/companyProfileDetails/VendorCard";
 import VendorBranchSection from "@/components/modules/companyProfileDetails/VendorBranchSection";
@@ -28,6 +29,8 @@ export default function CompanyProfileDetailsPage() {
   const [activeSellerId, setActiveSellerId] = useState<string | null>();
 
   const me = useMe();
+  
+
 
   const vendorQuery = useVendorDetails(
     {
@@ -46,6 +49,14 @@ export default function CompanyProfileDetailsPage() {
     setActiveSellerId(sellerId);
     setActiveTab(type || "profile-info");
   }, []);
+
+  // Debug log to see what data we're getting
+  useEffect(() => {
+    if (me.data?.data) {
+      console.log("User data:", me.data.data);
+      console.log("User branches:", me.data.data.userBranch);
+    }
+  }, [me.data]);
 
   return (
     <>
@@ -114,6 +125,7 @@ export default function CompanyProfileDetailsPage() {
                 </TabsList>
                 <TabsContent value="profile-info" className="mt-0">
                   <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white px-2 py-2 shadow-md sm:px-6 sm:pb-4 sm:pt-8 md:px-9 md:pb-7 md:pt-12">
+                    {/* Company Information Section */}
                     {!activeSellerId ? (
                       <InformationSection userDetails={me.data?.data} />
                     ) : null}
@@ -122,33 +134,22 @@ export default function CompanyProfileDetailsPage() {
                       <VendorInformationSection vendor={vendor} />
                     ) : null}
 
-                    {!activeSellerId && me.data?.data?.userBranch?.length ? (
+                    {/* More Information Section */}
+                    {!activeSellerId && me.data?.data?.userProfile?.[0] ? (
                       <MoreInformationSection userDetails={me.data?.data} />
                     ) : null}
 
-                    {activeSellerId && vendor?.userBranch?.length ? (
+                    {activeSellerId && vendor?.userProfile?.[0] ? (
                       <VendorMoreInformationSection vendor={vendor} />
                     ) : null}
 
                     {/* Branch Section */}
-                    {!me.data?.data?.userBranch?.length ? (
-                      <p
-                        className="pt-5 text-center text-lg font-medium text-color-dark"
-                        dir={langDir}
-                        translate="no"
-                      >
-                        {t("no_branch_exists")}
-                      </p>
-                    ) : null}
                     <div className="mb-4 w-full pt-4">
+                      {/* Add button */}
                       {!activeSellerId ? (
                         <div className="mb-5 flex w-full items-center justify-end">
                           <Link
-                            href={
-                              !me.data?.data?.userBranch?.length
-                                ? "/company-profile"
-                                : "/company-profile/add-branch"
-                            }
+                            href="/company-profile/add-branch"
                             className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-xs font-medium capitalize leading-6 text-white sm:text-sm"
                             dir={langDir}
                             translate="no"
@@ -158,7 +159,22 @@ export default function CompanyProfileDetailsPage() {
                           </Link>
                         </div>
                       ) : null}
-                      {!activeSellerId
+
+                      {/* Show "No Branch Exists" message if no branches */}
+                      {!activeSellerId && (!me.data?.data?.userBranch || me.data?.data?.userBranch?.length === 0) ? (
+                        <div className="text-center">
+                          <p
+                            className="pt-5 text-lg font-medium text-color-dark"
+                            dir={langDir}
+                            translate="no"
+                          >
+                            {t("no_branch_exists")}
+                          </p>
+                        </div>
+                      ) : null}
+                      
+                      {/* Display branches if they exist */}
+                      {!activeSellerId && me.data?.data?.userBranch && me.data?.data?.userBranch?.length > 0
                         ? me.data?.data?.userBranch
                             .sort(
                               (a: any, b: any) => b?.mainOffice - a?.mainOffice,
@@ -197,7 +213,7 @@ export default function CompanyProfileDetailsPage() {
                   </div>
                 </TabsContent>
                 <TabsContent value="products" className="mt-0">
-                  <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white px-2 py-2 shadow-md sm:px-6 sm:pb-4 sm:pt-8 md:px-4 md:pb-7 lg:pt-12 xl:px-9">
+                  <div className="w-full rounded-b-3xl border border-solid border-gray-300 bg-white px-2 py-2 shadow-md sm:px-4 md:pb-7 lg:pt-12 xl:px-9">
                     {/* importing from freelancer details module */}
                     <ProductsSection sellerId={activeSellerId as string} />
                   </div>

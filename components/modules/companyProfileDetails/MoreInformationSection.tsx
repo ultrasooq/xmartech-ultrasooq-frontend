@@ -52,24 +52,22 @@ const MoreInformationSection: React.FC<MoreInformationSectionProps> = ({
           <h2 className="text-lg font-bold text-color-dark" dir={langDir} translate="no">
             {t("more_information")}
           </h2>
-          {userDetails?.userBranch?.length ? (
-            <div className="w-auto">
-              <Link
-                href={`/company-profile/edit-profile?userId=${userDetails?.id}`}
-                className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
-                translate="no"
-              >
-                <Image
-                  src={EditIcon}
-                  height={18}
-                  width={18}
-                  className="mr-1"
-                  alt="edit-icon"
-                />
-                {t("edit")}
-              </Link>
-            </div>
-          ) : null}
+          <div className="w-auto">
+            <Link
+              href={`/company-profile/edit-profile?userId=${userDetails?.id}`}
+              className="flex items-center rounded-md border-0 bg-dark-orange px-3 py-2 text-sm font-medium capitalize leading-6 text-white"
+              translate="no"
+            >
+              <Image
+                src={EditIcon}
+                height={18}
+                width={18}
+                className="mr-1"
+                alt="edit-icon"
+              />
+              {t("edit")}
+            </Link>
+          </div>
         </div>
       </div>
       <div className="w-full">
@@ -111,13 +109,6 @@ const MoreInformationSection: React.FC<MoreInformationSectionProps> = ({
               </div>
             </div>
 
-            {/* <ReactQuill
-              defaultValue={userDetails?.userProfile?.[0]?.aboutUs || ''}
-              readOnly={true}
-              modules={{
-                toolbar: null
-              }}
-            /> */}
             <Form {...form}>
               <ControlledRichTextEditor
                 name="aboutUs"

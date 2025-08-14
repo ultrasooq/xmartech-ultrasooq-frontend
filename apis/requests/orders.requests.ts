@@ -2,6 +2,7 @@ import axios from "axios";
 import { getCookie } from "cookies-next";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import urlcat from "urlcat";
+import { getApiUrl } from "@/config/api";
 
 export const fetchOrders = (payload: {
   page: number;
@@ -13,10 +14,7 @@ export const fetchOrders = (payload: {
 }) => {
   return axios({
     method: "GET",
-    url: urlcat(
-      `${process.env.NEXT_PUBLIC_API_URL}/order/getAllOrderProductByUserId`,
-      payload,
-    ),
+    url: urlcat(`${getApiUrl()}/order/getAllOrderProductByUserId`, payload),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -28,7 +26,7 @@ export const fetchOrders = (payload: {
 export const createOrder = (payload: any) => {
   return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/order/createOrder`,
+    url: `${getApiUrl()}/order/createOrder`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -41,7 +39,7 @@ export const createOrder = (payload: any) => {
 export const createOrderUnAuth = (payload: any) => {
   return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/order/createOrderUnAuth`,
+    url: `${getApiUrl()}/order/createOrderUnAuth`,
     data: payload,
   });
 };
@@ -49,7 +47,7 @@ export const createOrderUnAuth = (payload: any) => {
 export const createPaymentIntent = (payload: any) => {
   return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/payment/create-paymob-intention`,
+    url: `${getApiUrl()}/payment/create-paymob-intention`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -62,7 +60,7 @@ export const createPaymentIntent = (payload: any) => {
 export const createPaymentLink = (payload: any) => {
   return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/payment/createPaymentLink`,
+    url: `${getApiUrl()}/payment/createPaymentLink`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -75,7 +73,7 @@ export const createPaymentLink = (payload: any) => {
 export const createEMIPayment = (payload: any) => {
   return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/payment/createPaymentForEMI`,
+    url: `${getApiUrl()}/payment/createPaymentForEMI`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -89,7 +87,7 @@ export const fetchOrderById = (payload: { orderProductId: string }) => {
   return axios({
     method: "GET",
     url: urlcat(
-      `${process.env.NEXT_PUBLIC_API_URL}/order/getOneOrderProductDetailByUserId`,
+      `${getApiUrl()}/order/getOneOrderProductDetailByUserId`,
       payload,
     ),
     headers: {
@@ -104,7 +102,7 @@ export const fetchOrderBySellerId = (payload: { orderProductId: string }) => {
   return axios({
     method: "GET",
     url: urlcat(
-      `${process.env.NEXT_PUBLIC_API_URL}/order/getOneOrderProductDetailBySellerId`,
+      `${getApiUrl()}/order/getOneOrderProductDetailBySellerId`,
       payload,
     ),
     headers: {
@@ -125,10 +123,7 @@ export const fetchOrdersBySellerId = (payload: {
 }) => {
   return axios({
     method: "GET",
-    url: urlcat(
-      `${process.env.NEXT_PUBLIC_API_URL}/order/getAllOrderProductBySellerId`,
-      payload,
-    ),
+    url: urlcat(`${getApiUrl()}/order/getAllOrderProductBySellerId`, payload),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -143,7 +138,7 @@ export const updateProductStatus = (payload: {
 }) => {
   return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/order/orderProductStatusById`,
+    url: `${getApiUrl()}/order/orderProductStatusById`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -159,7 +154,7 @@ export const updateCancelReason = (payload: {
 }) => {
   return axios({
     method: "PATCH",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/order/orderProductCancelReason`,
+    url: `${getApiUrl()}/order/orderProductCancelReason`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -175,7 +170,7 @@ export const updateOrderShippingStatus = (payload: {
 }) => {
   return axios({
     method: "PATCH",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/order/orderShippingStatusUpdateById`,
+    url: `${getApiUrl()}/order/orderShippingStatusUpdateById`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -188,7 +183,7 @@ export const updateOrderShippingStatus = (payload: {
 export const preOrderCalculation = (payload: any) => {
   return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/order/preOrderCal`,
+    url: `${getApiUrl()}/order/preOrderCal`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -201,10 +196,7 @@ export const preOrderCalculation = (payload: any) => {
 export const fetchOrderByIdUnAuth = (payload: { orderId: number }) => {
   return axios({
     method: "GET",
-    url: urlcat(
-      `${process.env.NEXT_PUBLIC_API_URL}/order/getOneOrderUnAuth`,
-      payload,
-    ),
+    url: urlcat(`${getApiUrl()}/order/getOneOrderUnAuth`, payload),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",

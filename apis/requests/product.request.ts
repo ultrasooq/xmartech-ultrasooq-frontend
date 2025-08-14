@@ -2,6 +2,7 @@ import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import { getCookie } from "cookies-next";
 import axios from "axios";
 import urlcat from "urlcat";
+import { getApiUrl } from "@/config/api";
 import {
   ICreateProductRequest,
   IDeleteProductRequest,
@@ -11,7 +12,7 @@ import {
 export const createProduct = (payload: ICreateProductRequest) => {
   return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/product/create`,
+    url: `${getApiUrl()}/product/create`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -35,7 +36,7 @@ export const fetchProducts = (payload: {
 }) => {
   return axios({
     method: "GET",
-    url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/product/findAll`, payload),
+    url: urlcat(`${getApiUrl()}/product/findAll`, payload),
   });
 };
 
@@ -46,7 +47,7 @@ export const fetchProductById = (payload: {
 }) => {
   return axios({
     method: "GET",
-    url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/product/findOne`, payload),
+    url: urlcat(`${getApiUrl()}/product/findOne`, payload),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -61,10 +62,7 @@ export const fetchRfqProductById = (payload: {
 }) => {
   return axios({
     method: "GET",
-    url: urlcat(
-      `${process.env.NEXT_PUBLIC_API_URL}/product/rfqFindOne`,
-      payload,
-    ),
+    url: urlcat(`${getApiUrl()}/product/rfqFindOne`, payload),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -76,7 +74,7 @@ export const fetchRfqProductById = (payload: {
 export const deleteProduct = (payload: IDeleteProductRequest) => {
   return axios({
     method: "DELETE",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/product/delete/${payload.productId}`,
+    url: `${getApiUrl()}/product/delete/${payload.productId}`,
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -88,7 +86,7 @@ export const deleteProduct = (payload: IDeleteProductRequest) => {
 export const updateProduct = (payload: IUpdateProductRequest) => {
   return axios({
     method: "PATCH",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/product/update`,
+    url: `${getApiUrl()}/product/update`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -101,7 +99,7 @@ export const updateProduct = (payload: IUpdateProductRequest) => {
 export const updateForCustomize = (payload: any) => {
   return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/product/addCustomizeProduct`,
+    url: `${getApiUrl()}/product/addCustomizeProduct`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -111,14 +109,37 @@ export const updateForCustomize = (payload: any) => {
   });
 };
 
-export const fetchExistingProducts = (payload: { page: number; limit: number; term?: string; sort?: string; brandIds?: string; priceMin?: number; priceMax?: number; brandAddedBy?: number; categoryIds?: string; }) => {
+export const fetchExistingProducts = (payload: {
+  page: number;
+  limit: number;
+  term?: string;
+  sort?: string;
+  brandIds?: string;
+  priceMin?: number;
+  priceMax?: number;
+  brandAddedBy?: number;
+  categoryIds?: string;
+}) => {
   return axios({
     method: "GET",
-    url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/product/existingAllProduct`, payload,),
+    url: urlcat(`${getApiUrl()}/product/existingAllProduct`, payload),
   });
 };
 
-export const fetchAllProducts = (payload: { page: number; limit: number; term?: string; sort?: string; brandIds?: string; priceMin?: number; priceMax?: number; userId?: number; categoryIds?: string; isOwner?: string; userType?: string; related?: boolean }) => {
+export const fetchAllProducts = (payload: {
+  page: number;
+  limit: number;
+  term?: string;
+  sort?: string;
+  brandIds?: string;
+  priceMin?: number;
+  priceMax?: number;
+  userId?: number;
+  categoryIds?: string;
+  isOwner?: string;
+  userType?: string;
+  related?: boolean;
+}) => {
   const related = payload.related;
   delete payload?.related;
   if (related) {
@@ -126,7 +147,7 @@ export const fetchAllProducts = (payload: { page: number; limit: number; term?: 
   }
   return axios({
     method: "GET",
-    url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/product/getAllProduct`, payload,),
+    url: urlcat(`${getApiUrl()}/product/getAllProduct`, payload),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -135,10 +156,25 @@ export const fetchAllProducts = (payload: { page: number; limit: number; term?: 
   });
 };
 
-export const fetchAllProductsByUserBusinessCategory = (payload: { page: number; limit: number; term?: string; sort?: string; brandIds?: string; priceMin?: number; priceMax?: number; userId?: number; categoryIds?: string; isOwner?: string; userType?: string; }) => {
+export const fetchAllProductsByUserBusinessCategory = (payload: {
+  page: number;
+  limit: number;
+  term?: string;
+  sort?: string;
+  brandIds?: string;
+  priceMin?: number;
+  priceMax?: number;
+  userId?: number;
+  categoryIds?: string;
+  isOwner?: string;
+  userType?: string;
+}) => {
   return axios({
     method: "GET",
-    url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/product/getAllProductByUserBusinessCategory`, payload,),
+    url: urlcat(
+      `${getApiUrl()}/product/getAllProductByUserBusinessCategory`,
+      payload,
+    ),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -147,7 +183,20 @@ export const fetchAllProductsByUserBusinessCategory = (payload: { page: number; 
   });
 };
 
-export const fetchAllBuyGroupProducts = (payload: { page: number; limit: number; term?: string; sort?: string; brandIds?: string; priceMin?: number; priceMax?: number; userId?: number; categoryIds?: string; isOwner?: string; userType?: string; related?: boolean }) => {
+export const fetchAllBuyGroupProducts = (payload: {
+  page: number;
+  limit: number;
+  term?: string;
+  sort?: string;
+  brandIds?: string;
+  priceMin?: number;
+  priceMax?: number;
+  userId?: number;
+  categoryIds?: string;
+  isOwner?: string;
+  userType?: string;
+  related?: boolean;
+}) => {
   const related = payload.related;
   delete payload?.related;
   if (related) {
@@ -155,7 +204,7 @@ export const fetchAllBuyGroupProducts = (payload: { page: number; limit: number;
   }
   return axios({
     method: "GET",
-    url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/product/getAllBuyGroupProduct`, payload,),
+    url: urlcat(`${getApiUrl()}/product/getAllBuyGroupProduct`, payload),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -164,10 +213,25 @@ export const fetchAllBuyGroupProducts = (payload: { page: number; limit: number;
   });
 };
 
-export const fetchAllBuyGroupProductsByUserBusinessCategory = (payload: { page: number; limit: number; term?: string; sort?: string; brandIds?: string; priceMin?: number; priceMax?: number; userId?: number; categoryIds?: string; isOwner?: string; userType?: string; }) => {
+export const fetchAllBuyGroupProductsByUserBusinessCategory = (payload: {
+  page: number;
+  limit: number;
+  term?: string;
+  sort?: string;
+  brandIds?: string;
+  priceMin?: number;
+  priceMax?: number;
+  userId?: number;
+  categoryIds?: string;
+  isOwner?: string;
+  userType?: string;
+}) => {
   return axios({
     method: "GET",
-    url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/product/getAllBuyGroupProductByUserBusinessCategory`, payload,),
+    url: urlcat(
+      `${getApiUrl()}/product/getAllBuyGroupProductByUserBusinessCategory`,
+      payload,
+    ),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -185,10 +249,7 @@ export const fetchSameBrandProducts = (payload: {
 }) => {
   return axios({
     method: "GET",
-    url: urlcat(
-      `${process.env.NEXT_PUBLIC_API_URL}/product/sameBrandAllProduct`,
-      payload,
-    ),
+    url: urlcat(`${getApiUrl()}/product/sameBrandAllProduct`, payload),
   });
 };
 
@@ -201,17 +262,14 @@ export const fetchRelatedProducts = (payload: {
 }) => {
   return axios({
     method: "GET",
-    url: urlcat(
-      `${process.env.NEXT_PUBLIC_API_URL}/product/relatedAllProduct`,
-      payload,
-    ),
+    url: urlcat(`${getApiUrl()}/product/relatedAllProduct`, payload),
   });
 };
 
 export const addMultiplePriceForProduct = (payload: any) => {
   return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/product/addMultiplePriceForProduct`,
+    url: `${getApiUrl()}/product/addMultiplePriceForProduct`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -224,7 +282,7 @@ export const addMultiplePriceForProduct = (payload: any) => {
 export const updateMultipleProductPrice = (payload: any) => {
   return axios({
     method: "PATCH",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/product/updateMultipleProductPrice`,
+    url: `${getApiUrl()}/product/updateMultipleProductPrice`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -247,10 +305,7 @@ export const getAllManagedProducts = (payload: {
 }) => {
   return axios({
     method: "GET",
-    url: urlcat(
-      `${process.env.NEXT_PUBLIC_API_URL}/product/getAllProductPriceByUser`,
-      payload,
-    ),
+    url: urlcat(`${getApiUrl()}/product/getAllProductPriceByUser`, payload),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -265,10 +320,7 @@ export const getOneWithProductPrice = (payload: {
 }) => {
   return axios({
     method: "GET",
-    url: urlcat(
-      `${process.env.NEXT_PUBLIC_API_URL}/product/findOneWithProductPrice`,
-      payload,
-    ),
+    url: urlcat(`${getApiUrl()}/product/findOneWithProductPrice`, payload),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -280,10 +332,7 @@ export const getOneWithProductPrice = (payload: {
 export const getVendorDetails = (payload: { adminId: string }) => {
   return axios({
     method: "GET",
-    url: urlcat(
-      `${process.env.NEXT_PUBLIC_API_URL}/product/vendorDetails`,
-      payload,
-    ),
+    url: urlcat(`${getApiUrl()}/product/vendorDetails`, payload),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -306,10 +355,7 @@ export const getVendorProducts = (payload: {
 }) => {
   return axios({
     method: "GET",
-    url: urlcat(
-      `${process.env.NEXT_PUBLIC_API_URL}/product/vendorAllProduct`,
-      payload,
-    ),
+    url: urlcat(`${getApiUrl()}/product/vendorAllProduct`, payload),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -325,7 +371,7 @@ export const getOneProductByProductCondition = (payload: {
   return axios({
     method: "GET",
     url: urlcat(
-      `${process.env.NEXT_PUBLIC_API_URL}/product/getOneProductByProductCondition`,
+      `${getApiUrl()}/product/getOneProductByProductCondition`,
       payload,
     ),
     headers: {
@@ -355,7 +401,7 @@ export const updateProductPriceByProductCondition = (payload: {
 }) => {
   return axios({
     method: "PATCH",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/product/editProductPriceByProductCondition`,
+    url: `${getApiUrl()}/product/editProductPriceByProductCondition`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -371,7 +417,7 @@ export const updateProductStatus = (payload: {
 }) => {
   return axios({
     method: "PATCH",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/product/updateProductPrice`,
+    url: `${getApiUrl()}/product/updateProductPrice`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -383,32 +429,32 @@ export const updateProductStatus = (payload: {
 
 export const updateSingleProducts = (payload: {
   productPriceId: number;
-  stock: number,
-  askForPrice: string,
-  askForStock: string,
-  offerPrice: number,
-  productPrice: number
-  status: string,
-  productCondition: string,
-  consumerType: string,
-  sellType: string,
-  deliveryAfter: number,
-  timeOpen: number,
-  timeClose: number,
-  vendorDiscount: number,
+  stock: number;
+  askForPrice: string;
+  askForStock: string;
+  offerPrice: number;
+  productPrice: number;
+  status: string;
+  productCondition: string;
+  consumerType: string;
+  sellType: string;
+  deliveryAfter: number;
+  timeOpen: number;
+  timeClose: number;
+  vendorDiscount: number;
   vendorDiscountType: string | null;
-  consumerDiscount: number,
+  consumerDiscount: number;
   consumerDiscountType: string | null;
-  minQuantity: number,
-  maxQuantity: number,
-  minCustomer: number,
-  maxCustomer: number,
-  minQuantityPerCustomer: number,
-  maxQuantityPerCustomer: number
+  minQuantity: number;
+  maxQuantity: number;
+  minCustomer: number;
+  maxCustomer: number;
+  minQuantityPerCustomer: number;
+  maxQuantityPerCustomer: number;
 }) => {
   return axios({
     method: "PATCH",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/product/updateProductPrice`,
+    url: `${getApiUrl()}/product/updateProductPrice`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -418,15 +464,10 @@ export const updateSingleProducts = (payload: {
   });
 };
 
-export const removeProduct = (payload: {
-  productPriceId: number
-}) => {
+export const removeProduct = (payload: { productPriceId: number }) => {
   return axios({
     method: "DELETE",
-    url: urlcat(
-      `${process.env.NEXT_PUBLIC_API_URL}/product/deleteOneProductPrice`,
-      payload,
-    ),
+    url: urlcat(`${getApiUrl()}/product/deleteOneProductPrice`, payload),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -438,9 +479,9 @@ export const removeProduct = (payload: {
 export const fetchProductVariant = (productPriceId: number[]) => {
   return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/product/getProductVariant`,
+    url: `${getApiUrl()}/product/getProductVariant`,
     data: {
-      productPriceId
+      productPriceId,
     },
     headers: {
       "Content-Type": "application/json",
@@ -448,15 +489,18 @@ export const fetchProductVariant = (productPriceId: number[]) => {
       Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
     },
   });
-}
+};
 
-export const getProductsByService = (serviceId: number, payload: {
-  page: number;
-  limit: number;
-}) => {
+export const getProductsByService = (
+  serviceId: number,
+  payload: {
+    page: number;
+    limit: number;
+  },
+) => {
   return axios({
     method: "GET",
-    url: urlcat(`${process.env.NEXT_PUBLIC_API_URL}/service/product/${serviceId}`, payload),
+    url: urlcat(`${getApiUrl()}/service/product/${serviceId}`, payload),
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",

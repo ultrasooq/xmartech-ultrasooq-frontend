@@ -10,7 +10,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+
 import { Checkbox } from "@/components/ui/checkbox";
 import { useRegister } from "@/apis/queries/auth.queries";
 import { Button } from "@/components/ui/button";
@@ -27,7 +27,6 @@ import {
 } from "@/components/ui/dialog";
 import {
   EMAIL_REGEX_LOWERCASE,
-  TRADE_ROLE_LIST,
   PUREMOON_TOKEN_KEY,
 } from "@/utils/constants";
 import { setCookie } from "cookies-next";
@@ -101,9 +100,7 @@ const formSchema = z
       .max(20, {
         message: "Phone Number cannot be more than 20 digits",
       }),
-    tradeRole: z.string().trim().min(2, {
-      message: "Trade Role is required",
-    }),
+
     acceptTerms: z.boolean().refine((val) => val, {
       message: "You must accept the Terms Of Use & Privacy Policy",
     }),
@@ -136,7 +133,7 @@ export default function RegisterPage() {
       password: "",
       phoneNumber: "",
       cc: "",
-      tradeRole: "",
+
       acceptTerms: false,
     },
   });
@@ -151,6 +148,7 @@ export default function RegisterPage() {
     const loginType = session ? getLoginType() : "MANUAL";
     const response = await register.mutateAsync({
       ...formData,
+      tradeRole: "BUYER",
       loginType: loginType as "MANUAL" | "GOOGLE" | "FACEBOOK",
     });
 
@@ -281,52 +279,6 @@ export default function RegisterPage() {
                     className="flex flex-wrap"
                     onSubmit={form.handleSubmit(onSubmit)}
                   >
-                    <FormField
-                      control={form.control}
-                      name="tradeRole"
-                      render={({ field }) => (
-                        <FormItem className="mb-4 flex w-full flex-col items-center md:flex-row md:items-start">
-                          <FormLabel
-                            className="mb-3 mr-6 capitalize md:mb-0"
-                            dir={langDir}
-                            translate="no"
-                          >
-                            {t("select_trade_role")}:
-                          </FormLabel>
-                          <div className="!mt-0">
-                            <FormControl className="mb-2">
-                              <RadioGroup
-                                className="!mt-0 flex items-center gap-4"
-                                onValueChange={field.onChange}
-                              >
-                                {TRADE_ROLE_LIST.map((role) => (
-                                  <FormItem
-                                    key={role.value}
-                                    className="flex items-center space-x-3 space-y-0"
-                                  >
-                                    <FormControl>
-                                      <div
-                                        key={role.value}
-                                        className="flex items-center space-x-2"
-                                      >
-                                        <RadioGroupItem
-                                          value={role.value}
-                                          id={role.value}
-                                        />
-                                        <FormLabel htmlFor={role.value}>
-                                          {role.label}
-                                        </FormLabel>
-                                      </div>
-                                    </FormControl>
-                                  </FormItem>
-                                ))}
-                              </RadioGroup>
-                            </FormControl>
-                            <FormMessage />
-                          </div>
-                        </FormItem>
-                      )}
-                    />
 
                     <ControlledTextInput
                       label={t("first_name")}

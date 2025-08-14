@@ -21,6 +21,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useTags } from "@/apis/queries/tags.queries";
 import { useRouter } from "next/navigation";
 import { useMe } from "@/apis/queries/user.queries";
+import { useCurrentAccount } from "@/apis/queries/auth.queries";
 import { getAmPm, handleDescriptionParse } from "@/utils/helper";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import { ICountries } from "@/utils/types/common.types";
@@ -170,9 +171,37 @@ export default function FreelancerProfilePage() {
   });
 
   const me = useMe();
+  const currentAccount = useCurrentAccount();
   const countriesQuery = useCountries();
   const tagsQuery = useTags();
   const createFreelancerProfile = useCreateFreelancerProfile();
+
+  // Get the current account data
+  const currentAccountData = currentAccount?.data?.data?.account;
+  const currentTradeRole = currentAccountData?.tradeRole;
+
+  // Redirect if user is not on a FREELANCER account
+  React.useEffect(() => {
+    if (currentTradeRole && currentTradeRole !== 'FREELANCER') {
+      if (currentTradeRole === 'BUYER') {
+        router.replace("/buyer-profile-details");
+      } else if (currentTradeRole === 'COMPANY') {
+        router.replace("/company-profile");
+      }
+    }
+  }, [currentTradeRole, router]);
+
+  // Show loading while account data is being fetched
+  if (currentAccount.isLoading || !currentTradeRole) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900 mx-auto"></div>
+          <p className="mt-4 text-lg">Loading account information...</p>
+        </div>
+      </div>
+    );
+  }
 
   const memoizedCountries = useMemo(() => {
     return (

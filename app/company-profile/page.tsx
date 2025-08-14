@@ -39,6 +39,7 @@ import BackgroundImage from "@/public/images/before-login-bg.png";
 import MultiSelectCategory from "@/components/shared/MultiSelectCategory";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import { useCurrentAccount } from "@/apis/queries/auth.queries";
 
 const formSchema = (t: any) => {
   return z.object({
@@ -259,10 +260,38 @@ export default function CompanyProfilePage() {
     },
   });
   const [imageFile, setImageFile] = useState<FileList | null>();
+  const currentAccount = useCurrentAccount();
   const countriesQuery = useCountries();
   const tagsQuery = useTags();
   const upload = useUploadFile();
   const createCompanyProfile = useCreateCompanyProfile();
+
+  // Get the current account data
+  const currentAccountData = currentAccount?.data?.data?.account;
+  const currentTradeRole = currentAccountData?.tradeRole;
+
+  // Redirect if user is not on a COMPANY account
+  React.useEffect(() => {
+    if (currentTradeRole && currentTradeRole !== 'COMPANY') {
+      if (currentTradeRole === 'BUYER') {
+        router.replace("/buyer-profile-details");
+      } else if (currentTradeRole === 'FREELANCER') {
+        router.replace("/freelancer-profile");
+      }
+    }
+  }, [currentTradeRole, router]);
+
+  // Show loading while account data is being fetched
+  if (currentAccount.isLoading || !currentTradeRole) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900 mx-auto"></div>
+          <p className="mt-4 text-lg">Loading account information...</p>
+        </div>
+      </div>
+    );
+  }
 
   const fieldArray = useFieldArray({
     control: form.control,

@@ -2,11 +2,12 @@ import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import axios from "axios";
 import { getCookie } from "cookies-next";
 import { isEmpty } from "lodash";
+import { getApiUrl } from "@/config/api";
 
 export const createCompanyProfile = (payload: any) => {
   return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/user/userProfile`,
+    url: `${getApiUrl()}/user/userProfile`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -19,7 +20,7 @@ export const createCompanyProfile = (payload: any) => {
 export const updateCompanyProfile = (payload: any) => {
   return axios({
     method: "PATCH",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/user/updateUserProfile`,
+    url: `${getApiUrl()}/user/updateUserProfile`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -32,7 +33,7 @@ export const updateCompanyProfile = (payload: any) => {
 export const updateCompanyBranch = (payload: any) => {
   return axios({
     method: "PATCH",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/user/updateBranch`,
+    url: `${getApiUrl()}/user/updateBranch`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -45,7 +46,7 @@ export const updateCompanyBranch = (payload: any) => {
 export const createCompanyBranch = (payload: any) => {
   return axios({
     method: "POST",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/user/addBranch`,
+    url: `${getApiUrl()}/user/addBranch`,
     data: payload,
     headers: {
       "Content-Type": "application/json",
@@ -64,7 +65,7 @@ export const fetchCompanyBranchById = (payload: { branchId: string }) => {
 
   return axios({
     method: "GET",
-    url: `${process.env.NEXT_PUBLIC_API_URL}/user/findOneBranch?${query}`,
+    url: `${getApiUrl()}/user/findOneBranch?${query}`,
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
