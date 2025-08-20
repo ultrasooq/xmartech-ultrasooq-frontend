@@ -6,7 +6,7 @@ export interface ILoginRequest {
 export interface ILogin {
   accessToken: string;
   data: {
-    status: "ACTIVE" | "INACTIVE" | "DELETE";
+    status: "WAITING" | "ACTIVE" | "REJECT" | "INACTIVE" | "DELETE";
   };
   message: string;
   status: boolean;
@@ -47,6 +47,8 @@ export interface User {
   tradeRole: "BUYER" | "COMPANY" | "FREELANCER";
   cc: string;
   phoneNumber: string;
+  status?: "WAITING" | "ACTIVE" | "REJECT" | "INACTIVE" | "DELETE";
+  statusNote?: string;
 }
 
 export interface IVerifyOtp {
@@ -100,18 +102,31 @@ export interface IChangePasswordRequest extends IResetPasswordRequest {
   password: string;
 }
 
-export interface IChangePassword extends IResetPassword {}
-
-export interface IChangeEmailRequest extends IForgotPasswordRequest {}
-
-export interface IChangeEmail extends IForgotPassword {}
-
-export interface IChangeEmailVerifyRequest extends IVerifyOtpRequest {}
-
-export interface IChangeEmailVerify {
-  data: {};
+export interface IChangePassword {
   message: string;
   status: boolean;
+  data: any;
+}
+
+export interface IChangeEmailRequest {
+  email: string;
+}
+
+export interface IChangeEmail {
+  message: string;
+  status: boolean;
+  data: any;
+}
+
+export interface IChangeEmailVerifyRequest {
+  email: string;
+  otp: number;
+}
+
+export interface IChangeEmailVerify {
+  message: string;
+  status: boolean;
+  data: any;
 }
 
 // Multi-Account System Types
@@ -138,7 +153,8 @@ export interface IUserAccount {
   orders?: number;
   rfq?: number;
   tracking?: number;
-  status?: "active" | "bended" | "inactive";
+  status?: "WAITING" | "ACTIVE" | "REJECT" | "INACTIVE";
+  statusNote?: string;
 }
 
 export interface IMainAccount {
@@ -156,7 +172,8 @@ export interface IMainAccount {
   orders?: number;
   rfq?: number;
   tracking?: number;
-  status?: "active" | "bended" | "inactive";
+  status?: "WAITING" | "ACTIVE" | "REJECT" | "INACTIVE";
+  statusNote?: string;
 }
 
 export interface ICreateAccountRequest {

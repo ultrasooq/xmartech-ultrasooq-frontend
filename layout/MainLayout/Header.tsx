@@ -29,6 +29,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useMe } from "@/apis/queries/user.queries";
 import { useCurrentAccount } from "@/apis/queries/auth.queries";
 import { getInitials, getOrCreateDeviceId } from "@/utils/helper";
+import { useAccessControl } from "@/hooks/useAccessControl";
 import { useCategory } from "@/apis/queries/category.queries";
 import { Button } from "@/components/ui/button";
 import { useClickOutside } from "use-events";
@@ -149,13 +150,19 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
     true, //!!categoryId,
   );
 
-  // Get the current active account's trade role
+  // Get access control information
+  const accessControl = useAccessControl();
   const currentTradeRole = currentAccount?.data?.data?.account?.tradeRole || me?.data?.data?.tradeRole;
-  const userStatus = me?.data?.data?.status;
+  const userStatus = accessControl.userStatus;
+  
+  // Debug logging for account switching
   console.log("Header - currentTradeRole:", currentTradeRole);
   console.log("Header - userStatus:", userStatus);
-  console.log("Header - currentAccount data:", currentAccount?.data?.data);
+  console.log("Header - currentAccount data:", currentAccount?.data);
   console.log("Header - me data:", me?.data?.data);
+  console.log("Header - accessControl.userStatus:", accessControl.userStatus);
+  console.log("Header - accessControl.isActive:", accessControl.isActive);
+  console.log("Header - accessControl.hasFullAccess:", accessControl.hasFullAccess);
 
   const [searchTerm, setSearchTerm] = useState(searchParams?.get("term") || "");
 
@@ -170,6 +177,13 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
 
   const [selectedCurrency, setSelectedCurrency] = useState<string>("USD");
   const currencies = [...CURRENCIES];
+
+  // Force refresh current account data when pathname changes (account switching)
+  useEffect(() => {
+    if (currentAccount?.refetch) {
+      currentAccount.refetch();
+    }
+  }, [pathname, currentAccount?.refetch]);
 
   // Debounced function to update URL
   const updateURL = debounce((newTerm) => {
@@ -720,7 +734,8 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                           {userStatus && userStatus !== "ACTIVE" && (
                             <div className={`absolute -top-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${
                               userStatus === "INACTIVE" ? "bg-red-500" : 
-                              userStatus === "SUSPENDED" ? "bg-yellow-500" : "bg-gray-500"
+                              userStatus === "WAITING" ? "bg-yellow-500" : 
+                              userStatus === "REJECT" ? "bg-red-600" : "bg-gray-500"
                             }`} title={`Status: ${userStatus}`} />
                           )}
                         </DropdownMenuTrigger>
@@ -730,7 +745,8 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                             <div className="px-2 py-1.5 text-xs text-gray-500 border-b border-gray-200">
                               Status: <span className={`font-medium ${
                                 userStatus === "INACTIVE" ? "text-red-600" : 
-                                userStatus === "SUSPENDED" ? "text-yellow-600" : "text-gray-600"
+                                userStatus === "WAITING" ? "text-yellow-600" : 
+                                userStatus === "REJECT" ? "text-red-700" : "text-gray-600"
                               }`}>{userStatus}</span>
                             </div>
                           )}
@@ -746,8 +762,8 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                             </DropdownMenuItem>
                           </Link>
                           
-                          {/* Check user status - if INACTIVE, only show Profile and Logout */}
-                          {userStatus === "INACTIVE" ? (
+                          {/* Check user status - if WAITING or INACTIVE, only show Profile and Logout */}
+                          {userStatus === "WAITING" || userStatus === "INACTIVE" ? (
                             <>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem
@@ -761,19 +777,21 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                             </>
                           ) : (
                             <>
-                              {/* Dashboard - Available for all active users */}
-                              <Link href="/vendor-dashboard">
-                                <DropdownMenuItem
-                                  className="cursor-pointer"
-                                  dir={langDir}
-                                  translate="no"
-                                >
-                                  {t("dashboard")}
-                                </DropdownMenuItem>
-                              </Link>
+                              {/* Dashboard - Only for ACTIVE users */}
+                              {accessControl.canAccessDashboard && (
+                                <Link href="/vendor-dashboard">
+                                  <DropdownMenuItem
+                                    className="cursor-pointer"
+                                    dir={langDir}
+                                    translate="no"
+                                  >
+                                    {t("dashboard")}
+                                  </DropdownMenuItem>
+                                </Link>
+                              )}
                               
                               {/* Company-specific options for active users */}
-                              {currentTradeRole !== "BUYER" ? (
+                              {currentTradeRole !== "BUYER" && accessControl.hasFullAccess ? (
                                 <>
                                   {hideMenu(PERMISSION_TEAM_MEMBERS) ? (
                                     <Link href="/team-members">
@@ -873,25 +891,34 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                                 </Link>
                               ) : null}
                               
-                              <Link href="/my-settings/address">
-                                <DropdownMenuItem dir={langDir} translate="no">
-                                  {t("my_settings")}
-                                </DropdownMenuItem>
-                              </Link>
+                              {/* My Settings - Available for all authenticated users */}
+                              {accessControl.canAccessSettings && (
+                                <Link href="/my-settings/address">
+                                  <DropdownMenuItem dir={langDir} translate="no">
+                                    {t("my_settings")}
+                                  </DropdownMenuItem>
+                                </Link>
+                              )}
                               
-                              <Link href="/transactions">
-                                <DropdownMenuItem dir={langDir} translate="no">
-                                  {t("transactions")}
-                                </DropdownMenuItem>
-                              </Link>
+                              {/* Transactions - Only for ACTIVE users */}
+                              {accessControl.canAccessTransactions && (
+                                <Link href="/transactions">
+                                  <DropdownMenuItem dir={langDir} translate="no">
+                                    {t("transactions")}
+                                  </DropdownMenuItem>
+                                </Link>
+                              )}
                               
-                              <Link href="/queries">
-                                <DropdownMenuItem
-                                  dir={langDir} translate="no"
-                                >
-                                  {t("queries")}
-                                </DropdownMenuItem>
-                              </Link>
+                              {/* Queries - Only for ACTIVE users */}
+                              {accessControl.canAccessQueries && (
+                                <Link href="/queries">
+                                  <DropdownMenuItem
+                                    dir={langDir} translate="no"
+                                  >
+                                    {t("queries")}
+                                  </DropdownMenuItem>
+                                </Link>
+                              )}
                               
                               <DropdownMenuSeparator />
                               

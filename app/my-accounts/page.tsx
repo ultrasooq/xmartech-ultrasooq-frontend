@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useMyAccounts, useCreateAccount, useSwitchAccount } from "@/apis/queries/auth.queries";
 import { useToast } from "@/components/ui/use-toast";
-import { TRADE_ROLE_LIST } from "@/utils/constants";
+import { TRADE_ROLE_LIST, DEFAULT_SUB_ACCOUNT_STATUS } from "@/utils/constants";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 import {
@@ -33,6 +33,7 @@ import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import StatusDisplayBadge from "@/components/shared/StatusDisplayBadge";
 
 const createAccountSchema = z.object({
   // Basic account info
@@ -201,372 +202,502 @@ export default function MyAccountsPage() {
       }
       
       toast({
-        title: "Creation Failed",
+        title: "Account Creation Failed",
         description: errorMessage,
         variant: "danger",
       });
     }
   };
 
+  // Helper function to get status display info
+  const getStatusInfo = (account: any) => {
+    const status = account?.status || DEFAULT_SUB_ACCOUNT_STATUS;
+    const statusNote = account?.statusNote;
+    
+    return {
+      status,
+      statusNote,
+      isWaiting: status === "WAITING",
+      isActive: status === "ACTIVE",
+      isRejected: status === "REJECT",
+      isInactive: status === "INACTIVE",
+    };
+  };
+
+  // Helper function to get status description
+  const getStatusDescription = (status: string, statusNote?: string) => {
+    switch (status) {
+      case "WAITING":
+        return "Your account is pending approval. You'll be notified once it's reviewed.";
+      case "ACTIVE":
+        return "Your account is active and you can use all features.";
+      case "REJECT":
+        if (statusNote) {
+          return "Your account was rejected. Please see the admin note below for details.";
+        }
+        return "Your account was rejected. Please contact support for more information.";
+      case "INACTIVE":
+        if (statusNote) {
+          return "Your account is temporarily inactive. Please see the admin note below for details.";
+        }
+        return "Your account is temporarily inactive. Please contact support to reactivate.";
+      default:
+        return "Account status information not available.";
+    }
+  };
+
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <LoaderWithMessage message="Loading accounts..." />
-      </div>
+      <LoaderWithMessage
+        message="Loading your accounts..."
+        className="min-h-screen"
+      />
     );
   }
 
   if (error) {
-    console.error("Error loading accounts:", error);
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-xl font-semibold mb-2">Error Loading Accounts</h2>
-          <p className="text-gray-600 mb-4">{error.message}</p>
-          <Button onClick={() => refetch()}>Retry</Button>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">
+            Error Loading Accounts
+          </h2>
+          <p className="text-gray-600 mb-4">
+            {error?.response?.data?.message || "Failed to load your accounts"}
+          </p>
+          <Button onClick={() => refetch()} variant="outline">
+            Try Again
+          </Button>
         </div>
       </div>
     );
   }
 
-  const mainAccount = accountsData?.data?.mainAccount;
-  const accountsByType = accountsData?.data?.accountsByType;
-  const rawAllAccounts = accountsData?.data?.allAccounts || [];
-  
-  // Robust filtering function for valid accounts
-  const isValidAccount = (account: any) => {
-    if (!account) {
-      if (process.env.NODE_ENV === 'development') {
-        console.log("Invalid account: null/undefined");
-      }
-      return false;
-    }
-    
-    // Check if account has required properties
-    if (!account.accountName || typeof account.accountName !== 'string') {
-      if (process.env.NODE_ENV === 'development') {
-        console.log("Invalid account: missing or invalid accountName", account);
-      }
-      return false;
-    }
-    
-    // Check for undefined values - be more specific to only filter truly corrupted accounts
-    const trimmedName = account.accountName.trim();
-    if (trimmedName === '' || 
-        trimmedName === 'undefined' || 
-        trimmedName.toLowerCase() === 'undefined account' ||
-        trimmedName === 'null') {
-      if (process.env.NODE_ENV === 'development') {
-        console.log("Invalid account: undefined/empty name", account);
-      }
-      return false;
-    }
-    
+  const { mainAccount, accountsByType, allAccounts } = accountsData?.data || {};
+  let currentAccount = allAccounts?.find(acc => acc.isCurrentAccount) || mainAccount;
+  let accountType = 'Main Account';
+
+  // Find the current sub-account
+  const activeSubAccount = allAccounts?.find(acc => acc.isCurrentAccount);
+  if (activeSubAccount) {
+    currentAccount = activeSubAccount;
+    accountType = 'Sub Account';
+  }
+
+  // Filter out main account from sub-accounts display
+  const subAccounts = allAccounts?.filter(account => {
     // Don't include main account in sub-accounts
     // Note: Sub-accounts have userId that matches mainAccount.id, but they are different entities
-    // We should NOT filter them out unless account.id === mainAccount.id
-    if (mainAccount && account.id === mainAccount.id) {
-      if (process.env.NODE_ENV === 'development') {
-        console.log("Filtering out main account from sub-accounts", account);
-      }
+    if (account.id === mainAccount?.id) {
       return false;
+    }
+    
+    // Debug logging
+    if (process.env.NODE_ENV === 'development') {
+      console.log("Filtering out main account from sub-accounts", account);
     }
     
     return true;
-  };
-  
-  // Filter out invalid accounts and main account data from allAccounts
-  const allAccounts = rawAllAccounts.filter(isValidAccount);
-
-  if (process.env.NODE_ENV === 'development') {
-    console.log("=== MY ACCOUNTS DEBUG ===");
-    console.log("mainAccount:", mainAccount);
-    console.log("accountsByType:", accountsByType);
-    console.log("rawAllAccounts:", rawAllAccounts);
-    console.log("filteredAllAccounts:", allAccounts);
-    
-    // Debug each account individually
-    rawAllAccounts.forEach((account, index) => {
-      console.log(`Account ${index}:`, {
-        id: account.id,
-        accountName: account.accountName,
-        tradeRole: account.tradeRole,
-        isCurrentAccount: account.isCurrentAccount,
-        isValid: isValidAccount(account)
-      });
-    });
-    
-    console.log("=== END DEBUG ===");
-  }
+  }) || [];
 
   return (
-    <>
-      <section className="min-h-screen bg-[#fff8f7] py-4">
-        <div className="container mx-auto px-4">
-          <div className="max-w-6xl mx-auto">
-          {/* Header Section */}
-          <div className="mb-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-xl font-bold text-dark-cyan mb-1" dir={langDir}>
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
                   My Accounts
                 </h1>
-                <p className="text-light-gray text-xs" dir={langDir}>
-                  Manage your accounts and switch between different roles and companies
-                </p>
+          <p className="text-gray-600">
+            Manage your business accounts and switch between different roles
+          </p>
+        </div>
+
+        {/* Current Account Card */}
+        {currentAccount && (
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span>Current Account</span>
+                <Badge variant="outline" className="text-sm">
+                  {accountType}
+                </Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div>
+                  <p className="text-sm font-medium text-gray-500">Account Name</p>
+                  <p className="text-lg font-semibold text-gray-900">
+                    {currentAccount.accountName || `${currentAccount.firstName} ${currentAccount.lastName}`}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-500">Trade Role</p>
+                  <p className="text-lg font-semibold text-gray-900">
+                    {currentAccount.tradeRole}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-500">Status</p>
+                  <StatusDisplayBadge 
+                    status={getStatusInfo(currentAccount).status}
+                    statusNote={getStatusInfo(currentAccount).statusNote}
+                    size="sm"
+                  />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-500">Email</p>
+                  <p className="text-lg font-semibold text-gray-900">
+                    {currentAccount.email}
+                  </p>
+                </div>
               </div>
+              
+              {/* Status Description */}
+              <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm text-blue-800">
+                  {getStatusDescription(getStatusInfo(currentAccount).status, getStatusInfo(currentAccount).statusNote)}
+                </p>
+                {/* Show Status Note if available */}
+                {getStatusInfo(currentAccount).statusNote && (
+                  <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <div className="flex items-start space-x-2">
+                      <div className="flex-shrink-0">
+                        <svg className="w-5 h-5 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="text-sm font-medium text-yellow-800">
+                          Admin Note:
+                        </h4>
+                        <p className="text-sm text-yellow-700 mt-1">
+                          {getStatusInfo(currentAccount).statusNote}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Accounts Tabs */}
+        <Tabs defaultValue="all" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="all">All Accounts ({allAccounts?.length || 0})</TabsTrigger>
+            <TabsTrigger value="company">Company ({accountsByType?.company?.length || 0})</TabsTrigger>
+            <TabsTrigger value="freelancer">Freelancer ({accountsByType?.freelancer?.length || 0})</TabsTrigger>
+            <TabsTrigger value="buyer">Buyer ({accountsByType?.buyer?.length || 0})</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="all" className="space-y-4">
+            {/* Create Account Button */}
+            <div className="flex justify-end">
               <Button
                 onClick={() => setShowCreateForm(true)}
-                className="bg-gradient-to-r from-dark-cyan to-blue-800 hover:from-blue-900 hover:to-dark-cyan text-white font-medium px-4 py-1 text-xs"
+                className="bg-blue-600 hover:bg-blue-700"
               >
-                + Create New Account
+                Create New Account
               </Button>
             </div>
-          </div>
 
-          <div className="flex gap-4">
-            {/* Left Column - Main Account (1/4 width) */}
-            <div className="w-1/4">
-              {/* Current Account Status - Above Main Account */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-3">
-                <div className="bg-gray-50 px-3 py-2 border-b border-gray-200">
-                  <h3 className="text-gray-700 font-medium text-sm">Current Account</h3>
-                </div>
-                <div className="p-3">
-                  {(() => {
-                    // Determine which account is currently active
-                    let currentAccount = null;
-                    let accountType = '';
-                    
-                    if (mainAccount?.isCurrentAccount) {
-                      currentAccount = mainAccount;
-                      accountType = 'Main Account';
-                    } else {
-                      // Find the current sub-account
-                      const activeSubAccount = allAccounts?.find(acc => acc.isCurrentAccount);
-                      if (activeSubAccount) {
-                        currentAccount = activeSubAccount;
-                        accountType = 'Sub Account';
-                      }
-                    }
-                    
-                    if (!currentAccount) {
-                      return (
-                        <div className="text-center py-2">
-                          <p className="text-gray-400 text-xs">No account active</p>
-                        </div>
-                      );
-                    }
-                    
-                    return (
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs text-gray-500">Type:</span>
-                          <span className="text-xs font-medium text-gray-700 bg-gray-100 px-2 py-1 rounded">
-                            {accountType}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs text-gray-500">Name:</span>
-                          <span className="text-xs font-medium text-gray-800">
-                            {'firstName' in currentAccount ? `${currentAccount.firstName} ${currentAccount.lastName}` : currentAccount.accountName}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs text-gray-500">Role:</span>
-                          <span className="text-xs font-medium text-gray-700">
-                            {currentAccount.tradeRole}
-                          </span>
-                        </div>
-                        {'firstName' in currentAccount && currentAccount.accountName && currentAccount.accountName !== currentAccount.firstName && (
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs text-gray-500">Account:</span>
-                            <span className="text-xs font-medium text-gray-700">
-                              {currentAccount.accountName}
-                            </span>
-                          </div>
-                        )}
-                        
-                        {/* Statistics */}
-                        <div className="pt-2 border-t border-gray-200 space-y-1">
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs text-gray-500">Messages:</span>
-                            <span className="text-xs font-medium text-gray-800">
-                              {currentAccount.messages || 0}
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs text-gray-500">Orders:</span>
-                            <span className="text-xs font-medium text-gray-800">
-                              {currentAccount.orders || 0}
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs text-gray-500">RFQ:</span>
-                            <span className="text-xs font-medium text-gray-800">
-                              {currentAccount.rfq || 0}
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs text-gray-500">Tracking:</span>
-                            <span className="text-xs font-medium text-gray-800">
-                              {currentAccount.tracking || 0}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })()}
-                </div>
-              </div>
-
+            {/* All Accounts Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {/* Main Account */}
               {mainAccount && (
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden h-60">
-                  <div className="bg-gray-100 px-3 py-2">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-gray-700 font-medium text-sm">
-                        Main Account
-                      </h3>
-                      <div className="flex items-center gap-2">
-                        {mainAccount.isCurrentAccount ? (
-                          <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">
-                            Current
-                          </span>
-                        ) : (
-                          <Button
-                            onClick={handleSwitchToMainAccount}
-                            disabled={switchAccount.isPending}
-                            className="bg-gray-600 hover:bg-gray-700 text-white px-2 py-1 text-xs h-6"
-                          >
-                            {switchAccount.isPending ? "Switching..." : "Switch"}
-                          </Button>
-                        )}
-                      </div>
+                <Card className="border-2 border-blue-200 bg-blue-50">
+                  <CardHeader>
+                    <CardTitle className="flex items-center justify-between">
+                      <span>{mainAccount.accountName || `${mainAccount.firstName} ${mainAccount.lastName}`}</span>
+                      <Badge variant="secondary">Main Account</Badge>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div>
+                      <p className="text-sm font-medium text-gray-500">Trade Role</p>
+                      <p className="font-semibold">{mainAccount.tradeRole}</p>
                     </div>
-                  </div>
-                  <div className="p-3 h-full flex flex-col">
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-medium text-sm text-gray-800">
-                        {mainAccount.firstName} {mainAccount.lastName}
-                      </h4>
-                      <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
-                        (mainAccount.status || 'active') === 'active' 
-                          ? 'bg-green-100 text-green-700' 
-                          : (mainAccount.status || 'active') === 'bended'
-                          ? 'bg-yellow-100 text-yellow-700'
-                          : 'bg-gray-100 text-gray-700'
-                      }`}>
-                        {mainAccount.status || 'active'}
-                      </span>
+                    <div>
+                      <p className="text-sm font-medium text-gray-500">Status</p>
+                      <StatusDisplayBadge 
+                        status={getStatusInfo(mainAccount).status}
+                        statusNote={getStatusInfo(mainAccount).statusNote}
+                        size="sm"
+                      />
                     </div>
-                    
-                    {/* Compact Account Statistics */}
-                    <div className="flex flex-col space-y-1 text-xs mb-auto text-gray-600">
-                      <span>Messages: <span className="font-medium text-gray-800">{mainAccount.messages || 0}</span></span>
-                      <span>Orders: <span className="font-medium text-gray-800">{mainAccount.orders || 0}</span></span>
-                      <span>RFQ: <span className="font-medium text-gray-800">{mainAccount.rfq || 0}</span></span>
-                      <span>Tracking: <span className="font-medium text-gray-800">{mainAccount.tracking || 0}</span></span>
+                    <div>
+                      <p className="text-sm font-medium text-gray-500">Email</p>
+                      <p className="font-semibold">{mainAccount.email}</p>
                     </div>
-                  </div>
-                </div>
+                    {!mainAccount.isCurrentAccount && (
+                      <Button
+                        onClick={() => handleSwitchToMainAccount()}
+                        variant="outline"
+                        className="w-full"
+                      >
+                        Switch to Main Account
+                      </Button>
+                    )}
+                  </CardContent>
+                </Card>
               )}
-            </div>
 
-            {/* Right Column - Additional Accounts (3/4 width) */}
-            <div className="w-3/4">
-              {/* Account Types Section */}
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                <div className="bg-gray-100 px-3 py-2 border-b border-gray-200">
-                  <h3 className="text-gray-700 font-medium text-sm">Additional Accounts</h3>
+              {/* Sub Accounts */}
+              {subAccounts.map((account) => {
+                const statusInfo = getStatusInfo(account);
+                return (
+                  <Card key={account.id} className="hover:shadow-lg transition-shadow">
+                    <CardHeader>
+                      <CardTitle className="flex items-center justify-between">
+                        <span>{account.accountName}</span>
+                        <Badge variant="outline">Sub Account</Badge>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div>
+                        <p className="text-sm font-medium text-gray-500">Trade Role</p>
+                        <p className="font-semibold">{account.tradeRole}</p>
                 </div>
-                <div className="p-3">
-                  <Tabs defaultValue="all" className="w-full">
-                    <TabsList className="grid w-full grid-cols-3 bg-gray-100 p-1 rounded-lg">
-                      <TabsTrigger value="all" className="text-xs data-[state=active]:bg-gray-600 data-[state=active]:text-white">
-                        All ({allAccounts?.length || 0})
-                      </TabsTrigger>
-                      <TabsTrigger value="company" className="text-xs data-[state=active]:bg-gray-600 data-[state=active]:text-white">
-                        Companies ({accountsByType?.company?.filter(isValidAccount)?.length || 0})
-                      </TabsTrigger>
-                      <TabsTrigger value="freelancer" className="text-xs data-[state=active]:bg-gray-600 data-[state=active]:text-white">
-                        Freelancers ({accountsByType?.freelancer?.filter(isValidAccount)?.length || 0})
-                      </TabsTrigger>
-                    </TabsList>
-
-                    <TabsContent value="all" className="mt-3">
-                      <div className="space-y-3">
-                        {allAccounts && allAccounts.length > 0 ? (
-                          allAccounts.map((account) => (
-                            <AccountCard 
-                              key={account.id} 
-                              account={account} 
-                              onSwitch={handleSwitchAccount}
-                              isPending={switchAccount.isPending}
-                            />
-                          ))
-                        ) : (
-                          <div className="text-center py-4">
-                            <p className="text-gray-400 text-sm">No additional accounts found</p>
+                      <div>
+                        <p className="text-sm font-medium text-gray-500">Status</p>
+                        <StatusDisplayBadge 
+                          status={statusInfo.status}
+                          statusNote={statusInfo.statusNote}
+                          size="sm"
+                        />
+                      </div>
+                      {/* Show Status Note prominently for rejected/inactive accounts */}
+                      {statusInfo.statusNote && (statusInfo.status === 'REJECT' || statusInfo.status === 'INACTIVE') && (
+                        <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                          <div className="flex items-start space-x-2">
+                            <div className="flex-shrink-0">
+                              <svg className="w-4 h-4 text-red-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                              </svg>
+                            </div>
+                            <div className="flex-1">
+                              <h4 className="text-xs font-medium text-red-800">
+                                Admin Note:
+                              </h4>
+                              <p className="text-xs text-red-700 mt-1">
+                                {statusInfo.statusNote}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      {account.companyName && (
+                        <div>
+                          <p className="text-sm font-medium text-gray-500">Company</p>
+                          <p className="font-semibold">{account.companyName}</p>
                           </div>
                         )}
+                      {/* <div>
+                        <p className="text-sm font-medium text-gray-500">Created</p>
+                        <p className="font-semibold">
+                          {new Date(account.createdAt).toLocaleDateString()}
+                        </p>
+                      </div> */}
+                      {!account.isCurrentAccount && (
+                        <Button
+                          onClick={() => handleSwitchAccount(account.id)}
+                          variant="outline"
+                          className="w-full"
+                        >
+                          Switch to This Account
+                        </Button>
+                      )}
+                    </CardContent>
+                  </Card>
+                );
+              })}
                       </div>
                     </TabsContent>
 
-                    <TabsContent value="company" className="mt-3">
-                      {(() => {
-                        const filteredCompanyAccounts = accountsByType?.company?.filter(isValidAccount) || [];
-                        
-                        return filteredCompanyAccounts.length > 0 ? (
-                          <div className="space-y-3">
-                            {filteredCompanyAccounts.map((account) => (
-                              <AccountCard 
-                                key={account.id} 
-                                account={account} 
-                                onSwitch={handleSwitchAccount}
-                                isPending={switchAccount.isPending}
-                              />
-                            ))}
+          <TabsContent value="company" className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {accountsByType?.company?.map((account) => {
+                const statusInfo = getStatusInfo(account);
+                return (
+                  <Card key={account.id} className="hover:shadow-lg transition-shadow">
+                    <CardHeader>
+                      <CardTitle className="flex items-center justify-between">
+                        <span>{account.accountName}</span>
+                        <Badge variant="outline">Company</Badge>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div>
+                        <p className="text-sm font-medium text-gray-500">Status</p>
+                        <StatusDisplayBadge 
+                          status={statusInfo.status}
+                          statusNote={statusInfo.statusNote}
+                          size="sm"
+                        />
+                      </div>
+                      {/* Show Status Note prominently for rejected/inactive accounts */}
+                      {statusInfo.statusNote && (statusInfo.status === 'REJECT' || statusInfo.status === 'INACTIVE') && (
+                        <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                          <div className="flex items-start space-x-2">
+                            <div className="flex-shrink-0">
+                              <svg className="w-4 h-4 text-red-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                              </svg>
+                            </div>
+                            <div className="flex-1">
+                              <h4 className="text-xs font-medium text-red-800">
+                                Admin Note:
+                              </h4>
+                              <p className="text-xs text-red-700 mt-1">
+                                {statusInfo.statusNote}
+                              </p>
+                            </div>
                           </div>
-                        ) : (
-                          <div className="text-center py-4">
-                            <p className="text-gray-400 text-sm">No company accounts found</p>
+                        </div>
+                      )}
+                      {account.companyName && (
+                        <div>
+                          <p className="text-sm font-medium text-gray-500">Company Name</p>
+                          <p className="font-semibold">{account.companyName}</p>
                           </div>
-                        );
-                      })()}
+                      )}
+                      {!account.isCurrentAccount && (
+                        <Button
+                          onClick={() => handleSwitchAccount(account.id)}
+                          variant="outline"
+                          className="w-full"
+                        >
+                          Switch to This Account
+                        </Button>
+                      )}
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
                     </TabsContent>
 
-                    <TabsContent value="freelancer" className="mt-3">
-                      {(() => {
-                        const filteredFreelancerAccounts = accountsByType?.freelancer?.filter(isValidAccount) || [];
-                        
-                        return filteredFreelancerAccounts.length > 0 ? (
-                          <div className="space-y-3">
-                            {filteredFreelancerAccounts.map((account) => (
-                              <AccountCard 
-                                key={account.id} 
-                                account={account} 
-                                onSwitch={handleSwitchAccount}
-                                isPending={switchAccount.isPending}
-                              />
-                            ))}
+          <TabsContent value="freelancer" className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {accountsByType?.freelancer?.map((account) => {
+                const statusInfo = getStatusInfo(account);
+                return (
+                  <Card key={account.id} className="hover:shadow-lg transition-shadow">
+                    <CardHeader>
+                      <CardTitle className="flex items-center justify-between">
+                        <span>{account.accountName}</span>
+                        <Badge variant="outline">Freelancer</Badge>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div>
+                        <p className="text-sm font-medium text-gray-500">Status</p>
+                        <StatusDisplayBadge 
+                          status={statusInfo.status}
+                          statusNote={statusInfo.statusNote}
+                          size="sm"
+                        />
+                      </div>
+                      {/* Show Status Note prominently for rejected/inactive accounts */}
+                      {statusInfo.statusNote && (statusInfo.status === 'REJECT' || statusInfo.status === 'INACTIVE') && (
+                        <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                          <div className="flex items-start space-x-2">
+                            <div className="flex-shrink-0">
+                              <svg className="w-4 h-4 text-red-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                              </svg>
+                            </div>
+                            <div className="flex-1">
+                              <h4 className="text-xs font-medium text-red-800">
+                                Admin Note:
+                              </h4>
+                              <p className="text-xs text-red-700 mt-1">
+                                {statusInfo.statusNote}
+                              </p>
+                            </div>
                           </div>
-                        ) : (
-                          <div className="text-center py-4">
-                            <p className="text-gray-400 text-sm">No freelancer accounts found</p>
+                        </div>
+                      )}
+                      {!account.isCurrentAccount && (
+                        <Button
+                          onClick={() => handleSwitchAccount(account.id)}
+                          variant="outline"
+                          className="w-full"
+                        >
+                          Switch to This Account
+                        </Button>
+                      )}
+                    </CardContent>
+                  </Card>
+                );
+              })}
                           </div>
-                        );
-                      })()}
                     </TabsContent>
-                  </Tabs>
-                </div>
-              </div>
+
+          <TabsContent value="buyer" className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {accountsByType?.buyer?.map((account) => {
+                const statusInfo = getStatusInfo(account);
+                return (
+                  <Card key={account.id} className="hover:shadow-lg transition-shadow">
+                    <CardHeader>
+                      <CardTitle className="flex items-center justify-between">
+                        <span>{account.accountName}</span>
+                        <Badge variant="outline">Buyer</Badge>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div>
+                        <p className="text-sm font-medium text-gray-500">Status</p>
+                        <StatusDisplayBadge 
+                          status={statusInfo.status}
+                          statusNote={statusInfo.statusNote}
+                          size="sm"
+                        />
+                      </div>
+                      {/* Show Status Note prominently for rejected/inactive accounts */}
+                      {statusInfo.statusNote && (statusInfo.status === 'REJECT' || statusInfo.status === 'INACTIVE') && (
+                        <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                          <div className="flex items-start space-x-2">
+                            <div className="flex-shrink-0">
+                              <svg className="w-4 h-4 text-red-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                              </svg>
+                            </div>
+                            <div className="flex-1">
+                              <h4 className="text-xs font-medium text-red-800">
+                                Admin Note:
+                              </h4>
+                              <p className="text-xs text-red-700 mt-1">
+                                {statusInfo.statusNote}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      {!account.isCurrentAccount && (
+                        <Button
+                          onClick={() => handleSwitchAccount(account.id)}
+                          variant="outline"
+                          className="w-full"
+                        >
+                          Switch to This Account
+                        </Button>
+                      )}
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
-          </div>
+          </TabsContent>
+        </Tabs>
 
         {/* Create Account Modal */}
         <Dialog open={showCreateForm} onOpenChange={setShowCreateForm}>
-          <DialogContent className="max-w-lg max-h-[90vh] border-2 border-dark-cyan overflow-hidden flex flex-col">
+          <DialogContent className="max-w-md max-h-[90vh] flex flex-col">
             <DialogHeader className="pb-4 border-b border-gray-200 flex-shrink-0">
               <DialogTitle dir={langDir} className="text-dark-cyan text-xl font-semibold">
                 Create New Account
@@ -687,16 +818,15 @@ export default function MyAccountsPage() {
                           )}
                         />
 
-                        <div className="grid grid-cols-2 gap-2">
                           <FormField
                             control={form.control}
                             name="companyPhone"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel className="text-dark-cyan font-medium text-xs">Phone</FormLabel>
+                              <FormLabel className="text-dark-cyan font-medium text-xs">Company Phone</FormLabel>
                                 <FormControl>
                                   <Input 
-                                    placeholder="Phone number" 
+                                  placeholder="Enter company phone" 
                                     {...field} 
                                     className="border-gray-300 focus:border-dark-orange focus:ring-dark-orange text-sm"
                                   />
@@ -711,10 +841,10 @@ export default function MyAccountsPage() {
                             name="companyWebsite"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel className="text-dark-cyan font-medium text-xs">Website</FormLabel>
+                              <FormLabel className="text-dark-cyan font-medium text-xs">Company Website</FormLabel>
                                 <FormControl>
                                   <Input 
-                                    placeholder="Website URL" 
+                                  placeholder="Enter company website" 
                                     {...field} 
                                     className="border-gray-300 focus:border-dark-orange focus:ring-dark-orange text-sm"
                                   />
@@ -723,17 +853,16 @@ export default function MyAccountsPage() {
                               </FormItem>
                             )}
                           />
-                        </div>
 
                         <FormField
                           control={form.control}
                           name="companyTaxId"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-dark-cyan font-medium text-xs">Tax ID / Business Registration</FormLabel>
+                              <FormLabel className="text-dark-cyan font-medium text-xs">Company Tax ID</FormLabel>
                               <FormControl>
                                 <Input 
-                                  placeholder="Enter tax ID or business registration" 
+                                  placeholder="Enter company tax ID" 
                                   {...field} 
                                   className="border-gray-300 focus:border-dark-orange focus:ring-dark-orange text-sm"
                                 />
@@ -745,27 +874,47 @@ export default function MyAccountsPage() {
                       </div>
                     </div>
                   )}
+
+                  {/* Status Information */}
+                  <div className="space-y-3 border-t border-gray-200 pt-4">
+                    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                      <div className="flex items-start space-x-2">
+                        <div className="flex-shrink-0">
+                          <svg className="w-5 h-5 text-yellow-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                          </svg>
+                        </div>
+                        <div className="text-sm text-yellow-800">
+                          <p className="font-medium">Account Status</p>
+                          <p className="text-yellow-600">New accounts will be created with a "Waiting" status and require admin approval before activation.</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </form>
               </Form>
             </div>
 
-            <div className="flex space-x-2 pt-4 border-t border-gray-200 flex-shrink-0">
+            <div className="flex justify-end space-x-2 pt-4 border-t border-gray-200 flex-shrink-0">
               <Button
-                type="button"
                 variant="outline"
                 onClick={() => setShowCreateForm(false)}
-                className="flex-1 border-gray-300 text-gray-600 hover:bg-gray-50"
               >
                 Cancel
               </Button>
               <Button
-                type="submit"
-                disabled={createAccount.isPending}
                 onClick={form.handleSubmit(handleCreateAccount)}
-                className="flex-1 bg-gradient-to-r from-dark-orange to-red-600 hover:from-red-600 hover:to-dark-orange text-white"
+                disabled={createAccount.isPending}
+                className="bg-blue-600 hover:bg-blue-700"
               >
                 {createAccount.isPending ? (
-                  <LoaderWithMessage message="Creating..." />
+                  <>
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Creating...
+                  </>
                 ) : (
                   "Create Account"
                 )}
@@ -773,88 +922,6 @@ export default function MyAccountsPage() {
             </div>
           </DialogContent>
         </Dialog>
-          </div>
-        </div>
-      </section>
-    </>
-  );
-}
-
-// Account Card Component
-function AccountCard({ account, onSwitch, isPending }: any) {
-  // Extremely strict validation - refuse to render anything questionable
-  if (!account || 
-      !account.accountName || 
-      typeof account.accountName !== 'string' ||
-      account.accountName.trim() === '' ||
-      account.accountName.trim() === 'undefined' ||
-      account.accountName.toLowerCase().includes('undefined') ||
-      account.accountName.trim() === 'null' ||
-      !account.id ||
-      !account.tradeRole) {
-    
-    if (process.env.NODE_ENV === 'development') {
-      console.warn("AccountCard: Refusing to render invalid account:", account);
-    }
-    return null; // Absolutely refuse to render
-  }
-
-  const accountName = account.accountName.trim();
-  
-  return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-      {/* Header */}
-      <div className="bg-gray-100 px-3 py-2 border-b border-gray-200">
-        <div className="flex items-center justify-between">
-          <h3 className="text-gray-700 font-medium text-sm capitalize">
-            {account.tradeRole.toLowerCase()}
-          </h3>
-          <div className="flex items-center gap-2">
-            {account.isCurrentAccount ? (
-              <span className="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-medium">
-                Current
-              </span>
-            ) : (
-              <Button
-                onClick={() => onSwitch(account.id)}
-                disabled={isPending}
-                className="bg-gray-600 hover:bg-gray-700 text-white px-2 py-1 text-xs h-6"
-              >
-                {isPending ? "Switching..." : "Switch"}
-              </Button>
-            )}
-          </div>
-        </div>
-      </div>
-      
-      {/* Body */}
-      <div className="p-3">
-        <div className="flex items-center justify-between mb-2">
-          <h4 className="font-medium text-sm text-gray-800">
-            {accountName}
-          </h4>
-          <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
-            (account.status || 'active') === 'active' 
-              ? 'bg-green-100 text-green-700' 
-              : (account.status || 'active') === 'bended'
-              ? 'bg-yellow-100 text-yellow-700'
-              : 'bg-gray-100 text-gray-700'
-          }`}>
-            {account.status || 'active'}
-          </span>
-        </div>
-        
-        {account.companyName && (
-          <div className="text-xs text-gray-500 mb-2">• {account.companyName}</div>
-        )}
-        
-        {/* Compact Account Statistics */}
-        <div className="flex items-center justify-between text-xs text-gray-600">
-          <span>msg: <span className="font-medium text-gray-800">{account.messages || 0}</span></span>
-          <span>orders: <span className="font-medium text-gray-800">{account.orders || 0}</span></span>
-          <span>RFQ: <span className="font-medium text-gray-800">{account.rfq || 0}</span></span>
-          <span>track: <span className="font-medium text-gray-800">{account.tracking || 0}</span></span>
-        </div>
       </div>
     </div>
   );

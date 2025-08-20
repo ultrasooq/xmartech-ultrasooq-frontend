@@ -415,28 +415,86 @@ export const BUSINESS_TYPE_CATEGORY_ID = 5;
 
 export const LANGUAGES = [
   {
-    locale: 'en',
-    name: 'English',
-    direction: 'ltr',
+    locale: "en",
+    name: "English",
+    direction: "ltr",
   },
   {
-    locale: 'ar',
-    name: 'Arabic',
-    direction: 'rtl',
-  }
+    locale: "ar",
+    name: "Arabic",
+    direction: "rtl",
+  },
 ];
 
 export const CURRENCIES = [
   {
-    code: 'INR',
-    symbol: '₹'
+    code: "INR",
+    symbol: "₹",
   },
   {
-    code: 'USD',
-    symbol: '$'
+    code: "USD",
+    symbol: "$",
   },
   {
-    code: 'AUD',
-    symbol: '$'
-  }
+    code: "AUD",
+    symbol: "$",
+  },
 ];
+
+// User Status System Constants
+export const USER_STATUS_LIST = [
+  { value: "WAITING", label: "Waiting" },
+  { value: "ACTIVE", label: "Active" },
+  { value: "REJECT", label: "Reject" },
+  { value: "INACTIVE", label: "Inactive" },
+];
+
+export const USER_STATUS_CONFIG = {
+  WAITING: {
+    label: "Waiting",
+    value: "WAITING",
+    color: "#ffc107",
+    bgColor: "#fff3cd",
+    textColor: "#856404",
+    icon: "clock-o",
+    canApprove: true,
+    canReject: true,
+    canDeactivate: true,
+  },
+  ACTIVE: {
+    label: "Active",
+    value: "ACTIVE",
+    color: "#28a745",
+    bgColor: "#d4edda",
+    textColor: "#155724",
+    icon: "check-circle",
+    canApprove: false,
+    canReject: true,
+    canDeactivate: true,
+  },
+  REJECT: {
+    label: "Rejected",
+    value: "REJECT",
+    color: "#dc3545",
+    bgColor: "#f8d7da",
+    textColor: "#721c24",
+    icon: "times-circle",
+    canApprove: true,
+    canReject: false,
+    canDeactivate: true,
+  },
+  INACTIVE: {
+    label: "Inactive",
+    value: "INACTIVE",
+    color: "#6c757d",
+    bgColor: "#e2e3e5",
+    textColor: "#495057",
+    icon: "ban",
+    canApprove: true,
+    canReject: false,
+    canDeactivate: false,
+  },
+};
+
+// Default status for new sub-accounts
+export const DEFAULT_SUB_ACCOUNT_STATUS = "WAITING";

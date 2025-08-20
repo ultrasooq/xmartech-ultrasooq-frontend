@@ -121,19 +121,6 @@ const BuyerProfileDetailsPage = () => {
                 {t("my_profile")}
               </h2>
             </div>
-
-            <div className="common-q-text-with-action">
-              <p>Do you want to upgrade your profile?</p>
-              <button
-                type="button"
-                onClick={handleRoleModal}
-                className="theme-primary-btn addbtn"
-                dir={langDir}
-                translate="no"
-              >
-                {t("update")}
-              </button>
-            </div>
             <ProfileCard userDetails={currentAccountData || me.data?.data} />
             <div className="mt-12 w-full">
               <Tabs defaultValue="profile-info">

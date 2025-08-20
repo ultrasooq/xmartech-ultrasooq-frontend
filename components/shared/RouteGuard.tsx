@@ -1,84 +1,96 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useMe } from "@/apis/queries/user.queries";
-import { getCookie } from "cookies-next";
-import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
-import { isStatusAllowed, getUserStatusInfo } from "@/utils/statusCheck";
+import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useMe } from '@/apis/queries/user.queries';
+import { useCurrentAccount } from '@/apis/queries/auth.queries';
+import { 
+  hasRouteAccess, 
+  hasLimitedAccess, 
+  getUnauthorizedRedirect,
+  hasFullAccess 
+} from '@/utils/statusCheck';
+import { PUREMOON_TOKEN_KEY } from '@/utils/constants';
+import { getCookie } from 'cookies-next';
+import LoaderWithMessage from './LoaderWithMessage';
 
 interface RouteGuardProps {
   children: React.ReactNode;
-  allowedStatuses?: string[];
-  redirectTo?: string;
+  requiredStatus?: 'ACTIVE' | 'WAITING' | 'INACTIVE' | 'ANY';
+  fallback?: React.ReactNode;
+  showLoader?: boolean;
 }
 
 const RouteGuard: React.FC<RouteGuardProps> = ({
   children,
-  allowedStatuses = ["ACTIVE"],
-  redirectTo = "/home"
+  requiredStatus = 'ACTIVE',
+  fallback,
+  showLoader = true,
 }) => {
   const router = useRouter();
   const [isChecking, setIsChecking] = useState(true);
+  const [hasAccess, setHasAccess] = useState(false);
+  
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
-
-  // Only fetch user data if there's an access token
-  const { data: userData, isLoading, error } = useMe(!!accessToken);
+  const { data: me, isLoading: meLoading } = useMe(!!accessToken);
+  const { data: currentAccount, isLoading: accountLoading } = useCurrentAccount();
 
   useEffect(() => {
     if (!accessToken) {
       // No token, redirect to login
-      router.push("/login");
+      router.push('/login');
       return;
     }
 
-    if (isLoading) {
-      // Still loading, wait
-      return;
+    if (meLoading || accountLoading) {
+      return; // Still loading
     }
 
-    if (error) {
-      // Error fetching user data, redirect to login
-      router.push("/login");
-      return;
-    }
-
-    const userStatus = userData?.data?.status;
-    const statusInfo = getUserStatusInfo(userData);
+    // Get user status from current account or me data
+    let userStatus = 'WAITING'; // Default fallback
     
-    if (!userStatus) {
-      // No status found, redirect to login
-      console.log("RouteGuard: No user status found, redirecting to login");
-      router.push("/login");
+    if (currentAccount?.data?.data?.account?.status) {
+      userStatus = currentAccount.data.data.account.status;
+    } else if (me?.data?.data?.status) {
+      userStatus = me.data.data.status;
+    }
+
+    console.log('RouteGuard - userStatus:', userStatus);
+    console.log('RouteGuard - requiredStatus:', requiredStatus);
+
+    // Check if user has access based on status
+    let accessGranted = false;
+    
+    if (requiredStatus === 'ANY') {
+      accessGranted = true; // Allow access for any status
+    } else if (requiredStatus === 'ACTIVE') {
+      accessGranted = hasFullAccess(userStatus);
+    } else if (requiredStatus === 'WAITING' || requiredStatus === 'INACTIVE') {
+      accessGranted = hasLimitedAccess(userStatus) || hasFullAccess(userStatus);
+    }
+
+    if (!accessGranted) {
+      // User doesn't have access, redirect appropriately
+      const redirectUrl = getUnauthorizedRedirect(userStatus);
+      console.log('RouteGuard - Access denied, redirecting to:', redirectUrl);
+      router.push(redirectUrl);
       return;
     }
 
-    if (!isStatusAllowed(userStatus, allowedStatuses)) {
-      // User status not allowed, redirect
-      console.log(`RouteGuard: User status ${userStatus} not allowed. Redirecting to ${redirectTo}`);
-      console.log(`RouteGuard: Allowed statuses: ${allowedStatuses.join(', ')}`);
-      console.log(`RouteGuard: Status info:`, statusInfo);
-      router.push(redirectTo);
-      return;
-    }
-
-    console.log(`RouteGuard: User status ${userStatus} is allowed. Rendering component.`);
-    console.log(`RouteGuard: Status info:`, statusInfo);
-
-    // User status is allowed, render children
+    setHasAccess(true);
     setIsChecking(false);
-  }, [accessToken, userData, isLoading, error, allowedStatuses, redirectTo, router]);
+  }, [accessToken, me, currentAccount, meLoading, accountLoading, requiredStatus, router]);
 
-  // Show loading while checking
-  if (isChecking || isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
-      </div>
-    );
+  if (meLoading || accountLoading || isChecking) {
+    return showLoader ? (
+      <LoaderWithMessage message="Checking access..." />
+    ) : null;
   }
 
-  // If we reach here, user is authenticated and has allowed status
+  if (!hasAccess) {
+    return fallback || null;
+  }
+
   return <>{children}</>;
 };
 
