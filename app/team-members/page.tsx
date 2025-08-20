@@ -12,6 +12,7 @@ import { PERMISSION_TEAM_MEMBERS, checkPermission } from "@/helpers/permission";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import { withActiveUserGuard } from "@/components/shared/withRouteGuard";
 
 const TeamMembersPage = () => {
   const t = useTranslations();
@@ -182,4 +183,4 @@ const TeamMembersPage = () => {
   );
 };
 
-export default TeamMembersPage;
+export default withActiveUserGuard(TeamMembersPage);

@@ -73,6 +73,7 @@ import { useTranslations } from "next-intl";
 import { cookies } from "next/headers";
 import { setUserLocale } from "@/src/services/locale";
 import { fetchIpInfo } from "@/apis/requests/ip.requests";
+import StatusDisplay from "@/components/shared/StatusDisplay";
 
 type CategoryProps = {
   id: number;
@@ -150,7 +151,9 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
 
   // Get the current active account's trade role
   const currentTradeRole = currentAccount?.data?.data?.account?.tradeRole || me?.data?.data?.tradeRole;
+  const userStatus = me?.data?.data?.status;
   console.log("Header - currentTradeRole:", currentTradeRole);
+  console.log("Header - userStatus:", userStatus);
   console.log("Header - currentAccount data:", currentAccount?.data?.data);
   console.log("Header - me data:", me?.data?.data);
 
@@ -697,7 +700,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                     {isLoggedIn ? (
                       <div className="flex items-center gap-2">
                         <DropdownMenu>
-                        <DropdownMenuTrigger className="h-[44px] w-[44px]">
+                        <DropdownMenuTrigger className="h-[44px] w-[44px] relative">
                           {me?.data?.data?.profilePicture ? (
                             <Image
                               src={me?.data?.data?.profilePicture}
@@ -713,8 +716,26 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                               </p>
                             </div>
                           )}
+                          {/* Status indicator - only show for non-active users */}
+                          {userStatus && userStatus !== "ACTIVE" && (
+                            <div className={`absolute -top-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${
+                              userStatus === "INACTIVE" ? "bg-red-500" : 
+                              userStatus === "SUSPENDED" ? "bg-yellow-500" : "bg-gray-500"
+                            }`} title={`Status: ${userStatus}`} />
+                          )}
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
+                          {/* Status indicator - only show for non-active users */}
+                          {userStatus && userStatus !== "ACTIVE" && (
+                            <div className="px-2 py-1.5 text-xs text-gray-500 border-b border-gray-200">
+                              Status: <span className={`font-medium ${
+                                userStatus === "INACTIVE" ? "text-red-600" : 
+                                userStatus === "SUSPENDED" ? "text-yellow-600" : "text-gray-600"
+                              }`}>{userStatus}</span>
+                            </div>
+                          )}
+                          
+                          {/* Always show Profile Information */}
                           <Link href={handleProfile()}>
                             <DropdownMenuItem
                               className="cursor-pointer"
@@ -725,148 +746,165 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                             </DropdownMenuItem>
                           </Link>
                           
-                          {/* Dashboard - Available for all logged-in users */}
-                          <Link href="/vendor-dashboard">
-                            <DropdownMenuItem
-                              className="cursor-pointer"
-                              dir={langDir}
-                              translate="no"
-                            >
-                              {t("dashboard")}
-                            </DropdownMenuItem>
-                          </Link>
-                          
-                          {/* Company-specific options */}
-                          {currentTradeRole !== "BUYER" ? (
+                          {/* Check user status - if INACTIVE, only show Profile and Logout */}
+                          {userStatus === "INACTIVE" ? (
                             <>
-                              {hideMenu(PERMISSION_TEAM_MEMBERS) ? (
-                                <Link href="/team-members">
-                                  <DropdownMenuItem
-                                    dir={langDir}
-                                    translate="no"
-                                  >
-                                    {t("team_members")}
-                                  </DropdownMenuItem>
-                                </Link>
-                              ) : null}
-                              
-                              {hideMenu(PERMISSION_PRODUCTS) ? (
-                                <Link href="/manage-products">
-                                  <DropdownMenuItem
-                                    dir={langDir}
-                                    translate="no"
-                                  >
-                                    {t("products")}
-                                  </DropdownMenuItem>
-                                </Link>
-                              ) : null}
-                              
-                              {hideMenu(PERMISSION_SERVICES) ? (
-                                <Link href="/manage-services">
-                                  <DropdownMenuItem
-                                    dir={langDir}
-                                    translate="no"
-                                  >
-                                    {t("services")}
-                                  </DropdownMenuItem>
-                                </Link>
-                              ) : null}
-                              
-                              {hideMenu(PERMISSION_ORDERS) ? (
-                                <Link href="/seller-orders">
-                                  <DropdownMenuItem
-                                    dir={langDir}
-                                    translate="no"
-                                  >
-                                    {t("orders")}
-                                  </DropdownMenuItem>
-                                </Link>
-                              ) : null}
-                              
-                              {hideMenu(PERMISSION_RFQ_QUOTES) ? (
-                                <Link href="/rfq-quotes">
-                                  <DropdownMenuItem
-                                    dir={langDir}
-                                    translate="no"
-                                  >
-                                    {t("rfq_quotes")}
-                                  </DropdownMenuItem>
-                                </Link>
-                              ) : null}
-                              
-                              {hideMenu(PERMISSION_RFQ_SELLER_REQUESTS) ? (
-                                <Link href="/seller-rfq-request">
-                                  <DropdownMenuItem
-                                    dir={langDir}
-                                    translate="no"
-                                  >
-                                    {t("rfq_seller_requests")}
-                                  </DropdownMenuItem>
-                                </Link>
-                              ) : null}
-                              
-                              {hideMenu(PERMISSION_MESSAGE_SYSTEM) ? (
-                                <Link href="/seller-rfq-request">
-                                  <DropdownMenuItem
-                                    dir={langDir}
-                                    translate="no"
-                                  >
-                                    {t("Message System")}
-                                  </DropdownMenuItem>
-                                </Link>
-                              ) : null}
-                              
-                              {hideMenu(PERMISSION_SELLER_REWARDS) ? (
-                                <Link href="/seller-rewards">
-                                  <DropdownMenuItem
-                                    dir={langDir}
-                                    translate="no"
-                                  >
-                                    {t("seller_rewards")}
-                                  </DropdownMenuItem>
-                                </Link>
-                              ) : null}
-                            </>
-                          ) : null}
-                          
-                          {hideMenu(PERMISSION_SHARE_LINKS) ? (
-                            <Link href="/share-links">
-                              <DropdownMenuItem dir={langDir} translate="no">
-                                {t("share_links")}
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem
+                                onClick={handleLogout}
+                                className="cursor-pointer"
+                                dir={langDir}
+                                translate="no"
+                              >
+                                {t("logout")}
                               </DropdownMenuItem>
-                            </Link>
-                          ) : null}
-                          
-                          <Link href="/my-settings/address">
-                            <DropdownMenuItem dir={langDir} translate="no">
-                              {t("my_settings")}
-                            </DropdownMenuItem>
-                          </Link>
-                          
-                          <Link href="/transactions">
-                            <DropdownMenuItem dir={langDir} translate="no">
-                              {t("transactions")}
-                            </DropdownMenuItem>
-                          </Link>
-                          
-                          <Link href="/queries">
-                            <DropdownMenuItem
-                              dir={langDir} translate="no"
-                            >
-                              {t("queries")}
-                            </DropdownMenuItem>
-                          </Link>
-                          
-                          <DropdownMenuSeparator />
-                          
-                          <DropdownMenuItem
-                            onClick={handleLogout}
-                            className="cursor-pointer"
-                            dir={langDir}
-                            translate="no"
-                          >
-                            {t("logout")}
-                          </DropdownMenuItem>
+                            </>
+                          ) : (
+                            <>
+                              {/* Dashboard - Available for all active users */}
+                              <Link href="/vendor-dashboard">
+                                <DropdownMenuItem
+                                  className="cursor-pointer"
+                                  dir={langDir}
+                                  translate="no"
+                                >
+                                  {t("dashboard")}
+                                </DropdownMenuItem>
+                              </Link>
+                              
+                              {/* Company-specific options for active users */}
+                              {currentTradeRole !== "BUYER" ? (
+                                <>
+                                  {hideMenu(PERMISSION_TEAM_MEMBERS) ? (
+                                    <Link href="/team-members">
+                                      <DropdownMenuItem
+                                        dir={langDir}
+                                        translate="no"
+                                      >
+                                        {t("team_members")}
+                                      </DropdownMenuItem>
+                                    </Link>
+                                  ) : null}
+                                  
+                                  {hideMenu(PERMISSION_PRODUCTS) ? (
+                                    <Link href="/manage-products">
+                                      <DropdownMenuItem
+                                        dir={langDir}
+                                        translate="no"
+                                      >
+                                        {t("products")}
+                                      </DropdownMenuItem>
+                                    </Link>
+                                  ) : null}
+                                  
+                                  {hideMenu(PERMISSION_SERVICES) ? (
+                                    <Link href="/manage-services">
+                                      <DropdownMenuItem
+                                        dir={langDir}
+                                        translate="no"
+                                      >
+                                        {t("services")}
+                                      </DropdownMenuItem>
+                                    </Link>
+                                  ) : null}
+                                  
+                                  {hideMenu(PERMISSION_ORDERS) ? (
+                                    <Link href="/seller-orders">
+                                      <DropdownMenuItem
+                                        dir={langDir}
+                                        translate="no"
+                                      >
+                                        {t("orders")}
+                                      </DropdownMenuItem>
+                                    </Link>
+                                  ) : null}
+                                  
+                                  {hideMenu(PERMISSION_RFQ_QUOTES) ? (
+                                    <Link href="/rfq-quotes">
+                                      <DropdownMenuItem
+                                        dir={langDir}
+                                        translate="no"
+                                      >
+                                        {t("rfq_quotes")}
+                                      </DropdownMenuItem>
+                                    </Link>
+                                  ) : null}
+                                  
+                                  {hideMenu(PERMISSION_RFQ_SELLER_REQUESTS) ? (
+                                    <Link href="/seller-rfq-request">
+                                      <DropdownMenuItem
+                                        dir={langDir}
+                                        translate="no"
+                                      >
+                                        {t("rfq_seller_requests")}
+                                      </DropdownMenuItem>
+                                    </Link>
+                                  ) : null}
+                                  
+                                  {hideMenu(PERMISSION_MESSAGE_SYSTEM) ? (
+                                    <Link href="/seller-rfq-request">
+                                      <DropdownMenuItem
+                                        dir={langDir}
+                                        translate="no"
+                                      >
+                                        {t("Message System")}
+                                      </DropdownMenuItem>
+                                    </Link>
+                                  ) : null}
+                                  
+                                  {hideMenu(PERMISSION_SELLER_REWARDS) ? (
+                                    <Link href="/seller-rewards">
+                                      <DropdownMenuItem
+                                        dir={langDir}
+                                        translate="no"
+                                      >
+                                        {t("seller_rewards")}
+                                      </DropdownMenuItem>
+                                    </Link>
+                                  ) : null}
+                                </>
+                              ) : null}
+                              
+                              {hideMenu(PERMISSION_SHARE_LINKS) ? (
+                                <Link href="/share-links">
+                                  <DropdownMenuItem dir={langDir} translate="no">
+                                    {t("share_links")}
+                                  </DropdownMenuItem>
+                                </Link>
+                              ) : null}
+                              
+                              <Link href="/my-settings/address">
+                                <DropdownMenuItem dir={langDir} translate="no">
+                                  {t("my_settings")}
+                                </DropdownMenuItem>
+                              </Link>
+                              
+                              <Link href="/transactions">
+                                <DropdownMenuItem dir={langDir} translate="no">
+                                  {t("transactions")}
+                                </DropdownMenuItem>
+                              </Link>
+                              
+                              <Link href="/queries">
+                                <DropdownMenuItem
+                                  dir={langDir} translate="no"
+                                >
+                                  {t("queries")}
+                                </DropdownMenuItem>
+                              </Link>
+                              
+                              <DropdownMenuSeparator />
+                              
+                              <DropdownMenuItem
+                                onClick={handleLogout}
+                                className="cursor-pointer"
+                                dir={langDir}
+                                translate="no"
+                              >
+                                {t("logout")}
+                              </DropdownMenuItem>
+                            </>
+                          )}
                         </DropdownMenuContent>
                       </DropdownMenu>
                       </div>

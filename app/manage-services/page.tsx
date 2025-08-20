@@ -34,6 +34,7 @@ import { IoMdAdd } from "react-icons/io";
 // @ts-ignore
 import  { startDebugger }  from "remove-child-node-error-debugger";
 import ListIcon from "@/components/icons/ListIcon";
+import { withActiveUserGuard } from "@/components/shared/withRouteGuard";
 
 const ManageServices = () => {
   const t = useTranslations();
@@ -282,4 +283,4 @@ const ManageServices = () => {
   );
 };
 
-export default ManageServices;
+export default withActiveUserGuard(ManageServices);

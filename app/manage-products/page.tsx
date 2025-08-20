@@ -32,6 +32,7 @@ import {
 import { IBrands, ISelectOptions } from "@/utils/types/common.types";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useBrands } from "@/apis/queries/masters.queries";
+import { withActiveUserGuard } from "@/components/shared/withRouteGuard";
 
 const schema = (t: any) => {
   return (
@@ -872,4 +873,4 @@ const ManageProductsPage = () => {
   );
 };
 
-export default ManageProductsPage;
+export default withActiveUserGuard(ManageProductsPage);
