@@ -221,6 +221,7 @@ export default function MyAccountsPage() {
       isActive: status === "ACTIVE",
       isRejected: status === "REJECT",
       isInactive: status === "INACTIVE",
+      isWaitingForSuperAdmin: status === "WAITING_FOR_SUPER_ADMIN",
     };
   };
 
@@ -241,6 +242,11 @@ export default function MyAccountsPage() {
           return "Your account is temporarily inactive. Please see the admin note below for details.";
         }
         return "Your account is temporarily inactive. Please contact support to reactivate.";
+      case "WAITING_FOR_SUPER_ADMIN":
+        if (statusNote) {
+          return `Your account has been escalated to super admin for review: ${statusNote}`;
+        }
+        return "Your account has been escalated to super admin for final review.";
       default:
         return "Account status information not available.";
     }
@@ -293,8 +299,8 @@ export default function MyAccountsPage() {
     }
     
     // Debug logging
-    if (process.env.NODE_ENV === 'development') {
-      console.log("Filtering out main account from sub-accounts", account);
+      if (process.env.NODE_ENV === 'development') {
+        console.log("Filtering out main account from sub-accounts", account);
     }
     
     return true;
@@ -311,7 +317,7 @@ export default function MyAccountsPage() {
           <p className="text-gray-600">
             Manage your business accounts and switch between different roles
           </p>
-        </div>
+          </div>
 
         {/* Current Account Card */}
         {currentAccount && (
@@ -320,7 +326,7 @@ export default function MyAccountsPage() {
               <CardTitle className="flex items-center justify-between">
                 <span>Current Account</span>
                 <Badge variant="outline" className="text-sm">
-                  {accountType}
+                            {accountType}
                 </Badge>
               </CardTitle>
             </CardHeader>
@@ -331,28 +337,27 @@ export default function MyAccountsPage() {
                   <p className="text-lg font-semibold text-gray-900">
                     {currentAccount.accountName || `${currentAccount.firstName} ${currentAccount.lastName}`}
                   </p>
-                </div>
+                        </div>
                 <div>
                   <p className="text-sm font-medium text-gray-500">Trade Role</p>
                   <p className="text-lg font-semibold text-gray-900">
-                    {currentAccount.tradeRole}
+                            {currentAccount.tradeRole}
                   </p>
-                </div>
+                        </div>
                 <div>
                   <p className="text-sm font-medium text-gray-500">Status</p>
                   <StatusDisplayBadge 
                     status={getStatusInfo(currentAccount).status}
-                    statusNote={getStatusInfo(currentAccount).statusNote}
                     size="sm"
                   />
-                </div>
+                          </div>
                 <div>
                   <p className="text-sm font-medium text-gray-500">Email</p>
                   <p className="text-lg font-semibold text-gray-900">
                     {currentAccount.email}
                   </p>
-                </div>
-              </div>
+                          </div>
+                          </div>
               
               {/* Status Description */}
               <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
@@ -367,7 +372,7 @@ export default function MyAccountsPage() {
                         <svg className="w-5 h-5 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                         </svg>
-                      </div>
+                          </div>
                       <div className="flex-1">
                         <h4 className="text-sm font-medium text-yellow-800">
                           Admin Note:
@@ -375,11 +380,11 @@ export default function MyAccountsPage() {
                         <p className="text-sm text-yellow-700 mt-1">
                           {getStatusInfo(currentAccount).statusNote}
                         </p>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
                 )}
-              </div>
+                </div>
             </CardContent>
           </Card>
         )}
@@ -402,7 +407,7 @@ export default function MyAccountsPage() {
               >
                 Create New Account
               </Button>
-            </div>
+              </div>
 
             {/* All Accounts Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -424,7 +429,6 @@ export default function MyAccountsPage() {
                       <p className="text-sm font-medium text-gray-500">Status</p>
                       <StatusDisplayBadge 
                         status={getStatusInfo(mainAccount).status}
-                        statusNote={getStatusInfo(mainAccount).statusNote}
                         size="sm"
                       />
                     </div>
@@ -433,14 +437,14 @@ export default function MyAccountsPage() {
                       <p className="font-semibold">{mainAccount.email}</p>
                     </div>
                     {!mainAccount.isCurrentAccount && (
-                      <Button
+                          <Button
                         onClick={() => handleSwitchToMainAccount()}
                         variant="outline"
                         className="w-full"
                       >
                         Switch to Main Account
-                      </Button>
-                    )}
+                          </Button>
+                        )}
                   </CardContent>
                 </Card>
               )}
@@ -460,15 +464,14 @@ export default function MyAccountsPage() {
                       <div>
                         <p className="text-sm font-medium text-gray-500">Trade Role</p>
                         <p className="font-semibold">{account.tradeRole}</p>
-                </div>
+                      </div>
                       <div>
                         <p className="text-sm font-medium text-gray-500">Status</p>
                         <StatusDisplayBadge 
                           status={statusInfo.status}
-                          statusNote={statusInfo.statusNote}
                           size="sm"
                         />
-                      </div>
+                    </div>
                       {/* Show Status Note prominently for rejected/inactive accounts */}
                       {statusInfo.statusNote && (statusInfo.status === 'REJECT' || statusInfo.status === 'INACTIVE') && (
                         <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
@@ -477,24 +480,24 @@ export default function MyAccountsPage() {
                               <svg className="w-4 h-4 text-red-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                               </svg>
-                            </div>
+                  </div>
                             <div className="flex-1">
                               <h4 className="text-xs font-medium text-red-800">
                                 Admin Note:
-                              </h4>
+                      </h4>
                               <p className="text-xs text-red-700 mt-1">
                                 {statusInfo.statusNote}
                               </p>
-                            </div>
-                          </div>
-                        </div>
+                    </div>
+                    </div>
+                  </div>
                       )}
                       {account.companyName && (
                         <div>
                           <p className="text-sm font-medium text-gray-500">Company</p>
                           <p className="font-semibold">{account.companyName}</p>
-                          </div>
-                        )}
+                </div>
+              )}
                       {/* <div>
                         <p className="text-sm font-medium text-gray-500">Created</p>
                         <p className="font-semibold">
@@ -514,7 +517,7 @@ export default function MyAccountsPage() {
                   </Card>
                 );
               })}
-                      </div>
+            </div>
                     </TabsContent>
 
           <TabsContent value="company" className="space-y-4">
@@ -556,8 +559,8 @@ export default function MyAccountsPage() {
                               </p>
                             </div>
                           </div>
-                        </div>
-                      )}
+                          </div>
+                        )}
                       {account.companyName && (
                         <div>
                           <p className="text-sm font-medium text-gray-500">Company Name</p>
@@ -577,7 +580,7 @@ export default function MyAccountsPage() {
                   </Card>
                 );
               })}
-            </div>
+                      </div>
                     </TabsContent>
 
           <TabsContent value="freelancer" className="space-y-4">
@@ -600,7 +603,7 @@ export default function MyAccountsPage() {
                           statusNote={statusInfo.statusNote}
                           size="sm"
                         />
-                      </div>
+                          </div>
                       {/* Show Status Note prominently for rejected/inactive accounts */}
                       {statusInfo.statusNote && (statusInfo.status === 'REJECT' || statusInfo.status === 'INACTIVE') && (
                         <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
@@ -609,7 +612,7 @@ export default function MyAccountsPage() {
                               <svg className="w-4 h-4 text-red-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                               </svg>
-                            </div>
+                          </div>
                             <div className="flex-1">
                               <h4 className="text-xs font-medium text-red-800">
                                 Admin Note:
@@ -657,7 +660,7 @@ export default function MyAccountsPage() {
                           statusNote={statusInfo.statusNote}
                           size="sm"
                         />
-                      </div>
+                          </div>
                       {/* Show Status Note prominently for rejected/inactive accounts */}
                       {statusInfo.statusNote && (statusInfo.status === 'REJECT' || statusInfo.status === 'INACTIVE') && (
                         <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
@@ -666,7 +669,7 @@ export default function MyAccountsPage() {
                               <svg className="w-4 h-4 text-red-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                               </svg>
-                            </div>
+                          </div>
                             <div className="flex-1">
                               <h4 className="text-xs font-medium text-red-800">
                                 Admin Note:
@@ -674,9 +677,9 @@ export default function MyAccountsPage() {
                               <p className="text-xs text-red-700 mt-1">
                                 {statusInfo.statusNote}
                               </p>
-                            </div>
-                          </div>
-                        </div>
+                </div>
+              </div>
+            </div>
                       )}
                       {!account.isCurrentAccount && (
                         <Button
@@ -691,7 +694,7 @@ export default function MyAccountsPage() {
                   </Card>
                 );
               })}
-            </div>
+          </div>
           </TabsContent>
         </Tabs>
 

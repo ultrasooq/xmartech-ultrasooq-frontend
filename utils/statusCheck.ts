@@ -11,6 +11,7 @@ export interface UserStatus {
   isSuspended: boolean;
   isWaiting: boolean;
   isRejected: boolean;
+  isWaitingForSuperAdmin: boolean;
   status: string;
 }
 
@@ -41,6 +42,7 @@ export const getUserStatusInfo = (userData: any): UserStatus => {
     isSuspended: status === "SUSPENDED",
     isWaiting: status === "WAITING",
     isRejected: status === "REJECT",
+    isWaitingForSuperAdmin: status === "WAITING_FOR_SUPER_ADMIN",
     status,
   };
 };
@@ -76,10 +78,11 @@ export const isValidStatusTransition = (
   newStatus: string,
 ): boolean => {
   const validTransitions: Record<string, string[]> = {
-    WAITING: ["ACTIVE", "REJECT", "INACTIVE"],
-    ACTIVE: ["REJECT", "INACTIVE"],
-    REJECT: ["ACTIVE", "INACTIVE"],
-    INACTIVE: ["ACTIVE", "WAITING"],
+    WAITING: ["ACTIVE", "REJECT", "INACTIVE", "WAITING_FOR_SUPER_ADMIN"],
+    ACTIVE: ["REJECT", "INACTIVE", "WAITING_FOR_SUPER_ADMIN"],
+    REJECT: ["ACTIVE", "INACTIVE", "WAITING_FOR_SUPER_ADMIN"],
+    INACTIVE: ["ACTIVE", "REJECT", "WAITING_FOR_SUPER_ADMIN"],
+    WAITING_FOR_SUPER_ADMIN: ["ACTIVE", "REJECT", "INACTIVE"],
   };
 
   return validTransitions[currentStatus]?.includes(newStatus) || false;
@@ -94,10 +97,11 @@ export const getAvailableStatusTransitions = (
   currentStatus: string,
 ): string[] => {
   const validTransitions: Record<string, string[]> = {
-    WAITING: ["ACTIVE", "REJECT", "INACTIVE"],
-    ACTIVE: ["REJECT", "INACTIVE"],
-    REJECT: ["ACTIVE", "INACTIVE"],
-    INACTIVE: ["ACTIVE", "WAITING"],
+    WAITING: ["ACTIVE", "REJECT", "INACTIVE", "WAITING_FOR_SUPER_ADMIN"],
+    ACTIVE: ["REJECT", "INACTIVE", "WAITING_FOR_SUPER_ADMIN"],
+    REJECT: ["ACTIVE", "INACTIVE", "WAITING_FOR_SUPER_ADMIN"],
+    INACTIVE: ["ACTIVE", "REJECT", "WAITING_FOR_SUPER_ADMIN"],
+    WAITING_FOR_SUPER_ADMIN: ["ACTIVE", "REJECT", "INACTIVE"],
   };
 
   return validTransitions[currentStatus] || [];
@@ -129,27 +133,52 @@ export const getRouteProtection = (routeName: string) => {
     queries: { allowedStatuses: ["ACTIVE"], redirectTo: "/home" },
     "vendor-dashboard": { allowedStatuses: ["ACTIVE"], redirectTo: "/home" },
 
-    // Limited access routes - for ACTIVE, WAITING, and INACTIVE users
+    // Limited access routes - for ACTIVE, WAITING, INACTIVE, and WAITING_FOR_SUPER_ADMIN users
     "my-settings": {
-      allowedStatuses: ["ACTIVE", "WAITING", "INACTIVE"],
+      allowedStatuses: [
+        "ACTIVE",
+        "WAITING",
+        "INACTIVE",
+        "WAITING_FOR_SUPER_ADMIN",
+      ],
       redirectTo: "/home",
     },
     profile: {
-      allowedStatuses: ["ACTIVE", "WAITING", "INACTIVE"],
+      allowedStatuses: [
+        "ACTIVE",
+        "WAITING",
+        "INACTIVE",
+        "WAITING_FOR_SUPER_ADMIN",
+      ],
       redirectTo: "/home",
     },
     "my-accounts": {
-      allowedStatuses: ["ACTIVE", "WAITING", "INACTIVE"],
+      allowedStatuses: [
+        "ACTIVE",
+        "WAITING",
+        "INACTIVE",
+        "WAITING_FOR_SUPER_ADMIN",
+      ],
       redirectTo: "/home",
     },
 
     // Basic access routes - for all authenticated users
     home: {
-      allowedStatuses: ["ACTIVE", "WAITING", "INACTIVE"],
+      allowedStatuses: [
+        "ACTIVE",
+        "WAITING",
+        "INACTIVE",
+        "WAITING_FOR_SUPER_ADMIN",
+      ],
       redirectTo: "/login",
     },
     logout: {
-      allowedStatuses: ["ACTIVE", "WAITING", "INACTIVE"],
+      allowedStatuses: [
+        "ACTIVE",
+        "WAITING",
+        "INACTIVE",
+        "WAITING_FOR_SUPER_ADMIN",
+      ],
       redirectTo: "/login",
     },
   };
@@ -182,7 +211,9 @@ export const hasRouteAccess = (
  * @returns boolean indicating if user has limited access
  */
 export const hasLimitedAccess = (userStatus: string): boolean => {
-  return ["WAITING", "INACTIVE"].includes(userStatus);
+  return ["WAITING", "INACTIVE", "WAITING_FOR_SUPER_ADMIN"].includes(
+    userStatus,
+  );
 };
 
 /**

@@ -10,7 +10,10 @@ import BasicInformationSection from "@/components/modules/createProduct/BasicInf
 import ProductDetailsSection from "@/components/modules/createProduct/ProductDetailsSection";
 import DescriptionAndSpecificationSection from "@/components/modules/createProduct/DescriptionAndSpecificationSection";
 import Footer from "@/components/shared/Footer";
-import { useCreateProduct, useProductById, useProductVariant } from "@/apis/queries/product.queries";
+import { useCreateProduct, useProductById, useProductVariant, useExistingProductById } from "@/apis/queries/product.queries";
+import { useCurrentAccount } from "@/apis/queries/auth.queries";
+import { getCookie } from "cookies-next";
+import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -622,12 +625,23 @@ const CreateProductPage = () => {
   const createProduct = useCreateProduct();
   const watchProductImages = form.watch("productImages");
   const watchSetUpPrice = form.watch("setUpPrice");
+  
+  // Get current account to ensure we use the correct user ID
+  const { data: currentAccount } = useCurrentAccount();
 
   const productQueryById = useProductById(
     {
       productId: productId || ''
     },
-    !!productId,
+    !!productId && !searchParams?.get('copy'),
+  );
+
+  // Query for existing product when copying
+  const existingProductQueryById = useExistingProductById(
+    {
+      existingProductId: productId || ''
+    },
+    !!productId && searchParams?.get('copy') !== null,
   );
   const getProductVariant = useProductVariant();
 
@@ -684,15 +698,40 @@ const CreateProductPage = () => {
   }
 
   useEffect(() => {
+    // Handle regular product data
     if (productQueryById?.data?.data) {
       const product = productQueryById?.data?.data;
+      populateFormWithProductData(product);
+    }
+  }, [productQueryById?.data?.data]);
 
+  useEffect(() => {
+    // Handle existing product data when copying
+    console.log('=== EXISTING PRODUCT USE EFFECT TRIGGERED ===');
+    console.log('existingProductQueryById:', existingProductQueryById);
+    console.log('existingProductQueryById?.data:', existingProductQueryById?.data);
+    console.log('existingProductQueryById?.data?.data:', existingProductQueryById?.data?.data);
+    console.log('productId:', productId);
+    console.log('searchParams?.get("copy"):', searchParams?.get('copy'));
+    console.log('searchParams?.get("copy") !== null:', searchParams?.get('copy') !== null);
+    
+    if (existingProductQueryById?.data?.data) {
+      const existingProduct = existingProductQueryById?.data?.data;
+      console.log('Found existing product data:', existingProduct);
+      populateFormWithExistingProductData(existingProduct);
+    } else {
+      console.log('No existing product data found');
+      console.log('Query enabled:', !!productId && searchParams?.get('copy') !== null);
+    }
+  }, [existingProductQueryById?.data?.data]);
+
+  const populateFormWithProductData = (product: any) => {
       setActiveProductType(product.productType);
       
       form.setValue("categoryId", product.categoryId);
       form.setValue("categoryLocation", product.categoryLocation);
       setSelectedCategoryIds(
-        product.categoryLocation.split(',').filter((item: string) => item)
+      product.categoryLocation ? product.categoryLocation.split(',').filter((item: string) => item) : []
       );
 
       form.setValue("productName", product.productName);
@@ -717,99 +756,23 @@ const CreateProductPage = () => {
         : [];
 
       const productImages = productSellerImages?.filter((item: any) => item.image)
-        ?.filter((item: any) => !item.variant)
-        ?.map((item: any) => {
-          if (item?.image) {
-            return {
-              path: item?.image,
-              id: uuidv4(),
-            };
-          } else if (item?.video) {
-            return {
-              path: item?.video,
-              id: uuidv4(),
-            };
-          }
-        });
-      form.setValue('productImages', productImages);
+      .map((item: any) => ({
+        id: item.id,
+        path: item.image,
+        name: item.imageName || 'product-image',
+        type: 'image'
+      })) || [];
 
-      if (product.product_productPrice?.length) {
-        form.setValue("productPriceList.[0].consumerType", product.product_productPrice[0]?.consumerType);
-        form.setValue("productPriceList.[0].consumerDiscount", product.product_productPrice[0]?.consumerDiscount);
-        form.setValue("productPriceList.[0].consumerDiscountType", product.product_productPrice[0]?.consumerDiscountType);
-        form.setValue("productPriceList.[0].vendorDiscount", product.product_productPrice[0]?.consumerDiscount);
-        form.setValue("productPriceList.[0].vendorDiscountType", product.product_productPrice[0]?.vendorDiscountType);
-        form.setValue("productPriceList.[0].sellType", product.product_productPrice[0]?.sellType);
-        form.setValue("productPriceList.[0].minCustomer", product.product_productPrice[0]?.minCustomer);
-        form.setValue("productPriceList.[0].maxCustomer", product.product_productPrice[0]?.maxCustomer);
-        form.setValue("productPriceList.[0].minQuantityPerCustomer", product.product_productPrice[0]?.minQuantityPerCustomer);
-        form.setValue("productPriceList.[0].maxQuantityPerCustomer", product.product_productPrice[0]?.maxQuantityPerCustomer);
-        form.setValue("productPriceList.[0].minQuantity", product.product_productPrice[0]?.minQuantity);
-        form.setValue("productPriceList.[0].maxQuantity", product.product_productPrice[0]?.maxQuantity);
-        if (product.product_productPrice[0]?.dateOpen) {
-          form.setValue("productPriceList.[0].dateOpen", product.product_productPrice[0]?.dateOpen);
-        }
-        form.setValue("productPriceList.[0].startTime", product.product_productPrice[0]?.startTime);
-        if (product.product_productPrice[0]?.dateClose) {
-          form.setValue("productPriceList.[0].dateClose", product.product_productPrice[0]?.dateClose);
-        }
-        form.setValue("productPriceList.[0].endTime", product.product_productPrice[0]?.endTime);
-        form.setValue("productPriceList.[0].deliveryAfter", product.product_productPrice[0]?.deliveryAfter);
-        form.setValue("productPrice", product.product_productPrice[0]?.productPrice);
-        form.setValue("offerPrice", product.product_productPrice[0]?.offerPrice);
-        form.setValue("productPriceList.[0].stock", product.product_productPrice[0]?.stock);
-      }
-
-      form.setValue("productCountryId", product.product_productPrice[0]?.productCountryId);
-      form.setValue("productStateId", product.product_productPrice[0]?.productStateId);
-      form.setValue("productCityId", product.product_productPrice[0]?.productCityId);
-      form.setValue("productTown", product?.product_productPrice[0]?.productTown);
-      form.setValue("productLatLng", product?.product_productPrice[0]?.productLatLng);
-
-      form.setValue("sellCountryIds", product?.product_sellCountry?.map((item: any) => {
-        return {
-          label: item.countryName,
-          value: item.countryId
-        };
-      }) || []);
-      form.setValue("sellStateIds", product?.product_sellState?.map((item: any) => {
-        return {
-          label: item.stateName,
-          value: item.stateId
-        };
-      }) || []);
-      form.setValue("sellCityIds", product?.product_sellCity?.map((item: any) => {
-        return {
-          label: item.cityName,
-          value: item.cityId
-        };
-      }) || []);
-      form.setValue("placeOfOriginId", product?.placeOfOriginId);
-
-      const productShortDescriptionList = product
-        ?.product_productShortDescription?.length
-        ? product?.product_productShortDescription.map((item: any) => ({
-          shortDescription: item?.shortDescription,
-          shortDescriptionJson: [
-            {
-              children: [
-                {
-                  text: item?.shortDescription
-                }
-              ],
-              type: 'p'
-            }
-          ]
-        }))
-        : [
-          {
-            shortDescription: "",
-          },
-        ];
-
-      form.setValue("productShortDescriptionList", productShortDescriptionList)
-      form.setValue("description", product?.description || "");
-      form.setValue("descriptionJson", product?.description ? handleDescriptionParse(product?.description) : undefined);
+    form.setValue("productImages", productImages);
+    form.setValue("productPrice", product.productPrice);
+    form.setValue("offerPrice", product.offerPrice);
+    form.setValue("description", product.description);
+    form.setValue("specification", product.specification);
+    form.setValue("shortDescription", product.shortDescription);
+    form.setValue("barcode", product.barcode);
+    form.setValue("placeOfOriginId", product.placeOfOriginId);
+    form.setValue("productType", product.productType);
+    form.setValue("typeProduct", product.typeProduct);
 
       form.setValue("productSpecificationList", product.product_productSpecification?.map((item: any) => {
         return {
@@ -821,10 +784,81 @@ const CreateProductPage = () => {
       if (product.product_productPrice?.length) {
         fetchProductVariant(product.product_productPrice?.[0]?.id);
       }
-    }
-  }, [productQueryById?.data?.data]);
+  };
+
+  const populateFormWithExistingProductData = (existingProduct: any) => {
+    console.log('=== POPULATING FORM WITH EXISTING PRODUCT DATA ===');
+    console.log('existingProduct:', existingProduct);
+    
+    setActiveProductType(existingProduct.productType);
+    
+    form.setValue("categoryId", existingProduct.categoryId);
+    form.setValue("categoryLocation", existingProduct.categoryLocation);
+    setSelectedCategoryIds(
+      existingProduct.categoryLocation ? existingProduct.categoryLocation.split(',').filter((item: string) => item) : []
+    );
+
+    form.setValue("productName", existingProduct.productName);
+    console.log('Set productName:', existingProduct.productName);
+    
+    form.setValue("typeOfProduct", existingProduct.typeOfProduct);
+    form.setValue("brandId", existingProduct.brandId);
+    form.setValue("productCondition", "New"); // Default for existing products
+    form.setValue(
+      "productTagList",
+      existingProduct.existingProductTags?.filter((item: any) => item.existingProductTag)?.map((item: any) => {
+        return {
+          label: item.existingProductTag.tagName,
+          value: item.existingProductTag.id
+        }
+      }) || []
+    );
+
+    // Use existingProductImages for existing products
+    const productImages = existingProduct.existingProductImages?.filter((item: any) => item.image)
+      .map((item: any) => ({
+        id: item.id,
+        path: item.image,
+        name: item.imageName || 'product-image',
+        type: 'image'
+      })) || [];
+
+    console.log('Setting productImages:', productImages);
+    form.setValue("productImages", productImages);
+    form.setValue("productPrice", existingProduct.productPrice);
+    form.setValue("offerPrice", existingProduct.offerPrice);
+    form.setValue("description", existingProduct.description);
+    form.setValue("specification", existingProduct.specification);
+    form.setValue("shortDescription", existingProduct.shortDescription);
+    form.setValue("barcode", existingProduct.barcode);
+    form.setValue("placeOfOriginId", existingProduct.placeOfOriginId);
+    form.setValue("productType", existingProduct.productType);
+    form.setValue("typeProduct", existingProduct.typeProduct);
+    
+    console.log('=== FORM POPULATION COMPLETE ===');
+  };
 
   const onSubmit = async (formData: any) => {
+    // Get the current user ID from the current account for debugging
+    const currentUserId = currentAccount?.data?.account?.id;
+    
+    if (!currentUserId) {
+      toast({
+        title: t("error"),
+        description: "Unable to determine current account. Please try switching accounts and try again.",
+        variant: "danger",
+      });
+      return;
+    }
+
+    console.log('Creating product with current user ID:', currentUserId);
+    console.log('Current account data:', currentAccount?.data?.account);
+    
+    // Debug JWT token
+    const token = getCookie(PUREMOON_TOKEN_KEY);
+    console.log('JWT Token exists:', !!token);
+    console.log('JWT Token length:', token ? token.length : 0);
+
     const updatedFormData = {
       ...formData,
       productType:

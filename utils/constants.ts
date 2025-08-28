@@ -447,6 +447,7 @@ export const USER_STATUS_LIST = [
   { value: "ACTIVE", label: "Active" },
   { value: "REJECT", label: "Reject" },
   { value: "INACTIVE", label: "Inactive" },
+  { value: "WAITING_FOR_SUPER_ADMIN", label: "Waiting for Super Admin" },
 ];
 
 export const USER_STATUS_CONFIG = {
@@ -493,6 +494,17 @@ export const USER_STATUS_CONFIG = {
     canApprove: true,
     canReject: false,
     canDeactivate: false,
+  },
+  WAITING_FOR_SUPER_ADMIN: {
+    label: "Waiting for Super Admin",
+    value: "WAITING_FOR_SUPER_ADMIN",
+    color: "#17a2b8",
+    bgColor: "#d1ecf1",
+    textColor: "#0c5460",
+    icon: "user-secret",
+    canApprove: true,
+    canReject: true,
+    canDeactivate: true,
   },
 };
 

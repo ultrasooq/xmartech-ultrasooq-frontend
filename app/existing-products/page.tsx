@@ -119,18 +119,16 @@ const ExistingProductsPage = () => {
         productName: item?.productName || "-",
         productPrice: item?.productPrice || 0,
         offerPrice: item?.offerPrice || 0,
-        productImage: item?.productImages?.[0]?.image,
+        productImage: item?.existingProductImages?.[0]?.image,
         categoryName: item?.category?.name || "-",
         skuNo: item?.skuNo,
         brandName: item?.brand?.brandName || "-",
-        productReview: item?.productReview || [],
-        productProductPriceId: item?.product_productPrice?.[0]?.id,
-        productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
-        shortDescription: item?.product_productShortDescription?.length
-          ? item?.product_productShortDescription?.[0]?.shortDescription
-          : "-",
-        consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
-        askForPrice: item?.product_productPrice?.[0]?.askForPrice,
+        productReview: [], // ExistingProduct doesn't have reviews
+        productProductPriceId: item?.id, // Use the existing product ID
+        productProductPrice: item?.offerPrice, // Use the existing product offer price
+        shortDescription: item?.shortDescription || "-",
+        consumerDiscount: 0, // ExistingProduct doesn't have consumer discount
+        askForPrice: "NO", // ExistingProduct doesn't have askForPrice
       })) || []
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps

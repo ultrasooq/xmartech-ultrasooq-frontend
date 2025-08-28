@@ -122,7 +122,52 @@ export const fetchExistingProducts = (payload: {
 }) => {
   return axios({
     method: "GET",
-    url: urlcat(`${getApiUrl()}/product/existingAllProduct`, payload),
+    url: urlcat(`${getApiUrl()}/product/searchExistingProducts`, payload),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+// Dedicated function for "Add from Existing Product" functionality
+export const fetchExistingProductForCopy = (payload: {
+  page: number;
+  limit: number;
+  term?: string;
+  sort?: string;
+  brandIds?: string;
+  priceMin?: number;
+  priceMax?: number;
+  categoryIds?: string;
+}) => {
+  return axios({
+    method: "GET",
+    url: urlcat(
+      `${getApiUrl()}/product/searchExistingProductsForCopy`,
+      payload,
+    ),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+// Fetch existing product by ID for copy functionality
+export const fetchExistingProductById = (payload: {
+  existingProductId: string;
+}) => {
+  return axios({
+    method: "GET",
+    url: urlcat(`${getApiUrl()}/product/getExistingProductById`, payload),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
   });
 };
 

@@ -6,7 +6,13 @@ export interface ILoginRequest {
 export interface ILogin {
   accessToken: string;
   data: {
-    status: "WAITING" | "ACTIVE" | "REJECT" | "INACTIVE" | "DELETE";
+    status:
+      | "WAITING"
+      | "ACTIVE"
+      | "REJECT"
+      | "INACTIVE"
+      | "WAITING_FOR_SUPER_ADMIN"
+      | "DELETE";
   };
   message: string;
   status: boolean;
@@ -47,7 +53,13 @@ export interface User {
   tradeRole: "BUYER" | "COMPANY" | "FREELANCER";
   cc: string;
   phoneNumber: string;
-  status?: "WAITING" | "ACTIVE" | "REJECT" | "INACTIVE" | "DELETE";
+  status?:
+    | "WAITING"
+    | "ACTIVE"
+    | "REJECT"
+    | "INACTIVE"
+    | "WAITING_FOR_SUPER_ADMIN"
+    | "DELETE";
   statusNote?: string;
 }
 
@@ -153,7 +165,12 @@ export interface IUserAccount {
   orders?: number;
   rfq?: number;
   tracking?: number;
-  status?: "WAITING" | "ACTIVE" | "REJECT" | "INACTIVE";
+  status?:
+    | "WAITING"
+    | "ACTIVE"
+    | "REJECT"
+    | "INACTIVE"
+    | "WAITING_FOR_SUPER_ADMIN";
   statusNote?: string;
 }
 
@@ -172,7 +189,12 @@ export interface IMainAccount {
   orders?: number;
   rfq?: number;
   tracking?: number;
-  status?: "WAITING" | "ACTIVE" | "REJECT" | "INACTIVE";
+  status?:
+    | "WAITING"
+    | "ACTIVE"
+    | "REJECT"
+    | "INACTIVE"
+    | "WAITING_FOR_SUPER_ADMIN";
   statusNote?: string;
 }
 

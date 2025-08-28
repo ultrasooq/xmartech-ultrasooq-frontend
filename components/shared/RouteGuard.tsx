@@ -46,17 +46,21 @@ const RouteGuard: React.FC<RouteGuardProps> = ({
       return; // Still loading
     }
 
+    // Prevent redirect if we don't have account data yet
+    if (!currentAccount?.data?.account && !me?.data?.data) {
+      return;
+    }
+
     // Get user status from current account or me data
     let userStatus = 'WAITING'; // Default fallback
     
-    if (currentAccount?.data?.data?.account?.status) {
-      userStatus = currentAccount.data.data.account.status;
+    if (currentAccount?.data?.account?.status) {
+      userStatus = currentAccount.data.account.status;
     } else if (me?.data?.data?.status) {
       userStatus = me.data.data.status;
     }
 
-    console.log('RouteGuard - userStatus:', userStatus);
-    console.log('RouteGuard - requiredStatus:', requiredStatus);
+
 
     // Check if user has access based on status
     let accessGranted = false;
@@ -69,10 +73,17 @@ const RouteGuard: React.FC<RouteGuardProps> = ({
       accessGranted = hasLimitedAccess(userStatus) || hasFullAccess(userStatus);
     }
 
+
+
     if (!accessGranted) {
       // User doesn't have access, redirect appropriately
       const redirectUrl = getUnauthorizedRedirect(userStatus);
-      console.log('RouteGuard - Access denied, redirecting to:', redirectUrl);
+      
+      // Prevent infinite redirects - if we're already on the redirect URL, don't redirect again
+      if (typeof window !== 'undefined' && window.location.pathname === redirectUrl) {
+        return;
+      }
+      
       router.push(redirectUrl);
       return;
     }

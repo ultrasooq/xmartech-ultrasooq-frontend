@@ -7,6 +7,14 @@ import validator from "validator";
 import EditIcon from "@/public/images/edit-rfq.png";
 import Link from "next/link";
 import { IoIosEyeOff, IoIosEye } from "react-icons/io";
+import { 
+  IoMdCreate, 
+  IoMdCopy, 
+  IoMdRefresh, 
+  IoMdTrash,
+  IoMdArrowDown,
+  IoMdArrowUp
+} from "react-icons/io";
 import {
   useRemoveProduct,
   useUpdateProductStatus,
@@ -47,7 +55,11 @@ type ManageProductCardProps = {
   minQuantityPerCustomer: number | null;
   maxQuantityPerCustomer: number | null;
   productCondition: string;
-  onRemove: (id: number) => void; // Ensure onRemove function is typed properly
+  onRemove: (id: number) => void;
+  hideCheckbox?: boolean;
+  hideEyeIcon?: boolean;
+  hideCopyButton?: boolean;
+  hideActionButtons?: boolean;
 };
 
 const ManageProductCard: React.FC<ManageProductCardProps> = ({
@@ -81,15 +93,19 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
   maxQuantityPerCustomer: initialMaxQuantityPerCustomer,
   productCondition: initialCondition,
   onRemove,
+  hideCheckbox = false,
+  hideEyeIcon = false,
+  hideCopyButton = false,
+  hideActionButtons = false,
 }) => {
   const t = useTranslations();
   const { langDir } = useAuth();
   const { toast } = useToast();
+  const [isExpanded, setIsExpanded] = useState(false);
 
   // Status update part
-
-  const [status, setStatus] = useState(initialStatus); // Local state for status
-  const statusUpdate = useUpdateProductStatus(); // Get the mutation function
+  const [status, setStatus] = useState(initialStatus);
+  const statusUpdate = useUpdateProductStatus();
 
   const updateStatus = async (status: string) => {
     try {
@@ -100,7 +116,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
       });
 
       if (response.status) {
-        setStatus(newStatus); // Update local state to reflect the new status
+        setStatus(newStatus);
         toast({
           title: t("status_update_successful"),
           description: t("status_updated_successfully"),
@@ -123,56 +139,51 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
   };
 
   // Stock manage part
-
   const [stock, setStock] = useState(initialStock);
   const decreaseStock = () => {
-    setStock((prevStock) => Math.max(prevStock - 1, 0)); // Prevent going below 0
+    setStock((prevStock) => Math.max(prevStock - 1, 0));
   };
 
   const increaseStock = () => {
-    setStock((prevStock) => Math.min(prevStock + 1, 1000)); // Prevent exceeding 200
+    setStock((prevStock) => Math.min(prevStock + 1, 1000));
   };
 
-  // Price  part
-
-  const [offerPrice, setPrice] = useState<number>(Number(initialPrice)); // Ensure it's a number
+  // Price part
+  const [offerPrice, setPrice] = useState<number>(Number(initialPrice));
   const [productPrice, setProductPrice] = useState<number>(
     Number(initialProductPrice),
-  ); // Ensure it's a number
+  );
   const decreasePrice = () => {
-    setPrice((prevPrice) => Math.max(Number(prevPrice) - 1, 0)); // Convert prevPrice to number before subtracting
-    setProductPrice((prevPrice) => Math.max(Number(prevPrice) - 1, 0)); // Convert prevPrice to number before subtracting
+    setPrice((prevPrice) => Math.max(Number(prevPrice) - 1, 0));
+    setProductPrice((prevPrice) => Math.max(Number(prevPrice) - 1, 0));
   };
 
   const increasePrice = () => {
-    setPrice((prevPrice) => Math.min(prevPrice + 1, 1000000)); // Prevent exceeding 200
-    setProductPrice((prevPrice) => Math.min(prevPrice + 1, 1000000)); // Prevent exceeding 200
+    setPrice((prevPrice) => Math.min(prevPrice + 1, 1000000));
+    setProductPrice((prevPrice) => Math.min(prevPrice + 1, 1000000));
   };
 
   // Product condition part && customer type && sell type
-
   const [productCondition, setCondition] = useState<string>(initialCondition);
   const [consumerType, setConsumer] = useState<string>(initialConsumerType);
   const [sellType, setSell] = useState<string>(initialSellType);
 
   // set Deliver After
-
   const [deliveryAfter, setDelivery] = useState<number>(
     Number(initialDelivery),
-  ); // Ensure it's a number
+  );
   const decreaseDeliveryDay = () => {
-    setDelivery((prevDay) => Math.max(Number(prevDay) - 1, 0)); // Convert prevPrice to number before subtracting
+    setDelivery((prevDay) => Math.max(Number(prevDay) - 1, 0));
   };
 
   const increaseDeliveryDay = () => {
-    setDelivery((prevDay) => Math.min(prevDay + 1, 50)); // Prevent exceeding 200
+    setDelivery((prevDay) => Math.min(prevDay + 1, 50));
   };
 
   // set Time open & close
-
   const [timeOpen, setTimeOpen] = useState<number>(Number(initialTimeOpen));
   const decreaseTimeOpen = () => {
-    setTimeOpen((prevDay) => Math.max(Number(prevDay) - 1, 0));
+    setTimeOpen((prevDay) => Math.max(prevDay - 1, 0));
   };
 
   const increaseTimeOpen = () => {
@@ -181,130 +192,116 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
 
   const [timeClose, setTimeClose] = useState<number>(Number(initialTimeClose));
   const decreaseTimeClose = () => {
-    setTimeClose((prevDay) => Math.max(Number(prevDay) - 1, 0));
+    setTimeClose((prevDay) => Math.max(prevDay - 1, 0));
   };
 
   const increaseTimeClose = () => {
     setTimeClose((prevDay) => Math.min(prevDay + 1, 50));
   };
 
-  //  Remaining part
-
+  // Remaining part
   const [vendorDiscount, setVendor] = useState<number>(
     Number(initialVendorDiscount),
+  );
+  const [vendorDiscountType, setVendorDiscountType] = useState<string | null>(
+    initialVendorDiscountType,
   );
   const decreaseVendorDiscount = () => {
     setVendor((prevDayDiscount) => Math.max(Number(prevDayDiscount) - 1, 0));
   };
 
   const increaseVendorDiscount = () => {
-    setVendor((prevDayDiscount) => Math.min(prevDayDiscount + 1, 50));
+    setVendor((prevDayDiscount) => Math.min(prevDayDiscount + 1, 100));
   };
-
-  const [vendorDiscountType, setVendorDiscountType] = useState<string | null>(
-    initialVendorDiscountType,
-  );
 
   const [consumerDiscount, setConsumerDiscount] = useState<number>(
     Number(initialConsumerDiscount),
   );
+  const [consumerDiscountType, setConsumerDiscountType] = useState<string | null>(
+    initialConsumerDiscountType,
+  );
   const decreaseConsumerDiscount = () => {
-    setConsumerDiscount((prevDayDiscount) =>
-      Math.max(Number(prevDayDiscount) - 1, 0),
-    );
+    setConsumerDiscount((prevDayDiscount) => Math.max(Number(prevDayDiscount) - 1, 0));
   };
 
   const increaseConsumerDiscount = () => {
-    setConsumerDiscount((prevDayDiscount) => Math.min(prevDayDiscount + 1, 50));
+    setConsumerDiscount((prevDayDiscount) => Math.min(prevDayDiscount + 1, 100));
   };
-
-  const [consumerDiscountType, setConsumerDiscountType] = useState<
-    string | null
-  >(initialConsumerDiscountType);
 
   const [minQuantity, setMinQuantity] = useState<number>(
     Number(initialMinQuantity),
   );
   const decreaseMinQuantity = () => {
-    setMinQuantity((prevDayQuantity) =>
-      Math.max(Number(prevDayQuantity) - 1, 0),
-    );
+    setMinQuantity((prevDay) => Math.max(Number(prevDay) - 1, 0));
   };
 
   const increaseMinQuantity = () => {
-    setMinQuantity((prevDayQuantity) => Math.min(prevDayQuantity + 1, 50));
+    setMinQuantity((prevDay) => Math.min(prevDay + 1, 1000));
   };
 
   const [maxQuantity, setMaxQuantity] = useState<number>(
     Number(initialMaxQuantity),
   );
-  const decreaseMaxQuantity = () => {
-    setMaxQuantity((prevDayQuantity) =>
-      Math.max(Number(prevDayQuantity) - 1, 0),
-    );
+  const decreaseMaxsQuantity = () => {
+    setMaxQuantity((prevDay) => Math.max(Number(prevDay) - 1, 0));
   };
 
-  const increaseMaxsQuantity = () => {
-    setMaxQuantity((prevDayQuantity) => Math.min(prevDayQuantity + 1, 50));
+  const increaseMaxQuantity = () => {
+    setMaxQuantity((prevDay) => Math.min(prevDay + 1, 1000));
   };
 
   const [minCustomer, setMinCustomer] = useState<number>(
     Number(initialMinCustomer),
   );
   const decreaseMinCustomer = () => {
-    setMinCustomer((prevCustomer) => Math.max(Number(prevCustomer) - 1, 0));
+    setMinCustomer((prevDay) => Math.max(Number(prevDay) - 1, 0));
   };
 
-  const increaseMinsCustomer = () => {
-    setMinCustomer((prevCustomer) => Math.min(prevCustomer + 1, 50));
+  const increaseMinCustomer = () => {
+    setMinCustomer((prevDay) => Math.min(prevDay + 1, 1000));
   };
 
   const [maxCustomer, setMaxCustomer] = useState<number>(
     Number(initialMaxCustomer),
   );
   const decreaseMaxCustomer = () => {
-    setMaxCustomer((prevCustomer) => Math.max(Number(prevCustomer) - 1, 0));
+    setMaxCustomer((prevDay) => Math.max(Number(prevDay) - 1, 0));
   };
 
-  const increaseMaxsCustomer = () => {
-    setMaxCustomer((prevCustomer) => Math.min(prevCustomer + 1, 50));
+  const increaseMaxCustomer = () => {
+    setMaxCustomer((prevDay) => Math.min(prevDay + 1, 1000));
   };
 
-  const [minQuantityPerCustomer, setMinQuantityCustomer] = useState<number>(
+  const [minQuantityCustomer, setMinQuantityCustomer] = useState<number>(
     Number(initialMinQuantityPerCustomer),
   );
   const decreaseMinQuantityCustomer = () => {
-    setMinQuantityCustomer((prevDayQuantity) =>
-      Math.max(Number(prevDayQuantity) - 1, 0),
-    );
+    setMinQuantityCustomer((prevDay) => Math.max(prevDay - 1, 0));
   };
 
   const increaseMinQuantityCustomer = () => {
-    setMinQuantityCustomer((prevDayQuantity) =>
-      Math.min(prevDayQuantity + 1, 50),
-    );
+    setMinQuantityCustomer((prevDay) => Math.min(prevDay + 1, 1000));
   };
 
-  const [maxQuantityPerCustomer, setMaxQuantityCustomer] = useState<number>(
+  const [maxQuantityCustomer, setMaxQuantityCustomer] = useState<number>(
     Number(initialMaxQuantityPerCustomer),
   );
   const decreaseMaxQuantityCustomer = () => {
-    setMaxQuantityCustomer((prevDayQuantity) =>
-      Math.max(Number(prevDayQuantity) - 1, 0),
-    );
+    setMaxQuantityCustomer((prevDay) => Math.max(prevDay - 1, 0));
   };
 
   const increaseMaxQuantityCustomer = () => {
-    setMaxQuantityCustomer((prevDayQuantity) =>
-      Math.min(prevDayQuantity + 1, 50),
-    );
+    setMaxQuantityCustomer((prevDay) => Math.min(prevDay + 1, 1000));
   };
 
   // call update single product
+  const productUpdate = useUpdateSingleProduct();
 
-  const productUpdate = useUpdateSingleProduct(); // Get the mutation function
-
-  const handleUpdate = async () => {
+  const handleUpdate = async (e) => {
+    // Prevent form submission
+    e?.preventDefault();
+    e?.stopPropagation();
+    
     try {
       const response = await productUpdate.mutateAsync({
         productPriceId: id,
@@ -328,8 +325,8 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
         maxQuantity,
         minCustomer,
         maxCustomer,
-        minQuantityPerCustomer,
-        maxQuantityPerCustomer,
+        minQuantityPerCustomer: minQuantityCustomer,
+        maxQuantityPerCustomer: maxQuantityCustomer,
       });
 
       if (response.status) {
@@ -341,11 +338,12 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
       } else {
         toast({
           title: t("product_update_failed"),
-          description: t("something_went_wrong"),
+          description: response.message || t("something_went_wrong"),
           variant: "danger",
         });
       }
     } catch (error) {
+      console.error('Update error:', error);
       toast({
         title: t("error"),
         description: t("failed_to_update_product"),
@@ -355,7 +353,8 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
   };
 
   // For remove product
-  const productRemove = useRemoveProduct(); // Get the mutation function
+  const productRemove = useRemoveProduct();
+
   const handleRemoveProduct = async () => {
     try {
       const response = await productRemove.mutateAsync({
@@ -388,16 +387,19 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
 
   // Function to reset all values to initial state
   const handleReset = () => {
-    setStock(initialStock);
+    setStock(Number(initialStock));
     setPrice(Number(initialPrice));
-    setDelivery(Number(initialDelivery));
+    setProductPrice(Number(initialProductPrice));
+    setCondition(initialCondition);
     setConsumer(initialConsumerType);
     setSell(initialSellType);
-    setCondition(initialCondition);
+    setDelivery(Number(initialDelivery));
     setTimeOpen(Number(initialTimeOpen));
     setTimeClose(Number(initialTimeClose));
     setVendor(Number(initialVendorDiscount));
+    setVendorDiscountType(initialVendorDiscountType);
     setConsumerDiscount(Number(initialConsumerDiscount));
+    setConsumerDiscountType(initialConsumerDiscountType);
     setMinQuantity(Number(initialMinQuantity));
     setMaxQuantity(Number(initialMaxQuantity));
     setMinCustomer(Number(initialMinCustomer));
@@ -407,777 +409,575 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
   };
 
   return (
-    <>
-      <div className="existing-product-add-item">
-        <div className="existing-product-add-box">
-          <div className="existing-product-add-box-row">
-            <div className="leftdiv">
-              <div className="image-container">
-                <div className="existing_product_checkbox z-10">
-                  <Checkbox
-                    className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
-                    checked={selectedIds?.includes(id)}
-                    onCheckedChange={(checked) => {
-                      onSelectedId?.(checked, id);
-                      if (checked) {
-                        onSelect?.({
-                          stock,
-                          askForPrice,
-                          askForStock,
-                          offerPrice,
-                          productPrice,
-                          status,
-                          productCondition,
-                          consumerType,
-                          sellType,
-                          deliveryAfter,
-                          timeOpen,
-                          timeClose,
-                          vendorDiscount,
-                          vendorDiscountType,
-                          consumerDiscount,
-                          consumerDiscountType,
-                          minQuantity,
-                          maxQuantity,
-                          minCustomer,
-                          maxCustomer,
-                          minQuantityPerCustomer,
-                          maxQuantityPerCustomer,
-                        });
-                      }
-                    }}
-                  />
-                </div>
-                <div
-                  className="existing_product_checkbox left-[30px] z-10 text-[20px] text-gray-500"
-                  onClick={() => updateStatus(status)} // Pass function reference correctly
-                >
-                  {status === "ACTIVE" ? <IoIosEye /> : <IoIosEyeOff />}
-                </div>
-                <div className="relative mx-auto h-[100%] w-[100%]">
-                  <Image
-                    src={
-                      productImage && validator.isURL(productImage)
-                        ? productImage
-                        : PlaceholderImage
+    <div className="mb-4 w-full rounded-lg border border-gray-200 bg-white shadow-sm">
+      {/* Compact View - Always Visible */}
+      <div className="flex items-center justify-between p-4">
+        {/* Left Section - Product Info */}
+        <div className="flex items-center space-x-4">
+          {/* Checkbox and Eye Icon */}
+          {!hideCheckbox && !hideEyeIcon && (
+            <div className="flex flex-col items-center space-y-2">
+              {!hideCheckbox && (
+                <Checkbox
+                  className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                  checked={selectedIds?.includes(id)}
+                  onCheckedChange={(checked) => {
+                    onSelectedId?.(checked, id);
+                    if (checked) {
+                      onSelect?.({
+                        stock,
+                        askForPrice,
+                        askForStock,
+                        offerPrice,
+                        productPrice,
+                        status,
+                        productCondition,
+                        consumerType,
+                        sellType,
+                        deliveryAfter,
+                        timeOpen,
+                        timeClose,
+                        vendorDiscount,
+                        vendorDiscountType,
+                        consumerDiscount,
+                        consumerDiscountType,
+                        minQuantity,
+                        maxQuantity,
+                        minCustomer,
+                        maxCustomer,
+                        minQuantityPerCustomer,
+                        maxQuantityPerCustomer,
+                      });
                     }
-                    alt="product-image"
-                    fill
-                    sizes="(max-width: 768px) 100vw,
-                  (max-width: 1200px) 50vw,
-                  33vw"
-                    className="object-contain"
-                    blurDataURL="/images/product-placeholder.png"
-                    placeholder="blur"
-                  />
+                  }}
+                />
+              )}
+              {!hideEyeIcon && (
+                <div
+                  className="cursor-pointer text-gray-500 hover:text-gray-700"
+                  onClick={() => updateStatus(status)}
+                >
+                  {status === "ACTIVE" ? <IoIosEye size={20} /> : <IoIosEyeOff size={20} />}
                 </div>
-                {productCondition === "OLD" ? (
-                  <div className="absolute right-0 top-0 z-10">
-                    <Link href={`/product/${productId}?productPriceId=${id}`}>
-                      <Image
-                        src={EditIcon}
-                        alt="review-dot-icon"
-                        height={21}
-                        width={21}
-                      />
-                    </Link>
-                  </div>
-                ) : null}
-              </div>
-              <div className="text-container">
-                <h3>{productName || "-"}</h3>
-              </div>
-              <div className="form-container">
-                <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
-                  {/* For Stock */}
-                  <div className="flex flex-wrap items-center gap-1 space-y-1 md:gap-0">
-                    <div
-                      className="flex items-center justify-start gap-2 text-black"
-                      dir={langDir}
-                    >
-                      <input
-                        type="checkbox"
-                        className="h-[20px] w-[20px]"
-                        defaultChecked={askForStock === "false"} // Checkbox is checked when askForStock is false
-                      />
-                      <div className="text-[12px] font-semibold" translate="no">
-                        {t("stock")}
-                      </div>
-                    </div>
-                    {askForStock === "false" ? (
-                      <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
-                        <a
-                          href="javascript:void(0)"
-                          className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc] disabled:text-[#999]"
-                          onClick={decreaseStock}
-                        >
-                          -
-                        </a>
-                        <input
-                          type="text"
-                          value={stock}
-                          className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
-                          onChange={(e) => setStock(Number(e.target.value))}
-                          // readOnly // Prevent manual editing
-                        />
-                        <a
-                          href="javascript:void(0)"
-                          className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]"
-                          onClick={increaseStock}
-                        >
-                          +
-                        </a>
-                      </div>
-                    ) : (
-                      <div
-                        className="text-left text-[13px] font-semibold leading-normal text-gray-500"
-                        translate="no"
-                      >
-                        {t("ask_for_the_stock")}
-                      </div>
-                    )}
-                  </div>
+              )}
+            </div>
+          )}
 
-                  <div className="flex flex-wrap items-center gap-1 space-y-1 md:gap-0">
-                    <div
-                      className="flex items-center justify-start gap-2 text-black"
-                      dir={langDir}
-                    >
-                      <input
-                        type="checkbox"
-                        className="h-[20px] w-[20px]"
-                        defaultChecked={askForPrice === "false"} // Checkbox is checked when askForStock is false
-                      />
-                      <div
-                        className="text-[12px] font-semibold"
-                        dir={langDir}
-                        translate="no"
-                      >
-                        {t("price")}
-                      </div>
-                    </div>
-                    {askForStock === "false" ? (
-                      <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
-                        <a
-                          href="javascript:void(0)"
-                          className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]"
-                          onClick={decreasePrice}
-                        >
-                          -
-                        </a>
-                        <input
-                          type="text"
-                          value={productPrice}
-                          className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
-                          onChange={(e) =>
-                            setProductPrice(Number(e.target.value))
-                          }
-                        />
-                        <a
-                          href="javascript:void(0)"
-                          className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]"
-                          onClick={increasePrice}
-                        >
-                          +
-                        </a>
-                      </div>
-                    ) : (
-                      <div
-                        className="text-left text-[13px] font-semibold leading-normal text-gray-500"
-                        translate="no"
-                      >
-                        {t("ask_for_the_price")}
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
-                  <div className="flex flex-wrap space-y-1" dir={langDir}>
-                    <div className="flex items-center justify-start gap-2 text-black">
-                      <div className="text-[12px] font-semibold" translate="no">
-                        {t("product_condition")}
-                      </div>
-                    </div>
-                    <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
-                      <select
-                        className="m-0 w-[100%] text-center focus:border-none focus:outline-none"
-                        defaultValue={initialCondition} // Bind the selected value to the state
-                        onChange={(e) => setCondition(e.target.value)} // Update the state when the value changes
-                      >
-                        <option value={"NEW"} dir={langDir} translate="no">
-                          {t("new")}
-                        </option>
-                        <option value={"OLD"} dir={langDir} translate="no">
-                          {t("old")}
-                        </option>
-                      </select>
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap space-y-1" dir={langDir}>
-                    <div className="flex items-center justify-start gap-2 text-black">
-                      <div
-                        className="text-[12px] font-semibold"
-                        dir={langDir}
-                        translate="no"
-                      >
-                        {t("deliver_after")}
-                      </div>
-                    </div>
-                    <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
-                      <a
-                        href="javascript:void(0)"
-                        className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]"
-                        onClick={decreaseDeliveryDay}
-                      >
-                        -
-                      </a>
-                      <input
-                        type="text"
-                        value={deliveryAfter}
-                        className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
-                        onChange={(e) => setDelivery(Number(e.target.value))}
-                      />
-                      <a
-                        href="javascript:void(0)"
-                        className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]"
-                        onClick={increaseDeliveryDay}
-                      >
-                        +
-                      </a>
-                    </div>
-                  </div>
-                </div>
+          {/* Product Image */}
+          <div className="relative h-24 w-24 overflow-hidden rounded-lg border border-gray-200">
+            <Image
+              src={
+                productImage && validator.isURL(productImage)
+                  ? productImage
+                  : PlaceholderImage
+              }
+              alt="product-image"
+              fill
+              sizes="96px"
+              className="object-cover"
+              blurDataURL="/images/product-placeholder.png"
+              placeholder="blur"
+            />
+          </div>
 
-                <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
-                  <div className="flex flex-wrap space-y-1">
-                    <button
-                      type="button"
-                      className="flex h-[50px] w-full items-center justify-center border-none bg-[#5a82ca] text-[12px] text-white"
-                      onClick={handleUpdate} // Attach the handleUpdate function here
-                      translate="no"
-                    >
-                      {t("update")}
-                    </button>
-                  </div>
-                  <div className="flex flex-wrap space-y-1">
-                    <Link href={`/product?copy=${productId}`}>
-                      <button
-                        type="button"
-                        className="flex h-[50px] w-full items-center justify-center border-none bg-[#5a82ca] text-[12px] text-white"
-                        dir={langDir}
-                        translate="no"
-                      >
-                        {t("copy_product")}
-                      </button>
-                    </Link>
-                  </div>
-                </div>
-                <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
-                  <div className="flex flex-wrap space-y-1">
-                    <button
-                      type="button"
-                      className="flex h-[50px] w-full items-center justify-center border-none bg-[#d56d26] text-[12px] text-white"
-                      onClick={handleReset}
-                      dir={langDir}
-                      translate="no"
-                    >
-                      {t("reset")}
-                    </button>
-                  </div>
-                  <div className="flex flex-wrap space-y-1">
-                    <button
-                      type="button"
-                      className="flex h-[50px] w-full items-center justify-center border-none bg-[#d56d26] text-[12px] text-white"
-                      onClick={handleRemoveProduct}
-                      dir={langDir}
-                      translate="no"
-                    >
-                      {t("remove")}
-                    </button>
-                  </div>
-                </div>
+          {/* Product Details */}
+          <div className="flex flex-col space-y-2">
+            <h3 className="text-lg font-semibold text-gray-900">{productName || "-"}</h3>
+            
+            {/* Stock and Price Info */}
+            <div className="flex space-x-6 text-sm text-gray-600">
+              <div className="flex items-center space-x-2">
+                <span className="font-medium">{t("stock")}:</span>
+                <span className="text-green-600 font-semibold">
+                  {askForStock === "false" ? stock : t("ask_for_the_stock")}
+                </span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="font-medium">{t("price")}:</span>
+                <span className="text-blue-600 font-semibold">
+                  {askForPrice === "false" ? `$${productPrice}` : t("ask_for_the_price")}
+                </span>
               </div>
             </div>
-            <div className="rightdiv">
-              <div className="form-container">
-                <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
-                  <div className="flex flex-wrap space-y-1" dir={langDir}>
-                    <div className="flex items-center justify-start gap-2 text-black">
-                      <div className="text-[12px] font-semibold" translate="no">
-                        {t("time_open")}
-                      </div>
-                    </div>
-                    <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
-                      <a
-                        href="javascript:void(0)"
-                        className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]"
-                        onClick={decreaseTimeOpen}
-                      >
-                        -
-                      </a>
-                      <input
-                        type="text"
-                        value={timeOpen}
-                        className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
-                        onChange={(e) => setTimeOpen(Number(e.target.value))}
-                      />
-                      <a
-                        href="javascript:void(0)"
-                        className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]"
-                        onClick={increaseTimeOpen}
-                      >
-                        +
-                      </a>
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap space-y-1" dir={langDir}>
-                    <div className="flex items-center justify-start gap-2 text-black">
-                      <div
-                        className="text-[12px] font-semibold"
-                        dir={langDir}
-                        translate="no"
-                      >
-                        {t("time_close")}
-                      </div>
-                    </div>
-                    <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
-                      <a
-                        href="javascript:void(0)"
-                        className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]"
-                        onClick={decreaseTimeClose}
-                      >
-                        -
-                      </a>
-                      <input
-                        type="text"
-                        value={timeClose}
-                        className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
-                        onChange={(e) => setTimeClose(Number(e.target.value))}
-                      />
-                      <a
-                        href="javascript:void(0)"
-                        className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]"
-                        onClick={increaseTimeClose}
-                      >
-                        +
-                      </a>
-                    </div>
-                  </div>
 
-                  {/* <div className="flex flex-wrap space-y-1 rounded bg-[#f1f1f1] p-1">
-                  <label>Time Open</label>
-                  <div className="theme-inputValue-picker-upDown">
-                    <span>{timeOpen || "-"}</span>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap space-y-1 rounded bg-[#f1f1f1] p-1">
-                  <label>Time Close</label>
-                  <div className="theme-inputValue-picker-upDown">
-                    <span>{timeClose || "-"}</span>
-                  </div>
-                </div> */}
-                </div>
-
-                <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2">
-                  <div className="flex flex-wrap space-y-1" dir={langDir}>
-                    <div className="flex w-full items-center justify-start gap-2 text-black md:w-[40%]">
-                      <div className="text-[12px] font-semibold" translate="no">
-                        {t("consumer_type")}
-                      </div>
-                    </div>
-                    <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2 text-sm md:w-[60%]">
-                      <select
-                        className="m-0 w-[100%] text-center text-[12x] focus:border-none focus:outline-none"
-                        defaultValue={initialConsumerType} // Bind the selected value to the state
-                        onChange={(e) => setConsumer(e.target.value)} // Update the state when the value changes
-                      >
-                        <option value={"CONSUMER"} dir={langDir} translate="no">
-                          {t("consumer")}
-                        </option>
-                        <option value={"VENDORS"} dir={langDir} translate="no">
-                          {t("vendor")}
-                        </option>
-                        <option value={"EVERYONE"} dir={langDir} translate="no">
-                          {t("everyone")}
-                        </option>
-                      </select>
-                    </div>
-                  </div>
-
-                  {/* <div className="flex flex-wrap space-y-1 rounded bg-[#f1f1f1] p-1">
-                  <label className="text-sm font-medium leading-normal peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                    Consumer Type
-                  </label>
-                  <span>{consumerType || "-"}</span>
-                </div>
-                <div className="flex flex-wrap space-y-1 rounded bg-[#f1f1f1] p-1">
-                  <label className="text-sm font-medium leading-normal peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                    Sell Type
-                  </label>
-                  <span>{sellType || "-"}</span>
-                </div> */}
-                </div>
-
-                <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2">
-                  <div className="flex flex-wrap space-y-1" dir={langDir}>
-                    <div className="flex w-[40%] items-center justify-start gap-2 text-black">
-                      <div className="text-[12px] font-semibold" translate="no">
-                        {t("sell_type")}
-                      </div>
-                    </div>
-                    <div className="flex w-[60%] items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2 text-sm">
-                      <select
-                        className="m-0 w-[100%] text-center text-[12x] focus:border-none focus:outline-none"
-                        defaultValue={initialSellType} // Bind the selected value to the state
-                        onChange={(e) => setSell(e.target.value)} // Update the state when the value changes
-                      >
-                        <option
-                          value={"NORMALSELL"}
-                          dir={langDir}
-                          translate="no"
-                        >
-                          {t("normal_sell")}
-                        </option>
-                        <option value={"BUYGROUP"} dir={langDir} translate="no">
-                          {t("buy_group")}
-                        </option>
-                        <option value={"EVERYONE"} dir={langDir} translate="no">
-                          {t("everyone")}
-                        </option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
-                  <div className="flex flex-wrap space-y-1" dir={langDir}>
-                    <div className="flex items-center justify-start gap-2 text-black">
-                      <div className="text-[12px] font-semibold" translate="no">
-                        {t("vendor_discount")}
-                      </div>
-                    </div>
-                    <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
-                      <a
-                        href="javascript:void(0)"
-                        className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]"
-                        onClick={decreaseVendorDiscount}
-                      >
-                        -
-                      </a>
-                      <input
-                        type="text"
-                        value={vendorDiscount}
-                        className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
-                        onChange={(e) => setVendor(Number(e.target.value))}
-                      />
-                      <a
-                        href="javascript:void(0)"
-                        className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]"
-                        onClick={increaseVendorDiscount}
-                      >
-                        +
-                      </a>
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap space-y-1" dir={langDir}>
-                    <div className="flex items-center justify-start gap-2 text-black">
-                      <div className="text-[12px] font-semibold" translate="no">
-                        {t("consumer_discount")}
-                      </div>
-                    </div>
-                    <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
-                      <a
-                        href="javascript:void(0)"
-                        className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]"
-                        onClick={decreaseConsumerDiscount}
-                      >
-                        -
-                      </a>
-                      <input
-                        type="text"
-                        value={consumerDiscount}
-                        className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
-                        onChange={(e) =>
-                          setConsumerDiscount(Number(e.target.value))
-                        }
-                      />
-                      <a
-                        href="javascript:void(0)"
-                        className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]"
-                        onClick={increaseConsumerDiscount}
-                      >
-                        +
-                      </a>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
-                  <div className="flex flex-wrap space-y-1" dir={langDir}>
-                    <div className="flex items-center justify-start gap-2 text-black">
-                      <div className="text-[12px] font-semibold" translate="no">
-                        {t("min_quantity")}
-                      </div>
-                    </div>
-                    <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
-                      <a
-                        href="javascript:void(0)"
-                        className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]"
-                        onClick={decreaseMinQuantity}
-                      >
-                        -
-                      </a>
-                      <input
-                        type="text"
-                        value={minQuantity}
-                        className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
-                        onChange={(e) => setMinQuantity(Number(e.target.value))}
-                      />
-                      <a
-                        href="javascript:void(0)"
-                        className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]"
-                        onClick={increaseMinQuantity}
-                      >
-                        +
-                      </a>
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap space-y-1" dir={langDir}>
-                    <div className="flex items-center justify-start gap-2 text-black">
-                      <div className="text-[12px] font-semibold" translate="no">
-                        {t("max_quantity")}
-                      </div>
-                    </div>
-                    <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
-                      <a
-                        href="javascript:void(0)"
-                        className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]"
-                        onClick={decreaseMaxQuantity}
-                      >
-                        -
-                      </a>
-                      <input
-                        type="text"
-                        value={maxQuantity}
-                        className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
-                        onChange={(e) => setMaxQuantity(Number(e.target.value))}
-                      />
-                      <a
-                        href="javascript:void(0)"
-                        className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]"
-                        onClick={increaseMaxsQuantity}
-                      >
-                        +
-                      </a>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
-                  <div className="flex flex-wrap space-y-1" dir={langDir}>
-                    <div className="flex items-center justify-start gap-2 text-black">
-                      <div className="text-[12px] font-semibold" translate="no">
-                        {t("min_customer")}
-                      </div>
-                    </div>
-                    <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
-                      <a
-                        href="javascript:void(0)"
-                        className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]"
-                        onClick={decreaseMinCustomer}
-                      >
-                        -
-                      </a>
-                      <input
-                        type="text"
-                        value={minCustomer}
-                        className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
-                        onChange={(e) => setMinCustomer(Number(e.target.value))}
-                      />
-                      <a
-                        href="javascript:void(0)"
-                        className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]"
-                        onClick={increaseMinsCustomer}
-                      >
-                        +
-                      </a>
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap space-y-1" dir={langDir}>
-                    <div className="flex items-center justify-start gap-2 text-black">
-                      <div className="text-[12px] font-semibold" translate="no">
-                        {t("max_customer")}
-                      </div>
-                    </div>
-                    <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
-                      <a
-                        href="javascript:void(0)"
-                        className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]"
-                        onClick={decreaseMaxCustomer}
-                      >
-                        -
-                      </a>
-                      <input
-                        type="text"
-                        value={maxCustomer}
-                        className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
-                        onChange={(e) => setMaxCustomer(Number(e.target.value))}
-                      />
-                      <a
-                        href="javascript:void(0)"
-                        className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]"
-                        onClick={increaseMaxsCustomer}
-                      >
-                        +
-                      </a>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
-                  <div className="flex flex-wrap space-y-1" dir={langDir}>
-                    <div className="flex items-center justify-start gap-2 text-black">
-                      <div className="text-[12px] font-semibold" translate="no">
-                        {t("min_quantity_per_customer")}
-                      </div>
-                    </div>
-                    <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
-                      <a
-                        href="javascript:void(0)"
-                        className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]"
-                        onClick={decreaseMinQuantityCustomer}
-                      >
-                        -
-                      </a>
-                      <input
-                        type="text"
-                        value={minQuantityPerCustomer}
-                        className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
-                        onChange={(e) =>
-                          setMinQuantityCustomer(Number(e.target.value))
-                        }
-                      />
-                      <a
-                        href="javascript:void(0)"
-                        className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]"
-                        onClick={increaseMinQuantityCustomer}
-                      >
-                        +
-                      </a>
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap space-y-1" dir={langDir}>
-                    <div className="flex items-center justify-start gap-2 text-black">
-                      <div className="text-[12px] font-semibold" translate="no">
-                        {t("max_quantity_per_customer")}
-                      </div>
-                    </div>
-                    <div className="flex w-full items-center justify-center rounded border-[1px] border-[#EBEBEB] border-[solid] p-2">
-                      <a
-                        href="javascript:void(0)"
-                        className="m-0 w-[20%] text-[24px] font-semibold text-[#ccc]"
-                        onClick={decreaseMaxQuantityCustomer}
-                      >
-                        -
-                      </a>
-                      <input
-                        type="text"
-                        value={maxQuantityPerCustomer}
-                        className="m-0 w-[60%] text-center focus:border-none focus:outline-none"
-                        onChange={(e) =>
-                          setMaxQuantityCustomer(Number(e.target.value))
-                        }
-                      />
-                      <a
-                        href="javascript:void(0)"
-                        className="m-0 w-[20%] text-[24px] font-semibold  text-[#ccc]"
-                        onClick={increaseMaxQuantityCustomer}
-                      >
-                        +
-                      </a>
-                    </div>
-                  </div>
-                </div>
-
-                {/* <div className="mb-2 grid w-full grid-cols-1 gap-x-2 gap-y-2 md:grid-cols-2">
-                <div className="flex flex-wrap space-y-1 rounded bg-[#f1f1f1] p-1">
-                  <label className="text-sm font-medium leading-normal peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                    Vendor Discount
-                  </label>
-                  <div className="theme-inputValue-picker-upDown">
-                    <span>{vendorDiscount ? `${vendorDiscount}%` : "-"}</span>
-                  </div>
-                </div>
-                <div className="flex flex-wrap space-y-1 rounded bg-[#f1f1f1] p-1">
-                  <label className="text-sm font-medium leading-normal peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                    Consumer Discount
-                  </label>
-                  <div className="theme-inputValue-picker-upDown">
-                    <span>
-                      {consumerDiscount ? `${consumerDiscount}%` : "-"}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap space-y-1 rounded bg-[#f1f1f1] p-1">
-                  <label className="text-sm font-medium leading-normal peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                    Min Quantity
-                  </label>
-                  <div className="theme-inputValue-picker-upDown">
-                    <span>{minQuantity || "-"}</span>
-                  </div>
-                </div>
-                <div className="flex flex-wrap space-y-1 rounded bg-[#f1f1f1] p-1">
-                  <label className="text-sm font-medium leading-normal peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                    Max Quantity
-                  </label>
-                  <div className="theme-inputValue-picker-upDown">
-                    <span>{maxQuantity || "-"}</span>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap space-y-1 rounded bg-[#f1f1f1] p-1">
-                  <label className="text-sm font-medium leading-normal peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                    Min Consumer
-                  </label>
-                  <div className="theme-inputValue-picker-upDown">
-                    <span>{minCustomer || "-"}</span>
-                  </div>
-                </div>
-                <div className="flex flex-wrap space-y-1 rounded bg-[#f1f1f1] p-1">
-                  <label className="text-sm font-medium leading-normal peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                    Max Consumer
-                  </label>
-                  <div className="theme-inputValue-picker-upDown">
-                    <span>{maxCustomer || "-"}</span>
-                  </div>
-                </div>
-
-                <div className="flex flex-wrap space-y-1 rounded bg-[#f1f1f1] p-1">
-                  <label className="text-sm font-medium leading-normal peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                    Min Qty Consumer
-                  </label>
-                  <div className="theme-inputValue-picker-upDown">
-                    <span>{minQuantityPerCustomer || "-"}</span>
-                  </div>
-                </div>
-                <div className="flex flex-wrap space-y-1 rounded bg-[#f1f1f1] p-1">
-                  <label className="text-sm font-medium leading-normal peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                    Max Qty Consumer
-                  </label>
-                  <div className="theme-inputValue-picker-upDown">
-                    <span>{maxQuantityPerCustomer || "-"}</span>
-                  </div>
-                </div>
-              </div> */}
+            {/* Additional Info */}
+            <div className="flex space-x-6 text-sm text-gray-500">
+              <div className="flex items-center space-x-2">
+                <span>{t("condition")}:</span>
+                <span className="font-medium">{productCondition || "-"}</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span>{t("delivery")}:</span>
+                <span className="font-medium">{deliveryAfter} {t("days")}</span>
               </div>
             </div>
           </div>
         </div>
+
+        {/* Right Section - Action Buttons */}
+        <div className="flex items-center space-x-2">
+          {/* Action Buttons - Iconic Only */}
+          {!hideCopyButton && !hideActionButtons && (
+            <div className="flex space-x-2">
+              {!hideCopyButton && (
+                <Link href={`/product?copy=${productId}`}>
+                  <button
+                    type="button"
+                    className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-500 text-white hover:bg-green-600 transition-colors"
+                    title={t("copy_product")}
+                  >
+                    <IoMdCopy size={18} />
+                  </button>
+                </Link>
+              )}
+              
+              {!hideActionButtons && (
+                <button
+                  type="button"
+                  className="flex h-10 w-10 items-center justify-center rounded-lg bg-red-500 text-white hover:bg-red-600 transition-colors"
+                  onClick={handleRemoveProduct}
+                  title={t("remove")}
+                >
+                  <IoMdTrash size={18} />
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* Expand/Collapse Button */}
+          <button
+            type="button"
+            className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 transition-colors"
+            onClick={() => setIsExpanded(!isExpanded)}
+            title={isExpanded ? t("collapse") : t("expand")}
+          >
+            {isExpanded ? <IoMdArrowUp size={18} /> : <IoMdArrowDown size={18} />}
+          </button>
+        </div>
       </div>
-    </>
-  );
-};
+
+             {/* Expanded View - Editable Fields */}
+       {isExpanded && (
+         <div className="border-t border-gray-200 bg-gray-50 p-4">
+           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+                         {/* Stock Management */}
+             <div className="space-y-1">
+               <Label className="text-xs font-medium">{t("stock")}</Label>
+               <div className="flex items-center space-x-1">
+                 <input
+                   type="checkbox"
+                   className="h-3 w-3"
+                   defaultChecked={askForStock === "false"}
+                 />
+                 <span className="text-xs text-gray-600">{t("manage_stock")}</span>
+               </div>
+               {askForStock === "false" && (
+                 <div className="flex items-center space-x-1">
+                   <button
+                     type="button"
+                     onClick={decreaseStock}
+                     className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                   >
+                     -
+                   </button>
+                   <input
+                     type="number"
+                     value={stock}
+                     onChange={(e) => setStock(Number(e.target.value))}
+                     className="h-6 w-12 rounded border border-gray-300 text-center text-xs"
+                   />
+                   <button
+                     type="button"
+                     onClick={increaseStock}
+                     className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                   >
+                     +
+                   </button>
+                 </div>
+               )}
+             </div>
+
+                         {/* Price Management */}
+             <div className="space-y-1">
+               <Label className="text-xs font-medium">{t("price")}</Label>
+               <div className="flex items-center space-x-1">
+                 <input
+                   type="checkbox"
+                   className="h-3 w-3"
+                   defaultChecked={askForPrice === "false"}
+                 />
+                 <span className="text-xs text-gray-600">{t("manage_price")}</span>
+               </div>
+               {askForPrice === "false" && (
+                 <div className="flex items-center space-x-1">
+                   <button
+                     type="button"
+                     onClick={(e) => { e.preventDefault(); decreasePrice(); }}
+                     className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                   >
+                     -
+                   </button>
+                   <input
+                     type="number"
+                     value={productPrice}
+                     onChange={(e) => setProductPrice(Number(e.target.value))}
+                     className="h-6 w-14 rounded border border-gray-300 text-center text-xs"
+                   />
+                   <button
+                     type="button"
+                     onClick={(e) => { e.preventDefault(); increasePrice(); }}
+                     className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                   >
+                     +
+                   </button>
+                 </div>
+               )}
+             </div>
+
+             {/* Product Condition */}
+             <div className="space-y-1">
+               <Label className="text-xs font-medium">{t("product_condition")}</Label>
+               <select
+                 value={productCondition}
+                 onChange={(e) => setCondition(e.target.value)}
+                 className="h-6 w-full rounded border border-gray-300 px-1 text-xs"
+               >
+                 <option value="NEW">{t("new")}</option>
+                 <option value="OLD">{t("old")}</option>
+                 <option value="REFURBISHED">{t("refurbished")}</option>
+               </select>
+             </div>
+
+             {/* Delivery After */}
+             <div className="space-y-1">
+               <Label className="text-xs font-medium">{t("deliver_after")}</Label>
+               <div className="flex items-center space-x-1">
+                 <button
+                  onClick={(e) => { e.preventDefault(); decreaseDeliveryDay() }}
+                   className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                 >
+                   -
+                 </button>
+                 <input
+                   type="number"
+                   value={deliveryAfter}
+                   onChange={(e) => setDelivery(Number(e.target.value))}
+                   className="h-6 w-12 rounded border border-gray-300 text-center text-xs"
+                 />
+                 <button
+                   onClick={(e) => { e.preventDefault(); increaseDeliveryDay() }}
+                   className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                 >
+                   +
+                 </button>
+               </div>
+             </div>
+
+                         {/* Time Open */}
+             <div className="space-y-1">
+               <Label className="text-xs font-medium">{t("time_open")}</Label>
+               <div className="flex items-center space-x-1">
+                 <button
+                   onClick={(e) => { e.preventDefault(); decreaseTimeOpen() }}
+                   className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                 >
+                   -
+                 </button>
+                 <input
+                   type="number"
+                   value={timeOpen}
+                   onChange={(e) => setTimeOpen(Number(e.target.value))}
+                   className="h-6 w-12 rounded border border-gray-300 text-center text-xs"
+                 />
+                 <button
+                   onClick={(e) => { e.preventDefault(); increaseTimeOpen() }}
+                   className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                 >
+                   +
+                 </button>
+               </div>
+             </div>
+
+             {/* Time Close */}
+             <div className="space-y-1">
+               <Label className="text-xs font-medium">{t("time_close")}</Label>
+               <div className="flex items-center space-x-1">
+                 <button
+                   onClick={(e) => { e.preventDefault(); decreaseTimeClose() }}
+                   className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                 >
+                   -
+                 </button>
+                 <input
+                   type="number"
+                   value={timeClose}
+                   onChange={(e) => setTimeClose(Number(e.target.value))}
+                   className="h-6 w-12 rounded border border-gray-300 text-center text-xs"
+                 />
+                 <button
+                   onClick={(e) => { e.preventDefault(); increaseTimeClose() }}
+                   className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                 >
+                   +
+                 </button>
+               </div>
+             </div>
+
+             {/* Consumer Type */}
+             <div className="space-y-1">
+               <Label className="text-xs font-medium">{t("consumer_type")}</Label>
+               <select
+                 value={consumerType}
+                 onChange={(e) => setConsumer(e.target.value)}
+                 className="h-6 w-full rounded border border-gray-300 px-1 text-xs"
+               >
+                 <option value="CONSUMER">{t("consumer")}</option>
+                 <option value="BUSINESS">{t("business")}</option>
+                 <option value="EVERYONE">{t("everyone")}</option>
+               </select>
+             </div>
+
+             {/* Sell Type */}
+             <div className="space-y-1">
+               <Label className="text-xs font-medium">{t("sell_type")}</Label>
+               <select
+                 value={sellType}
+                 onChange={(e) => setSell(e.target.value)}
+                 className="h-6 w-full rounded border border-gray-300 px-1 text-xs"
+               >
+                 <option value="NORMALSELL">{t("normal_sell")}</option>
+                 <option value="BUYGROUP">{t("buy_group")}</option>
+                 <option value="EVERYONE">{t("everyone")}</option>
+               </select>
+             </div>
+
+                         {/* Vendor Discount */}
+             <div className="space-y-1">
+               <Label className="text-xs font-medium">{t("vendor_discount")}</Label>
+               <div className="flex items-center space-x-1">
+                 <button
+                   onClick={(e) => { e.preventDefault(); decreaseVendorDiscount() }}
+                   className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                 >
+                   -
+                 </button>
+                 <input
+                   type="number"
+                   value={vendorDiscount}
+                   onChange={(e) => setVendor(Number(e.target.value))}
+                   className="h-6 w-12 rounded border border-gray-300 text-center text-xs"
+                 />
+                 <button
+                   onClick={(e) => { e.preventDefault(); increaseVendorDiscount() }}
+                   className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                 >
+                   +
+                 </button>
+               </div>
+             </div>
+
+             {/* Consumer Discount */}
+             <div className="space-y-1">
+               <Label className="text-xs font-medium">{t("consumer_discount")}</Label>
+               <div className="flex items-center space-x-1">
+                 <button
+                   onClick={(e) => { e.preventDefault(); decreaseConsumerDiscount() }}
+                   className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                 >
+                   -
+                 </button>
+                 <input
+                   type="number"
+                   value={consumerDiscount}
+                   onChange={(e) => setConsumerDiscount(Number(e.target.value))}
+                   className="h-6 w-12 rounded border border-gray-300 text-center text-xs"
+                 />
+                 <button
+                   onClick={(e) => { e.preventDefault(); increaseConsumerDiscount() }}
+                   className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                 >
+                   +
+                 </button>
+               </div>
+             </div>
+
+             {/* Min Quantity */}
+             <div className="space-y-1">
+               <Label className="text-xs font-medium">{t("min_quantity")}</Label>
+               <div className="flex items-center space-x-1">
+                 <button
+                   onClick={(e) => { e.preventDefault(); decreaseMinQuantity() }}
+                   className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                 >
+                   -
+                 </button>
+                 <input
+                   type="number"
+                   value={minQuantity}
+                   onChange={(e) => setMinQuantity(Number(e.target.value))}
+                   className="h-6 w-12 rounded border border-gray-300 text-center text-xs"
+                 />
+                 <button
+                   onClick={(e) => { e.preventDefault(); increaseMinQuantity() }}
+                   className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                 >
+                   +
+                 </button>
+               </div>
+             </div>
+
+             {/* Max Quantity */}
+             <div className="space-y-1">
+               <Label className="text-xs font-medium">{t("max_quantity")}</Label>
+               <div className="flex items-center space-x-1">
+                 <button
+                   onClick={(e) => { e.preventDefault(); decreaseMaxsQuantity() }}
+                   className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                 >
+                   -
+                 </button>
+                 <input
+                   type="number"
+                   value={maxQuantity}
+                   onChange={(e) => setMaxQuantity(Number(e.target.value))}
+                   className="h-6 w-12 rounded border border-gray-300 text-center text-xs"
+                 />
+                 <button
+                   onClick={(e) => { e.preventDefault(); increaseMaxQuantity() }}
+                   className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                 >
+                   +
+                 </button>
+               </div>
+             </div>
+
+                         {/* Min Customer */}
+             <div className="space-y-1">
+               <Label className="text-xs font-medium">{t("min_customer")}</Label>
+               <div className="flex items-center space-x-1">
+                 <button
+                   onClick={(e) => { e.preventDefault(); decreaseMinCustomer() }  }
+                   className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                 >
+                   -
+                 </button>
+                 <input
+                   type="number"
+                   value={minCustomer}
+                   onChange={(e) => setMinCustomer(Number(e.target.value))}
+                   className="h-6 w-12 rounded border border-gray-300 text-center text-xs"
+                 />
+                 <button
+                   onClick={(e) => { e.preventDefault(); increaseMinCustomer() }}
+                   className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                 >
+                   +
+                 </button>
+               </div>
+             </div>
+
+             {/* Max Customer */}
+             <div className="space-y-1">
+               <Label className="text-xs font-medium">{t("max_customer")}</Label>
+               <div className="flex items-center space-x-1">
+                 <button
+                   onClick={(e) => { e.preventDefault(); decreaseMaxCustomer() }}
+                   className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                 >
+                   -
+                 </button>
+                 <input
+                   type="number"
+                   value={maxCustomer}
+                   onChange={(e) => setMaxCustomer(Number(e.target.value))}
+                   className="h-6 w-12 rounded border border-gray-300 text-center text-xs"
+                 />
+                 <button
+                   onClick={(e) => { e.preventDefault(); increaseMaxCustomer() }}
+                   className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                 >
+                   +
+                 </button>
+               </div>
+             </div>
+
+             {/* Min Quantity Per Customer */}
+             <div className="space-y-1">
+               <Label className="text-xs font-medium">{t("min_quantity_per_customer")}</Label>
+               <div className="flex items-center space-x-1">
+                 <button
+                   onClick={(e) => { e.preventDefault(); decreaseMinQuantityCustomer() }}
+                   className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                 >
+                   -
+                 </button>
+                 <input
+                   type="number"
+                   value={minQuantityCustomer}
+                   onChange={(e) => setMinQuantityCustomer(Number(e.target.value))}
+                   className="h-6 w-12 rounded border border-gray-300 text-center text-xs"
+                 />
+                 <button
+                   onClick={(e) => { e.preventDefault(); increaseMinQuantityCustomer() }}
+                   className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                 >
+                   +
+                 </button>
+               </div>
+             </div>
+
+             {/* Max Quantity Per Customer */}
+             <div className="space-y-1">
+               <Label className="text-xs font-medium">{t("max_quantity_per_customer")}</Label>
+               <div className="flex items-center space-x-1">
+                 <button
+                   onClick={(e) => { e.preventDefault(); decreaseMaxQuantityCustomer() }}
+                   className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                 >
+                   -
+                 </button>
+                 <input
+                   type="number"
+                   value={maxQuantityCustomer}
+                   onChange={(e) => setMaxQuantityCustomer(Number(e.target.value))}
+                   className="h-6 w-12 rounded border border-gray-300 text-center text-xs"
+                 />
+                 <button
+                   onClick={(e) => { e.preventDefault(); increaseMaxQuantityCustomer() }}
+                   className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                 >
+                   +
+                 </button>
+               </div>
+             </div>
+           </div>
+
+           {/* Action Buttons Section */}
+           {!hideActionButtons && (
+             <div className="mt-4 flex justify-center space-x-3 border-t border-gray-300 pt-4">
+               <button
+                 type="button"
+                 className="flex items-center justify-center rounded-lg bg-blue-500 px-4 py-2 text-sm text-white hover:bg-blue-600 transition-colors"
+                 onClick={(e) => handleUpdate(e)}
+               >
+                 <IoMdCreate size={16} className="mr-1" />
+                 {t("update")}
+               </button>
+                
+               <button
+                 type="button"
+                 className="flex items-center justify-center rounded-lg bg-orange-500 px-4 py-2 text-sm text-white hover:bg-orange-600 transition-colors"
+                 onClick={handleReset}
+               >
+                 <IoMdRefresh size={16} className="mr-1" />
+                 {t("reset")}
+               </button>
+             </div>
+           )}
+         </div>
+       )}
+     </div>
+   );
+ };
 
 export default ManageProductCard;

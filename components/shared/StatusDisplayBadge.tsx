@@ -74,6 +74,13 @@ const StatusDisplayBadge: React.FC<StatusDisplayBadgeProps> = ({
                 clipRule="evenodd"
               />
             )}
+            {statusConfig.icon === "user-secret" && (
+              <path
+                fillRule="evenodd"
+                d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM1.49 15.326a.78.78 0 01-.358-.442 3 3 0 014.308-3.516 6.484 6.484 0 00-1.905 3.959c-.023.222-.014.442.025.654a4.97 4.97 0 01-2.07-.655zm14.44.654c.04-.212.048-.432.025-.654a6.484 6.484 0 00-1.905-3.959 3 3 0 014.308 3.516.78.78 0 01-.358.442 4.97 4.97 0 01-2.07.655z"
+                clipRule="evenodd"
+              />
+            )}
           </svg>
         )}
         {statusConfig.label}

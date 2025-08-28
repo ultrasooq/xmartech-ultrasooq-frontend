@@ -8,6 +8,8 @@ import {
   fetchAllProducts,
   fetchAllProductsByUserBusinessCategory,
   fetchExistingProducts,
+  fetchExistingProductForCopy,
+  fetchExistingProductById,
   fetchProductById,
   fetchProductVariant,
   fetchProducts,
@@ -26,7 +28,7 @@ import {
   updateProduct,
   updateProductPriceByProductCondition,
   updateProductStatus,
-  updateSingleProducts
+  updateSingleProducts,
 } from "../requests/product.request";
 import {
   ICreateProduct,
@@ -92,7 +94,7 @@ export const useProducts = (
   });
 
 export const useProductById = (
-  payload: { productId: string; userId?: number, sharedLinkId?: string },
+  payload: { productId: string; userId?: number; sharedLinkId?: string },
   enabled = true,
 ) =>
   useQuery({
@@ -186,54 +188,173 @@ export const useUpdateForCustomize = () => {
   });
 };
 
-export const useExistingProduct = (payload: { page: number; limit: number; term?: string; sort?: string; brandIds?: string; priceMin?: number; priceMax?: number; brandAddedBy?: number; categoryIds?: string; }, enabled = true,) => useQuery({
-  queryKey: ["existing-products", payload],
-  queryFn: async () => {
-    const res = await fetchExistingProducts(payload);
-    return res.data;
+export const useExistingProduct = (
+  payload: {
+    page: number;
+    limit: number;
+    term?: string;
+    sort?: string;
+    brandIds?: string;
+    priceMin?: number;
+    priceMax?: number;
+    brandAddedBy?: number;
+    categoryIds?: string;
   },
-  // onError: (err: APIResponseError) => {
-  //   console.log(err);
-  // },
-  enabled,
-});
+  enabled = true,
+) =>
+  useQuery({
+    queryKey: ["existing-products", payload],
+    queryFn: async () => {
+      const res = await fetchExistingProducts(payload);
+      return res.data;
+    },
+    // onError: (err: APIResponseError) => {
+    //   console.log(err);
+    // },
+    enabled,
+  });
 
-
-export const useAllProducts = (payload: { page: number; limit: number; term?: string; sort?: string; brandIds?: string; priceMin?: number; priceMax?: number; userId?: number; categoryIds?: string; isOwner?: string; userType?: string; related?: boolean; }, enabled = true,) => useQuery({
-  queryKey: ["existing-products", payload],
-  queryFn: async () => {
-    const res = await fetchAllProducts(payload);
-    return res.data;
+// Dedicated hook for "Add from Existing Product" functionality
+export const useExistingProductForCopy = (
+  payload: {
+    page: number;
+    limit: number;
+    term?: string;
+    sort?: string;
+    brandIds?: string;
+    priceMin?: number;
+    priceMax?: number;
+    categoryIds?: string;
   },
-  enabled,
-});
+  enabled = true,
+) =>
+  useQuery({
+    queryKey: ["existing-products-for-copy", payload],
+    queryFn: async () => {
+      const res = await fetchExistingProductForCopy(payload);
+      return res.data;
+    },
+    enabled,
+  });
 
-export const useAllProductsByUserBusinessCategory = (payload: { page: number; limit: number; term?: string; sort?: string; brandIds?: string; priceMin?: number; priceMax?: number; userId?: number; categoryIds?: string; isOwner?: string; userType?: string; related?: boolean; }, enabled = true,) => useQuery({
-  queryKey: ["existing-products", payload],
-  queryFn: async () => {
-    const res = await fetchAllProductsByUserBusinessCategory(payload);
-    return res.data;
+// Hook to fetch existing product by ID for copy functionality
+export const useExistingProductById = (
+  payload: {
+    existingProductId: string;
   },
-  enabled,
-});
+  enabled = true,
+) =>
+  useQuery({
+    queryKey: ["existing-product-by-id", payload],
+    queryFn: async () => {
+      const res = await fetchExistingProductById(payload);
+      return res.data;
+    },
+    enabled,
+  });
 
-export const useAllBuyGroupProducts = (payload: { page: number; limit: number; term?: string; sort?: string; brandIds?: string; priceMin?: number; priceMax?: number; userId?: number; categoryIds?: string; isOwner?: string; userType?: string; related?: boolean; }, enabled = true,) => useQuery({
-  queryKey: ["buygroup-products", payload],
-  queryFn: async () => {
-    const res = await fetchAllBuyGroupProducts(payload);
-    return res.data;
+export const useAllProducts = (
+  payload: {
+    page: number;
+    limit: number;
+    term?: string;
+    sort?: string;
+    brandIds?: string;
+    priceMin?: number;
+    priceMax?: number;
+    userId?: number;
+    categoryIds?: string;
+    isOwner?: string;
+    userType?: string;
+    related?: boolean;
   },
-  enabled,
-});
+  enabled = true,
+) =>
+  useQuery({
+    queryKey: ["existing-products", payload],
+    queryFn: async () => {
+      const res = await fetchAllProducts(payload);
+      return res.data;
+    },
+    enabled,
+  });
 
-export const useAllBuyGroupProductsByUserBusinessCategory = (payload: { page: number; limit: number; term?: string; sort?: string; brandIds?: string; priceMin?: number; priceMax?: number; userId?: number; categoryIds?: string; isOwner?: string; userType?: string; }, enabled = true,) => useQuery({
-  queryKey: ["buygroup-products", payload],
-  queryFn: async () => {
-    const res = await fetchAllBuyGroupProducts(payload);
-    return res.data;
+export const useAllProductsByUserBusinessCategory = (
+  payload: {
+    page: number;
+    limit: number;
+    term?: string;
+    sort?: string;
+    brandIds?: string;
+    priceMin?: number;
+    priceMax?: number;
+    userId?: number;
+    categoryIds?: string;
+    isOwner?: string;
+    userType?: string;
+    related?: boolean;
   },
-  enabled,
-});
+  enabled = true,
+) =>
+  useQuery({
+    queryKey: ["existing-products", payload],
+    queryFn: async () => {
+      const res = await fetchAllProductsByUserBusinessCategory(payload);
+      return res.data;
+    },
+    enabled,
+  });
+
+export const useAllBuyGroupProducts = (
+  payload: {
+    page: number;
+    limit: number;
+    term?: string;
+    sort?: string;
+    brandIds?: string;
+    priceMin?: number;
+    priceMax?: number;
+    userId?: number;
+    categoryIds?: string;
+    isOwner?: string;
+    userType?: string;
+    related?: boolean;
+  },
+  enabled = true,
+) =>
+  useQuery({
+    queryKey: ["buygroup-products", payload],
+    queryFn: async () => {
+      const res = await fetchAllBuyGroupProducts(payload);
+      return res.data;
+    },
+    enabled,
+  });
+
+export const useAllBuyGroupProductsByUserBusinessCategory = (
+  payload: {
+    page: number;
+    limit: number;
+    term?: string;
+    sort?: string;
+    brandIds?: string;
+    priceMin?: number;
+    priceMax?: number;
+    userId?: number;
+    categoryIds?: string;
+    isOwner?: string;
+    userType?: string;
+  },
+  enabled = true,
+) =>
+  useQuery({
+    queryKey: ["buygroup-products", payload],
+    queryFn: async () => {
+      const res = await fetchAllBuyGroupProducts(payload);
+      return res.data;
+    },
+    enabled,
+  });
 
 export const useSameBrandProducts = (
   payload: {
@@ -485,37 +606,41 @@ export const useUpdateProductStatus = () => {
       console.log(err);
     },
   });
-};  
+};
 
-export const useUpdateSingleProduct = () => {  
+export const useUpdateSingleProduct = () => {
   return useMutation<
     any, // Replace with the actual API response type
     APIResponseError,
-    { productPriceId: number;
-      stock: number,
-      askForPrice: string,
-      askForStock: string,
-      offerPrice: number,
-      productPrice: number,
-      status: string,
-      productCondition: string,
-      consumerType: string,
-      sellType: string,
-      deliveryAfter: number,
-      timeOpen: number,
-      timeClose: number,
-      vendorDiscount: number,
+    {
+      productPriceId: number;
+      stock: number;
+      askForPrice: string;
+      askForStock: string;
+      offerPrice: number;
+      productPrice: number;
+      status: string;
+      productCondition: string;
+      consumerType: string;
+      sellType: string;
+      deliveryAfter: number;
+      timeOpen: number;
+      timeClose: number;
+      vendorDiscount: number;
       vendorDiscountType: string | null;
-      consumerDiscount: number,
+      consumerDiscount: number;
       consumerDiscountType: string | null;
-      minQuantity: number,
-      maxQuantity: number,
-      minCustomer: number,
-      maxCustomer: number,
-      minQuantityPerCustomer: number,
-      maxQuantityPerCustomer: number }
+      minQuantity: number;
+      maxQuantity: number;
+      minCustomer: number;
+      maxCustomer: number;
+      minQuantityPerCustomer: number;
+      maxQuantityPerCustomer: number;
+    }
   >({
-    mutationFn: async ({  productPriceId,  stock,
+    mutationFn: async ({
+      productPriceId,
+      stock,
       askForPrice,
       askForStock,
       offerPrice,
@@ -536,8 +661,11 @@ export const useUpdateSingleProduct = () => {
       minCustomer,
       maxCustomer,
       minQuantityPerCustomer,
-      maxQuantityPerCustomer }) => {
-      const res = await updateSingleProducts({productPriceId,  stock,
+      maxQuantityPerCustomer,
+    }) => {
+      const res = await updateSingleProducts({
+        productPriceId,
+        stock,
         askForPrice,
         askForStock,
         offerPrice,
@@ -558,11 +686,12 @@ export const useUpdateSingleProduct = () => {
         minCustomer,
         maxCustomer,
         minQuantityPerCustomer,
-        maxQuantityPerCustomer});
+        maxQuantityPerCustomer,
+      });
       return res.data;
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
+      console.error("Update product error:", err);
     },
   });
 };
@@ -581,7 +710,7 @@ export const useRemoveProduct = () => {
       console.log(err);
     },
   });
-}
+};
 
 export const useProductVariant = () => {
   const queryClient = useQueryClient();
@@ -590,9 +719,7 @@ export const useProductVariant = () => {
       const res = await fetchProductVariant(productPriceId);
       return res.data;
     },
-    onSuccess: () => {
-      
-    },
+    onSuccess: () => {},
     onError: (err: APIResponseError) => {
       console.log(err);
     },

@@ -257,14 +257,16 @@ export const useCreateAccount = () => {
     mutationFn: (payload) => createAccount(payload).then((res) => res.data),
     onSuccess: (data) => {
       console.log("CreateAccount onSuccess - invalidating myAccounts cache");
-      // Remove the query from cache completely
-      queryClient.removeQueries({ queryKey: ["myAccounts"] });
-      // Clear all related queries
-      queryClient.removeQueries({ queryKey: ["currentAccount"] });
-      // Then refetch
+
+      // Reset all queries to ensure complete cache clearing
+      // This ensures fresh data is fetched after account creation
+      queryClient.resetQueries();
+
+      // Then invalidate auth-related queries specifically
       queryClient.invalidateQueries({ queryKey: ["myAccounts"] });
       queryClient.invalidateQueries({ queryKey: ["currentAccount"] });
-      // Force refetch
+
+      // Force refetch for auth queries
       queryClient.refetchQueries({ queryKey: ["myAccounts"] });
       queryClient.refetchQueries({ queryKey: ["currentAccount"] });
       console.log("CreateAccount onSuccess - cache invalidation completed");
@@ -284,17 +286,17 @@ export const useSwitchAccount = () => {
       // Update the token in cookies
       setCookie(PUREMOON_TOKEN_KEY, data.data.accessToken);
 
-      // Remove queries from cache completely
-      queryClient.removeQueries({ queryKey: ["myAccounts"] });
-      queryClient.removeQueries({ queryKey: ["currentAccount"] });
-      queryClient.removeQueries({ queryKey: ["me"] });
+      // Reset all queries to ensure complete cache clearing
+      // This is necessary because product queries have different payloads (different userIds)
+      // and we need to ensure all cached data is cleared when switching accounts
+      queryClient.resetQueries();
 
-      // Then invalidate and force refetch
+      // Then invalidate auth-related queries specifically
       queryClient.invalidateQueries({ queryKey: ["myAccounts"] });
       queryClient.invalidateQueries({ queryKey: ["currentAccount"] });
       queryClient.invalidateQueries({ queryKey: ["me"] });
 
-      // Force immediate refetch
+      // Force immediate refetch for auth queries
       queryClient.refetchQueries({ queryKey: ["myAccounts"] });
       queryClient.refetchQueries({ queryKey: ["currentAccount"] });
       queryClient.refetchQueries({ queryKey: ["me"] });
