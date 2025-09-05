@@ -405,10 +405,48 @@ const PlateEditor: React.FC<PlateEditorProps> = ({ onChange, description, readOn
   useEffect(() => {
     if (description) {
       try {
-        setValue(description);
+        // Validate that description is in the correct Slate format
+        if (Array.isArray(description) && description.length > 0) {
+          setValue(description);
+        } else if (typeof description === 'string') {
+          // If it's a string, convert to proper Slate format
+          setValue([
+            {
+              id: '1',
+              type: 'p',
+              children: [{ text: description }]
+            }
+          ]);
+        } else {
+          // Default empty format
+          setValue([
+            {
+              id: '1',
+              type: 'p',
+              children: [{ text: '' }]
+            }
+          ]);
+        }
       } catch (error) {
-        console.error("Error parsing JSON:", error);
+        console.error("Error parsing description:", error);
+        // Fallback to empty format
+        setValue([
+          {
+            id: '1',
+            type: 'p',
+            children: [{ text: '' }]
+          }
+        ]);
       }
+    } else {
+      // Default empty format when no description
+      setValue([
+        {
+          id: '1',
+          type: 'p',
+          children: [{ text: '' }]
+        }
+      ]);
     }
   }, [description]);
 

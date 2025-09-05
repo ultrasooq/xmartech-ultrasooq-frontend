@@ -119,6 +119,8 @@ export const fetchExistingProducts = (payload: {
   priceMax?: number;
   brandAddedBy?: number;
   categoryIds?: string;
+  productType?: string;
+  type?: string;
 }) => {
   return axios({
     method: "GET",
@@ -343,6 +345,7 @@ export const getAllManagedProducts = (payload: {
   term?: string;
   selectedAdminId?: number;
   brandIds?: string;
+  categoryIds?: string;
   status?: string;
   expireDate?: string;
   sellType?: string;

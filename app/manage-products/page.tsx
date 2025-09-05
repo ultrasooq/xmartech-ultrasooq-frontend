@@ -2,8 +2,14 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   useAllManagedProducts,
+  useExistingProduct,
+  useAddMultiplePriceForProduct,
 } from "@/apis/queries/product.queries";
+import { useCategory } from "@/apis/queries/category.queries";
+import { PRODUCT_CATEGORY_ID } from "@/utils/constants";
 import ManageProductCard from "@/components/modules/manageProducts/ManageProductCard";
+import ExistingProductCard from "@/components/modules/manageProducts/ExistingProductCard";
+import ProductCard from "@/components/modules/trending/ProductCard";
 import Pagination from "@/components/shared/Pagination";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -15,8 +21,13 @@ import { useRouter } from "next/navigation";
 import { IoMdAdd } from "react-icons/io";
 import { Input } from "@/components/ui/input";
 import { debounce } from "lodash";
-import { Dialog, DialogTrigger } from "@/components/ui/dialog";
-import AddProductContent from "@/components/modules/products/AddProductContent";
+import { getCookie } from "cookies-next";
+import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
+import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import LoaderPrimaryIcon from "@/public/images/load-primary.png";
+import SkeletonProductCardLoader from "@/components/shared/SkeletonProductCardLoader";
+
 
 
 import { PERMISSION_PRODUCTS, checkPermission } from "@/helpers/permission";
@@ -34,6 +45,7 @@ import { IBrands, ISelectOptions } from "@/utils/types/common.types";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useBrands } from "@/apis/queries/masters.queries";
 import { withActiveUserGuard } from "@/components/shared/withRouteGuard";
+import CategoryFilter from "@/components/modules/manageProducts/CategoryFilter";
 
 const schema = (t: any) => {
   return (
@@ -138,6 +150,32 @@ const ManageProductsPage = () => {
   const { toast } = useToast();
   const [page, setPage] = useState(1);
   
+  // Tab state management
+  const [activeTab, setActiveTab] = useState<'my-products' | 'existing-products'>('my-products');
+  
+  // Search and filter states
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTermBrand, setSearchTermBrand] = useState("");
+  
+  // Actual search terms used in queries (separate from input values)
+  const [activeSearchTerm, setActiveSearchTerm] = useState("");
+  const [activeSearchTermBrand, setActiveSearchTermBrand] = useState("");
+  
+  // Category filtering state
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>([]);
+  
+  // Existing products state
+  const [existingProductsPage, setExistingProductsPage] = useState(1);
+  const [existingProductsLimit] = useState(8);
+  const [existingProductsSearchTerm, setExistingProductsSearchTerm] = useState("");
+  const [activeExistingProductsSearchTerm, setActiveExistingProductsSearchTerm] = useState("");
+  const [existingProductsSelectedBrandIds, setExistingProductsSelectedBrandIds] = useState<number[]>([]);
+  const [existingProductsSelectedCategoryIds, setExistingProductsSelectedCategoryIds] = useState<number[]>([]);
+  const [existingProductsSelectedIds, setExistingProductsSelectedIds] = useState<number[]>([]);
+  const [existingProductsSelectedType, setExistingProductsSelectedType] = useState<string>("");
+  const [haveAccessToken, setHaveAccessToken] = useState(false);
+  const accessToken = getCookie(PUREMOON_TOKEN_KEY);
+  
   // Handle page change while preserving selections
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
@@ -175,11 +213,37 @@ const ManageProductsPage = () => {
   const [selectedProductIds, setSelectedProductIds] = useState<number[]>([]);
   const [globalSelectedIds, setGlobalSelectedIds] = useState<Set<number>>(new Set());
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [isAddProductModalOpen, setIsAddProductModalOpen] = useState(false);
   const me = useMe();
 
   const searchInputRef = useRef<HTMLInputElement>(null);
+  
+  // Existing products queries
+  const existingProductsQueryParams = {
+    page: existingProductsSelectedType ? 1 : existingProductsPage, // Always use page 1 when filtering
+    limit: existingProductsSelectedType ? 100 : existingProductsLimit, // Fetch more when filtering
+    sort: "desc",
+    brandIds: existingProductsSelectedBrandIds.map((item) => item.toString()).join(",") || undefined,
+    categoryIds: existingProductsSelectedCategoryIds.map((item) => item.toString()).join(",") || undefined,
+    term: activeExistingProductsSearchTerm !== "" ? activeExistingProductsSearchTerm : undefined,
+    brandAddedBy: me.data?.data?.id,
+    productType: existingProductsSelectedType || undefined,
+    type: existingProductsSelectedType || undefined
+  };
+
+
+  const existingProductsQuery = useExistingProduct(existingProductsQueryParams);
+
+
+
+  const existingProductsBrandsQuery = useBrands({ 
+    term: activeSearchTermBrand, 
+    addedBy: me.data?.data?.id, 
+    type: 'BRAND' 
+  });
+
+  const categoriesQuery = useCategory(PRODUCT_CATEGORY_ID.toString());
+
+  const addMultiplePriceForProductIds = useAddMultiplePriceForProduct();
 
   const [selectedBrandIds, setSelectedBrandIds] = useState<number[]>([]);
   const [displayStoreProducts, setDisplayStoreProducts] = useState(false);
@@ -188,10 +252,8 @@ const ManageProductsPage = () => {
   const [displayHiddenProducts, setDisplayHiddenProducts] = useState(false);
   const [displayDiscountedProducts, setDisplayDiscountedProducts] = useState(false);
 
-  const [searchTermBrand, setSearchTermBrand] = useState("");
-
   const brandsQuery = useBrands({
-    term: searchTermBrand,
+    term: activeSearchTermBrand,
   });
 
   const memoizedBrands = useMemo(() => {
@@ -203,9 +265,130 @@ const ManageProductsPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [brandsQuery?.data?.data?.length]);
 
-  const handleDebounceBrandSearch = debounce((event: any) => {
+  // Existing products memoized data
+  const memoizedExistingProductsBrands = useMemo(() => {
+    return (
+      existingProductsBrandsQuery?.data?.data.map((item: IBrands) => {
+        return { label: item.brandName, value: item.id };
+      }) || []
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [existingProductsBrandsQuery?.data?.data?.length]);
+
+  const memoizedCategories = useMemo(() => {
+    if (categoriesQuery?.data?.data?.children) {
+      return categoriesQuery.data.data.children.map((item: any) => {
+        return { label: item.name, value: item.id };
+      });
+    }
+    return [];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categoriesQuery?.data?.data?.children]);
+
+  const memoizedExistingProductList = useMemo(() => {
+    let products = existingProductsQuery?.data?.data?.map((item: any) => ({
+      id: item.id,
+      productName: item?.productName || "-",
+      productPrice: item?.productPrice || 0,
+      offerPrice: item?.offerPrice || 0,
+      productImage: item?.existingProductImages?.[0]?.image,
+      categoryName: item?.category?.name || "-",
+      categoryId: item?.category?.id,
+      skuNo: item?.skuNo,
+      brandName: item?.brand?.brandName || "-",
+      productReview: [],
+      productProductPriceId: item?.id,
+      productProductPrice: item?.offerPrice,
+      shortDescription: item?.shortDescription || "-",
+      consumerDiscount: 0,
+      askForPrice: "NO",
+      productType: item?.productType || "P",
+    })) || [];
+
+    // Frontend filtering by product type if backend doesn't support it
+    if (existingProductsSelectedType && products.length > 0) {
+      products = products.filter((product: any) => product.productType === existingProductsSelectedType);
+    }
+
+    // Frontend filtering by category if backend doesn't support it
+    if (existingProductsSelectedCategoryIds.length > 0 && products.length > 0) {
+      products = products.filter((product: any) => 
+        existingProductsSelectedCategoryIds.includes(product.categoryId)
+      );
+    }
+
+    return products;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    existingProductsQuery?.data?.data,
+    existingProductsQuery?.data?.data?.length,
+    existingProductsPage,
+    existingProductsLimit,
+    existingProductsSearchTerm,
+    existingProductsSelectedBrandIds,
+    existingProductsSelectedCategoryIds,
+    existingProductsSelectedType,
+  ]);
+
+  // Reset to page 1 when filter changes
+  useEffect(() => {
+    if (existingProductsSelectedType) {
+      setExistingProductsPage(1);
+    }
+  }, [existingProductsSelectedType]);
+
+  // Force refetch when categoryIds change
+  useEffect(() => {
+    if (existingProductsSelectedCategoryIds.length > 0) {
+      existingProductsQuery.refetch();
+    }
+  }, [existingProductsSelectedCategoryIds, existingProductsQuery]);
+
+  // Calculate filtered total count for pagination
+  const filteredTotalCount = useMemo(() => {
+    if (!existingProductsSelectedType) {
+      return existingProductsQuery.data?.totalCount || 0;
+    }
+    
+    // When filtering, we need to get all products and count the filtered ones
+    // For now, we'll show the current filtered count and disable pagination
+    return memoizedExistingProductList.length;
+  }, [
+    existingProductsSelectedType,
+    memoizedExistingProductList.length,
+    existingProductsQuery.data?.totalCount,
+  ]);
+
+  const handleBrandSearchChange = (event: any) => {
     setSearchTermBrand(event.target.value);
-  }, 1000);
+  };
+
+  const handleBrandSearch = () => {
+    setActiveSearchTermBrand(searchTermBrand);
+    // Trigger refetch for brands
+    if (brandsQuery.refetch) {
+      brandsQuery.refetch();
+    }
+  };
+
+  // Category filter handlers
+  const handleCategoryChange = (categoryIds: number[]) => {
+    setSelectedCategoryIds(categoryIds);
+  };
+
+  const handleCategoryClear = () => {
+    setSelectedCategoryIds([]);
+  };
+
+  // Existing products category filter handlers
+  const handleExistingProductsCategoryChange = (categoryIds: number[]) => {
+    setExistingProductsSelectedCategoryIds(categoryIds);
+  };
+
+
+  const handleExistingProductsCategoryClear = () => {
+    setExistingProductsSelectedCategoryIds([]);
+  };
 
   const handleBrandChange = (
     checked: boolean | string,
@@ -220,6 +403,70 @@ const ManageProductsPage = () => {
       tempArr = tempArr.filter((ele: number) => ele !== item.value);
     }
     setSelectedBrandIds(tempArr);
+  };
+
+  // Existing products handlers
+  const handleExistingProductsSearchChange = (event: any) => {
+    setExistingProductsSearchTerm(event.target.value);
+  };
+
+  const handleExistingProductsBrandChange = (
+    checked: boolean | string,
+    item: ISelectOptions,
+  ) => {
+    let tempArr = existingProductsSelectedBrandIds || [];
+    if (checked && !tempArr.find((ele: number) => ele === item.value)) {
+      tempArr = [...tempArr, item.value];
+    }
+
+    if (!checked && tempArr.find((ele: number) => ele === item.value)) {
+      tempArr = tempArr.filter((ele: number) => ele !== item.value);
+    }
+    setExistingProductsSelectedBrandIds(tempArr);
+  };
+
+
+  const handleExistingProductsSelection = (checked: boolean | string, id: number) => {
+    let tempArr = existingProductsSelectedIds || [];
+    if (checked && !tempArr.find((ele: number) => ele === id)) {
+      tempArr = [...tempArr, id];
+    }
+
+    if (!checked && tempArr.find((ele: number) => ele === id)) {
+      tempArr = tempArr.filter((ele: number) => ele !== id);
+    }
+
+    setExistingProductsSelectedIds(tempArr);
+  };
+
+  const handleAddExistingProducts = async () => {
+    const data = existingProductsSelectedIds.map((item: number) => ({
+      productId: item,
+      status: "INACTIVE",
+    }));
+
+    const response = await addMultiplePriceForProductIds.mutateAsync({
+      productPrice: data,
+    });
+
+    if (response.status && response.data) {
+      toast({
+        title: t("product_price_add_successful"),
+        description: response.message,
+        variant: "success",
+      });
+      setExistingProductsSelectedIds([]);
+      // Switch back to my products tab after successful addition
+      setActiveTab('my-products');
+      // Refetch my products to show the newly added products
+      refetch();
+    } else {
+      toast({
+        title: t("product_price_add_failed"),
+        description: response.message,
+        variant: "danger",
+      });
+    }
   };
 
   const form = useForm({
@@ -247,12 +494,13 @@ const ManageProductsPage = () => {
     {
       page: showOnlySelected ? 1 : page, // When filter is active, start from page 1
       limit: showOnlySelected ? 1000 : limit, // When filter is active, fetch a large number to get all selected products
-      term: searchTerm !== "" ? searchTerm : undefined,
+      term: activeSearchTerm !== "" ? activeSearchTerm : undefined,
       selectedAdminId:
         me?.data?.data?.tradeRole == "MEMBER"
           ? me?.data?.data?.addedBy
           : undefined,
       brandIds: selectedBrandIds.join(","),
+      categoryIds: selectedCategoryIds.length > 0 ? selectedCategoryIds.join(",") : undefined,
       status: displayHiddenProducts ? "INACTIVE" : "",
       expireDate: displayExpiredProducts ? "expired" : "",
       sellType:
@@ -262,9 +510,34 @@ const ManageProductsPage = () => {
     hasPermission,
   );
 
+
   const { data, refetch } = allManagedProductsQuery;
   const [products, setProducts] = useState(data?.data || []);
   const [totalCount, setTotalCount] = useState(data?.totalCount || 0);
+
+  // Frontend filtering for My Products
+  const filteredProducts = useMemo(() => {
+    let filtered = products || [];
+    
+    // Filter by category if backend doesn't support it
+    if (selectedCategoryIds.length > 0) {
+      filtered = filtered.filter((product: any) => {
+        // Check multiple possible category ID fields
+        const categoryId = product.categoryId || 
+                          product.category?.id || 
+                          product.product?.categoryId || 
+                          product.product?.category?.id ||
+                          product.productPrice_product?.categoryId ||
+                          product.productPrice_product?.category?.id;
+        return selectedCategoryIds.includes(categoryId);
+      });
+    }
+    
+    return filtered;
+  }, [products, selectedCategoryIds]);
+
+  // Update total count based on filtered products
+  const displayTotalCount = selectedCategoryIds.length > 0 ? filteredProducts.length : totalCount;
 
   const selectAll = () => {
     setSelectedBrandIds(
@@ -306,6 +579,16 @@ const ManageProductsPage = () => {
     setDisplayExpiredProducts(false);
     setDisplayHiddenProducts(false);
     setDisplayDiscountedProducts(false);
+    
+    // Clear search terms
+    setSearchTerm("");
+    setActiveSearchTerm("");
+    setSearchTermBrand("");
+    setActiveSearchTermBrand("");
+    
+    // Clear category filters
+    setSelectedCategoryIds([]);
+    setExistingProductsSelectedCategoryIds([]);
 
     if (searchInputRef?.current) searchInputRef.current.value = "";
   };
@@ -313,6 +596,8 @@ const ManageProductsPage = () => {
   // Update state when new data is available
   useEffect(() => {
     if (data?.data) {
+      // Debug: Log the actual data structure
+      console.log("Raw API data:", data.data[0]);
       let filteredProducts = [...data.data];
       
       // Apply "Show Only Selected" filter if enabled
@@ -372,13 +657,24 @@ const ManageProductsPage = () => {
     }
   };
 
-  const handleDebounce = debounce((event: any) => {
+  const handleSearchChange = (event: any) => {
     setSearchTerm(event.target.value);
-  }, 1000);
-
-  const handleAddProductModal = () => {
-    setIsAddProductModalOpen(true);
   };
+
+  const handleSearch = () => {
+    setActiveSearchTerm(searchTerm);
+    refetch();
+  };
+
+  const handleExistingProductsSearch = () => {
+    setActiveExistingProductsSearchTerm(existingProductsSearchTerm);
+    // Trigger refetch for existing products
+    if (existingProductsQuery.refetch) {
+      existingProductsQuery.refetch();
+    }
+  };
+
+
 
   const handleProductIds = (checked: boolean | string, id: number) => {
     let tempArr = selectedProductIds || [];
@@ -575,6 +871,14 @@ const ManageProductsPage = () => {
     if (!hasPermission) router.push("/home");
   }, []);
 
+  useEffect(() => {
+    if (accessToken) {
+      setHaveAccessToken(true);
+    } else {
+      setHaveAccessToken(false);
+    }
+  }, [accessToken]);
+
   if (!hasPermission) return <div></div>;
 
   return (
@@ -590,29 +894,58 @@ const ManageProductsPage = () => {
                 </h1>
               </div>
               <div className="flex items-center gap-3">
-                <Input
-                  type="text"
-                  placeholder={t("search_product")}
-                  className="w-64 h-10"
-                  onChange={handleDebounce}
-                  ref={searchInputRef}
-                  dir={langDir}
-                  translate="no"
-                />
-
-                <Dialog open={isAddProductModalOpen} onOpenChange={setIsAddProductModalOpen}>
-                  <DialogTrigger asChild>
-                    <button
-                      className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors flex items-center gap-2"
-                      onClick={handleAddProductModal}
+                {activeTab === 'my-products' && (
+                  <div className="flex gap-2">
+                    <Input
+                      type="text"
+                      placeholder={t("search_product")}
+                      className="w-64 h-10"
+                      onChange={handleSearchChange}
+                      ref={searchInputRef}
                       dir={langDir}
+                      translate="no"
+                    />
+                    <Button
+                      type="button"
+                      onClick={handleSearch}
+                      disabled={!searchTerm.trim()}
+                      className="h-10 px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
                     >
-                      <IoMdAdd size={20} />
-                      <span>{t("add_product")}</span>
-                    </button>
-                  </DialogTrigger>
-                  <AddProductContent onClose={() => setIsAddProductModalOpen(false)} />
-                </Dialog>
+                      {t("search")}
+                    </Button>
+                  </div>
+                )}
+
+                {activeTab === 'existing-products' && (
+                  <div className="flex gap-2">
+                    <Input
+                      type="text"
+                      placeholder={t("search_product")}
+                      className="w-64 h-10"
+                      onChange={handleExistingProductsSearchChange}
+                      dir={langDir}
+                      translate="no"
+                    />
+                    <Button
+                      type="button"
+                      onClick={handleExistingProductsSearch}
+                      disabled={!existingProductsSearchTerm.trim()}
+                      className="h-10 px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                    >
+                      {t("search")}
+                    </Button>
+                  </div>
+                )}
+
+                <button
+                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors flex items-center gap-2"
+                  // onClick={() => router.push('/manage-products/add-from-existing')}
+                  onClick={() => router.push('/product')}
+                  dir={langDir}
+                >
+                  <IoMdAdd size={20} />
+                  <span>{t("add_product")}</span>
+                </button>
                 {/* <button
                   className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
                   onClick={selectAllProducts}
@@ -635,88 +968,148 @@ const ManageProductsPage = () => {
                     onClick={() => router.push(`/manage-products/bulk-action?ids=${Array.from(globalSelectedIds).join(',')}`)}
                     dir={langDir}
                   >
-                    Bulk Action ({Array.from(globalSelectedIds).length})
+                    Bulk Update ({Array.from(globalSelectedIds).length})
                   </button>
                 )}
               </div>
             </div>
           </div>
 
-          {/* Main Content */}
-          <FormProvider {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
-              <div className="flex flex-col lg:flex-row gap-6">
-                {/* Filters - Left Side */}
-                <div className="lg:w-1/4">
-                  <div className="bg-white rounded-lg shadow-sm p-6">
-                    <div className="mb-4">
-                      <div className="flex gap-2 mb-4">
-                        <button 
-                          type="button" 
-                          onClick={selectAll}
-                          className="px-3 py-2 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors text-sm"
-                        >
-                          {t("select_all")}
-                        </button>
-                        <button 
-                          type="button" 
-                          onClick={clearFilter}
-                          className="px-3 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors text-sm"
-                        >
-                          {t("clean_select")}
-                        </button>
-                      </div>
-                    </div>
+          {/* Tab Navigation */}
+          <div className="mb-6">
+            <div className="border-b border-gray-200">
+              <nav className="-mb-px flex space-x-8">
+                <button
+                  onClick={() => setActiveTab('my-products')}
+                  className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                    activeTab === 'my-products'
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  {t("my_products")}
+                </button>
+                <button
+                  onClick={() => setActiveTab('existing-products')}
+                  className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                    activeTab === 'existing-products'
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  {t("existing_products")}
+                </button>
+              </nav>
+            </div>
+          </div>
 
-                    {/* Brand Filter */}
-                    <Accordion
-                      type="multiple"
-                      defaultValue={["brand"]}
-                      className="mb-4"
-                    >
-                      <AccordionItem value="brand">
-                        <AccordionTrigger className="text-base hover:!no-underline">
-                          {t("by_brand")}
-                        </AccordionTrigger>
-                        <AccordionContent>
-                          <div className="mb-3">
-                            <Input
-                              type="text"
-                              placeholder={t("search_brand")}
-                              className="w-full h-8 text-sm"
-                              onChange={handleDebounceBrandSearch}
-                              dir={langDir}
-                              translate="no"
+          {/* Main Content */}
+          {activeTab === 'my-products' ? (
+            <FormProvider {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)}>
+                <div className="flex flex-col lg:flex-row gap-6">
+                  {/* Filters - Left Side */}
+                  <div className="lg:w-1/4">
+                    <div className="bg-white rounded-lg shadow-sm p-6">
+                      <div className="mb-4">
+                        <div className="flex gap-2 mb-4">
+                          <button 
+                            type="button" 
+                            onClick={selectAll}
+                            className="px-3 py-2 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors text-sm"
+                          >
+                            {t("select_all")}
+                          </button>
+                          <button 
+                            type="button" 
+                            onClick={clearFilter}
+                            className="px-3 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors text-sm"
+                          >
+                            {t("clean_select")}
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Category Filter */}
+                      <Accordion
+                        type="multiple"
+                        defaultValue={["category_filter"]}
+                        className="mb-4"
+                      >
+                        <AccordionItem value="category_filter">
+                          <AccordionTrigger className="text-base hover:!no-underline">
+                            {t("by_category")}
+                          </AccordionTrigger>
+                          <AccordionContent>
+                            <CategoryFilter
+                              selectedCategoryIds={selectedCategoryIds}
+                              onCategoryChange={handleCategoryChange}
+                              onClear={handleCategoryClear}
                             />
-                          </div>
-                          <div className="space-y-2 max-h-40 overflow-y-auto">
-                            {!memoizedBrands.length ? (
-                              <p className="text-center text-sm text-gray-500">
-                                {t("no_data_found")}
-                              </p>
-                            ) : null}
-                            {memoizedBrands.map((item: ISelectOptions) => (
-                              <div key={item.value} className="flex items-center space-x-2">
-                                <Checkbox
-                                  id={item.label}
-                                  className="border border-gray-300 data-[state=checked]:!bg-blue-600"
-                                  onCheckedChange={(checked) =>
-                                    handleBrandChange(checked, item)
-                                  }
-                                  checked={selectedBrandIds.includes(item.value)}
+                          </AccordionContent>
+                        </AccordionItem>
+                      </Accordion>
+
+                      {/* Brand Filter */}
+                      <Accordion
+                        type="multiple"
+                        defaultValue={["brand"]}
+                        className="mb-4"
+                      >
+                        <AccordionItem value="brand">
+                          <AccordionTrigger className="text-base hover:!no-underline">
+                            {t("by_brand")}
+                          </AccordionTrigger>
+                          <AccordionContent>
+                            <div className="mb-3">
+                              <div className="flex gap-2">
+                                <Input
+                                  type="text"
+                                  placeholder={t("search_brand")}
+                                  className="flex-1 h-8 text-sm"
+                                  onChange={handleBrandSearchChange}
+                                  dir={langDir}
+                                  translate="no"
                                 />
-                                <label
-                                  htmlFor={item.label}
-                                  className="text-sm font-medium leading-none cursor-pointer"
+                                <Button
+                                  type="button"
+                                  onClick={handleBrandSearch}
+                                  disabled={!searchTermBrand.trim()}
+                                  size="sm"
+                                  className="h-8 px-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-xs"
                                 >
-                                  {item.label}
-                                </label>
+                                  {t("search")}
+                                </Button>
                               </div>
-                            ))}
-                          </div>
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
+                            </div>
+                            <div className="space-y-2 max-h-40 overflow-y-auto">
+                              {!memoizedBrands.length ? (
+                                <p className="text-center text-sm text-gray-500">
+                                  {t("no_data_found")}
+                                </p>
+                              ) : null}
+                              {memoizedBrands.map((item: ISelectOptions) => (
+                                <div key={item.value} className="flex items-center space-x-2">
+                                  <Checkbox
+                                    id={item.label}
+                                    className="border border-gray-300 data-[state=checked]:!bg-blue-600"
+                                    onCheckedChange={(checked) =>
+                                      handleBrandChange(checked, item)
+                                    }
+                                    checked={selectedBrandIds.includes(item.value)}
+                                  />
+                                  <label
+                                    htmlFor={item.label}
+                                    className="text-sm font-medium leading-none cursor-pointer"
+                                  >
+                                    {item.label}
+                                  </label>
+                                </div>
+                              ))}
+                            </div>
+                          </AccordionContent>
+                        </AccordionItem>
+                      </Accordion>
 
                     {/* Product Conditions Filter */}
                     <Accordion
@@ -830,6 +1223,7 @@ const ManageProductsPage = () => {
                         </AccordionContent>
                       </AccordionItem>
                     </Accordion>
+
                   </div>
                 </div>
 
@@ -839,7 +1233,7 @@ const ManageProductsPage = () => {
                     <div className="mb-4">
                       <div className="flex items-center justify-between">
                         <h2 className="text-xl font-semibold">
-                          {t("products")} ({totalCount})
+                          {t("products")} ({displayTotalCount})
                         </h2>
                         <div className="flex items-center gap-4">
                           {/* Show Only Selected Filter */}
@@ -894,7 +1288,7 @@ const ManageProductsPage = () => {
                       </div>
                     </div>
 
-                                         {allManagedProductsQuery.isLoading ? (
+                      {allManagedProductsQuery.isLoading ? (
                        <div className="space-y-4">
                          {Array.from({ length: 6 }).map((_, index) => (
                            <Skeleton key={index} className="h-24 w-full" />
@@ -930,7 +1324,7 @@ const ManageProductsPage = () => {
                     ) : null}
 
                                          <div className="space-y-4">
-                       {products.map(
+                       {filteredProducts.map(
                          (product: {
                            id: number;
                            productId: number;
@@ -991,41 +1385,37 @@ const ManageProductsPage = () => {
                              productName={
                                product?.productPrice_product?.productName
                              }
-                             productPrice={product?.productPrice}
-                             offerPrice={product?.offerPrice}
-                             deliveryAfter={product?.deliveryAfter}
-                             stock={product?.stock}
-                             consumerType={product?.consumerType}
-                             sellType={product?.sellType}
-                             timeOpen={product?.timeOpen}
-                             timeClose={product?.timeClose}
-                             vendorDiscount={product?.vendorDiscount}
-                             vendorDiscountType={product?.vendorDiscountType}
-                             consumerDiscount={product?.consumerDiscount}
-                             consumerDiscountType={product?.consumerDiscountType}
-                             minQuantity={product?.minQuantity}
-                             maxQuantity={product?.maxQuantity}
-                             minCustomer={product?.minCustomer}
-                             maxCustomer={product?.maxCustomer}
-                             minQuantityPerCustomer={
-                               product?.minQuantityPerCustomer
-                             }
-                             maxQuantityPerCustomer={
-                               product?.maxQuantityPerCustomer
-                             }
-                             productCondition={product?.productCondition}
+                             productPrice={product?.productPrice_product?.productPrice || product?.productPrice || "0"}
+                             offerPrice={product?.productPrice_product?.offerPrice || product?.offerPrice || "0"}
+                             deliveryAfter={product?.deliveryAfter || 0}
+                             stock={product?.stock || 0}
+                             consumerType={product?.consumerType || "CONSUMER"}
+                             sellType={product?.sellType || "NORMALSELL"}
+                             timeOpen={product?.timeOpen || 0}
+                             timeClose={product?.timeClose || 0}
+                             vendorDiscount={product?.vendorDiscount || 0}
+                             vendorDiscountType={product?.vendorDiscountType || "PERCENTAGE"}
+                             consumerDiscount={product?.consumerDiscount || 0}
+                             consumerDiscountType={product?.consumerDiscountType || "PERCENTAGE"}
+                             minQuantity={product?.minQuantity || 0}
+                             maxQuantity={product?.maxQuantity || 0}
+                             minCustomer={product?.minCustomer || 0}
+                             maxCustomer={product?.maxCustomer || 0}
+                             minQuantityPerCustomer={product?.minQuantityPerCustomer || 0}
+                             maxQuantityPerCustomer={product?.maxQuantityPerCustomer || 0}
+                             productCondition={product?.productPrice_product?.productCondition || product?.productCondition || ""}
                              onRemove={handleRemoveFromList}
                            />
                          ),
                        )}
                      </div>
 
-                    {!showOnlySelected && totalCount > limit ? (
+                    {!showOnlySelected && displayTotalCount > limit ? (
                       <div className="mt-8">
                         <Pagination
                           page={page}
                           setPage={handlePageChange}
-                          totalCount={totalCount}
+                          totalCount={displayTotalCount}
                           limit={limit}
                         />
                       </div>
@@ -1040,8 +1430,285 @@ const ManageProductsPage = () => {
               </div>
             </form>
           </FormProvider>
+          ) : (
+            /* Existing Products Tab */
+            <div className="flex flex-col lg:flex-row gap-6">
+              {/* Filters - Left Side */}
+              <div className="lg:w-1/4">
+                <div className="bg-white rounded-lg shadow-sm p-6">
+                  <div className="mb-4">
+                    <div className="flex gap-2 mb-4">
+                      <button 
+                        type="button" 
+                        onClick={() => {
+                          setExistingProductsSelectedBrandIds(
+                            existingProductsBrandsQuery?.data?.data?.map((item: any) => item.id) || []
+                          );
+                          setExistingProductsSelectedCategoryIds(
+                            categoriesQuery?.data?.data?.children?.map((item: any) => item.id) || []
+                          );
+                        }}
+                        className="px-3 py-2 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors text-sm"
+                      >
+                        {t("select_all")}
+                      </button>
+                      <button 
+                        type="button" 
+                        onClick={() => {
+                          setExistingProductsSelectedBrandIds([]);
+                          setExistingProductsSelectedCategoryIds([]);
+                          setExistingProductsSearchTerm("");
+                          setActiveExistingProductsSearchTerm("");
+                          setSearchTermBrand("");
+                          setActiveSearchTermBrand("");
+                        }}
+                        className="px-3 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors text-sm"
+                      >
+                        {t("clean_select")}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Category Filter */}
+                  <Accordion
+                    type="multiple"
+                    defaultValue={["category"]}
+                    className="mb-4"
+                  >
+                    <AccordionItem value="category">
+                      <AccordionTrigger className="text-base hover:!no-underline">
+                        {t("by_category")}
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <CategoryFilter
+                          selectedCategoryIds={existingProductsSelectedCategoryIds}
+                          onCategoryChange={handleExistingProductsCategoryChange}
+                          onClear={handleExistingProductsCategoryClear}
+                        />
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+
+                  {/* Brand Filter */}
+                  <Accordion
+                    type="multiple"
+                    defaultValue={["brand"]}
+                    className="mb-4"
+                  >
+                    <AccordionItem value="brand">
+                      <AccordionTrigger className="text-base hover:!no-underline">
+                        {t("by_brand")}
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <div className="mb-3">
+                          <div className="flex gap-2">
+                            <Input
+                              type="text"
+                              placeholder={t("search_brand")}
+                              className="flex-1 h-8 text-sm"
+                              onChange={handleBrandSearchChange}
+                              dir={langDir}
+                              translate="no"
+                            />
+                            <Button
+                              type="button"
+                              onClick={handleBrandSearch}
+                              disabled={!searchTermBrand.trim()}
+                              size="sm"
+                              className="h-8 px-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-xs"
+                            >
+                              {t("search")}
+                            </Button>
+                          </div>
+                        </div>
+                        <div className="space-y-2 max-h-40 overflow-y-auto">
+                          {!memoizedExistingProductsBrands.length ? (
+                            <p className="text-center text-sm text-gray-500">
+                              {t("no_data_found")}
+                            </p>
+                          ) : null}
+                          {memoizedExistingProductsBrands.map((item: ISelectOptions) => (
+                            <div key={item.value} className="flex items-center space-x-2">
+                              <Checkbox
+                                id={`existing-${item.label}`}
+                                className="border border-gray-300 data-[state=checked]:!bg-blue-600"
+                                onCheckedChange={(checked) =>
+                                  handleExistingProductsBrandChange(checked, item)
+                                }
+                                checked={existingProductsSelectedBrandIds.includes(item.value)}
+                              />
+                              <label
+                                htmlFor={`existing-${item.label}`}
+                                className="text-sm font-medium leading-none cursor-pointer"
+                              >
+                                {item.label}
+                              </label>
+                            </div>
+                          ))}
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+
+
+                  {/* Product Type Filter */}
+                  <Accordion
+                    type="multiple"
+                    defaultValue={["type"]}
+                    className="mb-4"
+                  >
+                    <AccordionItem value="type">
+                      <AccordionTrigger className="text-base hover:!no-underline">
+                        {t("by_product_type")}
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <div className="space-y-2">
+                          <div className="flex items-center space-x-2">
+                            <Checkbox
+                              id="existing-type-p"
+                              className="border border-gray-300 data-[state=checked]:!bg-blue-600"
+                              onCheckedChange={(checked) => {
+                                if (checked) {
+                                  setExistingProductsSelectedType("P");
+                                } else {
+                                  setExistingProductsSelectedType("");
+                                }
+                              }}
+                              checked={existingProductsSelectedType === "P"}
+                            />
+                            <label
+                              htmlFor="existing-type-p"
+                              className="text-sm font-medium leading-none cursor-pointer"
+                            >
+                              {t("regular_products")}
+                            </label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox
+                              id="existing-type-r"
+                              className="border border-gray-300 data-[state=checked]:!bg-blue-600"
+                              onCheckedChange={(checked) => {
+                                if (checked) {
+                                  setExistingProductsSelectedType("R");
+                                } else {
+                                  setExistingProductsSelectedType("");
+                                }
+                              }}
+                              checked={existingProductsSelectedType === "R"}
+                            />
+                            <label
+                              htmlFor="existing-type-r"
+                              className="text-sm font-medium leading-none cursor-pointer"
+                            >
+                              {t("rfq_products")}
+                            </label>
+                          </div>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                </div>
+              </div>
+
+              {/* Products List - Right Side */}
+              <div className="lg:w-3/4">
+                <div className="bg-white rounded-lg shadow-sm p-6">
+                  <div className="mb-4">
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-xl font-semibold">
+                        {t("existing_products")} ({filteredTotalCount})
+                      </h2>
+                    </div>
+                  </div>
+
+                  {existingProductsQuery.isLoading ? (
+                    <div className="grid grid-cols-4 gap-5">
+                      {Array.from({ length: 8 }).map((_, index) => (
+                        <SkeletonProductCardLoader key={index} />
+                      ))}
+                    </div>
+                  ) : null}
+
+                  {!memoizedExistingProductList.length && !existingProductsQuery.isLoading ? (
+                    <div className="text-center py-16">
+                      <p className="text-gray-500 text-lg">
+                        {t("no_product_found")}
+                      </p>
+                    </div>
+                  ) : null}
+
+                  <div className="space-y-4">
+                    {memoizedExistingProductList.map((item: any) => (
+                      <ExistingProductCard
+                        key={item.id}
+                        id={item.id}
+                        productImage={item.productImage}
+                        productName={item.productName}
+                        productPrice={item.productPrice}
+                        offerPrice={item.offerPrice}
+                        categoryName={item.categoryName}
+                        brandName={item.brandName}
+                        shortDescription={item.shortDescription}
+                        skuNo={item.skuNo}
+                        productType={item.productType}
+                        selectedIds={existingProductsSelectedIds}
+                        onSelectedId={handleExistingProductsSelection}
+                      />
+                    ))}
+                  </div>
+
+                  {!existingProductsSelectedType && existingProductsQuery.data?.totalCount > existingProductsLimit ? (
+                    <div className="mt-8">
+                      <Pagination
+                        page={existingProductsPage}
+                        setPage={setExistingProductsPage}
+                        totalCount={existingProductsQuery.data?.totalCount}
+                        limit={existingProductsLimit}
+                      />
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Fixed bottom bar for existing products */}
+      {activeTab === 'existing-products' && existingProductsSelectedIds.length > 0 && (
+        <div className="fixed bottom-0 left-0 z-10 flex w-full items-center justify-between border-t border-solid border-gray-300 bg-blue-600 px-10 py-3">
+          <div className="flex items-center gap-4">
+            {/* <p className="text-base font-medium text-white" translate="no">
+              {t("n_products_selected").replace("{n}", String(existingProductsSelectedIds.length))}
+            </p> */}
+            <Button
+              type="button"
+              onClick={() => setExistingProductsSelectedIds([])}
+              size="sm"
+              className="flex items-center rounded-sm bg-transparent border border-white text-sm font-bold text-white hover:bg-white hover:text-blue-600"
+              dir={langDir}
+              translate="no"
+            >
+              {t("clear_selection")}
+            </Button>
+          </div>
+          <div className="flex items-center gap-3">
+            <Button
+              type="button"
+              onClick={() => {
+                const selectedIds = existingProductsSelectedIds.join(',');
+                router.push(`/manage-products/bulk-add-existing?ids=${selectedIds}`);
+              }}
+              size="lg"
+              className="flex items-center rounded-sm bg-transparent border border-white text-sm font-bold text-white hover:bg-white hover:text-blue-600"
+              dir={langDir}
+              translate="no"
+            >
+              {t("bulk_add_products")}
+            </Button>
+          </div>
+        </div>
+      )}
       
     </>
   );

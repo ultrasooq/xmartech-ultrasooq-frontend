@@ -199,6 +199,8 @@ export const useExistingProduct = (
     priceMax?: number;
     brandAddedBy?: number;
     categoryIds?: string;
+    productType?: string;
+    type?: string;
   },
   enabled = true,
 ) =>
@@ -449,6 +451,7 @@ export const useAllManagedProducts = (
     term?: string;
     selectedAdminId?: number;
     brandIds?: string;
+    categoryIds?: string;
     status?: string;
     expireDate?: string;
     sellType?: string;

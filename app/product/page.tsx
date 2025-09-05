@@ -789,6 +789,9 @@ const CreateProductPage = () => {
   const populateFormWithExistingProductData = (existingProduct: any) => {
     console.log('=== POPULATING FORM WITH EXISTING PRODUCT DATA ===');
     console.log('existingProduct:', existingProduct);
+    console.log('existingProduct.specification:', existingProduct.specification);
+    console.log('existingProduct.shortDescription:', existingProduct.shortDescription);
+    console.log('existingProduct.description:', existingProduct.description);
     
     setActiveProductType(existingProduct.productType);
     
@@ -828,7 +831,120 @@ const CreateProductPage = () => {
     form.setValue("productPrice", existingProduct.productPrice);
     form.setValue("offerPrice", existingProduct.offerPrice);
     form.setValue("description", existingProduct.description);
-    form.setValue("specification", existingProduct.specification);
+    
+    // Parse description JSON if it exists, otherwise create proper Slate format
+    if (existingProduct.description) {
+      try {
+        const descriptionJson = JSON.parse(existingProduct.description);
+        // Validate that it's a proper Slate format
+        if (Array.isArray(descriptionJson) && descriptionJson.length > 0) {
+          form.setValue("descriptionJson", descriptionJson);
+        } else {
+          // If it's not a proper Slate format, create one
+          form.setValue("descriptionJson", [
+            {
+              id: '1',
+              type: 'p',
+              children: [{ text: existingProduct.description }]
+            }
+          ]);
+        }
+      } catch (e) {
+        console.log('Description is not valid JSON, creating Slate format from plain text');
+        // Create proper Slate format from plain text
+        form.setValue("descriptionJson", [
+          {
+            id: '1',
+            type: 'p',
+            children: [{ text: existingProduct.description }]
+          }
+        ]);
+      }
+    } else {
+      // Default empty Slate format
+      form.setValue("descriptionJson", [
+        {
+          id: '1',
+          type: 'p',
+          children: [{ text: '' }]
+        }
+      ]);
+    }
+    
+    // Set product specifications - ExistingProduct has specification as a simple string field
+    if (existingProduct.specification && existingProduct.specification.trim()) {
+      // Try to parse as JSON first, if it fails, treat as plain text
+      try {
+        const specData = JSON.parse(existingProduct.specification);
+        if (Array.isArray(specData) && specData.length > 0) {
+          const productSpecificationList = specData.map((item: any) => ({
+            label: item.label || "",
+            specification: item.specification || ""
+          }));
+          form.setValue("productSpecificationList", productSpecificationList);
+        } else {
+          // If it's not an array, create a single specification entry
+          form.setValue("productSpecificationList", [
+            {
+              label: "Specification",
+              specification: existingProduct.specification
+            }
+          ]);
+        }
+      } catch (e) {
+        // If parsing fails, treat as plain text
+        form.setValue("productSpecificationList", [
+          {
+            label: "Specification",
+            specification: existingProduct.specification
+          }
+        ]);
+      }
+    } else {
+      // Default empty specification
+      form.setValue("productSpecificationList", [
+        {
+          label: "",
+          specification: ""
+        }
+      ]);
+    }
+    
+    // Set product short descriptions - ExistingProduct has shortDescription as a simple string field
+    if (existingProduct.shortDescription && existingProduct.shortDescription.trim()) {
+      // Try to parse as JSON first, if it fails, treat as plain text
+      try {
+        const shortDescData = JSON.parse(existingProduct.shortDescription);
+        if (Array.isArray(shortDescData) && shortDescData.length > 0) {
+          const productShortDescriptionList = shortDescData.map((item: any) => ({
+            shortDescription: item.shortDescription || ""
+          }));
+          form.setValue("productShortDescriptionList", productShortDescriptionList);
+        } else {
+          // If it's not an array, create a single short description entry
+          form.setValue("productShortDescriptionList", [
+            {
+              shortDescription: existingProduct.shortDescription
+            }
+          ]);
+        }
+      } catch (e) {
+        // If parsing fails, treat as plain text
+        form.setValue("productShortDescriptionList", [
+          {
+            shortDescription: existingProduct.shortDescription
+          }
+        ]);
+      }
+    } else {
+      // Default empty short description
+      form.setValue("productShortDescriptionList", [
+        {
+          shortDescription: ""
+        }
+      ]);
+    }
+    
     form.setValue("shortDescription", existingProduct.shortDescription);
     form.setValue("barcode", existingProduct.barcode);
     form.setValue("placeOfOriginId", existingProduct.placeOfOriginId);
@@ -1024,6 +1140,12 @@ const CreateProductPage = () => {
         ? (updatedFormData.offerPrice ?? 0)
         : (updatedFormData.productPrice ?? 0);
 
+    // Add existingProductId if creating from existing product
+    if (productId && searchParams?.get('copy')) {
+      updatedFormData.existingProductId = parseInt(productId);
+      console.log('Adding existingProductId to payload:', parseInt(productId));
+    }
+
     // TODO: category input field change
     if (updatedFormData.categoryId === 0) {
       toast({
@@ -1038,6 +1160,44 @@ const CreateProductPage = () => {
       ? JSON.stringify(updatedFormData?.descriptionJson)
       : ""),
       delete updatedFormData.descriptionJson;
+
+    // Process short descriptions for backend
+    if (updatedFormData.productShortDescriptionList?.length > 0) {
+      // Filter out empty short descriptions
+      const validShortDescriptions = updatedFormData.productShortDescriptionList
+        .filter((item: any) => item.shortDescription && item.shortDescription.trim())
+        .map((item: any) => ({
+          shortDescription: item.shortDescription.trim()
+        }));
+      
+      if (validShortDescriptions.length > 0) {
+        updatedFormData.productShortDescriptionList = validShortDescriptions;
+        // Also set the first short description as the main shortDescription field
+        updatedFormData.shortDescription = validShortDescriptions[0].shortDescription;
+      } else {
+        delete updatedFormData.productShortDescriptionList;
+        updatedFormData.shortDescription = "";
+      }
+    } else {
+      updatedFormData.shortDescription = "";
+    }
+
+    // Process specifications for backend
+    if (updatedFormData.productSpecificationList?.length > 0) {
+      // Filter out empty specifications
+      const validSpecifications = updatedFormData.productSpecificationList
+        .filter((item: any) => item.label && item.label.trim() && item.specification && item.specification.trim())
+        .map((item: any) => ({
+          label: item.label.trim(),
+          specification: item.specification.trim()
+        }));
+      
+      if (validSpecifications.length > 0) {
+        updatedFormData.productSpecificationList = validSpecifications;
+      } else {
+        delete updatedFormData.productSpecificationList;
+      }
+    }
 
     updatedFormData.productVariant = [];
     for (let productVariant of updatedFormData.productVariants) {
@@ -1136,6 +1296,12 @@ const CreateProductPage = () => {
       updatedFormData.status = "ACTIVE";
     }
 
+    console.log('=== FINAL FORM DATA BEING SENT TO BACKEND ===');
+    console.log('updatedFormData:', updatedFormData);
+    console.log('productShortDescriptionList:', updatedFormData.productShortDescriptionList);
+    console.log('productSpecificationList:', updatedFormData.productSpecificationList);
+    console.log('shortDescription:', updatedFormData.shortDescription);
+    
     const response = await createProduct.mutateAsync(updatedFormData);
 
     if (response.status && response.data) {
