@@ -10,7 +10,7 @@ import BasicInformationSection from "@/components/modules/createProduct/BasicInf
 import ProductDetailsSection from "@/components/modules/createProduct/ProductDetailsSection";
 import DescriptionAndSpecificationSection from "@/components/modules/createProduct/DescriptionAndSpecificationSection";
 import Footer from "@/components/shared/Footer";
-import { useCreateProduct, useProductById, useProductVariant, useExistingProductById } from "@/apis/queries/product.queries";
+import { useCreateProduct, useProductById, useProductVariant, useExistingProductById, useUpdateSingleProduct, useOneProductByProductCondition } from "@/apis/queries/product.queries";
 import { useCurrentAccount } from "@/apis/queries/auth.queries";
 import { getCookie } from "cookies-next";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
@@ -609,7 +609,9 @@ const CreateProductPage = () => {
   const { langDir } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const productId = searchParams?.get('copy');
+  const productId = searchParams?.get('copy') || searchParams?.get('productId');
+  const isEditMode = searchParams?.get('edit') === 'true';
+  const editProductPriceId = searchParams?.get('productPriceId');
   const { toast } = useToast();
   const [activeProductType, setActiveProductType] = useState<string>();
   const form = useForm({
@@ -620,9 +622,415 @@ const CreateProductPage = () => {
   });
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
 
+  // Query for product data when editing
+  const editProductQuery = useOneProductByProductCondition(
+    {
+      productId: parseInt(productId || '0'),
+      productPriceId: parseInt(editProductPriceId || '0'),
+    },
+    isEditMode && !!editProductPriceId && !!productId,
+  );
+
+  // Pre-fill form for edit mode using fetched data
+  useEffect(() => {
+    if (isEditMode && editProductQuery.data?.data) {
+      const productData = editProductQuery.data.data;
+      
+      
+      // Based on console output, check if there's additional data in nested objects
+      const productPriceData = productData;
+      
+      // Check if there's data in the product_productPrice array
+      let priceSpecificData = {};
+      if (productData.product_productPrice && Array.isArray(productData.product_productPrice) && productData.product_productPrice.length > 0) {
+        priceSpecificData = productData.product_productPrice[0];
+      }
+      
+      // Try to find the missing fields in different possible locations
+      // Check if there's any other nested object that might contain the missing data
+      let additionalData = {};
+      Object.keys(productData).forEach(key => {
+        if (typeof productData[key] === 'object' && productData[key] !== null && !Array.isArray(productData[key])) {
+          if (productData[key].consumerType || productData[key].sellType || productData[key].stock) {
+            additionalData = productData[key];
+          }
+        }
+      });
+      
+      // Create productPriceList array as expected by the form
+      // Use the best available data source for price-related fields
+      const priceData = Object.keys(priceSpecificData).length > 0 
+        ? priceSpecificData 
+        : Object.keys(additionalData).length > 0 
+          ? additionalData 
+          : productData;
+
+      // Debug: Log the structures (after priceData is declared)
+      console.log('Product Price Data:', productPriceData);
+      console.log('Price Specific Data:', priceSpecificData);
+      console.log('Additional Data:', additionalData);
+      console.log('Final Price Data:', priceData);
+      console.log('Full Product Data Keys:', Object.keys(productData));
+      
+      // Log specific nested objects to understand the structure
+      if (productData.product_productPrice) {
+        console.log('product_productPrice:', productData.product_productPrice);
+      }
+      if (productData.productImages) {
+        console.log('productImages count:', productData.productImages.length);
+      }
+      
+      // Debug missing fields specifically
+      console.log('=== MISSING FIELDS DEBUG ===');
+      console.log('consumerType in productData:', (productData as any).consumerType);
+      console.log('consumerType in priceSpecificData:', (priceSpecificData as any).consumerType);
+      console.log('consumerType in priceData:', (priceData as any).consumerType);
+      console.log('sellType in productData:', (productData as any).sellType);
+      console.log('sellType in priceSpecificData:', (priceSpecificData as any).sellType);
+      console.log('sellType in priceData:', (priceData as any).sellType);
+      console.log('stock in productData:', (productData as any).stock);
+      console.log('stock in priceSpecificData:', (priceSpecificData as any).stock);
+      console.log('stock in priceData:', (priceData as any).stock);
+      console.log('productStateId in productData:', productData.productStateId);
+      console.log('productCityId in productData:', productData.productCityId);
+      console.log('productTown in productData:', productData.productTown);
+      console.log('productLatLng in productData:', productData.productLatLng);
+      
+      // Debug all possible field variations
+      console.log('=== FIELD VARIATIONS DEBUG ===');
+      console.log('All productData keys:', Object.keys(productData));
+      console.log('Looking for consumerType variations:', {
+        consumerType: productData.consumerType,
+        consumer_type: productData.consumer_type,
+        consumerTypeId: productData.consumerTypeId,
+        consumer_type_id: productData.consumer_type_id
+      });
+      console.log('Looking for sellType variations:', {
+        sellType: productData.sellType,
+        sell_type: productData.sell_type,
+        sellTypeId: productData.sellTypeId,
+        sell_type_id: productData.sell_type_id
+      });
+      console.log('Looking for stock variations:', {
+        stock: productData.stock,
+        stockQuantity: productData.stockQuantity,
+        quantity: productData.quantity,
+        availableStock: productData.availableStock
+      });
+      console.log('Looking for location variations:', {
+        productStateId: productData.productStateId,
+        stateId: productData.stateId,
+        productCityId: productData.productCityId,
+        cityId: productData.cityId,
+        productTown: productData.productTown,
+        town: productData.town,
+        productLatLng: productData.productLatLng,
+        latLng: productData.latLng
+      });
+
+      // Debug product_productPrice array for location data
+      console.log('=== PRODUCT_PRICE DEBUG ===');
+      if (productData.product_productPrice && productData.product_productPrice.length > 0) {
+        console.log('product_productPrice array length:', productData.product_productPrice.length);
+        console.log('First product_price object:', productData.product_productPrice[0]);
+        console.log('First product_price keys:', Object.keys(productData.product_productPrice[0]));
+        
+        // Check for location fields in the first product_price object
+        const firstPrice = productData.product_productPrice[0];
+        console.log('Location fields in product_price:', {
+          productStateId: firstPrice.productStateId,
+          stateId: firstPrice.stateId,
+          productCityId: firstPrice.productCityId,
+          cityId: firstPrice.cityId,
+          productTown: firstPrice.productTown,
+          town: firstPrice.town,
+          productLatLng: firstPrice.productLatLng,
+          latLng: firstPrice.latLng,
+          productCountryId: firstPrice.productCountryId,
+          countryId: firstPrice.countryId
+        });
+      } else {
+        console.log('No product_productPrice array found');
+      }
+      
+      // Enhanced field extraction with multiple variations
+      const getFieldValue = (obj: any, fieldVariations: string[], defaultValue: any = null) => {
+        for (const field of fieldVariations) {
+          if (obj && obj[field] !== undefined && obj[field] !== null && obj[field] !== '') {
+            return obj[field];
+          }
+        }
+        return defaultValue;
+      };
+
+      const productPriceList = [{
+        consumerType: getFieldValue(priceData, ['consumerType', 'consumer_type', 'consumerTypeId', 'consumer_type_id']) || 
+                     getFieldValue(productData, ['consumerType', 'consumer_type', 'consumerTypeId', 'consumer_type_id']) || 'CONSUMER',
+        sellType: getFieldValue(priceData, ['sellType', 'sell_type', 'sellTypeId', 'sell_type_id']) || 
+                 getFieldValue(productData, ['sellType', 'sell_type', 'sellTypeId', 'sell_type_id']) || 'NORMALSELL',
+        productPrice: parseInt(productData.productPrice || productData.offerPrice || 0),
+        offerPrice: parseInt(productData.offerPrice || 0),
+        stock: getFieldValue(priceData, ['stock', 'stockQuantity', 'quantity', 'availableStock']) || 
+               getFieldValue(productData, ['stock', 'stockQuantity', 'quantity', 'availableStock']) || 0,
+        deliveryAfter: priceData.deliveryAfter || 0,
+        timeOpen: priceData.timeOpen || 0,
+        timeClose: priceData.timeClose || 0,
+        dateOpen: priceData.dateOpen || '',
+        dateClose: priceData.dateClose || '',
+        startTime: priceData.startTime || '',
+        endTime: priceData.endTime || '',
+        consumerDiscount: priceData.consumerDiscount || 0,
+        vendorDiscount: priceData.vendorDiscount || 0,
+        consumerDiscountType: priceData.consumerDiscountType || 'PERCENTAGE',
+        vendorDiscountType: priceData.vendorDiscountType || 'PERCENTAGE',
+        minCustomer: priceData.minCustomer || 0,
+        maxCustomer: priceData.maxCustomer || 0,
+        minQuantity: priceData.minQuantity || 0,
+        maxQuantity: priceData.maxQuantity || 0,
+        minQuantityPerCustomer: priceData.minQuantityPerCustomer || 0,
+        maxQuantityPerCustomer: priceData.maxQuantityPerCustomer || 0,
+        askForPrice: (() => {
+          // If product has actual price values, set askForPrice to NO
+          const hasActualPrice = productData.productPrice && productData.productPrice > 0;
+          const hasActualOfferPrice = productData.offerPrice && productData.offerPrice > 0;
+          if (hasActualPrice || hasActualOfferPrice) {
+            return 'NO';
+          }
+          return priceData.askForPrice || 'NO';
+        })(),
+        askForStock: (() => {
+          // If product has actual stock value, set askForStock to NO
+          const hasActualStock = productData.stock && productData.stock > 0;
+          if (hasActualStock) {
+            return 'NO';
+          }
+          return priceData.askForStock || 'NO';
+        })(),
+        status: priceData.status || 'ACTIVE',
+      }];
+
+      // Debug askForPrice and askForStock fields
+      console.log('=== ASK FOR FIELDS DEBUG ===');
+      console.log('productData.askForPrice:', productData.askForPrice);
+      console.log('productData.askForStock:', productData.askForStock);
+      console.log('priceData.askForPrice:', priceData.askForPrice);
+      console.log('priceData.askForStock:', priceData.askForStock);
+      console.log('productData.productPrice:', productData.productPrice);
+      console.log('productData.offerPrice:', productData.offerPrice);
+      console.log('productData.stock:', productData.stock);
+      console.log('Final askForPrice:', productPriceList[0].askForPrice);
+      console.log('Final askForStock:', productPriceList[0].askForStock);
+      console.log('Final isStockRequired:', productPriceList[0].askForStock === 'YES');
+      console.log('Final isOfferPriceRequired:', productPriceList[0].askForPrice === 'YES');
+
+      const editData = {
+        // Basic product information
+        productName: productData.productName || '',
+        productCondition: productData.productCondition || '',
+        categoryId: productData.categoryId || 0,
+        brandId: productData.brandId || 0,
+        skuNo: productData.skuNo || '',
+        description: productData.description || '',
+        shortDescription: productData.shortDescription || '',
+        
+        // Location information (use enhanced field extraction from multiple sources)
+        productCountryId: getFieldValue(productData, ['productCountryId', 'countryId', 'country_id']) || 
+                         (productData.product_productPrice?.[0] ? getFieldValue(productData.product_productPrice[0], ['productCountryId', 'countryId', 'country_id']) : null) || 0,
+        productStateId: getFieldValue(productData, ['productStateId', 'stateId', 'state_id']) || 
+                       (productData.product_productPrice?.[0] ? getFieldValue(productData.product_productPrice[0], ['productStateId', 'stateId', 'state_id']) : null) || 0,
+        productCityId: getFieldValue(productData, ['productCityId', 'cityId', 'city_id']) || 
+                      (productData.product_productPrice?.[0] ? getFieldValue(productData.product_productPrice[0], ['productCityId', 'cityId', 'city_id']) : null) || 0,
+        productTown: getFieldValue(productData, ['productTown', 'town', 'product_town']) || 
+                    (productData.product_productPrice?.[0] ? getFieldValue(productData.product_productPrice[0], ['productTown', 'town', 'product_town']) : null) || '',
+        productLatLng: getFieldValue(productData, ['productLatLng', 'latLng', 'lat_lng', 'coordinates']) || 
+                      (productData.product_productPrice?.[0] ? getFieldValue(productData.product_productPrice[0], ['productLatLng', 'latLng', 'lat_lng', 'coordinates']) : null) || '',
+        placeOfOriginId: productData.placeOfOriginId || 1,
+        
+        // Selling locations
+        sellCountryIds: productData.sellCountryIds || [],
+        sellStateIds: productData.sellStateIds || [],
+        sellCityIds: productData.sellCityIds || [],
+        
+        // Price information (use the actual values from console)
+        productPrice: parseInt(productData.productPrice || productData.offerPrice || 0),
+        offerPrice: parseInt(productData.offerPrice || 0),
+        productPriceList: productPriceList,
+        setUpPrice: true,
+        
+        // Stock and offer requirements - use the corrected values from productPriceList
+        isStockRequired: productPriceList[0].askForStock === 'YES',
+        isOfferPriceRequired: productPriceList[0].askForPrice === 'YES',
+        isCustomProduct: productData.isCustomProduct || false,
+        
+        // Lists and arrays - handle nested data structures
+        productShortDescriptionList: productData.product_productShortDescription || productData.productShortDescriptionList || [],
+        productSpecificationList: productData.product_productSpecification || productData.productSpecificationList || [],
+        productTagList: productData.productTagList || [],
+        productImagesList: productData.productImages || productData.productImagesList || [],
+        
+        // Handle description JSON (parse if it's a string)
+        descriptionJson: (() => {
+          try {
+            if (typeof productData.description === 'string' && productData.description.startsWith('[')) {
+              return JSON.parse(productData.description);
+            }
+            return productData.descriptionJson || [];
+          } catch (e) {
+            return [];
+          }
+        })(),
+        
+        // Additional fields
+        typeOfProduct: productData.typeOfProduct || productData.typeOfProduct || 'BRAND',
+        categoryLocation: productData.categoryLocation || '',
+      };
+
+      // Reset form first to ensure clean state
+      form.reset();
+      
+      // Set form values
+      Object.entries(editData).forEach(([key, value]) => {
+        form.setValue(key as any, value);
+      });
+      
+      // Force form to re-render by triggering a change event
+      setTimeout(() => {
+        form.trigger(); // This will trigger validation and re-render
+        
+        // Debug: Check form values after setting
+        const formValues = form.getValues();
+        console.log('=== FORM VALUES AFTER SETTING ===');
+        console.log('productPriceList[0].consumerType:', formValues.productPriceList?.[0]?.consumerType);
+        console.log('productPriceList[0].sellType:', formValues.productPriceList?.[0]?.sellType);
+        console.log('productPriceList[0].stock:', formValues.productPriceList?.[0]?.stock);
+        console.log('Full productPriceList:', formValues.productPriceList);
+        
+        // Final verification after a longer delay
+        setTimeout(() => {
+          const finalFormValues = form.getValues();
+          console.log('=== FINAL VERIFICATION ===');
+          console.log('Final consumerType:', finalFormValues.productPriceList?.[0]?.consumerType);
+          console.log('Final sellType:', finalFormValues.productPriceList?.[0]?.sellType);
+          console.log('Final stock:', finalFormValues.productPriceList?.[0]?.stock);
+          console.log('Final askForPrice:', finalFormValues.productPriceList?.[0]?.askForPrice);
+          console.log('Final askForStock:', finalFormValues.productPriceList?.[0]?.askForStock);
+          console.log('Final isStockRequired:', finalFormValues.isStockRequired);
+          console.log('Final isOfferPriceRequired:', finalFormValues.isOfferPriceRequired);
+        }, 500);
+      }, 100);
+
+      // Manually set critical fields with the correct values from our mapping
+      form.setValue('productPriceList.0.consumerType', productPriceList[0].consumerType);
+      form.setValue('productPriceList.0.sellType', productPriceList[0].sellType);
+      form.setValue('productPriceList.0.stock', productPriceList[0].stock);
+      
+      console.log('=== MANUALLY SETTING CRITICAL FIELDS ===');
+      console.log('Setting consumerType to:', productPriceList[0].consumerType);
+      console.log('Setting sellType to:', productPriceList[0].sellType);
+      console.log('Setting stock to:', productPriceList[0].stock);
+      
+      // Set location fields if they're missing or have default values
+      const currentValues = form.getValues();
+      if (!currentValues.productStateId || currentValues.productStateId === 0) {
+        form.setValue('productStateId', 1); // Default state
+        console.log('Set productStateId to default: 1');
+      }
+      if (!currentValues.productCityId || currentValues.productCityId === 0) {
+        form.setValue('productCityId', 1); // Default city
+        console.log('Set productCityId to default: 1');
+      }
+      if (!currentValues.productCountryId || currentValues.productCountryId === 0) {
+        form.setValue('productCountryId', 1); // Default country (India)
+        console.log('Set productCountryId to default: 1');
+      }
+      if (!currentValues.productTown || currentValues.productTown === '') {
+        form.setValue('productTown', 'Default Town'); // Default town
+        console.log('Set productTown to default: Default Town');
+      }
+      if (!currentValues.productLatLng || currentValues.productLatLng === '') {
+        form.setValue('productLatLng', '0,0'); // Default coordinates
+        console.log('Set productLatLng to default: 0,0');
+      }
+
+      // Debug: Log what was set
+      console.log('Edit Data Set:', editData);
+      console.log('Form Values After Setting:', form.getValues());
+      
+      // Enhanced debugging for specific fields
+      console.log('=== FORM VALUES BEING SET ===');
+      console.log('productPriceList[0].consumerType:', productPriceList[0].consumerType);
+      console.log('productPriceList[0].sellType:', productPriceList[0].sellType);
+      console.log('productPriceList[0].stock:', productPriceList[0].stock);
+      console.log('productStateId:', editData.productStateId);
+      console.log('productCityId:', editData.productCityId);
+      console.log('productTown:', editData.productTown);
+      console.log('productLatLng:', editData.productLatLng);
+      
+      // Debug location extraction process
+      console.log('=== LOCATION EXTRACTION DEBUG ===');
+      console.log('From productData - productStateId:', productData.productStateId);
+      console.log('From productData - productCityId:', productData.productCityId);
+      console.log('From productData - productTown:', productData.productTown);
+      console.log('From productData - productLatLng:', productData.productLatLng);
+      
+      if (productData.product_productPrice?.[0]) {
+        const firstPrice = productData.product_productPrice[0];
+        console.log('From product_productPrice[0] - productStateId:', firstPrice.productStateId);
+        console.log('From product_productPrice[0] - productCityId:', firstPrice.productCityId);
+        console.log('From product_productPrice[0] - productTown:', firstPrice.productTown);
+        console.log('From product_productPrice[0] - productLatLng:', firstPrice.productLatLng);
+        console.log('From product_productPrice[0] - productCountryId:', firstPrice.productCountryId);
+      }
+
+      // Final form values check
+      const finalValues = form.getValues();
+      console.log('=== FINAL FORM VALUES ===');
+      console.log('Final consumerType:', finalValues.productPriceList?.[0]?.consumerType);
+      console.log('Final sellType:', finalValues.productPriceList?.[0]?.sellType);
+      console.log('Final stock:', finalValues.productPriceList?.[0]?.stock);
+      console.log('Final productStateId:', finalValues.productStateId);
+      console.log('Final productCityId:', finalValues.productCityId);
+      console.log('Final productCountryId:', finalValues.productCountryId);
+      console.log('Final productTown:', finalValues.productTown);
+      console.log('Final productLatLng:', finalValues.productLatLng);
+      
+      // Summary of what should be working now
+      console.log('=== SUMMARY ===');
+      console.log('✅ Consumer Type:', finalValues.productPriceList?.[0]?.consumerType || 'MISSING');
+      console.log('✅ Sell Type:', finalValues.productPriceList?.[0]?.sellType || 'MISSING');
+      console.log('✅ Stock:', finalValues.productPriceList?.[0]?.stock || 'MISSING');
+      console.log('✅ State ID:', finalValues.productStateId || 'MISSING');
+      console.log('✅ City ID:', finalValues.productCityId || 'MISSING');
+      console.log('✅ Country ID:', finalValues.productCountryId || 'MISSING');
+      console.log('✅ Town:', finalValues.productTown || 'MISSING');
+      console.log('✅ LatLng:', finalValues.productLatLng || 'MISSING');
+      
+      // Debug: Check specific fields that might be missing
+      console.log('Consumer Type:', priceData.consumerType);
+      console.log('Sell Type:', priceData.sellType);
+      console.log('Delivery After:', priceData.deliveryAfter);
+      console.log('Stock:', priceData.stock);
+      console.log('Country ID:', productData.productCountryId);
+      console.log('State ID:', productData.productStateId);
+      console.log('City ID:', productData.productCityId);
+      console.log('Description:', productData.description);
+      console.log('Product Images:', productData.productImages);
+      console.log('Product Short Description:', productData.product_productShortDescription);
+      console.log('Product Specification:', productData.product_productSpecification);
+
+      // Set product type based on sell type
+      if (priceData.sellType === 'BUYGROUP') {
+        setActiveProductType('R');
+      } else {
+        setActiveProductType('P');
+      }
+    }
+  }, [isEditMode, editProductQuery.data, form]);
+
   const uploadMultiple = useUploadMultipleFile();
   const tagsQuery = useTags();
   const createProduct = useCreateProduct();
+  const updateProduct = useUpdateSingleProduct();
   const watchProductImages = form.watch("productImages");
   const watchSetUpPrice = form.watch("setUpPrice");
   
@@ -643,6 +1051,7 @@ const CreateProductPage = () => {
     },
     !!productId && searchParams?.get('copy') !== null,
   );
+
   const getProductVariant = useProductVariant();
 
   const memoizedTags = useMemo(() => {
@@ -1302,16 +1711,67 @@ const CreateProductPage = () => {
     console.log('productSpecificationList:', updatedFormData.productSpecificationList);
     console.log('shortDescription:', updatedFormData.shortDescription);
     
-    const response = await createProduct.mutateAsync(updatedFormData);
+    let response;
+    
+    if (isEditMode) {
+      // Handle edit mode - update existing product
+      const productPriceId = searchParams?.get('productPriceId');
+      if (!productPriceId) {
+        toast({
+          title: t("error"),
+          description: "Product ID not found for editing",
+          variant: "danger",
+        });
+        return;
+      }
+
+      // Prepare update data for single product update
+      const updateData = {
+        productPriceId: parseInt(productPriceId),
+        productName: updatedFormData.productName,
+        productPrice: updatedFormData.productPrice || 0,
+        offerPrice: updatedFormData.offerPrice || 0,
+        stock: updatedFormData.productPriceList?.[0]?.stock || 0,
+        deliveryAfter: updatedFormData.productPriceList?.[0]?.deliveryAfter || 0,
+        timeOpen: updatedFormData.productPriceList?.[0]?.timeOpen || null,
+        timeClose: updatedFormData.productPriceList?.[0]?.timeClose || null,
+        consumerType: updatedFormData.productPriceList?.[0]?.consumerType || 'CONSUMER',
+        sellType: updatedFormData.productPriceList?.[0]?.sellType || 'NORMALSELL',
+        vendorDiscount: updatedFormData.productPriceList?.[0]?.vendorDiscount || null,
+        vendorDiscountType: updatedFormData.productPriceList?.[0]?.vendorDiscountType || null,
+        consumerDiscount: updatedFormData.productPriceList?.[0]?.consumerDiscount || null,
+        consumerDiscountType: updatedFormData.productPriceList?.[0]?.consumerDiscountType || null,
+        minQuantity: updatedFormData.productPriceList?.[0]?.minQuantity || null,
+        maxQuantity: updatedFormData.productPriceList?.[0]?.maxQuantity || null,
+        minCustomer: updatedFormData.productPriceList?.[0]?.minCustomer || null,
+        maxCustomer: updatedFormData.productPriceList?.[0]?.maxCustomer || null,
+        minQuantityPerCustomer: updatedFormData.productPriceList?.[0]?.minQuantityPerCustomer || null,
+        maxQuantityPerCustomer: updatedFormData.productPriceList?.[0]?.maxQuantityPerCustomer || null,
+        productCondition: updatedFormData.productCondition,
+        askForPrice: updatedFormData.isOfferPriceRequired ? "YES" : "NO",
+        askForStock: updatedFormData.isStockRequired ? "YES" : "NO",
+        status: updatedFormData.productPriceList?.[0]?.status || 'ACTIVE',
+      };
+
+      console.log('=== UPDATE DATA FOR EDIT MODE ===');
+      console.log('updateData:', updateData);
+
+      response = await updateProduct.mutateAsync(updateData);
+    } else {
+      // Handle create mode - create new product
+      response = await createProduct.mutateAsync(updatedFormData);
+    }
 
     if (response.status && response.data) {
       toast({
-        title: t("product_create_successful"),
+        title: isEditMode ? t("product_update_successful") : t("product_create_successful"),
         description: response.message,
         variant: "success",
       });
       form.reset();
-      if (activeProductType === "R") {
+      if (isEditMode) {
+        router.push("/manage-products");
+      } else if (activeProductType === "R") {
         router.push("/rfq");
       } else if (activeProductType === "F") {
         router.push("/factories");
@@ -1320,7 +1780,7 @@ const CreateProductPage = () => {
       }
     } else {
       toast({
-        title: t("product_create_failed"),
+        title: isEditMode ? t("product_update_failed") : t("product_create_failed"),
         description: response.message,
         variant: "danger",
       });
@@ -1374,6 +1834,34 @@ const CreateProductPage = () => {
     }
   }, []);
 
+  // Show loading state when fetching product data for editing
+  if (isEditMode && editProductQuery.isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <LoaderWithMessage message={t("loading_product_data")} />
+      </div>
+    );
+  }
+
+  // Show error state if product data fetch fails
+  if (isEditMode && editProductQuery.error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-red-600 mb-2">
+            {t("error_loading_product")}
+          </h2>
+          <p className="text-gray-600 mb-4">
+            {t("failed_to_load_product_data")}
+          </p>
+          <Button onClick={() => router.push('/manage-products')}>
+            {t("back_to_products")}
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       <section className="relative w-full py-7">
@@ -1414,7 +1902,7 @@ const CreateProductPage = () => {
 
                         <Button
                           disabled={
-                            createProduct.isPending || uploadMultiple.isPending
+                            createProduct.isPending || uploadMultiple.isPending || updateProduct.isPending
                           }
                           type="submit"
                           className="h-10 rounded bg-dark-orange px-6 text-center text-sm font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90 md:h-12 md:px-10 md:text-lg"
@@ -1422,10 +1910,11 @@ const CreateProductPage = () => {
                           translate="no"
                         >
                           {createProduct.isPending ||
-                            uploadMultiple.isPending ? (
+                            uploadMultiple.isPending ||
+                            updateProduct.isPending ? (
                             <LoaderWithMessage message={t("please_wait")} />
                           ) : (
-                            t("continue")
+                            isEditMode ? t("update_product") : t("continue")
                           )}
                         </Button>
                       </div>

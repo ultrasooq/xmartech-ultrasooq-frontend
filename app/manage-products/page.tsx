@@ -676,6 +676,7 @@ const ManageProductsPage = () => {
 
 
 
+
   const handleProductIds = (checked: boolean | string, id: number) => {
     let tempArr = selectedProductIds || [];
     if (checked && !tempArr.find((ele: number) => ele === id)) {
@@ -1363,7 +1364,9 @@ const ManageProductsPage = () => {
                            minQuantityPerCustomer: number | null;
                            maxQuantityPerCustomer: number | null;
                            productCondition: string;
-                         }) => (
+                         }) => {
+                           
+                           return (
                            <ManageProductCard
                              key={product?.id}
                              selectedIds={selectedProductIds}
@@ -1403,11 +1406,11 @@ const ManageProductsPage = () => {
                              maxCustomer={product?.maxCustomer || 0}
                              minQuantityPerCustomer={product?.minQuantityPerCustomer || 0}
                              maxQuantityPerCustomer={product?.maxQuantityPerCustomer || 0}
-                             productCondition={product?.productPrice_product?.productCondition || product?.productCondition || ""}
+                             productCondition={product?.productCondition || ""}
                              onRemove={handleRemoveFromList}
                            />
-                         ),
-                       )}
+                         );
+                       })}
                      </div>
 
                     {!showOnlySelected && displayTotalCount > limit ? (
@@ -1709,6 +1712,7 @@ const ManageProductsPage = () => {
           </div>
         </div>
       )}
+
       
     </>
   );

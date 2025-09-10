@@ -3,6 +3,7 @@ import DealsCard from "@/components/modules/home/DealsCard";
 import ProductCardHome from "@/components/modules/home/ProductCard";
 import TrendingCard from "@/components/modules/home/TrendingCard";
 import TrendingOptionCard from "@/components/modules/home/TrendingOptionCard";
+import TrendingCategories from "@/components/modules/home/TrendingCategories";
 import ProductCard from "@/components/modules/trending/ProductCard";
 import Footer from "@/components/shared/Footer";
 import {
@@ -46,6 +47,7 @@ import { getOrCreateDeviceId } from "@/utils/helper";
 import { useCategoryStore } from "@/lib/categoryStore";
 import { useRouter } from "next/navigation";
 import { useCategory } from "@/apis/queries/category.queries";
+import { TrendingUp, ArrowRight } from "lucide-react";
 // @ts-ignore
 import { startDebugger } from "remove-child-node-error-debugger";
 // import { Metadata } from "next";
@@ -433,26 +435,30 @@ function HomePage() {
         <div className="container m-auto px-3">
           <div className="flex flex-wrap">
             <div className="mb-5 w-full" dir={langDir}>
-              <h3 className="text-lg font-normal capitalize text-color-dark md:text-2xl">
-                Search Trending
-              </h3>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-normal capitalize text-color-dark md:text-2xl">
+                    {t("explore_categories")}
+                  </h3>
+                  <p className="mt-1 text-sm text-gray-600">
+                    {t("browse_categories_to_find_trending_products")}
+                  </p>
+                </div>
+                <div>
+                  <Link
+                    href="/trending"
+                    className="group inline-flex items-center gap-2 rounded-md border border-gray-300 px-6 py-3 text-sm font-medium text-black  transition-all duration-300 hover:scale-105 hover:shadow-xl "
+                  >
+                    <TrendingUp className="h-4 w-4" />
+                    {t("view_trending_products")}
+                    <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+                  </Link>
+                </div>
+              </div>
             </div>
             <div className="w-full">
-              <div className="bg-neutral-100 p-4 lg:p-8">
-                <div className="block w-full">
-                  <ul className="mb-2 grid grid-cols-3 gap-3 border-b border-solid border-gray-300 sm:grid-cols-5 md:grid-cols-8">
-                    {trendingTopicList.map((item: any) => (
-                      <TrendingOptionCard key={uuidv4()} item={item} />
-                    ))}
-                  </ul>
-                </div>
-                <div className="block w-full py-5">
-                  <div className="grid w-full grid-cols-2 gap-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
-                    {trendingList.map((item) => (
-                      <TrendingCard key={uuidv4()} item={item} />
-                    ))}
-                  </div>
-                </div>
+              <div className="">
+                <TrendingCategories />
               </div>
             </div>
           </div>
@@ -460,7 +466,7 @@ function HomePage() {
       </section>
 
       {memoizedBuyGroupProducts?.length > 0 ? (
-        <section className="w-full pb-8 pt-0">
+        <section className="w-full pb-8 pt-5">
           <div className="container m-auto px-3">
             <div className="flex flex-wrap">
               <div className="flex w-full flex-wrap items-center justify-between border-b border-solid border-gray-300 pb-3.5">

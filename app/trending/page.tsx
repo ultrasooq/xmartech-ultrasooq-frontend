@@ -32,6 +32,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ReactSlider from "react-slider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -49,6 +50,7 @@ import {
 } from "@/apis/queries/wishlist.queries";
 import { useQueryClient } from "@tanstack/react-query";
 import { useMe } from "@/apis/queries/user.queries";
+import { useUserAccounts } from "@/hooks/useUserAccounts";
 import {
   useCartListByDevice,
   useCartListByUserId,
@@ -60,10 +62,12 @@ import BannerSection from "@/components/modules/trending/BannerSection";
 import SkeletonProductCardLoader from "@/components/shared/SkeletonProductCardLoader";
 import { useCategoryStore } from "@/lib/categoryStore";
 import TrendingCategories from "@/components/modules/trending/TrendingCategories";
+import VendorsSection from "@/components/modules/trending/VendorsSection";
 import { useTranslations } from "next-intl";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/context/AuthContext";
+import { Package, Building2 } from "lucide-react";
 // @ts-ignore
 import { startDebugger } from "remove-child-node-error-debugger";
 import Cart from "@/components/modules/cartList/Cart";
@@ -94,6 +98,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
   const [limit] = useState(8);
   const [productVariants, setProductVariants] = useState<any[]>([]);
   const [haveAccessToken, setHaveAccessToken] = useState(false);
+  const [activeTab, setActiveTab] = useState<"products" | "vendors">("products");
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
   const category = useCategoryStore();
 
@@ -106,6 +111,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
   const me = useMe();
   const addToWishlist = useAddToWishList();
   const deleteFromWishlist = useDeleteFromWishList();
+  
   const allProductsQuery = useAllProducts({
     page,
     limit,
@@ -128,6 +134,21 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
     related: displayRelatedProducts,
     userType: me?.data?.data?.tradeRole == "BUYER" ? "BUYER" : ""
   });
+
+  // Get unique user IDs from products
+  const uniqueUserIds = useMemo(() => {
+    const userIds = new Set<number>();
+    allProductsQuery?.data?.data?.forEach((item: any) => {
+      if (item?.userId) {
+        userIds.add(item.userId);
+      }
+    });
+    return Array.from(userIds);
+  }, [allProductsQuery?.data?.data]);
+
+  // Use custom hook to get user accounts
+  const { usersMap, isLoading: usersLoading } = useUserAccounts(uniqueUserIds);
+
   const fetchProductVariant = useProductVariant();
   const brandsQuery = useBrands({
     term: searchTerm,
@@ -207,6 +228,55 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
         vendorDiscountType: item?.product_productPrice?.[0]?.vendorDiscountType,
         askForPrice: item?.product_productPrice?.[0]?.askForPrice,
         productPrices: item?.product_productPrice,
+         // Add vendor information
+         vendorId: item?.addedBy || item?.userId,
+         vendorName: (() => {
+           const userId = item?.userId;
+           const user = usersMap.get(userId);
+           
+           console.log("=== VENDOR DEBUG ===");
+           console.log("Product ID:", item.id);
+           console.log("Product userId:", userId);
+           console.log("User from map:", user);
+           console.log("Account name:", user?.accountName);
+           console.log("First name:", user?.firstName);
+           console.log("Last name:", user?.lastName);
+           console.log("Users map size:", usersMap.size);
+           console.log("==================");
+           
+           // Priority order for vendor name:
+           // 1. Account name (sub-account name)
+           // 2. First name + Last name
+           // 3. First name only
+           // 4. Email
+           // 5. Fallback to vendor ID
+           
+           if (user?.accountName) {
+             return user.accountName;
+           }
+           if (user?.firstName && user?.lastName) {
+             return `${user.firstName} ${user.lastName}`;
+           }
+           if (user?.firstName) {
+             return user.firstName;
+           }
+           if (user?.email) {
+             return user.email;
+           }
+           // Fallback to vendor ID if no user data
+           if (userId) {
+             return `Vendor ${userId}`;
+           }
+           if (item?.addedBy) {
+             return `Vendor ${item.addedBy}`;
+           }
+           return "Unknown Vendor";
+         })(),
+         vendorEmail: usersMap.get(item?.userId)?.email || item?.user?.email,
+         vendorPhone: usersMap.get(item?.userId)?.phoneNumber || item?.user?.phoneNumber,
+         vendorProfilePicture: usersMap.get(item?.userId)?.profilePicture || item?.user?.profilePicture,
+         vendorTradeRole: usersMap.get(item?.userId)?.tradeRole || item?.user?.tradeRole,
+         vendorUserProfile: usersMap.get(item?.userId)?.userProfile || item?.user?.userProfile,
       })) || []
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -224,7 +294,64 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
     searchTerm,
     selectedBrandIds,
     displayMyProducts,
+    usersMap,
   ]);
+
+  // Extract unique vendors from products
+  const memoizedVendors = useMemo(() => {
+    const vendorMap = new Map();
+    
+    memoizedProductList.forEach((product: any) => {
+      if (product.vendorId) {
+        if (!vendorMap.has(product.vendorId)) {
+          vendorMap.set(product.vendorId, {
+            id: product.vendorId,
+            firstName: product.vendorName.split(' ')[0] || '',
+            lastName: product.vendorName.split(' ').slice(1).join(' ') || '',
+            email: product.vendorEmail || '',
+            phoneNumber: product.vendorPhone || '',
+            profilePicture: product.vendorProfilePicture,
+            tradeRole: product.vendorTradeRole || 'VENDOR',
+            userProfile: product.vendorUserProfile || [],
+            productCount: 0,
+            averageRating: 0,
+            location: '', // Will be populated from user profile if available
+            businessTypes: [],
+          });
+        }
+        
+        // Increment product count
+        const vendor = vendorMap.get(product.vendorId);
+        vendor.productCount += 1;
+      }
+    });
+
+    // Calculate average ratings and extract business types
+    return Array.from(vendorMap.values()).map(vendor => {
+      // Calculate average rating from products
+      const vendorProducts = memoizedProductList.filter((p: any) => p.vendorId === vendor.id);
+      const totalRating = vendorProducts.reduce((sum: number, product: any) => {
+        const reviews = product.productReview || [];
+        const avgRating = reviews.length > 0 
+          ? reviews.reduce((rSum: number, review: any) => rSum + (review.rating || 0), 0) / reviews.length
+          : 0;
+        return sum + avgRating;
+      }, 0);
+      
+      vendor.averageRating = vendorProducts.length > 0 ? totalRating / vendorProducts.length : 0;
+      
+      // Extract business types
+      if (vendor.userProfile?.length) {
+        vendor.businessTypes = vendor.userProfile
+          .map((item: any) => item?.userProfileBusinessType)
+          .flat()
+          .map((item: any) => item?.userProfileBusinessTypeTag?.tagName)
+          .filter(Boolean);
+      }
+      
+      return vendor;
+    });
+  }, [memoizedProductList]);
 
   const getProductVariants = async () => {
     let productPriceIds = memoizedProductList
@@ -530,6 +657,25 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
               onClick={() => setProductFilter(false)}
             ></div>
             <div className="right-products">
+              <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "products" | "vendors")} className="w-full">
+                <TabsList className="grid w-full grid-cols-2 mb-6">
+                  <TabsTrigger value="products" className="flex items-center space-x-2">
+                    <Package className="h-4 w-4" />
+                    <span>{t("products")}</span>
+                    <span className="ml-2 text-xs bg-gray-100 px-2 py-1 rounded-full">
+                      {allProductsQuery.data?.totalCount || 0}
+                    </span>
+                  </TabsTrigger>
+                  <TabsTrigger value="vendors" className="flex items-center space-x-2">
+                    <Building2 className="h-4 w-4" />
+                    <span>{t("vendors")}</span>
+                    <span className="ml-2 text-xs bg-gray-100 px-2 py-1 rounded-full">
+                      {memoizedVendors.length}
+                    </span>
+                  </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="products" className="space-y-6">
               {haveAccessToken && me?.data?.data?.tradeRole != "BUYER" ? (
                 <RadioGroup
                   className="mb-3 flex flex-row gap-y-3"
@@ -570,6 +716,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
                   </div>
                 </RadioGroup>
               ) : null}
+                  
               <div className="products-header-filter">
                 <div className="le-info">
                   {/* TODO: need name here */}
@@ -732,6 +879,16 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
                   limit={limit}
                 />
               ) : null}
+                </TabsContent>
+
+                <TabsContent value="vendors" className="space-y-6">
+                  <VendorsSection 
+                    vendors={memoizedVendors}
+                    isLoading={allProductsQuery.isLoading || usersLoading}
+                    products={memoizedProductList}
+                  />
+                </TabsContent>
+              </Tabs>
             </div>
             {/* <div className="product_cart_modal absolute right-[20px] top-[150px] w-full px-4 lg:w-[300px]">
               <Cart 

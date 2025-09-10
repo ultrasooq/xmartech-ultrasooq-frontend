@@ -13,7 +13,8 @@ import {
   IoMdRefresh, 
   IoMdTrash,
   IoMdArrowDown,
-  IoMdArrowUp
+  IoMdArrowUp,
+  IoMdCreate as IoMdEdit
 } from "react-icons/io";
 import {
   useRemoveProduct,
@@ -24,6 +25,7 @@ import CounterTextInputField from "../createProduct/CounterTextInputField";
 import { useToast } from "@/components/ui/use-toast";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
 
 type ManageProductCardProps = {
   selectedIds?: number[];
@@ -101,6 +103,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
   const t = useTranslations();
   const { langDir } = useAuth();
   const { toast } = useToast();
+  const router = useRouter();
   const [isExpanded, setIsExpanded] = useState(false);
 
   // Status update part
@@ -385,6 +388,11 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
     }
   };
 
+  const handleEditProduct = () => {
+    // Navigate to the add product page with product ID and productPriceId for editing
+    router.push(`/product?edit=true&productId=${productId}&productPriceId=${id}`);
+  };
+
   // Function to reset all values to initial state
   const handleReset = () => {
     setStock(Number(initialStock));
@@ -489,13 +497,13 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
               <div className="flex items-center space-x-2">
                 <span className="font-medium">{t("stock")}:</span>
                 <span className="text-green-600 font-semibold">
-                  {askForStock === "false" ? stock : t("ask_for_the_stock")}
+                  {askForStock === "false" || askForStock === "NO" || (askForStock as any) === false ? stock : t("ask_for_the_stock")}
                 </span>
               </div>
               <div className="flex items-center space-x-2">
                 <span className="font-medium">{t("price")}:</span>
                 <span className="text-blue-600 font-semibold">
-                  {askForPrice === "false" ? `$${productPrice}` : t("ask_for_the_price")}
+                  {askForPrice === "false" || askForPrice === "NO" || (askForPrice as any) === false ? `$${productPrice}` : t("ask_for_the_price")}
                 </span>
               </div>
             </div>
@@ -567,7 +575,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                  <input
                    type="checkbox"
                    className="h-3 w-3"
-                   defaultChecked={askForStock === "false"}
+                   defaultChecked={askForStock === "false" || askForStock === "NO" || (askForStock as any) === false}
                  />
                  <span className="text-xs text-gray-600">{t("manage_stock")}</span>
                </div>
@@ -602,7 +610,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                  <input
                    type="checkbox"
                    className="h-3 w-3"
-                   defaultChecked={askForPrice === "false"}
+                   defaultChecked={askForPrice === "false" || askForPrice === "NO" || (askForPrice as any) === false}
                  />
                  <span className="text-xs text-gray-600">{t("manage_price")}</span>
                </div>
@@ -1005,6 +1013,15 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
            {/* Action Buttons Section */}
            {!hideActionButtons && (
              <div className="mt-4 flex justify-center space-x-3 border-t border-gray-300 pt-4">
+               <button
+                 type="button"
+                 className="flex items-center justify-center rounded-lg bg-green-500 px-4 py-2 text-sm text-white hover:bg-green-600 transition-colors"
+                 onClick={handleEditProduct}
+               >
+                 <IoMdEdit size={16} className="mr-1" />
+                 {t("edit")}
+               </button>
+
                <button
                  type="button"
                  className="flex items-center justify-center rounded-lg bg-blue-500 px-4 py-2 text-sm text-white hover:bg-blue-600 transition-colors"

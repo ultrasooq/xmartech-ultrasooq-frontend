@@ -64,3 +64,16 @@ export const fetchUserBusinessCategories = () => {
     },
   });
 };
+
+export const fetchUserById = (payload: { userId: number }) => {
+  return axios({
+    method: "POST",
+    url: `${getApiUrl()}/user/findUnique`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
