@@ -474,104 +474,116 @@ const ProductCard: React.FC<ProductCardProps> = ({
   }, [item?.productPrices, language, t]);
 
   return (
-    <div className="product-list-s1-col">
-      <div className="product-list-s1-box relative hover:bg-slate-100">
-        {isSelectable ? (
-          <div className="absolute left-[10px] top-[20px]">
-            <Checkbox
-              className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
-              checked={selectedIds?.includes(item.id)}
-              onCheckedChange={(checked) => onSelectedId?.(checked, item.id)}
-            />
-          </div>
-        ) : null}
-        {timeLeft ? (
-          <div
-            className={`time_left ${language === "ar" ? "rtl" : "ltr"}`}
-            translate="no"
-          >
+    <div className="group relative bg-white rounded-xl shadow-lg border border-gray-100 hover:shadow-xl hover:border-gray-200 transition-all duration-300 overflow-hidden h-full flex flex-col items-stretch">
+      {/* Selection Checkbox */}
+      {isSelectable ? (
+        <div className="absolute left-3 top-3 z-20">
+          <Checkbox
+            className="border-2 border-gray-300 data-[state=checked]:!bg-blue-600 data-[state=checked]:!border-blue-600"
+            checked={selectedIds?.includes(item.id)}
+            onCheckedChange={(checked) => onSelectedId?.(checked, item.id)}
+          />
+        </div>
+      ) : null}
+
+      {/* Time Left Badge */}
+      {timeLeft ? (
+        <div className="absolute right-3 top-3 z-20">
+          <div className="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-medium">
             <span dir={language === "ar" ? "rtl" : "ltr"}>{timeLeft}</span>
           </div>
-        ) : null}
-        <Link href={`/trending/${item.id}`}>
-          {item?.askForPrice !== "true" && item.consumerDiscount ? (
-            <div className="absolute right-2.5 top-14 z-10 inline-block rounded bg-dark-orange px-2 py-1.5 text-xs font-medium capitalize leading-3 text-white">
-              <span>{item.consumerDiscount}%</span>
-            </div>
-          ) : null}
-          <div className="relative mx-auto mb-4 h-36 w-36">
-            <Image
-              src={
-                item?.productImage && validator.isURL(item.productImage)
-                  ? item.productImage
-                  : PlaceholderImage
-              }
-              alt="product-image"
-              fill
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              className="object-cover"
-              blurDataURL="/images/product-placeholder.png"
-              placeholder="blur"
-            />
-          </div>
-        </Link>
+        </div>
+      ) : null}
 
-        {isInteractive ? (
-          <div className="mb-3 flex flex-row items-center justify-center gap-x-3">
-            {item?.askForPrice !== "true" ? (
-              <Button
-                variant="ghost"
-                className="relative h-8 w-8 rounded-full p-0 shadow-md"
-                onClick={() => handleAddToCart(-1, "add")}
-              >
-                <ShoppingIcon />
-              </Button>
-            ) : null}
-            <Link
-              href={`/trending/${item.id}`}
-              className="relative flex h-8 w-8 items-center justify-center rounded-full !shadow-md"
+      {/* Product Image Container */}
+      <Link href={`/trending/${item.id}`} className="block">
+        {/* Discount Badge */}
+        {item?.askForPrice !== "true" && item.consumerDiscount ? (
+          <div className="absolute right-3 top-12 z-20 bg-gradient-to-r from-orange-500 to-red-500 text-white px-2 py-1 rounded-full text-xs font-bold shadow-lg">
+            -{item.consumerDiscount}%
+          </div>
+        ) : null}
+
+        <div className="relative w-full h-48 bg-gray-50 overflow-hidden">
+          <Image
+            src={
+              item?.productImage && validator.isURL(item.productImage)
+                ? item.productImage
+                : PlaceholderImage
+            }
+            alt="product-image"
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover group-hover:scale-105 transition-transform duration-300"
+            blurDataURL="/images/product-placeholder.png"
+            placeholder="blur"
+          />
+        </div>
+      </Link>
+
+      {/* Action Buttons */}
+      {isInteractive ? (
+        <div className="absolute top-3 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex gap-2">
+          {item?.askForPrice !== "true" ? (
+            <Button
+              variant="secondary"
+              size="sm"
+              className="h-8 w-8 rounded-full bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white hover:scale-110 transition-all duration-200"
+              onClick={() => handleAddToCart(-1, "add")}
             >
-              <FiEye size={18} />
-            </Link>
-            {haveAccessToken ? (
-              <Button
-                variant="ghost"
-                className="relative h-8 w-8 rounded-full p-0 shadow-md"
-                onClick={onWishlist}
-              >
-                {inWishlist ? (
-                  <FaHeart color="red" size={16} />
-                ) : (
-                  <FaRegHeart size={16} />
-                )}
-              </Button>
-            ) : null}
-          </div>
-        ) : null}
-
-        <Link href={`/trending/${item.id}`}>
-          <div
-            className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base"
-            dir={langDir}
+              <ShoppingIcon />
+            </Button>
+          ) : null}
+          <Link
+            href={`/trending/${item.id}`}
+            className="h-8 w-8 rounded-full bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white hover:scale-110 transition-all duration-200 flex items-center justify-center"
           >
-            <h4 className="mb-2.5 min-h-[43px] border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark md:min-h-max">
-              {item.productName}
-            </h4>
-            <p title={item.shortDescription} className="truncate">
-              {item.shortDescription}
-            </p>
-            <div className="my-1 flex">
+            <FiEye size={16} className="text-gray-700" />
+          </Link>
+          {haveAccessToken ? (
+            <Button
+              variant="secondary"
+              size="sm"
+              className="h-8 w-8 rounded-full bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white hover:scale-110 transition-all duration-200"
+              onClick={onWishlist}
+            >
+              {inWishlist ? (
+                <FaHeart color="#ef4444" size={14} />
+              ) : (
+                <FaRegHeart size={14} className="text-gray-700" />
+              )}
+            </Button>
+          ) : null}
+        </div>
+      ) : null}
+
+      {/* Product Information */}
+      <div className="p-4 space-y-3 flex-1 flex flex-col">
+        <Link href={`/trending/${item.id}`} className="block group flex-1">
+          <h3 className="font-semibold text-gray-900 text-base leading-tight line-clamp-2 group-hover:text-blue-600 transition-colors duration-200 mb-2" dir={langDir}>
+            {item.productName}
+          </h3>
+          <p className="text-gray-600 text-sm line-clamp-1 mb-2" title={item.shortDescription}>
+            {item.shortDescription}
+          </p>
+          
+          {/* Rating */}
+          <div className="flex items-center gap-1 mb-2">
+            <div className="flex">
               {calculateRatings(calculateAvgRating)}
-              <span className="ml-2">{item.productReview?.length}</span>
             </div>
+            <span className="text-sm text-gray-500 ml-1">
+              ({item.productReview?.length || 0})
+            </span>
           </div>
         </Link>
-        <div>
+        {/* Price Section */}
+        <div className="space-y-2 mb-3">
           {item?.askForPrice === "true" ? (
             <Link href={`/seller-rfq-request?product_id=${item?.id}`}>
               <button
                 type="button"
-                className="inline-block w-full rounded-sm bg-color-yellow px-3 py-1 text-sm font-bold text-white"
+                className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-md text-sm"
                 dir={langDir}
                 translate="no"
               >
@@ -579,138 +591,144 @@ const ProductCard: React.FC<ProductCardProps> = ({
               </button>
             </Link>
           ) : (
-            <div suppressHydrationWarning>
-              <h5
-                className="py-0.5 text-[#1D77D1]"
-                dir={langDir}
-                translate="no"
-              >
-                {currency.symbol}
-                {calculateDiscountedPrice()}{" "}
-                <span className="text-gray-500 !line-through">
-                  {currency.symbol}
-                  {item.productProductPrice}
+            <div className="space-y-1" suppressHydrationWarning>
+              <div className="flex items-center gap-2">
+                <span className="text-lg font-bold text-blue-600" dir={langDir}>
+                  {currency.symbol}{calculateDiscountedPrice()}
                 </span>
-              </h5>
+                {item.productProductPrice && Number(item.productProductPrice) !== calculateDiscountedPrice() && (
+                  <span className="text-sm text-gray-500 line-through">
+                    {currency.symbol}{item.productProductPrice}
+                  </span>
+                )}
+              </div>
             </div>
           )}
         </div>
+        {/* Product Variants */}
         {productVariantTypes.length > 0 ? (
-          productVariantTypes.map((variantType: string, index: number) => {
-            return (
-              <div className="mb-2" dir={langDir} key={index}>
-                <label htmlFor={variantType}>{variantType}</label>
-                <select
-                  className="w-full"
-                  value={selectedProductVariant?.find((variant: any) => variant.type == variantType)?.value}
-                  onChange={(e) => {
-                    let selectedVariants = [];
-                    let value = e.target.value;
-                    const selected = productVariants.find(
-                      (variant: any) => variant.type == variantType && variant.value == value
-                    );
+          <div className="space-y-2 mb-3">
+            {productVariantTypes.map((variantType: string, index: number) => {
+              return (
+                <div key={index} dir={langDir}>
+                  <label htmlFor={variantType} className="block text-sm font-medium text-gray-700 mb-1">
+                    {variantType}
+                  </label>
+                  <select
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                    value={selectedProductVariant?.find((variant: any) => variant.type == variantType)?.value}
+                    onChange={(e) => {
+                      let selectedVariants = [];
+                      let value = e.target.value;
+                      const selected = productVariants.find(
+                        (variant: any) => variant.type == variantType && variant.value == value
+                      );
 
-                    if (selectedProductVariant.find((variant: any) => variant.type == selected.type)) {
-                      selectedVariants = selectedProductVariant.map((variant: any) => {
-                        if (variant.type == selected.type) {
-                          return selected;
-                        }
-                        return variant;
-                      });
+                      if (selectedProductVariant.find((variant: any) => variant.type == selected.type)) {
+                        selectedVariants = selectedProductVariant.map((variant: any) => {
+                          if (variant.type == selected.type) {
+                            return selected;
+                          }
+                          return variant;
+                        });
 
-                    } else {
-                      selectedVariants = [
-                        ...selectedProductVariant,
-                        selected
-                      ];
-                    }
+                      } else {
+                        selectedVariants = [
+                          ...selectedProductVariant,
+                          selected
+                        ];
+                      }
 
-                    setSelectedProductVariant(selectedVariants);
+                      setSelectedProductVariant(selectedVariants);
 
-                    if (cartId) handleAddToCart(quantity, "add", selectedVariants);
-                  }}
-                >
-                  {productVariants.filter((variant: any) => variant.type == variantType)
-                    .map((variant: any, i: number) => {
-                    return <option key={`${index}${i}`} value={variant.value} dir={langDir}>{variant.value}</option>;
-                  })}
-                </select>
-              </div>
-            );
-          })
+                      if (cartId) handleAddToCart(quantity, "add", selectedVariants);
+                    }}
+                  >
+                    {productVariants.filter((variant: any) => variant.type == variantType)
+                      .map((variant: any, i: number) => {
+                      return <option key={`${index}${i}`} value={variant.value} dir={langDir}>{variant.value}</option>;
+                    })}
+                  </select>
+                </div>
+              );
+            })}
+          </div>
         ) : null}
-        <div className="quantity_wrap mb-2">
-          <label dir={langDir} translate="no">
+        {/* Quantity Section */}
+        <div className="space-y-2 mb-3">
+          <label className="block text-sm font-medium text-gray-700" dir={langDir} translate="no">
             {t("quantity")}
           </label>
-          <div className="qty-up-down-s1-with-rgMenuAction">
-            <div className="flex items-center gap-x-3 md:gap-x-4">
-              <Button
-                type="button"
-                variant="outline"
-                className="relative hover:shadow-sm"
-                onClick={() => handleQuantity(quantity - 1, "remove")}
-                disabled={
-                  quantity === 0 ||
-                  updateCartWithLogin?.isPending ||
-                  updateCartByDevice?.isPending
-                }
-              >
-                <Image
-                  src="/images/upDownBtn-minus.svg"
-                  alt="minus-icon"
-                  fill
-                  className="p-3"
-                />
-              </Button>
-              <input
-                type="text"
-                value={quantity}
-                className="h-auto w-[35px] border-none bg-transparent text-center focus:border-none focus:outline-none"
-                onChange={(e) => {
-                  const value = Number(e.target.value);
-                  setQuantity(isNaN(value) ? productQuantity : value);
-                }}
-                onBlur={handleQuantityChange}
+          <div className="flex items-center justify-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-8 w-8 rounded-full border-gray-300 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50"
+              onClick={() => handleQuantity(quantity - 1, "remove")}
+              disabled={
+                quantity === 0 ||
+                updateCartWithLogin?.isPending ||
+                updateCartByDevice?.isPending
+              }
+            >
+              <Image
+                src="/images/upDownBtn-minus.svg"
+                alt="minus-icon"
+                width={16}
+                height={16}
+                className="opacity-70"
               />
-              <Button
-                type="button"
-                variant="outline"
-                className="relative hover:shadow-sm"
-                onClick={() => handleQuantity(quantity + 1, "add")}
-                disabled={
-                  updateCartWithLogin?.isPending ||
-                  updateCartByDevice?.isPending
-                }
-              >
-                <Image
-                  src="/images/upDownBtn-plus.svg"
-                  alt="plus-icon"
-                  fill
-                  className="p-3"
-                />
-              </Button>
-            </div>
+            </Button>
+            <input
+              type="text"
+              value={quantity}
+              className="h-8 w-16 text-center text-sm font-medium border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              onChange={(e) => {
+                const value = Number(e.target.value);
+                setQuantity(isNaN(value) ? productQuantity : value);
+              }}
+              onBlur={handleQuantityChange}
+            />
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-8 w-8 rounded-full border-gray-300 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50"
+              onClick={() => handleQuantity(quantity + 1, "add")}
+              disabled={
+                updateCartWithLogin?.isPending ||
+                updateCartByDevice?.isPending
+              }
+            >
+              <Image
+                src="/images/upDownBtn-plus.svg"
+                alt="plus-icon"
+                width={16}
+                height={16}
+                className="opacity-70"
+              />
+            </Button>
           </div>
         </div>
 
-        <div className="cart_button">
+        {/* Cart Button */}
+        <div className="mt-auto pt-3">
           {isAddedToCart ? (
             <button
               type="button"
-              className="flex items-center justify-evenly gap-x-2 rounded-sm border border-[#E8E8E8] p-[10px] text-[15px] font-bold leading-5 text-[#7F818D]"
+              className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-lg border-2 border-green-200 bg-green-50 text-green-700 font-semibold text-sm transition-all duration-200"
               disabled={false}
               dir={langDir}
               translate="no"
             >
-              <FaCircleCheck color="#00C48C" />
+              <FaCircleCheck color="#10b981" size={16} />
               {t("added_to_cart")}
             </button>
-          ) : null}
-          {!isAddedToCart ? (
+          ) : (
             <button
               type="button"
-              className="add_to_cart_button"
+              className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-md disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none text-sm"
               onClick={() => handleAddToCart(quantity, "add")}
               disabled={quantity == 0}
               dir={langDir}
@@ -718,63 +736,72 @@ const ProductCard: React.FC<ProductCardProps> = ({
             >
               {t("add_to_cart")}
             </button>
-          ) : null}
+          )}
         </div>
 
+        {/* Sold Progress Bar */}
         {sold !== undefined && sold !== null && item.productPrices?.[0]?.stock
           ? (() => {
               const percentage = Number(
                 (100 - (sold / (sold + item.productPrices[0].stock)) * 100).toFixed(),
               );
               return (
-                <>
-                  <div className="mt-3 h-3 w-full bg-gray-300">
+                <div className="mt-3 space-y-2">
+                  <div className="w-full bg-gray-200 rounded-full h-2">
                     <div
-                      className="h-full bg-color-yellow"
+                      className="bg-gradient-to-r from-yellow-400 to-orange-500 h-2 rounded-full transition-all duration-300"
                       style={{ width: `${percentage}%` }}
                     />
                   </div>
-                  <span
-                    className="w-full text-sm font-normal capitalize text-light-gray"
-                    translate="no"
-                  >
-                    {t("sold")}: {sold}
-                  </span>
-                </>
+                  <div className="flex justify-between items-center text-sm text-gray-600">
+                    <span translate="no">
+                      {t("sold")}: {sold}
+                    </span>
+                    <span className="font-semibold">
+                      {percentage}% {t("left")}
+                    </span>
+                  </div>
+                </div>
               );
             })()
           : null}
       </div>
+      {/* Confirmation Dialog */}
       <Dialog open={isConfirmDialogOpen} onOpenChange={handleConfirmDialog}>
         <DialogContent
-          className="add-new-address-modal add_member_modal gap-0 p-0 md:!max-w-2xl"
+          className="max-w-md p-6 rounded-xl"
           ref={confirmDialogRef}
         >
-          <div className="modal-header !justify-between" dir={langDir}>
-            <DialogTitle className="text-center text-xl font-bold text-dark-orange" />
+          <div className="flex items-center justify-between mb-4" dir={langDir}>
+            <DialogTitle className="text-lg font-semibold text-gray-900">
+              {t("confirm_removal")}
+            </DialogTitle>
             <Button
               onClick={onCancelRemove}
-              className={`${langDir == "ltr" ? "absolute" : ""} right-2 top-2 z-10 !bg-white !text-black shadow-none`}
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 rounded-full hover:bg-gray-100"
             >
-              <IoCloseSharp size={20} />
+              <IoCloseSharp size={18} />
             </Button>
           </div>
-          <div className="mb-4 mt-4 text-center">
-            <p className="text-dark-orange" translate="no">
+          <div className="text-center space-y-4">
+            <p className="text-gray-600" translate="no">
               {t("do_you_want_to_remove_this_item_from_cart")}
             </p>
-            <div>
+            <div className="flex gap-3 justify-center">
               <Button
                 type="button"
-                className="mr-2 bg-white text-red-500"
+                variant="outline"
                 onClick={onCancelRemove}
                 translate="no"
+                className="px-6"
               >
                 {t("cancel")}
               </Button>
               <Button
                 type="button"
-                className="bg-red-500"
+                className="bg-red-500 hover:bg-red-600 px-6"
                 onClick={onConfirmRemove}
                 translate="no"
               >

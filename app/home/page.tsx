@@ -469,11 +469,16 @@ function HomePage() {
         <section className="w-full pb-8 pt-5">
           <div className="container m-auto px-3">
             <div className="flex flex-wrap">
-              <div className="flex w-full flex-wrap items-center justify-between border-b border-solid border-gray-300 pb-3.5">
+              <div className="flex w-full flex-wrap items-center justify-between pb-3.5">
                 <div className="flex flex-wrap items-center justify-start">
-                  <h4 className="mr-3 whitespace-nowrap text-lg font-normal capitalize text-color-dark md:mr-6 md:text-2xl" translate="no">
-                    {t("deal_of_the_day")}
-                  </h4>
+                  <div className="flex flex-col">
+                    <h4 className="mr-3 whitespace-nowrap text-lg font-normal capitalize text-color-dark md:mr-6 md:text-2xl" translate="no">
+                      {t("deal_of_the_day")}
+                    </h4>
+                    <p className="text-xs text-gray-500 md:text-sm" translate="no">
+                      {t("explore_all_best_deals_for_limited_time")}
+                    </p>
+                  </div>
                   {/* <span className="rounded bg-dark-orange px-3 py-1.5 text-sm font-medium capitalize text-white md:px-5 md:py-2.5 md:text-lg">
                   End in: 26:22:00:19
                 </span> */}
@@ -488,7 +493,7 @@ function HomePage() {
                   </Link>
                 </div>
               </div>
-              <div className="product-list-s1 w-full">
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 items-stretch">
                 {memoizedBuyGroupProducts.map((item: TrendingProduct) => {
                   const cartItem =  cartList?.find((el: any) => el.productId == item.id);
                   let relatedCart: any = null;
@@ -694,7 +699,7 @@ function HomePage() {
                   </a>
                 </div>
               </div>
-              <div className="product-list-s1 w-full">
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 items-stretch">
                 {memoizedHomeDecorProducts.map((item: TrendingProduct) => {
                   const cartItem = cartList?.find((el: any) => el.productId == item.id);
                   let relatedCart: any = null;
@@ -805,7 +810,7 @@ function HomePage() {
                   </a>
                 </div>
               </div>
-              <div className="product-list-s1 w-full">
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 items-stretch">
                 {memoizedFashionBeautyProducts.map((item: TrendingProduct) => {
                   const cartItem = cartList?.find((el: any) => el.productId == item.id);
                   let relatedCart: any = null;
@@ -923,7 +928,7 @@ function HomePage() {
                   </a>
                 </div>
               </div>
-              <div className="product-list-s1 w-full">
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 items-stretch">
                 {memoizedConsumerElectronicsProducts.map(
                   (item: TrendingProduct) => {
                     const cartItem = cartList?.find((el: any) => el.productId == item.id);

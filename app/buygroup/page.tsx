@@ -674,7 +674,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
               ) : null}
 
               {viewType === "grid" ? (
-                <div className="product-list-s1">
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 items-stretch">
                   {memoizedProductList.map((item: TrendingProduct) => {
                     const cartItem = cartList?.find(
                       (el: any) => el.productId == item.id,

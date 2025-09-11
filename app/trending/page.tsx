@@ -71,6 +71,7 @@ import { Package, Building2 } from "lucide-react";
 // @ts-ignore
 import { startDebugger } from "remove-child-node-error-debugger";
 import Cart from "@/components/modules/cartList/Cart";
+import CategoryFilter from "@/components/modules/manageProducts/CategoryFilter";
 
 interface TrendingPageProps {
   searchParams?: { term?: string };
@@ -86,6 +87,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
   const deviceId = getOrCreateDeviceId() || "";
   const [viewType, setViewType] = useState<"grid" | "list">("grid");
   const [searchTerm, setSearchTerm] = useState("");
+  const [searchTermBrand, setSearchTermBrand] = useState("");
   const [selectedBrandIds, setSelectedBrandIds] = useState<number[]>([]);
   const [priceRange, setPriceRange] = useState<number[]>([]);
   const [minPriceInput, setMinPriceInput] = useState("");
@@ -99,6 +101,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
   const [productVariants, setProductVariants] = useState<any[]>([]);
   const [haveAccessToken, setHaveAccessToken] = useState(false);
   const [activeTab, setActiveTab] = useState<"products" | "vendors">("products");
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>([]);
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
   const category = useCategoryStore();
 
@@ -129,7 +132,9 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
       : me?.data?.data?.tradeRole == "MEMBER"
         ? me?.data?.data?.addedBy
         : me?.data?.data?.id,
-    categoryIds: category.categoryIds ? category.categoryIds : undefined,
+    categoryIds: selectedCategoryIds.length > 0 
+      ? selectedCategoryIds.join(",") 
+      : category.categoryIds ? category.categoryIds : undefined,
     isOwner: displayMyProducts == "1" ? "me" : "",
     related: displayRelatedProducts,
     userType: me?.data?.data?.tradeRole == "BUYER" ? "BUYER" : ""
@@ -194,6 +199,18 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
       tempArr = tempArr.filter((ele: number) => ele !== item.value);
     }
     setSelectedBrandIds(tempArr);
+  };
+
+  const handleBrandSearchChange = (event: any) => {
+    setSearchTermBrand(event.target.value);
+  };
+
+  const handleBrandSearch = () => {
+    setSearchTerm(searchTermBrand);
+    // Trigger refetch for brands
+    if (brandsQuery.refetch) {
+      brandsQuery.refetch();
+    }
   };
 
   const memoizedProductList = useMemo(() => {
@@ -473,9 +490,19 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
     setMinPriceInput("");
     setPriceRange([]);
     setDisplayMyProducts("0");
+    setSelectedCategoryIds([]);
 
     if (minPriceInputRef.current) minPriceInputRef.current.value = "";
     if (maxPriceInputRef.current) maxPriceInputRef.current.value = "";
+  };
+
+  // Category filter handlers
+  const handleCategoryChange = (categoryIds: number[]) => {
+    setSelectedCategoryIds(categoryIds);
+  };
+
+  const handleCategoryClear = () => {
+    setSelectedCategoryIds([]);
   };
 
   useEffect(() => {
@@ -513,145 +540,178 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
 
         <div className="trending-search-sec">
           <div className="container m-auto px-3">
-            <div
-              className={productFilter ? "left-filter show" : "left-filter"}
-              dir={langDir}
-            >
-              <div className="all_select_button">
-                <button type="button" onClick={selectAll} translate="no">
-                  {t("select_all")}
-                </button>
-                <button type="button" onClick={clearFilter} translate="no">
-                  {t("clean_select")}
-                </button>
-              </div>
-              <Accordion
-                type="multiple"
-                defaultValue={["brand"]}
-                className="filter-col"
-              >
-                <AccordionItem value="brand">
-                  <AccordionTrigger
-                    className="px-3 text-base hover:!no-underline"
-                    dir={langDir}
-                    translate="no"
-                  >
-                    {t("by_brand")}
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <div className="filter-sub-header">
-                      <Input
-                        type="text"
-                        placeholder={t("search_brand")}
-                        className="custom-form-control-s1 searchInput rounded-none"
-                        onChange={handleDebounce}
-                        dir={langDir}
-                        translate="no"
-                      />
-                    </div>
-                    <div className="filter-body-part">
-                      <div className="filter-checklists">
-                        {!memoizedBrands.length ? (
-                          <p
-                            className="text-center text-sm font-medium"
-                            dir={langDir}
-                            translate="no"
-                          >
-                            {t("no_data_found")}
-                          </p>
-                        ) : null}
-                        {memoizedBrands.map((item: ISelectOptions) => (
-                          <div key={item.value} className="div-li">
-                            <Checkbox
-                              id={item.label}
-                              className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
-                              onCheckedChange={(checked) =>
-                                handleBrandChange(checked, item)
-                              }
-                              checked={selectedBrandIds.includes(item.value)}
-                            />
-                            <div className="grid gap-1.5 leading-none">
-                              <label
-                                htmlFor={item.label}
-                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                              >
-                                {item.label}
-                              </label>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
+             <div
+               className={`${productFilter ? "left-filter show" : "left-filter"} bg-white rounded-lg shadow-sm p-6`}
+               dir={langDir}
+             >
+               <div className="mb-4">
+                 <div className="flex gap-2 mb-4">
+                   <button 
+                     type="button" 
+                     onClick={selectAll}
+                     className="px-3 py-2 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors text-sm"
+                   >
+                     {t("select_all")}
+                   </button>
+                   <button 
+                     type="button" 
+                     onClick={clearFilter}
+                     className="px-3 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors text-sm"
+                   >
+                     {t("clean_select")}
+                   </button>
+                 </div>
+               </div>
 
-                <AccordionItem value="price">
-                  <AccordionTrigger
-                    className="px-3 text-base hover:!no-underline"
-                    dir={langDir}
-                    translate="no"
-                  >
-                    {t("price")}
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <div className="px-4">
-                      <div className="px-2">
-                        <ReactSlider
-                          className="horizontal-slider"
-                          thumbClassName="example-thumb"
-                          trackClassName="example-track"
-                          defaultValue={[0, 500]}
-                          ariaLabel={["Lower thumb", "Upper thumb"]}
-                          ariaValuetext={(state) =>
-                            `Thumb value ${state.valueNow}`
-                          }
-                          renderThumb={(props, state) => (
-                            <div {...props} key={props.key}>
-                              {state.valueNow}
-                            </div>
-                          )}
-                          pearling
-                          minDistance={10}
-                          onChange={(value) => handlePriceDebounce(value)}
-                          max={500}
-                          min={0}
-                        />
-                      </div>
-                      <div className="flex justify-center">
-                        <Button
-                          variant="outline"
-                          className="mb-4"
-                          onClick={() => setPriceRange([])}
-                          dir={langDir}
-                          translate="no"
-                        >
-                          {t("clear")}
-                        </Button>
-                      </div>
-                      <div className="range-price-left-right-info">
-                        <Input
-                          type="number"
-                          placeholder={`${currency.symbol}0`}
-                          className="custom-form-control-s1 rounded-none"
-                          onChange={handleMinPriceChange}
-                          onWheel={(e) => e.currentTarget.blur()}
-                          ref={minPriceInputRef}
-                        />
-                        <div className="center-divider"></div>
-                        <Input
-                          type="number"
-                          placeholder={`${currency.symbol}500`}
-                          className="custom-form-control-s1 rounded-none"
-                          onChange={handleMaxPriceChange}
-                          onWheel={(e) => e.currentTarget.blur()}
-                          ref={maxPriceInputRef}
-                        />
-                      </div>
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-            </div>
+               {/* Category Filter */}
+               <Accordion
+                 type="multiple"
+                 defaultValue={["category_filter"]}
+                 className="mb-4"
+               >
+                 <AccordionItem value="category_filter">
+                   <AccordionTrigger className="text-base hover:!no-underline">
+                     {t("by_category")}
+                   </AccordionTrigger>
+                   <AccordionContent>
+                     <CategoryFilter
+                       selectedCategoryIds={selectedCategoryIds}
+                       onCategoryChange={handleCategoryChange}
+                       onClear={handleCategoryClear}
+                     />
+                   </AccordionContent>
+                 </AccordionItem>
+               </Accordion>
+
+               {/* Brand Filter */}
+               <Accordion
+                 type="multiple"
+                 defaultValue={["brand"]}
+                 className="mb-4"
+               >
+                 <AccordionItem value="brand">
+                   <AccordionTrigger className="text-base hover:!no-underline">
+                     {t("by_brand")}
+                   </AccordionTrigger>
+                   <AccordionContent>
+                     <div className="mb-3">
+                       <div className="flex gap-2">
+                         <Input
+                           type="text"
+                           placeholder={t("search_brand")}
+                           className="flex-1 h-8 text-sm"
+                           onChange={handleBrandSearchChange}
+                           dir={langDir}
+                           translate="no"
+                         />
+                         <Button
+                           type="button"
+                           onClick={handleBrandSearch}
+                           disabled={!searchTermBrand.trim()}
+                           size="sm"
+                           className="h-8 px-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-xs"
+                         >
+                           {t("search")}
+                         </Button>
+                       </div>
+                     </div>
+                     <div className="space-y-2 max-h-40 overflow-y-auto">
+                       {!memoizedBrands.length ? (
+                         <p className="text-center text-sm text-gray-500">
+                           {t("no_data_found")}
+                         </p>
+                       ) : null}
+                       {memoizedBrands.map((item: ISelectOptions) => (
+                         <div key={item.value} className="flex items-center space-x-2">
+                           <Checkbox
+                             id={item.label}
+                             className="border border-gray-300 data-[state=checked]:!bg-blue-600"
+                             onCheckedChange={(checked) =>
+                               handleBrandChange(checked, item)
+                             }
+                             checked={selectedBrandIds.includes(item.value)}
+                           />
+                           <label
+                             htmlFor={item.label}
+                             className="text-sm font-medium leading-none cursor-pointer"
+                           >
+                             {item.label}
+                           </label>
+                         </div>
+                       ))}
+                     </div>
+                   </AccordionContent>
+                 </AccordionItem>
+               </Accordion>
+
+               {/* Price Filter */}
+               <Accordion
+                 type="multiple"
+                 defaultValue={["price"]}
+               >
+                 <AccordionItem value="price">
+                   <AccordionTrigger className="text-base hover:!no-underline">
+                     {t("price")}
+                   </AccordionTrigger>
+                   <AccordionContent>
+                     <div className="px-4">
+                       <div className="px-2">
+                         <ReactSlider
+                           className="horizontal-slider"
+                           thumbClassName="example-thumb"
+                           trackClassName="example-track"
+                           defaultValue={[0, 500]}
+                           ariaLabel={["Lower thumb", "Upper thumb"]}
+                           ariaValuetext={(state) =>
+                             `Thumb value ${state.valueNow}`
+                           }
+                           renderThumb={(props, state) => (
+                             <div {...props} key={props.key}>
+                               {state.valueNow}
+                             </div>
+                           )}
+                           pearling
+                           minDistance={10}
+                           onChange={(value) => handlePriceDebounce(value)}
+                           max={500}
+                           min={0}
+                         />
+                       </div>
+                       <div className="flex justify-center">
+                         <Button
+                           variant="outline"
+                           className="mb-4"
+                           onClick={() => setPriceRange([])}
+                           dir={langDir}
+                           translate="no"
+                         >
+                           {t("clear")}
+                         </Button>
+                       </div>
+                       <div className="range-price-left-right-info">
+                         <Input
+                           type="number"
+                           placeholder={`${currency.symbol}0`}
+                           className="custom-form-control-s1 rounded-none"
+                           onChange={handleMinPriceChange}
+                           onWheel={(e) => e.currentTarget.blur()}
+                           ref={minPriceInputRef}
+                         />
+                         <div className="center-divider"></div>
+                         <Input
+                           type="number"
+                           placeholder={`${currency.symbol}500`}
+                           className="custom-form-control-s1 rounded-none"
+                           onChange={handleMaxPriceChange}
+                           onWheel={(e) => e.currentTarget.blur()}
+                           ref={maxPriceInputRef}
+                         />
+                       </div>
+                     </div>
+                   </AccordionContent>
+                 </AccordionItem>
+               </Accordion>
+             </div>
             <div
               className="left-filter-overlay"
               onClick={() => setProductFilter(false)}
@@ -676,46 +736,6 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
                 </TabsList>
 
                 <TabsContent value="products" className="space-y-6">
-              {haveAccessToken && me?.data?.data?.tradeRole != "BUYER" ? (
-                <RadioGroup
-                  className="mb-3 flex flex-row gap-y-3"
-                  value={displayMyProducts}
-                  onValueChange={setDisplayMyProducts}
-                  // @ts-ignore
-                  dir={langDir}
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem
-                      value="0"
-                      id="all_products"
-                      checked={displayMyProducts == "0"}
-                    />
-                    <Label
-                      htmlFor="all_products"
-                      className="text-base"
-                      dir={langDir}
-                      translate="no"
-                    >
-                      {t("all_products")}
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem
-                      value="1"
-                      id="my_products"
-                      checked={displayMyProducts == "1"}
-                    />
-                    <Label
-                      htmlFor="my_products"
-                      className="text-base"
-                      dir={langDir}
-                      translate="no"
-                    >
-                      {t("my_products")}
-                    </Label>
-                  </div>
-                </RadioGroup>
-              ) : null}
                   
               <div className="products-header-filter">
                 <div className="le-info">
@@ -819,7 +839,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
               ) : null}
 
               {viewType === "grid" ? (
-                <div className="product-list-s1">
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 items-stretch">
                   {memoizedProductList.map((item: TrendingProduct) => {
                     const cartItem = cartList?.find(
                       (el: any) => el.productId == item.id,

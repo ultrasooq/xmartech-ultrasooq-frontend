@@ -1079,7 +1079,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
             <div className="relative flex flex-row flex-wrap md:flex-nowrap">
               <div className="flex w-full flex-1 flex-wrap gap-x-3 md:w-auto md:gap-x-5">
                 <div className="dropdown">
-                  {pathname == "/trending" || pathname == "/buygroup" ? (
+                  {/* {pathname == "/trending" || pathname == "/buygroup" ? (
                     <button className="dropbtn flex items-center">
                       <div>
                         <Image src={HamburgerIcon} alt="hamburger-icon" />
@@ -1097,7 +1097,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                         />
                       </div>
                     </button>
-                  ) : null}
+                  ) : null} */}
 
                   {(pathname == "/trending" || pathname == "/buygroup") &&
                   memoizedSubCategory?.length ? (
