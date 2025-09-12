@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
@@ -62,6 +62,7 @@ type ManageProductCardProps = {
   hideEyeIcon?: boolean;
   hideCopyButton?: boolean;
   hideActionButtons?: boolean;
+  disableFields?: boolean;
 };
 
 const ManageProductCard: React.FC<ManageProductCardProps> = ({
@@ -99,6 +100,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
   hideEyeIcon = false,
   hideCopyButton = false,
   hideActionButtons = false,
+  disableFields = false,
 }) => {
   const t = useTranslations();
   const { langDir } = useAuth();
@@ -170,6 +172,39 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
   const [productCondition, setCondition] = useState<string>(initialCondition);
   const [consumerType, setConsumer] = useState<string>(initialConsumerType);
   const [sellType, setSell] = useState<string>(initialSellType);
+
+  // Sync local state with props when they change (for bulk updates)
+  useEffect(() => {
+    setConsumer(initialConsumerType);
+  }, [initialConsumerType]);
+
+  useEffect(() => {
+    setSell(initialSellType);
+  }, [initialSellType]);
+
+  useEffect(() => {
+    setCondition(initialCondition);
+  }, [initialCondition]);
+
+  useEffect(() => {
+    setDelivery(Number(initialDelivery));
+  }, [initialDelivery]);
+
+  useEffect(() => {
+    setVendor(Number(initialVendorDiscount));
+  }, [initialVendorDiscount]);
+
+  useEffect(() => {
+    setVendorDiscountType(initialVendorDiscountType);
+  }, [initialVendorDiscountType]);
+
+  useEffect(() => {
+    setConsumerDiscount(Number(initialConsumerDiscount));
+  }, [initialConsumerDiscount]);
+
+  useEffect(() => {
+    setConsumerDiscountType(initialConsumerDiscountType);
+  }, [initialConsumerDiscountType]);
 
   // set Deliver After
   const [deliveryAfter, setDelivery] = useState<number>(
@@ -567,7 +602,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
              {/* Expanded View - Editable Fields */}
        {isExpanded && (
          <div className="border-t border-gray-200 bg-gray-50 p-4">
-           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+           <div className={`grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4 ${disableFields ? 'pointer-events-none opacity-60' : ''}`}>
              {/* Stock Management - Always Visible */}
              <div className="space-y-1">
                <Label className="text-xs font-medium">{t("stock")}</Label>
@@ -576,6 +611,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                    type="checkbox"
                    className="h-3 w-3"
                    defaultChecked={askForStock === "false" || askForStock === "NO" || (askForStock as any) === false}
+                   disabled={disableFields}
                  />
                  <span className="text-xs text-gray-600">{t("manage_stock")}</span>
                </div>
@@ -591,6 +627,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                    type="number"
                    value={stock}
                    onChange={(e) => setStock(Number(e.target.value))}
+                   disabled={disableFields}
                    className="h-6 w-12 rounded border border-gray-300 text-center text-xs"
                  />
                  <button
@@ -683,10 +720,11 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                <select
                  value={consumerType}
                  onChange={(e) => setConsumer(e.target.value)}
+                 disabled={false}
                  className="h-6 w-full rounded border border-gray-300 px-1 text-xs"
                >
                  <option value="CONSUMER">{t("consumer")}</option>
-                 <option value="BUSINESS">{t("business")}</option>
+                 <option value="VENDORS">{t("vendor")}</option>
                  <option value="EVERYONE">{t("everyone")}</option>
                </select>
              </div>
@@ -696,71 +734,71 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                <Label className="text-xs font-medium">{t("sell_type")}</Label>
                <select
                  value={sellType}
-                 onChange={(e) => setSell(e.target.value)}
+                 onChange={(e) => {
+                   const newSellType = e.target.value;
+                   setSell(newSellType);
+                 }}
                  className="h-6 w-full rounded border border-gray-300 px-1 text-xs"
                >
                  <option value="NORMALSELL">{t("normal_sell")}</option>
                  <option value="BUYGROUP">{t("buy_group")}</option>
-                 <option value="EVERYONE">{t("everyone")}</option>
+                 <option value="TRIAL_PRODUCT">{t("trial_product")}</option>
+                 <option value="WHOLESALE_PRODUCT">{t("wholesale_product")}</option>
                </select>
              </div>
 
-             {/* Time Open - Show only for BUYGROUP sell type */}
-             {sellType === "BUYGROUP" && (
-               <div className="space-y-1">
-                 <Label className="text-xs font-medium">{t("time_open")}</Label>
-                 <div className="flex items-center space-x-1">
-                   <button
-                     onClick={(e) => { e.preventDefault(); decreaseTimeOpen() }}
-                     className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
-                   >
-                     -
-                   </button>
-                   <input
-                     type="number"
-                     value={timeOpen}
-                     onChange={(e) => setTimeOpen(Number(e.target.value))}
-                     className="h-6 w-12 rounded border border-gray-300 text-center text-xs"
-                   />
-                   <button
-                     onClick={(e) => { e.preventDefault(); increaseTimeOpen() }}
-                     className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
-                   >
-                     +
-                   </button>
-                 </div>
+             {/* Time Open - Common for all sell types */}
+             <div className="space-y-1">
+               <Label className="text-xs font-medium">{t("time_open")}</Label>
+               <div className="flex items-center space-x-1">
+                 <button
+                   onClick={(e) => { e.preventDefault(); decreaseTimeOpen() }}
+                   className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                 >
+                   -
+                 </button>
+                 <input
+                   type="number"
+                   value={timeOpen}
+                   onChange={(e) => setTimeOpen(Number(e.target.value))}
+                   className="h-6 w-12 rounded border border-gray-300 text-center text-xs"
+                 />
+                 <button
+                   onClick={(e) => { e.preventDefault(); increaseTimeOpen() }}
+                   className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                 >
+                   +
+                 </button>
                </div>
-             )}
+             </div>
 
-             {/* Time Close - Show only for BUYGROUP sell type */}
-             {sellType === "BUYGROUP" && (
-               <div className="space-y-1">
-                 <Label className="text-xs font-medium">{t("time_close")}</Label>
-                 <div className="flex items-center space-x-1">
-                   <button
-                     onClick={(e) => { e.preventDefault(); decreaseTimeClose() }}
-                     className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
-                   >
-                     -
-                   </button>
-                   <input
-                     type="number"
-                     value={timeClose}
-                     onChange={(e) => setTimeClose(Number(e.target.value))}
-                     className="h-6 w-12 rounded border border-gray-300 text-center text-xs"
-                   />
-                   <button
-                     onClick={(e) => { e.preventDefault(); increaseTimeClose() }}
-                     className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
-                   >
-                     +
-                   </button>
-                 </div>
+             {/* Time Close - Common for all sell types */}
+             <div className="space-y-1">
+               <Label className="text-xs font-medium">{t("time_close")}</Label>
+               <div className="flex items-center space-x-1">
+                 <button
+                   onClick={(e) => { e.preventDefault(); decreaseTimeClose() }}
+                   className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                 >
+                   -
+                 </button>
+                 <input
+                   type="number"
+                   value={timeClose}
+                   onChange={(e) => setTimeClose(Number(e.target.value))}
+                   className="h-6 w-12 rounded border border-gray-300 text-center text-xs"
+                 />
+                 <button
+                   onClick={(e) => { e.preventDefault(); increaseTimeClose() }}
+                   className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                 >
+                   +
+                 </button>
                </div>
-             )}
+             </div>
 
-             {/* Vendor Discount - Show only for BUSINESS consumer type */}
-             {consumerType === "BUSINESS" && (
+            {/* Vendor Discount - Show for VENDORS/EVERYONE consumer type */}
+            {(consumerType === "VENDORS" || consumerType === "EVERYONE") && (
                <div className="space-y-1">
                  <Label className="text-xs font-medium">{t("vendor_discount")}</Label>
                  <div className="flex items-center space-x-1">
@@ -786,8 +824,8 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                </div>
              )}
 
-             {/* Vendor Discount Type - Show only for BUSINESS consumer type and when discount > 0 */}
-             {consumerType === "BUSINESS" && (vendorDiscount > 0 || vendorDiscountType) && (
+            {/* Vendor Discount Type - Show for VENDORS/EVERYONE consumer type and when discount > 0 */}
+            {(consumerType === "VENDORS" || consumerType === "EVERYONE") && (vendorDiscount > 0 || vendorDiscountType) && (
                <div className="space-y-1">
                  <Label className="text-xs font-medium">{t("discount_type")}</Label>
                  <select
@@ -802,8 +840,8 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                </div>
              )}
 
-             {/* Consumer Discount - Show only for CONSUMER consumer type */}
-             {consumerType === "CONSUMER" && (
+            {/* Consumer Discount - Show for CONSUMER/EVERYONE consumer type */}
+            {(consumerType === "CONSUMER" || consumerType === "EVERYONE") && (
                <div className="space-y-1">
                  <Label className="text-xs font-medium">{t("consumer_discount")}</Label>
                  <div className="flex items-center space-x-1">
@@ -829,8 +867,8 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                </div>
              )}
 
-             {/* Consumer Discount Type - Show only for CONSUMER consumer type and when discount > 0 */}
-             {consumerType === "CONSUMER" && (consumerDiscount > 0 || consumerDiscountType) && (
+            {/* Consumer Discount Type - Show for CONSUMER/EVERYONE consumer type and when discount > 0 */}
+            {(consumerType === "CONSUMER" || consumerType === "EVERYONE") && (consumerDiscount > 0 || consumerDiscountType) && (
                <div className="space-y-1">
                  <Label className="text-xs font-medium">{t("discount_type")}</Label>
                  <select
@@ -1008,6 +1046,252 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                  </div>
                </div>
              )}
+
+             {/* Trial Product Fields - Show only for TRIAL_PRODUCT sell type and EVERYONE consumer type */}
+             {sellType === "TRIAL_PRODUCT" && consumerType === "EVERYONE" && (
+               <>
+                 {/* Vendor Discount for Trial Product */}
+                 <div className="space-y-1">
+                   <Label className="text-xs font-medium">{t("vendor_discount")}</Label>
+                   <div className="flex items-center space-x-1">
+                     <button
+                       onClick={(e) => { e.preventDefault(); decreaseVendorDiscount() }}
+                       className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                     >
+                       -
+                     </button>
+                     <input
+                       type="number"
+                       value={vendorDiscount}
+                       onChange={(e) => setVendor(Number(e.target.value))}
+                       className="h-6 w-12 rounded border border-gray-300 text-center text-xs"
+                     />
+                     <button
+                       onClick={(e) => { e.preventDefault(); increaseVendorDiscount() }}
+                       className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                     >
+                       +
+                     </button>
+                   </div>
+                 </div>
+
+                 {/* Consumer Discount for Trial Product */}
+                 <div className="space-y-1">
+                   <Label className="text-xs font-medium">{t("consumer_discount")}</Label>
+                   <div className="flex items-center space-x-1">
+                     <button
+                       onClick={(e) => { e.preventDefault(); decreaseConsumerDiscount() }}
+                       className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                     >
+                       -
+                     </button>
+                     <input
+                       type="number"
+                       value={consumerDiscount}
+                       onChange={(e) => setConsumerDiscount(Number(e.target.value))}
+                       className="h-6 w-12 rounded border border-gray-300 text-center text-xs"
+                     />
+                     <button
+                       onClick={(e) => { e.preventDefault(); increaseConsumerDiscount() }}
+                       className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                     >
+                       +
+                     </button>
+                   </div>
+                 </div>
+
+                 {/* Vendor Discount Type for Trial Product */}
+                 {(vendorDiscount > 0 || vendorDiscountType) && (
+                   <div className="space-y-1">
+                     <Label className="text-xs font-medium">{t("vendor_discount_type")}</Label>
+                     <select
+                       value={vendorDiscountType || ""}
+                       onChange={(e) => setVendorDiscountType(e.target.value)}
+                       className="h-6 w-full rounded border border-gray-300 px-1 text-xs"
+                     >
+                       <option value="FLAT" dir={langDir}>{t("flat").toUpperCase()}</option>
+                       <option value="PERCENTAGE" dir={langDir}>{t("percentage").toUpperCase()}</option>
+                     </select>
+                   </div>
+                 )}
+
+                 {/* Consumer Discount Type for Trial Product */}
+                 {(consumerDiscount > 0 || consumerDiscountType) && (
+                   <div className="space-y-1">
+                     <Label className="text-xs font-medium">{t("consumer_discount_type")}</Label>
+                     <select
+                       value={consumerDiscountType || ""}
+                       onChange={(e) => setConsumerDiscountType(e.target.value)}
+                       className="h-6 w-full rounded border border-gray-300 px-1 text-xs"
+                     >
+                       <option value="FLAT" dir={langDir}>{t("flat").toUpperCase()}</option>
+                       <option value="PERCENTAGE" dir={langDir}>{t("percentage").toUpperCase()}</option>
+                     </select>
+                   </div>
+                 )}
+
+                 {/* Max Quantity Per Customer for Trial Product */}
+                 <div className="space-y-1">
+                   <Label className="text-xs font-medium">{t("max_quantity_per_customer")}</Label>
+                   <div className="flex items-center space-x-1">
+                     <button
+                       onClick={(e) => { e.preventDefault(); decreaseMaxQuantityCustomer() }}
+                       className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                     >
+                       -
+                     </button>
+                     <input
+                       type="number"
+                       value={maxQuantityCustomer}
+                       onChange={(e) => setMaxQuantityCustomer(Number(e.target.value))}
+                       className="h-6 w-12 rounded border border-gray-300 text-center text-xs"
+                     />
+                     <button
+                       onClick={(e) => { e.preventDefault(); increaseMaxQuantityCustomer() }}
+                       className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                     >
+                       +
+                     </button>
+                   </div>
+                 </div>
+               </>
+             )}
+
+             {/* Wholesale Product Fields - Show only for WHOLESALE_PRODUCT sell type and EVERYONE consumer type */}
+             {sellType === "WHOLESALE_PRODUCT" && consumerType === "EVERYONE" && (
+               <>
+                 {/* Vendor Discount for Wholesale Product */}
+                 <div className="space-y-1">
+                   <Label className="text-xs font-medium">{t("vendor_discount")}</Label>
+                   <div className="flex items-center space-x-1">
+                     <button
+                       onClick={(e) => { e.preventDefault(); decreaseVendorDiscount() }}
+                       className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                     >
+                       -
+                     </button>
+                     <input
+                       type="number"
+                       value={vendorDiscount}
+                       onChange={(e) => setVendor(Number(e.target.value))}
+                       className="h-6 w-12 rounded border border-gray-300 text-center text-xs"
+                     />
+                     <button
+                       onClick={(e) => { e.preventDefault(); increaseVendorDiscount() }}
+                       className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                     >
+                       +
+                     </button>
+                   </div>
+                 </div>
+
+                 {/* Consumer Discount for Wholesale Product */}
+                 <div className="space-y-1">
+                   <Label className="text-xs font-medium">{t("consumer_discount")}</Label>
+                   <div className="flex items-center space-x-1">
+                     <button
+                       onClick={(e) => { e.preventDefault(); decreaseConsumerDiscount() }}
+                       className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                     >
+                       -
+                     </button>
+                     <input
+                       type="number"
+                       value={consumerDiscount}
+                       onChange={(e) => setConsumerDiscount(Number(e.target.value))}
+                       className="h-6 w-12 rounded border border-gray-300 text-center text-xs"
+                     />
+                     <button
+                       onClick={(e) => { e.preventDefault(); increaseConsumerDiscount() }}
+                       className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                     >
+                       +
+                     </button>
+                   </div>
+                 </div>
+
+                 {/* Vendor Discount Type for Wholesale Product */}
+                 {(vendorDiscount > 0 || vendorDiscountType) && (
+                   <div className="space-y-1">
+                     <Label className="text-xs font-medium">{t("vendor_discount_type")}</Label>
+                     <select
+                       value={vendorDiscountType || ""}
+                       onChange={(e) => setVendorDiscountType(e.target.value)}
+                       className="h-6 w-full rounded border border-gray-300 px-1 text-xs"
+                     >
+                       <option value="FLAT" dir={langDir}>{t("flat").toUpperCase()}</option>
+                       <option value="PERCENTAGE" dir={langDir}>{t("percentage").toUpperCase()}</option>
+                     </select>
+                   </div>
+                 )}
+
+                 {/* Consumer Discount Type for Wholesale Product */}
+                 {(consumerDiscount > 0 || consumerDiscountType) && (
+                   <div className="space-y-1">
+                     <Label className="text-xs font-medium">{t("consumer_discount_type")}</Label>
+                     <select
+                       value={consumerDiscountType || ""}
+                       onChange={(e) => setConsumerDiscountType(e.target.value)}
+                       className="h-6 w-full rounded border border-gray-300 px-1 text-xs"
+                     >
+                       <option value="FLAT" dir={langDir}>{t("flat").toUpperCase()}</option>
+                       <option value="PERCENTAGE" dir={langDir}>{t("percentage").toUpperCase()}</option>
+                     </select>
+                   </div>
+                 )}
+
+                 {/* Min Quantity Per Customer for Wholesale Product */}
+                 <div className="space-y-1">
+                   <Label className="text-xs font-medium">{t("min_quantity_per_customer")}</Label>
+                   <div className="flex items-center space-x-1">
+                     <button
+                       onClick={(e) => { e.preventDefault(); decreaseMinQuantityCustomer() }}
+                       className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                     >
+                       -
+                     </button>
+                     <input
+                       type="number"
+                       value={minQuantityCustomer}
+                       onChange={(e) => setMinQuantityCustomer(Number(e.target.value))}
+                       className="h-6 w-12 rounded border border-gray-300 text-center text-xs"
+                     />
+                     <button
+                       onClick={(e) => { e.preventDefault(); increaseMinQuantityCustomer() }}
+                       className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                     >
+                       +
+                     </button>
+                   </div>
+                 </div>
+
+                 {/* Max Quantity Per Customer for Wholesale Product */}
+                 <div className="space-y-1">
+                   <Label className="text-xs font-medium">{t("max_quantity_per_customer")}</Label>
+                   <div className="flex items-center space-x-1">
+                     <button
+                       onClick={(e) => { e.preventDefault(); decreaseMaxQuantityCustomer() }}
+                       className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                     >
+                       -
+                     </button>
+                     <input
+                       type="number"
+                       value={maxQuantityCustomer}
+                       onChange={(e) => setMaxQuantityCustomer(Number(e.target.value))}
+                       className="h-6 w-12 rounded border border-gray-300 text-center text-xs"
+                     />
+                     <button
+                       onClick={(e) => { e.preventDefault(); increaseMaxQuantityCustomer() }}
+                       className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                     >
+                       +
+                     </button>
+                   </div>
+                 </div>
+               </>
+             )}
+
            </div>
 
            {/* Action Buttons Section */}

@@ -118,13 +118,22 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
     const price = productProductPrice ? Number(productProductPrice) : 0;
     let discount = consumerDiscount || 0;
     let discountType = consumerDiscountType;
+    
+    // For non-BUYER users, try vendor discount first, but fall back to consumer discount if vendor discount is not available
     if (user?.tradeRole && user.tradeRole != "BUYER") {
-      discount = vendorDiscount || 0;
-      discountType = vendorDiscountType;
+      if (vendorDiscount && vendorDiscount > 0) {
+        discount = vendorDiscount;
+        discountType = vendorDiscountType;
+      }
+      // If vendor discount is not available, keep using consumer discount
     }
+    
     if (discountType == "PERCENTAGE") {
       return Number((price - (price * discount) / 100).toFixed(2));
+    } else if (discountType == "FLAT") {
+      return Number((price - discount).toFixed(2));
     }
+    // Default fallback for any other discount type
     return Number((price - discount).toFixed(2));
   };
 
@@ -394,7 +403,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
             <h3>
               {currency.symbol}
               {calculateDiscountedPrice()}{" "}
-              <span>
+              <span className="text-gray-500 line-through">
                 {currency.symbol}
                 {Number(productProductPrice)}
               </span>

@@ -32,13 +32,21 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
       : 0;
     let discount = wishlistData?.product_productPrice?.[0]?.consumerDiscount || 0;
     let discountType = wishlistData?.product_productPrice?.[0]?.consumerDiscountType;
+    
+    // For non-BUYER users, try vendor discount first, but fall back to consumer discount if vendor discount is not available
     if (user?.tradeRole && user?.tradeRole != 'BUYER') {
-      discount = wishlistData?.product_productPrice?.[0]?.vendorDiscount || 0;
-      discountType = wishlistData?.product_productPrice?.[0]?.vendorDiscountType;
+      if (wishlistData?.product_productPrice?.[0]?.vendorDiscount && wishlistData?.product_productPrice?.[0]?.vendorDiscount > 0) {
+        discount = wishlistData?.product_productPrice?.[0]?.vendorDiscount;
+        discountType = wishlistData?.product_productPrice?.[0]?.vendorDiscountType;
+      }
+      // If vendor discount is not available, keep using consumer discount
     }
     if (discountType == 'PERCENTAGE') {
       return Number((price - (price * discount) / 100).toFixed(2));
+    } else if (discountType == 'FLAT') {
+      return Number((price - discount).toFixed(2));
     }
+    // Default fallback for any other discount type
     return Number((price - discount).toFixed(2));
   };
 

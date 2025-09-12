@@ -28,13 +28,21 @@ const ProductTable: React.FC<ProducTableProps> = ({ list }) => {
     const price = item.productProductPrice ? Number(item.productProductPrice) : 0;
     let discount = item.consumerDiscount || 0;
     let discountType = item.consumerDiscountType;
+    
+    // For non-BUYER users, try vendor discount first, but fall back to consumer discount if vendor discount is not available
     if (user?.tradeRole && user?.tradeRole != 'BUYER') {
-      discount = item.vendorDiscount || 0;
-      discountType = item.vendorDiscountType;
+      if (item.vendorDiscount && item.vendorDiscount > 0) {
+        discount = item.vendorDiscount;
+        discountType = item.vendorDiscountType;
+      }
+      // If vendor discount is not available, keep using consumer discount
     }
     if (discountType == 'PERCENTAGE') {
       return Number((price - (price * discount) / 100).toFixed(2));
+    } else if (discountType == 'FLAT') {
+      return Number((price - discount).toFixed(2));
     }
+    // Default fallback for any other discount type
     return Number((price - discount).toFixed(2));
   };
 

@@ -1,16 +1,17 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import { useSearchParams } from "next/navigation";
-import { useAllManagedProducts } from "@/apis/queries/product.queries";
+import { useAllManagedProducts, useUpdateMultipleProductPrice } from "@/apis/queries/product.queries";
 import ManageProductCard from "@/components/modules/manageProducts/ManageProductCard";
-import ManageProductAside from "@/components/modules/manageProducts/ManageProductAside";
-import { FormProvider, useForm } from "react-hook-form";
+import BulkEditSidebar from "@/components/modules/manageProducts/BulkEditSidebar";
 
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 import { withActiveUserGuard } from "@/components/shared/withRouteGuard";
 import { PERMISSION_PRODUCTS, checkPermission } from "@/helpers/permission";
+import { FormProvider, useForm } from "react-hook-form";
+import { useToast } from "@/components/ui/use-toast";
 
 const BulkActionPage = () => {
   const t = useTranslations();
@@ -18,50 +19,28 @@ const BulkActionPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const hasPermission = checkPermission(PERMISSION_PRODUCTS);
+  const { toast } = useToast();
   
   const [selectedProducts, setSelectedProducts] = useState<any[]>([]);
-  const [prefilledData, setPrefilledData] = useState<{[key: string]: any}>();
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [debugMode, setDebugMode] = useState(true); // Set to false to enable page reload
+  const prevProductIdsRef = useRef<string | null>(null);
 
-  // Initialize form with default values
+  // Bulk update mutation
+  const updateMultipleProductPriceMutation = useUpdateMultipleProductPrice();
+
+  // Create a form instance for the CounterTextInputField components
   const form = useForm({
     defaultValues: {
-      productPrice: 0,
-      offerPrice: 0,
-      stock: 0,
-      deliveryAfter: 0,
-      timeOpen: 0,
-      timeClose: 0,
-      consumerType: "CONSUMER",
-      sellType: "NORMALSELL",
-      vendorDiscount: 0,
-      consumerDiscount: 0,
-      minQuantity: 0,
-      maxQuantity: 0,
-      minCustomer: 0,
-      maxCustomer: 0,
-      minQuantityPerCustomer: 0,
-      maxQuantityPerCustomer: 0,
-      productCondition: "NEW",
-      isProductConditionRequired: false,
-      isStockRequired: false,
-      isOfferPriceRequired: false,
-      isDeliveryAfterRequired: false,
-      isConsumerTypeRequired: false,
-      isSellTypeRequired: false,
-      isVendorDiscountRequired: false,
-      isConsumerDiscountRequired: false,
-      isMinQuantityRequired: false,
-      isMaxQuantityRequired: false,
-      isMinCustomerRequired: false,
-      isMaxCustomerRequired: false,
-      isMinQuantityPerCustomerRequired: false,
-      isMaxQuantityPerCustomerRequired: false,
+      // Add any default values needed for CounterTextInputField components
     },
   });
 
   // Get product IDs from URL params
   const productIdsParam = searchParams?.get('ids');
-  const productIds = productIdsParam ? productIdsParam.split(',').map(Number) : [];
+  const productIds = useMemo(() => {
+    return productIdsParam ? productIdsParam.split(',').map(Number) : [];
+  }, [productIdsParam]);
 
   // Fetch all products to get the selected ones
   const allProductsQuery = useAllManagedProducts(
@@ -82,49 +61,144 @@ const BulkActionPage = () => {
   // Filter selected products based on IDs from URL
   useEffect(() => {
     if (allProductsQuery.data?.data && productIds.length > 0) {
+      // Only update if productIds have actually changed
+      if (prevProductIdsRef.current !== productIdsParam) {
       const filtered = allProductsQuery.data.data.filter((product: any) => 
         productIds.includes(product.id)
       );
       setSelectedProducts(filtered);
-      
-      // Auto-populate prefilledData with the first product's data for bulk editing
-      if (filtered.length > 0) {
-        const firstProduct = filtered[0];
-        console.log("First product data:", firstProduct);
-        
-        const productData = {
-          stock: firstProduct.stock || 0,
-          askForPrice: firstProduct.askForPrice || "false",
-          askForStock: firstProduct.askForStock || "false",
-          offerPrice: firstProduct.offerPrice || 0,
-          productPrice: firstProduct.productPrice || 0,
-          status: firstProduct.status || "ACTIVE",
-          productCondition: firstProduct.productCondition || "NEW",
-          consumerType: firstProduct.consumerType || "CONSUMER",
-          sellType: firstProduct.sellType || "NORMALSELL",
-          deliveryAfter: firstProduct.deliveryAfter || 0,
-          timeOpen: firstProduct.timeOpen || 0,
-          timeClose: firstProduct.timeClose || 0,
-          vendorDiscount: firstProduct.vendorDiscount || 0,
-          vendorDiscountType: firstProduct.vendorDiscountType || "PERCENTAGE",
-          consumerDiscount: firstProduct.consumerDiscount || 0,
-          consumerDiscountType: firstProduct.consumerDiscountType || "PERCENTAGE",
-          minQuantity: firstProduct.minQuantity || 0,
-          maxQuantity: firstProduct.maxQuantity || 0,
-          minCustomer: firstProduct.minCustomer || 0,
-          maxCustomer: firstProduct.maxCustomer || 0,
-          minQuantityPerCustomer: firstProduct.minQuantityPerCustomer || 0,
-          maxQuantityPerCustomer: firstProduct.maxQuantityPerCustomer || 0,
-        };
-        setPrefilledData(productData);
-        console.log("Auto-populated prefilledData:", productData);
+        prevProductIdsRef.current = productIdsParam || null;
       }
     }
-  }, [allProductsQuery.data, productIds]);
+  }, [allProductsQuery.data, productIds, productIdsParam]);
 
-  // Handle product data selection for aside
-  const handleProductDataSelection = (data: { [key: string]: any }) => {
-    setPrefilledData(data);
+  // Handle bulk update
+  const handleBulkUpdate = async (updateData: any) => {
+    if (selectedProducts.length === 0) {
+      toast({
+        title: "No Products Selected",
+        description: "Please select products to update",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsUpdating(true);
+    try {
+      console.log("🔍 Bulk update data:", updateData);
+      console.log("🔍 Number of selected products:", selectedProducts.length);
+      console.log("🔍 Update data keys:", Object.keys(updateData));
+      console.log("🔍 Update data values:", Object.values(updateData));
+      
+      // Prepare the payload for bulk update according to backend DTO
+      const productPriceArray = selectedProducts.map(product => {
+        const productPriceData: any = {
+          productPriceId: product.id,
+        };
+
+        // Only include fields that are being updated
+        if (updateData.productPrice !== undefined) productPriceData.productPrice = updateData.productPrice;
+        if (updateData.offerPrice !== undefined) productPriceData.offerPrice = updateData.offerPrice;
+        if (updateData.stock !== undefined) productPriceData.stock = updateData.stock;
+        
+        // Add required fields that might be missing
+        productPriceData.askForPrice = product.askForPrice || "false";
+        productPriceData.askForStock = product.askForStock || "false";
+        
+        // Basic fields
+        if (updateData.sellCountryIds !== undefined) productPriceData.sellCountryIds = updateData.sellCountryIds;
+        if (updateData.sellStateIds !== undefined) productPriceData.sellStateIds = updateData.sellStateIds;
+        if (updateData.sellCityIds !== undefined) productPriceData.sellCityIds = updateData.sellCityIds;
+        if (updateData.placeOfOriginId !== undefined) productPriceData.placeOfOriginId = updateData.placeOfOriginId;
+        if (updateData.hideAllSelected !== undefined) productPriceData.hideAllSelected = updateData.hideAllSelected;
+        if (updateData.productCondition !== undefined) productPriceData.productCondition = updateData.productCondition;
+        if (updateData.askForPrice !== undefined) productPriceData.askForPrice = updateData.askForPrice;
+        if (updateData.askForSell !== undefined) productPriceData.askForSell = updateData.askForSell;
+        
+        // Other fields
+        if (updateData.deliveryAfter !== undefined) productPriceData.deliveryAfter = Number(updateData.deliveryAfter);
+        if (updateData.status !== undefined) productPriceData.status = updateData.status;
+        if (updateData.consumerType !== undefined) productPriceData.consumerType = updateData.consumerType;
+        if (updateData.sellType !== undefined) productPriceData.sellType = updateData.sellType;
+        if (updateData.vendorDiscount !== undefined) productPriceData.vendorDiscount = Number(updateData.vendorDiscount);
+        if (updateData.vendorDiscountType !== undefined) productPriceData.vendorDiscountType = updateData.vendorDiscountType;
+        if (updateData.consumerDiscount !== undefined) productPriceData.consumerDiscount = Number(updateData.consumerDiscount);
+        if (updateData.consumerDiscountType !== undefined) productPriceData.consumerDiscountType = updateData.consumerDiscountType;
+        if (updateData.minQuantity !== undefined) productPriceData.minQuantity = Number(updateData.minQuantity);
+        if (updateData.maxQuantity !== undefined) productPriceData.maxQuantity = Number(updateData.maxQuantity);
+        if (updateData.minCustomer !== undefined) productPriceData.minCustomer = Number(updateData.minCustomer);
+        if (updateData.maxCustomer !== undefined) productPriceData.maxCustomer = Number(updateData.maxCustomer);
+        if (updateData.minQuantityPerCustomer !== undefined) productPriceData.minQuantityPerCustomer = Number(updateData.minQuantityPerCustomer);
+        if (updateData.maxQuantityPerCustomer !== undefined) productPriceData.maxQuantityPerCustomer = Number(updateData.maxQuantityPerCustomer);
+        if (updateData.timeOpen !== undefined) productPriceData.timeOpen = Number(updateData.timeOpen);
+        if (updateData.timeClose !== undefined) productPriceData.timeClose = Number(updateData.timeClose);
+
+        console.log(`📦 Product ${product.id} data:`, productPriceData);
+        return productPriceData;
+      });
+      
+      const payload = {
+        productPrice: productPriceArray
+      };
+
+      console.log("📤 Sending payload to API:", payload);
+      console.log("📤 First product data:", productPriceArray[0]);
+      console.log("📤 Payload structure:", JSON.stringify(payload, null, 2));
+      
+      // Call the actual API
+      const result = await updateMultipleProductPriceMutation.mutateAsync(payload);
+      console.log("API response:", result);
+      
+      // Check if the API call was actually successful
+      if (result?.status && result?.data) {
+        console.log("✅ API call successful!");
+        console.log("✅ Result status:", result.status);
+        console.log("✅ Result data:", result.data);
+        
+        // Show success message with updated values
+        const updatedFields = Object.keys(updateData).filter(key => 
+          updateData[key] !== undefined && updateData[key] !== "" && updateData[key] !== 0
+        );
+        
+        toast({
+          title: "Success!",
+          description: `Successfully updated ${selectedProducts.length} products. Updated fields: ${updatedFields.join(", ")}`,
+          variant: "default",
+        });
+        
+        // Refresh the page to show updated data (increased delay to see console logs)
+        if (!debugMode) {
+          setTimeout(() => {
+            console.log("🔄 Reloading page...");
+            window.location.reload();
+          }, 5000); // Increased from 1000ms to 5000ms (5 seconds)
+        } else {
+          console.log("🐛 Debug mode enabled - page reload disabled");
+          console.log("🐛 You can now inspect the console logs and data");
+          console.log("🔄 Refreshing product data to show updates...");
+          // Refresh the product data even in debug mode
+          allProductsQuery.refetch();
+        }
+      } else {
+        console.log("❌ API call failed!");
+        console.log("❌ Result status:", result?.status);
+        console.log("❌ Result data:", result?.data);
+        throw new Error("API returned unsuccessful response");
+      }
+      
+    } catch (error: any) {
+      console.error("Bulk update error:", error);
+      console.error("Error response:", error?.response?.data);
+      console.error("Error status:", error?.response?.status);
+      
+      toast({
+        title: "Update Failed",
+        description: `Error updating products: ${error?.response?.data?.message || error?.message || 'Unknown error'}`,
+        variant: "destructive",
+      });
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   // Redirect if no permission
@@ -181,24 +255,35 @@ const BulkActionPage = () => {
                 Managing Products: {selectedProducts.length} products selected
               </p>
             </div>
-            <button
-              onClick={() => router.push("/manage-products")}
-              className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors"
-            >
-              Back to Manage Products
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setDebugMode(!debugMode)}
+                className={`px-4 py-2 rounded transition-colors ${
+                  debugMode 
+                    ? 'bg-yellow-500 text-white hover:bg-yellow-600' 
+                    : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
+                }`}
+              >
+                {debugMode ? '🐛 Debug ON' : '🐛 Debug OFF'}
+              </button>
+              <button
+                onClick={() => router.push("/manage-products")}
+                className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors"
+              >
+                Back to Manage Products
+              </button>
+            </div>
           </div>
         </div>
 
         {/* Main Content */}
         <FormProvider {...form}>
-          <form onSubmit={form.handleSubmit(() => {})}>
             <div className="flex flex-col lg:flex-row gap-6">
               {/* Products List - Left Side */}
               <div className="lg:w-2/3">
                 <div className="bg-white rounded-lg shadow-sm p-6">
                   <h2 className="text-xl font-semibold mb-4">
-                    Selected Products
+                  Selected Products ({selectedProducts.length})
                   </h2>
                   
                   <div className="space-y-4">
@@ -207,7 +292,7 @@ const BulkActionPage = () => {
                         key={product.id}
                         selectedIds={[]} // Empty array to hide checkboxes
                         onSelectedId={() => {}} // No-op function
-                        onSelect={handleProductDataSelection}
+                      onSelect={() => {}}
                         id={product.id}
                         productId={product.productId}
                         status={product.status}
@@ -243,23 +328,23 @@ const BulkActionPage = () => {
                         hideEyeIcon={true}
                         hideCopyButton={true}
                         hideActionButtons={true}
+                      disableFields={true}
                       />
                     ))}
                   </div>
                 </div>
               </div>
 
-              {/* ManageProductAside - Right Side */}
+            {/* Bulk Edit Sidebar - Right Side */}
               <div className="lg:w-1/3">
                 <div className="sticky top-6">
-                  <ManageProductAside
-                    isLoading={false}
-                    prefilledData={prefilledData}
-                  />
-                </div>
+              <BulkEditSidebar
+                onBulkUpdate={handleBulkUpdate}
+                isLoading={isUpdating || updateMultipleProductPriceMutation.isPending}
+              />
               </div>
             </div>
-          </form>
+          </div>
         </FormProvider>
       </div>
     </div>

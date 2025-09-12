@@ -259,13 +259,21 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
     const price = productPrices?.[0]?.offerPrice ? Number(productPrices[0]?.offerPrice) : 0;
     let discount = productPrices?.[0]?.consumerDiscount || 0;
     let discountType = productPrices?.[0]?.consumerDiscountType;
+    
+    // For non-BUYER users, try vendor discount first, but fall back to consumer discount if vendor discount is not available
     if (user?.tradeRole && user?.tradeRole != 'BUYER') {
-      discount = productPrices?.[0]?.vendorDiscount || 0;
-      discountType = productPrices?.[0]?.vendorDiscountType;
+      if (productPrices?.[0]?.vendorDiscount && productPrices?.[0]?.vendorDiscount > 0) {
+        discount = productPrices?.[0]?.vendorDiscount;
+        discountType = productPrices?.[0]?.vendorDiscountType;
+      }
+      // If vendor discount is not available, keep using consumer discount
     }
     if (discountType == 'PERCENTAGE') {
       return Number((price - (price * discount) / 100).toFixed(2));
+    } else if (discountType == 'FLAT') {
+      return Number((price - discount).toFixed(2));
     }
+    // Default fallback for any other discount type
     return Number((price - discount).toFixed(2));
   };
 

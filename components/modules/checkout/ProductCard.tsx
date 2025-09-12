@@ -62,7 +62,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
     }
     if (discountType == 'PERCENTAGE') {
       return Number((price - (price * discount) / 100).toFixed(2));
+    } else if (discountType == 'FLAT') {
+      return Number((price - discount).toFixed(2));
     }
+    // Default fallback for any other discount type
     return Number((price - discount).toFixed(2));
   };
 

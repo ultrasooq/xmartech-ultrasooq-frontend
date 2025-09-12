@@ -419,6 +419,16 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
       ? errors["0"].deliveryAfter?.message
       : undefined;
 
+  const vendorDiscountMessage =
+    errors && typeof errors["0"] === "object" && "vendorDiscount" in errors["0"]
+      ? errors["0"].vendorDiscount?.message
+      : undefined;
+
+  const consumerDiscountMessage =
+    errors && typeof errors["0"] === "object" && "consumerDiscount" in errors["0"]
+      ? errors["0"].consumerDiscount?.message
+      : undefined;
+
   const { setValue } = formContext;
 
   useEffect(() => {
@@ -427,6 +437,8 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
       setValue("isOfferPriceRequired", false);
       setValue("isStockRequired", false);
     }
+    
+    // No auto-set behavior - user can choose any consumer type
   }, [watchSellType, setValue]);
 
   const [localTime, setLocalTime] = useState<string>("");
@@ -701,6 +713,50 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
               </>
             ) : null}
 
+            {/* Trial Product Fields */}
+            {watchSellType === "TRIAL_PRODUCT" && watchConsumerType === "EVERYONE" ? (
+              <>
+                <CounterTextInputField
+                  label={t("max_quantity_per_customer")}
+                  name="productPriceList.[0].maxQuantityPerCustomer"
+                  placeholder={t("max")}
+                  errorMessage={
+                    maxQuantityPerCustomerMessage
+                      ? maxQuantityPerCustomerMessage.toString()
+                      : undefined
+                  }
+                />
+              </>
+            ) : null}
+
+            {/* Wholesale Product Fields */}
+            {watchSellType === "WHOLESALE_PRODUCT" && watchConsumerType === "EVERYONE" ? (
+              <>
+                <CounterTextInputField
+                  label={t("min_quantity_per_customer")}
+                  name="productPriceList.[0].minQuantityPerCustomer"
+                  placeholder={t("min")}
+                  errorMessage={
+                    minQuantityPerCustomerMessage
+                      ? minQuantityPerCustomerMessage.toString()
+                      : undefined
+                  }
+                />
+
+                <CounterTextInputField
+                  label={t("max_quantity_per_customer")}
+                  name="productPriceList.[0].maxQuantityPerCustomer"
+                  placeholder={t("max")}
+                  errorMessage={
+                    maxQuantityPerCustomerMessage
+                      ? maxQuantityPerCustomerMessage.toString()
+                      : undefined
+                  }
+                />
+              </>
+            ) : null}
+
+
             {watchSellType === "NORMALSELL" || watchSellType === "BUYGROUP" ? (
               <>
                 <CounterTextInputField
@@ -727,50 +783,49 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
               </>
             ) : null}
 
-            {watchSellType === "BUYGROUP" ? (
-              <>
-                {/* <CounterTextInputField
-                  label="Time Open"
-                  name="productPriceList.[0].timeOpen"
-                  placeholder="Open"
-                  errorMessage={
-                    timeOpenMessage ? timeOpenMessage.toString() : undefined
-                  }
-                /> */}
+            {/* Time fields - Common for all sell types */}
+            <>
+              {/* <CounterTextInputField
+                label="Time Open"
+                name="productPriceList.[0].timeOpen"
+                placeholder="Open"
+                errorMessage={
+                  timeOpenMessage ? timeOpenMessage.toString() : undefined
+                }
+              /> */}
 
-                <ControlledDatePicker
-                  label={t("date_open")}
-                  name="productPriceList.[0].dateOpen"
-                  isFuture
-                />
+              <ControlledDatePicker
+                label={t("date_open")}
+                name="productPriceList.[0].dateOpen"
+                isFuture
+              />
 
-                <ControlledTimePicker
-                  label={t("time_open")}
-                  name="productPriceList.[0].startTime"
-                />
+              <ControlledTimePicker
+                label={t("time_open")}
+                name="productPriceList.[0].startTime"
+              />
 
-                <ControlledDatePicker
-                  label={t("date_close")}
-                  name="productPriceList.[0].dateClose"
-                  isFuture
-                  minDate={watchDateOpen} // Pass timeOpen as minDate to disable past dates
-                />
+              <ControlledDatePicker
+                label={t("date_close")}
+                name="productPriceList.[0].dateClose"
+                isFuture
+                minDate={watchDateOpen} // Pass timeOpen as minDate to disable past dates
+              />
 
-                <ControlledTimePicker
-                  label={t("time_close")}
-                  name="productPriceList.[0].endTime"
-                />
+              <ControlledTimePicker
+                label={t("time_close")}
+                name="productPriceList.[0].endTime"
+              />
 
-                {/* <CounterTextInputField
-                  label="Time Close"
-                  name="productPriceList.[0].timeClose"
-                  placeholder="Close"
-                  errorMessage={
-                    timeCloseMessage ? timeCloseMessage.toString() : undefined
-                  }
-                /> */}
-              </>
-            ) : null}
+              {/* <CounterTextInputField
+                label="Time Close"
+                name="productPriceList.[0].timeClose"
+                placeholder="Close"
+                errorMessage={
+                  timeCloseMessage ? timeCloseMessage.toString() : undefined
+                }
+              /> */}
+            </>
           </div>
 
           {activeProductType !== "R" ? (

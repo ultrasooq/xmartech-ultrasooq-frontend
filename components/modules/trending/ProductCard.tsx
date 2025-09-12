@@ -78,13 +78,22 @@ const ProductCard: React.FC<ProductCardProps> = ({
       : 0;
     let discount = item.consumerDiscount || 0;
     let discountType = item.consumerDiscountType;
+    
+    // For non-BUYER users, try vendor discount first, but fall back to consumer discount if vendor discount is not available
     if (user?.tradeRole && user?.tradeRole != "BUYER") {
-      discount = item.vendorDiscount || 0;
-      discountType = item.vendorDiscountType;
+      if (item.vendorDiscount && item.vendorDiscount > 0) {
+        discount = item.vendorDiscount;
+        discountType = item.vendorDiscountType;
+      }
+      // If vendor discount is not available, keep using consumer discount
     }
+    
     if (discountType == "PERCENTAGE") {
       return Number((price - (price * discount) / 100).toFixed(2));
+    } else if (discountType == "FLAT") {
+      return Number((price - discount).toFixed(2));
     }
+    // Default fallback for any other discount type
     return Number((price - discount).toFixed(2));
   };
 
@@ -500,7 +509,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
         {/* Discount Badge */}
         {item?.askForPrice !== "true" && item.consumerDiscount ? (
           <div className="absolute right-3 top-12 z-20 bg-gradient-to-r from-orange-500 to-red-500 text-white px-2 py-1 rounded-full text-xs font-bold shadow-lg">
-            -{item.consumerDiscount}%
+            {item.consumerDiscountType === "PERCENTAGE" 
+              ? `${item.consumerDiscount}%` 
+              : `${currency.symbol}${item.consumerDiscount}`
+            }
           </div>
         ) : null}
 
@@ -596,7 +608,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 <span className="text-lg font-bold text-blue-600" dir={langDir}>
                   {currency.symbol}{calculateDiscountedPrice()}
                 </span>
-                {item.productProductPrice && Number(item.productProductPrice) !== calculateDiscountedPrice() && (
+                {item.productProductPrice && Number(item.productProductPrice) > calculateDiscountedPrice() && (
                   <span className="text-sm text-gray-500 line-through">
                     {currency.symbol}{item.productProductPrice}
                   </span>

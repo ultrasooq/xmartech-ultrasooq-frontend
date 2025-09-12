@@ -339,6 +339,14 @@ export const SELL_TYPE_LIST = [
     label: "buy_group",
     value: "BUYGROUP",
   },
+  {
+    label: "trial_product",
+    value: "TRIAL_PRODUCT",
+  },
+  {
+    label: "wholesale_product",
+    value: "WHOLESALE_PRODUCT",
+  },
 ];
 
 export const DELIVER_AFTER_LIST = [

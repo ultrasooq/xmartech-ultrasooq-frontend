@@ -19,6 +19,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
 import { IoMdAdd } from "react-icons/io";
+import { Store } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { debounce } from "lodash";
 import { getCookie } from "cookies-next";
@@ -32,6 +33,7 @@ import SkeletonProductCardLoader from "@/components/shared/SkeletonProductCardLo
 
 import { PERMISSION_PRODUCTS, checkPermission } from "@/helpers/permission";
 import { useMe } from "@/apis/queries/user.queries";
+import { useCurrentAccount } from "@/apis/queries/auth.queries";
 import { useAuth } from "@/context/AuthContext";
 import { useTranslations } from "next-intl";
 import BrandFilterList from "@/components/modules/rfq/BrandFilterList";
@@ -214,6 +216,7 @@ const ManageProductsPage = () => {
   const [globalSelectedIds, setGlobalSelectedIds] = useState<Set<number>>(new Set());
 
   const me = useMe();
+  const { data: currentAccount } = useCurrentAccount();
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   
@@ -248,6 +251,8 @@ const ManageProductsPage = () => {
   const [selectedBrandIds, setSelectedBrandIds] = useState<number[]>([]);
   const [displayStoreProducts, setDisplayStoreProducts] = useState(false);
   const [displayBuyGroupProducts, setDisplayBuyGroupProducts] = useState(false);
+  const [displayTrialProducts, setDisplayTrialProducts] = useState(false);
+  const [displayWholesaleProducts, setDisplayWholesaleProducts] = useState(false);
   const [displayExpiredProducts, setDisplayExpiredProducts] = useState(false);
   const [displayHiddenProducts, setDisplayHiddenProducts] = useState(false);
   const [displayDiscountedProducts, setDisplayDiscountedProducts] = useState(false);
@@ -475,19 +480,14 @@ const ManageProductsPage = () => {
   });
 
   const sellType = () => {
-    if (displayStoreProducts && displayBuyGroupProducts) {
-      return "NORMALSELL,BUYGROUP";
-    }
-
-    if (displayStoreProducts) {
-      return "NORMALSELL";
-    }
-
-    if (displayBuyGroupProducts) {
-      return "BUYGROUP";
-    }
-
-    return "";
+    const selectedTypes = [];
+    
+    if (displayStoreProducts) selectedTypes.push("NORMALSELL");
+    if (displayBuyGroupProducts) selectedTypes.push("BUYGROUP");
+    if (displayTrialProducts) selectedTypes.push("TRIAL_PRODUCT");
+    if (displayWholesaleProducts) selectedTypes.push("WHOLESALE_PRODUCT");
+    
+    return selectedTypes.length > 0 ? selectedTypes.join(",") : "";
   };
 
   const allManagedProductsQuery = useAllManagedProducts(
@@ -503,8 +503,7 @@ const ManageProductsPage = () => {
       categoryIds: selectedCategoryIds.length > 0 ? selectedCategoryIds.join(",") : undefined,
       status: displayHiddenProducts ? "INACTIVE" : "",
       expireDate: displayExpiredProducts ? "expired" : "",
-      sellType:
-        displayStoreProducts || displayBuyGroupProducts ? sellType() : "",
+      sellType: sellType(),
       discount: displayDiscountedProducts,
     },
     hasPermission,
@@ -890,9 +889,26 @@ const ManageProductsPage = () => {
           <div className="mb-6">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">
-                  {t("products")}
-                </h1>
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                    <Store className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <h1 className="text-xl font-semibold text-gray-900 capitalize">
+                      {(() => {
+                        const account = currentAccount?.data?.account;
+                        if (currentAccount?.data?.isMainAccount) {
+                          return account?.firstName || account?.name || "Main Account";
+                        } else {
+                          return account?.accountName || account?.companyName || "Account";
+                        }
+                      })()}
+                    </h1>
+                    <p className="text-sm text-gray-500">
+                      {currentAccount?.data?.account?.tradeRole || "User"}
+                    </p>
+                  </div>
+                </div>
               </div>
               <div className="flex items-center gap-3">
                 {activeTab === 'my-products' && (
@@ -1162,6 +1178,42 @@ const ManageProductsPage = () => {
                                 translate="no"
                               >
                                 {t("buy_group")}
+                              </label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <Checkbox
+                                id="displayTrialProducts"
+                                className="border border-gray-300 data-[state=checked]:!bg-blue-600"
+                                onCheckedChange={(checked: boolean) =>
+                                  setDisplayTrialProducts(checked)
+                                }
+                                checked={displayTrialProducts}
+                              />
+                              <label
+                                htmlFor="displayTrialProducts"
+                                className="text-sm font-medium cursor-pointer"
+                                dir={langDir}
+                                translate="no"
+                              >
+                                {t("trial_product")}
+                              </label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <Checkbox
+                                id="displayWholesaleProducts"
+                                className="border border-gray-300 data-[state=checked]:!bg-blue-600"
+                                onCheckedChange={(checked: boolean) =>
+                                  setDisplayWholesaleProducts(checked)
+                                }
+                                checked={displayWholesaleProducts}
+                              />
+                              <label
+                                htmlFor="displayWholesaleProducts"
+                                className="text-sm font-medium cursor-pointer"
+                                dir={langDir}
+                                translate="no"
+                              >
+                                {t("wholesale_product")}
                               </label>
                             </div>
                             {displayBuyGroupProducts ? (
