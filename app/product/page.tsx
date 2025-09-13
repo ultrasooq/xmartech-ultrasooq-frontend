@@ -82,7 +82,7 @@ const productPriceItemSchemaWhenSetUpPriceTrue = (t: any) => {
     })
     .refine(
       ({ minQuantity, maxQuantity, sellType }) =>
-        sellType != "BUYGROUP" ||
+        (sellType != "BUYGROUP" && sellType != "WHOLESALE_PRODUCT") ||
         (minQuantity && Number(minQuantity || 0) < Number(maxQuantity || 0)) ||
         (maxQuantity && Number(minQuantity || 0) < Number(maxQuantity || 0)),
       {
@@ -91,13 +91,19 @@ const productPriceItemSchemaWhenSetUpPriceTrue = (t: any) => {
       },
     )
     .refine(
-      ({ minQuantityPerCustomer, maxQuantityPerCustomer }) =>
-        (minQuantityPerCustomer &&
+      ({ minQuantityPerCustomer, maxQuantityPerCustomer, sellType, consumerType }) => {
+        // Skip validation if fields are not required (TRIAL_PRODUCT with non-EVERYONE consumer type)
+        if (sellType === "TRIAL_PRODUCT" && consumerType !== "EVERYONE") {
+          return true;
+        }
+        // Apply validation for other cases
+        return (minQuantityPerCustomer &&
           Number(minQuantityPerCustomer || 0) <
           Number(maxQuantityPerCustomer || 0)) ||
         (maxQuantityPerCustomer &&
           Number(minQuantityPerCustomer || 0) <
-          Number(maxQuantityPerCustomer || 0)),
+          Number(maxQuantityPerCustomer || 0));
+      },
       {
         message: t(
           "min_quantity_per_customer_must_be_less_than_max_quantity_per_customer",
@@ -125,7 +131,7 @@ const productPriceItemSchemaWhenSetUpPriceTrue = (t: any) => {
         startTime,
         endTime,
       } = schema;
-      if (sellType === "NORMALSELL" || sellType === "BUYGROUP") {
+      if (sellType === "NORMALSELL" || sellType === "BUYGROUP" || sellType === "WHOLESALE_PRODUCT") {
         if (!minQuantityPerCustomer) {
           ctx.addIssue({
             code: "custom",
@@ -141,7 +147,24 @@ const productPriceItemSchemaWhenSetUpPriceTrue = (t: any) => {
           });
         }
       }
-      if (sellType === "BUYGROUP") {
+      // For TRIAL_PRODUCT, only require quantity per customer fields when consumer type is EVERYONE
+      if (sellType === "TRIAL_PRODUCT" && schema.consumerType === "EVERYONE") {
+        if (!minQuantityPerCustomer) {
+          ctx.addIssue({
+            code: "custom",
+            message: t("quantity_per_customer_is_required"),
+            path: ["minQuantityPerCustomer"],
+          });
+        }
+        if (!maxQuantityPerCustomer) {
+          ctx.addIssue({
+            code: "custom",
+            message: t("quantity_per_customer_is_required"),
+            path: ["maxQuantityPerCustomer"],
+          });
+        }
+      }
+      if (sellType === "BUYGROUP" || sellType === "WHOLESALE_PRODUCT") {
         if (!minQuantity) {
           ctx.addIssue({
             code: "custom",
@@ -150,7 +173,7 @@ const productPriceItemSchemaWhenSetUpPriceTrue = (t: any) => {
           });
         }
       }
-      if (sellType === "BUYGROUP") {
+      if (sellType === "BUYGROUP" || sellType === "WHOLESALE_PRODUCT") {
         if (!maxQuantity) {
           ctx.addIssue({
             code: "custom",
@@ -159,7 +182,7 @@ const productPriceItemSchemaWhenSetUpPriceTrue = (t: any) => {
           });
         }
       }
-      if (sellType === "BUYGROUP") {
+      if (sellType === "BUYGROUP" || sellType === "WHOLESALE_PRODUCT") {
         if (!minCustomer) {
           ctx.addIssue({
             code: "custom",
@@ -168,7 +191,7 @@ const productPriceItemSchemaWhenSetUpPriceTrue = (t: any) => {
           });
         }
       }
-      if (sellType === "BUYGROUP") {
+      if (sellType === "BUYGROUP" || sellType === "WHOLESALE_PRODUCT") {
         if (!maxCustomer) {
           ctx.addIssue({
             code: "custom",
@@ -177,7 +200,7 @@ const productPriceItemSchemaWhenSetUpPriceTrue = (t: any) => {
           });
         }
       }
-      if (sellType == "BUYGROUP") {
+      if (sellType == "BUYGROUP" || sellType == "WHOLESALE_PRODUCT") {
         if (
           (minQuantity &&
             Number(minQuantity || 0) > Number(maxQuantity || 0)) ||
@@ -620,6 +643,25 @@ const CreateProductPage = () => {
     ),
     defaultValues,
   });
+  
+  // Debug form state
+  useEffect(() => {
+    console.log('=== FORM STATE DEBUG ===');
+    console.log('activeProductType:', activeProductType);
+    console.log('Form errors (detailed):', JSON.stringify(form.formState.errors, null, 2));
+    console.log('Form isValid:', form.formState.isValid);
+    console.log('Form isDirty:', form.formState.isDirty);
+    console.log('Form isSubmitting:', form.formState.isSubmitting);
+    
+    // Show which fields have errors
+    const errorFields = Object.keys(form.formState.errors);
+    if (errorFields.length > 0) {
+      console.log('Fields with errors:', errorFields);
+      errorFields.forEach(field => {
+        console.log(`Error in ${field}:`, form.formState.errors[field]?.message);
+      });
+    }
+  }, [form.formState.errors, form.formState.isValid, activeProductType]);
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
 
   // Query for product data when editing
@@ -1364,6 +1406,9 @@ const CreateProductPage = () => {
   };
 
   const onSubmit = async (formData: any) => {
+    console.log('=== FORM SUBMIT TRIGGERED ===');
+    console.log('formData received:', formData);
+    
     // Get the current user ID from the current account for debugging
     const currentUserId = currentAccount?.data?.account?.id;
     
@@ -1515,6 +1560,12 @@ const CreateProductPage = () => {
     }
     if (updatedFormData.productPriceList?.[0]?.sellType == "BUYGROUP") {
       updatedFormData.productPriceList[0].menuId = BUYGROUP_MENU_ID;
+    }
+    if (updatedFormData.productPriceList?.[0]?.sellType == "TRIAL_PRODUCT") {
+      updatedFormData.productPriceList[0].menuId = STORE_MENU_ID; // Trial products use store menu
+    }
+    if (updatedFormData.productPriceList?.[0]?.sellType == "WHOLESALE_PRODUCT") {
+      updatedFormData.productPriceList[0].menuId = STORE_MENU_ID; // Wholesale products use store menu
     }
     if (updatedFormData.isCustomProduct) {
       updatedFormData.productPriceList[0].menuId = FACTORIES_MENU_ID;
@@ -1713,75 +1764,105 @@ const CreateProductPage = () => {
     
     let response;
     
-    if (isEditMode) {
-      // Handle edit mode - update existing product
-      const productPriceId = searchParams?.get('productPriceId');
-      if (!productPriceId) {
+    try {
+      console.log('=== STARTING API CALL ===');
+      console.log('isEditMode:', isEditMode);
+      
+      if (isEditMode) {
+        // Handle edit mode - update existing product
+        const productPriceId = searchParams?.get('productPriceId');
+        if (!productPriceId) {
+          toast({
+            title: t("error"),
+            description: "Product ID not found for editing",
+            variant: "danger",
+          });
+          return;
+        }
+
+        // Prepare update data for single product update
+        const updateData = {
+          productPriceId: parseInt(productPriceId),
+          productName: updatedFormData.productName,
+          productPrice: updatedFormData.productPrice || 0,
+          offerPrice: updatedFormData.offerPrice || 0,
+          stock: updatedFormData.productPriceList?.[0]?.stock || 0,
+          deliveryAfter: updatedFormData.productPriceList?.[0]?.deliveryAfter || 0,
+          timeOpen: updatedFormData.productPriceList?.[0]?.timeOpen || null,
+          timeClose: updatedFormData.productPriceList?.[0]?.timeClose || null,
+          consumerType: updatedFormData.productPriceList?.[0]?.consumerType || 'CONSUMER',
+          sellType: updatedFormData.productPriceList?.[0]?.sellType || 'NORMALSELL',
+          vendorDiscount: updatedFormData.productPriceList?.[0]?.vendorDiscount || null,
+          vendorDiscountType: updatedFormData.productPriceList?.[0]?.vendorDiscountType || null,
+          consumerDiscount: updatedFormData.productPriceList?.[0]?.consumerDiscount || null,
+          consumerDiscountType: updatedFormData.productPriceList?.[0]?.consumerDiscountType || null,
+          minQuantity: updatedFormData.productPriceList?.[0]?.minQuantity || null,
+          maxQuantity: updatedFormData.productPriceList?.[0]?.maxQuantity || null,
+          minCustomer: updatedFormData.productPriceList?.[0]?.minCustomer || null,
+          maxCustomer: updatedFormData.productPriceList?.[0]?.maxCustomer || null,
+          minQuantityPerCustomer: updatedFormData.productPriceList?.[0]?.minQuantityPerCustomer || null,
+          maxQuantityPerCustomer: updatedFormData.productPriceList?.[0]?.maxQuantityPerCustomer || null,
+          productCondition: updatedFormData.productCondition,
+          askForPrice: updatedFormData.isOfferPriceRequired ? "YES" : "NO",
+          askForStock: updatedFormData.isStockRequired ? "YES" : "NO",
+          status: updatedFormData.productPriceList?.[0]?.status || 'ACTIVE',
+        };
+
+        console.log('=== UPDATE DATA FOR EDIT MODE ===');
+        console.log('updateData:', updateData);
+        console.log('Calling updateProduct.mutateAsync...');
+
+        response = await updateProduct.mutateAsync(updateData);
+      } else {
+        // Handle create mode - create new product
+        console.log('=== CREATE MODE - CALLING API ===');
+        console.log('Calling createProduct.mutateAsync with updatedFormData...');
+        console.log('createProduct mutation object:', createProduct);
+        
+        response = await createProduct.mutateAsync(updatedFormData);
+      }
+
+      console.log('=== API RESPONSE RECEIVED ===');
+      console.log('response:', response);
+
+      if (response && response.status && response.data) {
+        console.log('=== SUCCESS RESPONSE ===');
         toast({
-          title: t("error"),
-          description: "Product ID not found for editing",
+          title: isEditMode ? t("product_update_successful") : t("product_create_successful"),
+          description: response.message,
+          variant: "success",
+        });
+        form.reset();
+        if (isEditMode) {
+          router.push("/manage-products");
+        } else if (activeProductType === "R") {
+          router.push("/rfq");
+        } else if (activeProductType === "F") {
+          router.push("/factories");
+        } else {
+          router.push("/manage-products");
+        }
+      } else {
+        console.log('=== ERROR RESPONSE ===');
+        console.log('response.status:', response?.status);
+        console.log('response.data:', response?.data);
+        console.log('response.message:', response?.message);
+        toast({
+          title: isEditMode ? t("product_update_failed") : t("product_create_failed"),
+          description: response?.message || "Unknown error occurred",
           variant: "danger",
         });
-        return;
       }
-
-      // Prepare update data for single product update
-      const updateData = {
-        productPriceId: parseInt(productPriceId),
-        productName: updatedFormData.productName,
-        productPrice: updatedFormData.productPrice || 0,
-        offerPrice: updatedFormData.offerPrice || 0,
-        stock: updatedFormData.productPriceList?.[0]?.stock || 0,
-        deliveryAfter: updatedFormData.productPriceList?.[0]?.deliveryAfter || 0,
-        timeOpen: updatedFormData.productPriceList?.[0]?.timeOpen || null,
-        timeClose: updatedFormData.productPriceList?.[0]?.timeClose || null,
-        consumerType: updatedFormData.productPriceList?.[0]?.consumerType || 'CONSUMER',
-        sellType: updatedFormData.productPriceList?.[0]?.sellType || 'NORMALSELL',
-        vendorDiscount: updatedFormData.productPriceList?.[0]?.vendorDiscount || null,
-        vendorDiscountType: updatedFormData.productPriceList?.[0]?.vendorDiscountType || null,
-        consumerDiscount: updatedFormData.productPriceList?.[0]?.consumerDiscount || null,
-        consumerDiscountType: updatedFormData.productPriceList?.[0]?.consumerDiscountType || null,
-        minQuantity: updatedFormData.productPriceList?.[0]?.minQuantity || null,
-        maxQuantity: updatedFormData.productPriceList?.[0]?.maxQuantity || null,
-        minCustomer: updatedFormData.productPriceList?.[0]?.minCustomer || null,
-        maxCustomer: updatedFormData.productPriceList?.[0]?.maxCustomer || null,
-        minQuantityPerCustomer: updatedFormData.productPriceList?.[0]?.minQuantityPerCustomer || null,
-        maxQuantityPerCustomer: updatedFormData.productPriceList?.[0]?.maxQuantityPerCustomer || null,
-        productCondition: updatedFormData.productCondition,
-        askForPrice: updatedFormData.isOfferPriceRequired ? "YES" : "NO",
-        askForStock: updatedFormData.isStockRequired ? "YES" : "NO",
-        status: updatedFormData.productPriceList?.[0]?.status || 'ACTIVE',
-      };
-
-      console.log('=== UPDATE DATA FOR EDIT MODE ===');
-      console.log('updateData:', updateData);
-
-      response = await updateProduct.mutateAsync(updateData);
-    } else {
-      // Handle create mode - create new product
-      response = await createProduct.mutateAsync(updatedFormData);
-    }
-
-    if (response.status && response.data) {
-      toast({
-        title: isEditMode ? t("product_update_successful") : t("product_create_successful"),
-        description: response.message,
-        variant: "success",
-      });
-      form.reset();
-      if (isEditMode) {
-        router.push("/manage-products");
-      } else if (activeProductType === "R") {
-        router.push("/rfq");
-      } else if (activeProductType === "F") {
-        router.push("/factories");
-      } else {
-        router.push("/manage-products");
-      }
-    } else {
+    } catch (error: any) {
+      console.error('=== API CALL ERROR ===');
+      console.error('Error details:', error);
+      console.error('Error message:', error?.message);
+      console.error('Error response:', error?.response);
+      console.error('Error response data:', error?.response?.data);
+      
       toast({
         title: isEditMode ? t("product_update_failed") : t("product_create_failed"),
-        description: response.message,
+        description: error?.response?.data?.message || error?.message || "Network error occurred",
         variant: "danger",
       });
     }
@@ -1877,7 +1958,16 @@ const CreateProductPage = () => {
         <div className="container relative z-10 m-auto mx-auto max-w-[950px] px-3">
           <div className="flex flex-wrap">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
+              <form 
+                onSubmit={(e) => {
+                  console.log('=== FORM onSubmit EVENT TRIGGERED ===');
+                  console.log('Form event:', e);
+                  console.log('Form errors before submit:', form.formState.errors);
+                  console.log('Form isValid before submit:', form.formState.isValid);
+                  return form.handleSubmit(onSubmit)(e);
+                }} 
+                className="w-full"
+              >
                 <BasicInformationSection
                   tagsList={memoizedTags}
                   activeProductType={activeProductType}
@@ -1908,6 +1998,19 @@ const CreateProductPage = () => {
                           className="h-10 rounded bg-dark-orange px-6 text-center text-sm font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90 md:h-12 md:px-10 md:text-lg"
                           dir={langDir}
                           translate="no"
+                          onClick={() => {
+                            console.log('=== CONTINUE BUTTON CLICKED ===');
+                            console.log('Button disabled state:', createProduct.isPending || uploadMultiple.isPending || updateProduct.isPending);
+                            console.log('Form errors (detailed):', JSON.stringify(form.formState.errors, null, 2));
+                            console.log('Form isValid:', form.formState.isValid);
+                            console.log('Form values:', form.getValues());
+                            
+                            // Force trigger validation to see all errors
+                            form.trigger().then((isValid) => {
+                              console.log('Manual validation result:', isValid);
+                              console.log('All validation errors:', JSON.stringify(form.formState.errors, null, 2));
+                            });
+                          }}
                         >
                           {createProduct.isPending ||
                             uploadMultiple.isPending ||
