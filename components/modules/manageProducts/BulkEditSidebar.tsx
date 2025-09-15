@@ -6,7 +6,9 @@ import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { SELL_TYPE_LIST, CONSUMER_TYPE_LIST } from "@/utils/constants";
+import { toast } from "@/components/ui/use-toast";
+import { SELL_TYPE_LIST, CONSUMER_TYPE_LIST, PRODUCT_CONDITION_LIST, PUREMOON_TOKEN_KEY } from "@/utils/constants";
+import { getCookie } from "cookies-next";
 import ReactSelect, { MultiValue } from "react-select";
 import { IOption } from "@/utils/types/common.types";
 import {
@@ -19,11 +21,15 @@ import { useMe } from "@/apis/queries/user.queries";
 
 interface BulkEditSidebarProps {
   onBulkUpdate: (data: any) => void;
+  selectedProducts: number[];
+  onUpdate: () => void;
   isLoading?: boolean;
 }
 
 const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
   onBulkUpdate,
+  selectedProducts,
+  onUpdate,
   isLoading = false,
 }) => {
   const t = useTranslations();
@@ -45,6 +51,17 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
   const [statesByCountry, setStatesByCountry] = useState<Record<string, IOption[]>>({});
   const [citiesByState, setCitiesByState] = useState<Record<string, IOption[]>>({});
 
+  // Confirmation dialog state
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [confirmAction, setConfirmAction] = useState<{
+    message: string;
+    onConfirm: () => void;
+    type: 'hide' | 'show';
+  } | null>(null);
+
+  // Tab state management
+  const [activeTab, setActiveTab] = useState<'warehouse-location' | 'product-basic' | 'ask-for' | 'discounts'>('warehouse-location');
+
   const form = useForm({
     defaultValues: {
       // Section checkboxes
@@ -52,6 +69,7 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
       updateWhereToSell: false,
       updateBasic: false,
       updateDiscounts: false,
+      updateAskFor: false,
       
       // Warehouse fields
       branchId: "",
@@ -63,11 +81,14 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
       placeOfOriginId: "",
       
       // Basic fields
-      hideAllSelected: false,
       enableChat: false,
+      
+      // Product Condition field (separate section)
       productCondition: "",
-      askForPrice: false,
-      askForSell: false,
+      
+      // Ask For fields
+      askForPrice: "",
+      askForStock: "",
       
       // Discount fields
       consumerType: "",
@@ -98,16 +119,412 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
   const watchConsumerType = form.watch("consumerType");
   const watchVendorDiscount = form.watch("vendorDiscount");
   const watchConsumerDiscount = form.watch("consumerDiscount");
+  const watchProductCondition = form.watch("productCondition");
   const watchUpdateWarehouse = form.watch("updateWarehouse");
   const watchUpdateWhereToSell = form.watch("updateWhereToSell");
   const watchUpdateBasic = form.watch("updateBasic");
   const watchUpdateDiscounts = form.watch("updateDiscounts");
+  const watchUpdateAskFor = form.watch("updateAskFor");
+  const watchAskForPrice = form.watch("askForPrice");
+  const watchAskForStock = form.watch("askForStock");
+
+  // Show confirmation dialog
+  const showConfirmation = (hide: boolean) => {
+    const action = hide ? "hide" : "show";
+    const productCount = selectedProducts.length;
+    const confirmMessage = `Are you sure you want to ${action} ${productCount} selected product${productCount > 1 ? 's' : ''} ${hide ? 'from' : 'to'} customers?`;
+    
+    setConfirmAction({
+      message: confirmMessage,
+      onConfirm: () => executeHideShow(hide),
+      type: hide ? 'hide' : 'show',
+    });
+    setShowConfirmDialog(true);
+  };
+
+  // Handle bulk hide/show separately
+  const executeHideShow = async (hide: boolean) => {
+    setShowConfirmDialog(false);
+    setConfirmAction(null);
+
+    try {
+      const token = getCookie(PUREMOON_TOKEN_KEY);
+      
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/product/bulkHideShow`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          productPriceIds: selectedProducts,
+          hide: hide,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        toast({
+          title: "Error",
+          description: `HTTP ${response.status}: ${response.statusText}`,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const result = await response.json();
+
+      if (result.status) {
+        toast({
+          title: "Success",
+          description: result.message,
+          variant: "default",
+        });
+        onUpdate(); // Refresh the product list
+      } else {
+        toast({
+          title: "Error",
+          description: result.message || "Failed to update product visibility",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Network error occurred",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Handle bulk product condition update separately
+  const handleBulkProductCondition = async () => {
+    try {
+      const condition = form.getValues("productCondition");
+      
+      if (!condition) {
+        toast({
+          title: "Error",
+          description: "Please select a product condition",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const token = getCookie(PUREMOON_TOKEN_KEY);
+      
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/product/bulkProductCondition`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          productPriceIds: selectedProducts,
+          productCondition: condition,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        toast({
+          title: "Error",
+          description: `HTTP ${response.status}: ${response.statusText}`,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const result = await response.json();
+
+      if (result.status) {
+        toast({
+          title: "Success",
+          description: result.message,
+          variant: "default",
+        });
+        onUpdate(); // Refresh the product list
+        form.setValue("productCondition", ""); // Reset the form field
+      } else {
+        toast({
+          title: "Error",
+          description: result.message || "Failed to update product condition",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Network error occurred",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Handle bulk discount update separately
+  const handleBulkDiscountUpdate = async () => {
+    try {
+      const formData = form.getValues();
+      
+      // Validate required fields
+      if (!formData.consumerType || !formData.sellType) {
+        toast({
+          title: "Error",
+          description: "Please select both Consumer Type and Sell Type",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Prepare discount data
+      const discountData: any = {
+        consumerType: formData.consumerType,
+        sellType: formData.sellType,
+      };
+
+      // Add optional fields if they have values
+      if (formData.deliveryAfter !== undefined) discountData.deliveryAfter = Number(formData.deliveryAfter);
+      if (formData.vendorDiscount !== undefined) discountData.vendorDiscount = Number(formData.vendorDiscount);
+      if (formData.vendorDiscountType) discountData.vendorDiscountType = formData.vendorDiscountType;
+      if (formData.consumerDiscount !== undefined) discountData.consumerDiscount = Number(formData.consumerDiscount);
+      if (formData.consumerDiscountType) discountData.consumerDiscountType = formData.consumerDiscountType;
+      if (formData.minQuantity !== undefined) discountData.minQuantity = Number(formData.minQuantity);
+      if (formData.maxQuantity !== undefined) discountData.maxQuantity = Number(formData.maxQuantity);
+      if (formData.minCustomer !== undefined) discountData.minCustomer = Number(formData.minCustomer);
+      if (formData.maxCustomer !== undefined) discountData.maxCustomer = Number(formData.maxCustomer);
+      if (formData.minQuantityPerCustomer !== undefined) discountData.minQuantityPerCustomer = Number(formData.minQuantityPerCustomer);
+      if (formData.maxQuantityPerCustomer !== undefined) discountData.maxQuantityPerCustomer = Number(formData.maxQuantityPerCustomer);
+      if (formData.timeOpen !== undefined) discountData.timeOpen = Number(formData.timeOpen);
+      if (formData.timeClose !== undefined) discountData.timeClose = Number(formData.timeClose);
+
+      const token = getCookie(PUREMOON_TOKEN_KEY);
+      
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/product/bulkDiscountUpdate`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          productPriceIds: selectedProducts,
+          discountData: discountData,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        toast({
+          title: "Error",
+          description: `HTTP ${response.status}: ${response.statusText}`,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const result = await response.json();
+
+      if (result.status) {
+        toast({
+          title: "Success",
+          description: result.message,
+          variant: "default",
+        });
+        onUpdate(); // Refresh the product list
+        // Reset discount form fields
+        form.setValue("consumerType", "");
+        form.setValue("sellType", "");
+        form.setValue("deliveryAfter", 0);
+        form.setValue("vendorDiscount", 0);
+        form.setValue("vendorDiscountType", "");
+        form.setValue("consumerDiscount", 0);
+        form.setValue("consumerDiscountType", "");
+        form.setValue("minQuantity", 0);
+        form.setValue("maxQuantity", 0);
+        form.setValue("minCustomer", 0);
+        form.setValue("maxCustomer", 0);
+        form.setValue("minQuantityPerCustomer", 0);
+        form.setValue("maxQuantityPerCustomer", 0);
+        form.setValue("timeOpen", 0);
+        form.setValue("timeClose", 0);
+      } else {
+        toast({
+          title: "Error",
+          description: result.message || "Failed to update discounts",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Network error occurred",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Handle bulk where to sell update separately
+  const handleBulkWhereToSellUpdate = async () => {
+    try {
+      const formData = form.getValues();
+      
+      // Validate that at least one location field is selected
+      if (!selectedCountries.length && !selectedStates.length && !selectedCities.length) {
+        toast({
+          title: "Error",
+          description: "Please select at least one country, state, or city",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Prepare location data
+      const locationData: any = {};
+
+      // Add location fields if they have values
+      if (selectedCountries.length > 0) locationData.sellCountryIds = selectedCountries;
+      if (selectedStates.length > 0) locationData.sellStateIds = selectedStates;
+      if (selectedCities.length > 0) locationData.sellCityIds = selectedCities;
+      // Note: placeOfOriginId temporarily disabled due to database constraint issues
+      // if (formData.placeOfOriginId) locationData.placeOfOriginId = formData.placeOfOriginId;
+
+      const token = getCookie(PUREMOON_TOKEN_KEY);
+      
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/product/bulkWhereToSellUpdate`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          productPriceIds: selectedProducts,
+          locationData: locationData,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        toast({
+          title: "Error",
+          description: `HTTP ${response.status}: ${response.statusText}`,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const result = await response.json();
+
+      if (result.status) {
+        toast({
+          title: "Success",
+          description: result.message,
+          variant: "default",
+        });
+        onUpdate(); // Refresh the product list
+        // Reset location form fields
+        setSelectedCountries([]);
+        setSelectedStates([]);
+        setSelectedCities([]);
+        form.setValue("sellCountryIds", []);
+        form.setValue("sellStateIds", []);
+        form.setValue("sellCityIds", []);
+        // form.setValue("placeOfOriginId", ""); // Temporarily disabled
+      } else {
+        toast({
+          title: "Error",
+          description: result.message || "Failed to update where to sell settings",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Network error occurred",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Handle bulk ask for updates separately
+  const handleBulkAskForUpdate = async () => {
+    try {
+      const formData = form.getValues();
+      
+      // Validate that at least one ask for field is selected
+      if ((!watchAskForPrice || watchAskForPrice === "") && (!watchAskForStock || watchAskForStock === "")) {
+        toast({
+          title: "Error",
+          description: "Please select at least one Ask For option",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Prepare ask for data
+      const askForData: any = {};
+
+      // Add ask for fields if they have values
+      if (watchAskForPrice && watchAskForPrice !== "") askForData.askForPrice = watchAskForPrice;
+      if (watchAskForStock && watchAskForStock !== "") askForData.askForStock = watchAskForStock;
+
+      const token = getCookie(PUREMOON_TOKEN_KEY);
+      
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/product/bulkAskForUpdate`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          productPriceIds: selectedProducts,
+          askForData: askForData,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        toast({
+          title: "Error",
+          description: `HTTP ${response.status}: ${response.statusText}`,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const result = await response.json();
+
+      if (result.status) {
+        toast({
+          title: "Success",
+          description: result.message,
+          variant: "default",
+        });
+        onUpdate(); // Refresh the product list
+        // Reset ask for form fields
+        form.setValue("askForPrice", "");
+        form.setValue("askForStock", "");
+      } else {
+        toast({
+          title: "Error",
+          description: result.message || "Failed to update ask for settings",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Network error occurred",
+        variant: "destructive",
+      });
+    }
+  };
 
   const onSubmit = (data: any) => {
-    console.log("🔍 BulkEditSidebar - Raw form data:", data);
-    console.log("🔍 BulkEditSidebar - updateDiscounts:", data.updateDiscounts);
-    console.log("🔍 BulkEditSidebar - vendorDiscount:", data.vendorDiscount);
-    console.log("🔍 BulkEditSidebar - consumerDiscount:", data.consumerDiscount);
+    // Hide/show is handled by separate buttons, not form submission
     
     // Include fields only from checked sections
     const updateData: any = {};
@@ -117,22 +534,18 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
       if (data.branchId !== undefined && data.branchId !== "") updateData.branchId = data.branchId;
     }
     
-    // Where to Sell section data
-    if (data.updateWhereToSell) {
-      if (data.sellCountryIds !== undefined && data.sellCountryIds.length > 0) updateData.sellCountryIds = data.sellCountryIds;
-      if (data.sellStateIds !== undefined && data.sellStateIds.length > 0) updateData.sellStateIds = data.sellStateIds;
-      if (data.sellCityIds !== undefined && data.sellCityIds.length > 0) updateData.sellCityIds = data.sellCityIds;
-      if (data.placeOfOriginId !== undefined && data.placeOfOriginId !== "") updateData.placeOfOriginId = data.placeOfOriginId;
-    }
+    // Where to Sell section data - now handled by separate button/API
+    // Removed from general update to prevent conflicts
     
+    // Customer Visibility is handled separately - not included in general update
+
     // Basic section data
     if (data.updateBasic) {
-      if (data.hideAllSelected !== undefined) updateData.hideAllSelected = data.hideAllSelected;
       if (data.enableChat !== undefined) updateData.enableChat = data.enableChat;
-      if (data.productCondition !== undefined && data.productCondition !== "") updateData.productCondition = data.productCondition;
-      if (data.askForPrice !== undefined) updateData.askForPrice = data.askForPrice;
-      if (data.askForSell !== undefined) updateData.askForSell = data.askForSell;
     }
+    
+    // Ask For section data - now handled by separate button/API
+    // Removed from general update to prevent conflicts
     
     // Discounts section data
     if (data.updateDiscounts) {
@@ -157,17 +570,10 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
       if (data.timeClose !== undefined) updateData.timeClose = Number(data.timeClose);
     }
     
-    console.log("🔍 BulkEditSidebar - Processed updateData:", updateData);
-    console.log("🔍 BulkEditSidebar - updateData keys:", Object.keys(updateData));
-    console.log("🔍 BulkEditSidebar - updateData values:", Object.values(updateData));
-    
     // Check if there's any data to update
     if (Object.keys(updateData).length === 0) {
-      console.log("🔍 BulkEditSidebar - No data to update, skipping...");
       return;
     }
-    
-    console.log("🔍 BulkEditSidebar - Calling onBulkUpdate with:", updateData);
     onBulkUpdate(updateData);
   };
 
@@ -191,6 +597,13 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
     { label: t("flat"), value: "FLAT" },
   ];
 
+  const productConditions = () => {
+    return PRODUCT_CONDITION_LIST.map((item) => ({
+      label: t(item.label),
+      value: item.value,
+    }));
+  };
+
   // Memoized countries data
   const memoizedAllCountries = useMemo(() => {
     if (!countriesNewQuery.data?.data) return [];
@@ -203,10 +616,19 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
   const memoizedCountries = useMemo(() => {
     if (!countriesQuery.data?.data) return [];
     return countriesQuery.data.data.map((country: any) => ({
-      label: country.name,
+      label: country.name || country.countryName,
       value: country.id.toString(),
     }));
   }, [countriesQuery.data]);
+
+  // Memoized all states from selected countries
+  const memoizedAllStates = useMemo(() => {
+    const allStates: IOption[] = [];
+    Object.values(statesByCountry).forEach((states) => {
+      allStates.push(...states);
+    });
+    return allStates;
+  }, [statesByCountry]);
 
   // Memoized branches data
   const memoizedBranches = useMemo(() => {
@@ -221,15 +643,19 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
   const customStyles = {
     control: (provided: any) => ({
       ...provided,
-      minHeight: "40px",
+      minHeight: "32px",
+      height: "32px",
+      fontSize: "12px",
       border: "1px solid #d1d5db",
-      borderRadius: "6px",
+      borderRadius: "4px",
       "&:hover": {
         border: "1px solid #d1d5db",
       },
     }),
     option: (provided: any, state: any) => ({
       ...provided,
+      fontSize: "12px",
+      padding: "4px 8px",
       backgroundColor: state.isSelected ? "#3b82f6" : state.isFocused ? "#f3f4f6" : "white",
       color: state.isSelected ? "white" : "#374151",
     }),
@@ -338,12 +764,65 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
           </p>
         </div>
 
-        {/* Form */}
-        <form onSubmit={form.handleSubmit(onSubmit)} className="p-6 space-y-6">
+        {/* Tab Navigation */}
+        <div className="border-b border-gray-200 bg-white">
+          <nav className="flex space-x-4 px-4" aria-label="Tabs">
+            <button
+              type="button"
+              onClick={() => setActiveTab('warehouse-location')}
+              className={`py-2 px-2 border-b-2 font-medium text-sm whitespace-nowrap ${
+                activeTab === 'warehouse-location'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              } transition-colors`}
+            >
+              Location
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('product-basic')}
+              className={`py-2 px-2 border-b-2 font-medium text-sm whitespace-nowrap ${
+                activeTab === 'product-basic'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              } transition-colors`}
+            >
+              Product
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('ask-for')}
+              className={`py-2 px-2 border-b-2 font-medium text-sm whitespace-nowrap ${
+                activeTab === 'ask-for'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              } transition-colors`}
+            >
+              Ask For
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('discounts')}
+              className={`py-2 px-2 border-b-2 font-medium text-sm whitespace-nowrap ${
+                activeTab === 'discounts'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              } transition-colors`}
+            >
+              Discounts
+            </button>
+          </nav>
+        </div>
 
-          {/* Warehouse Section */}
-          <div className="space-y-4">
-            <div className="flex items-center space-x-2 mb-4">
+        {/* Form */}
+        <form onSubmit={form.handleSubmit(onSubmit)} className="p-4 space-y-3">
+
+          {/* Warehouse & Location Tab */}
+          {activeTab === 'warehouse-location' && (
+            <>
+              {/* Warehouse Section */}
+              <div className="space-y-2">
+            <div className="flex items-center space-x-2 mb-2">
               <div className="h-px bg-gray-300 flex-1"></div>
               <div className="flex items-center space-x-2 px-3 bg-white">
                 <Controller
@@ -369,10 +848,10 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
             </div>
 
             {/* Warehouse Fields */}
-            <div className={`space-y-4 ${!watchUpdateWarehouse ? 'opacity-50 pointer-events-none' : ''}`}>
+            <div className={`space-y-2 ${!watchUpdateWarehouse ? 'opacity-50 pointer-events-none' : ''}`}>
               {/* Branch Selection */}
-              <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
-                <Label className="text-sm font-medium text-gray-900 mb-3 block" translate="no">
+              <div className="p-3 bg-gray-50 rounded border border-gray-200">
+                <Label className="text-xs font-medium text-gray-900 mb-2 block" translate="no">
                   Select Branch
                 </Label>
                 <Controller
@@ -382,7 +861,7 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
                     <select
                       {...field}
                       disabled={!watchUpdateWarehouse}
-                      className="w-full h-10 capitalize rounded-md border border-gray-300 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+                      className="w-full h-8 capitalize rounded border border-gray-300 px-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
                     >
                       <option value="">{t("select")}</option>
                       {memoizedBranches.map((branch: IOption) => (
@@ -398,8 +877,8 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
           </div>
 
           {/* Where to Sell Section */}
-          <div className="space-y-4">
-            <div className="flex items-center space-x-2 mb-4">
+          <div className="space-y-2">
+            <div className="flex items-center space-x-2 mb-2">
               <div className="h-px bg-gray-300 flex-1"></div>
               <div className="flex items-center space-x-2 px-3 bg-white">
                 <Controller
@@ -425,10 +904,10 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
             </div>
 
             {/* Where to Sell Fields */}
-            <div className={`space-y-4 ${!watchUpdateWhereToSell ? 'opacity-50 pointer-events-none' : ''}`}>
+            <div className={`space-y-2 ${!watchUpdateWhereToSell ? 'opacity-50 pointer-events-none' : ''}`}>
               {/* Where to Sell - Select Multiple Country */}
-              <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
-                <Label className="text-sm font-medium text-gray-900 mb-3 block" translate="no">
+              <div className="p-3 bg-gray-50 rounded border border-gray-200">
+                <Label className="text-xs font-medium text-gray-900 mb-2 block" translate="no">
                   {t("select_multiple_country")}
                 </Label>
                 <Controller
@@ -478,88 +957,86 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
                 />
               </div>
 
-              {/* Select Multiple State */}
-              {selectedCountries.length > 0 && (
-                <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
-                  <Label className="text-sm font-medium text-gray-900 mb-3 block" translate="no">
-                    {t("select_multiple_state")}
-                  </Label>
-                  <Controller
-                    name="sellStateIds"
-                    control={form.control}
-                    render={({ field }) => (
-                      <ReactSelect
-                        isMulti
-                        isDisabled={!watchUpdateWhereToSell}
-                        onChange={(newValues: MultiValue<IOption>) => {
-                          const newStates = newValues || [];
-                          field.onChange(newStates);
-                          setSelectedStates([...newStates]);
+              {/* Select Multiple State - Always Available */}
+              <div className="p-3 bg-gray-50 rounded border border-gray-200">
+                <Label className="text-xs font-medium text-gray-900 mb-2 block" translate="no">
+                  {t("select_multiple_state")}
+                </Label>
+                <Controller
+                  name="sellStateIds"
+                  control={form.control}
+                  render={({ field }) => (
+                    <ReactSelect
+                      isMulti
+                      isDisabled={!watchUpdateWhereToSell}
+                      onChange={(newValues: MultiValue<IOption>) => {
+                        const newStates = newValues || [];
+                        field.onChange(newStates);
+                        setSelectedStates([...newStates]);
 
-                          // Remove cities that belong to removed states
-                          const updatedCities = selectedCities.filter((city) =>
-                            newStates.some((state) =>
-                              citiesByState[state.value]?.some(
-                                (c) => c.value === city.value,
-                              ),
+                        // Remove cities that belong to removed states
+                        const updatedCities = selectedCities.filter((city) =>
+                          newStates.some((state) =>
+                            citiesByState[state.value]?.some(
+                              (c) => c.value === city.value,
                             ),
-                          );
-                          setSelectedCities(updatedCities);
-                          form.setValue("sellCityIds", updatedCities);
-                        }}
-                        options={selectedCountries.flatMap(
-                          (country) => statesByCountry[country.value] || []
-                        )}
-                        value={selectedStates}
-                        styles={customStyles}
-                        instanceId="sellStateIds"
-                        placeholder={t("select")}
-                        onBlur={field.onBlur}
-                        name={field.name}
-                        ref={field.ref}
-                      />
-                    )}
-                  />
-                </div>
-              )}
+                          ),
+                        );
+                        setSelectedCities(updatedCities);
+                        form.setValue("sellCityIds", updatedCities);
+                      }}
+                      options={selectedCountries.length > 0 
+                        ? selectedCountries.flatMap((country) => statesByCountry[country.value] || [])
+                        : []
+                      }
+                      value={selectedStates}
+                      styles={customStyles}
+                      instanceId="sellStateIds"
+                      placeholder={selectedCountries.length > 0 ? t("select") : "Select countries first"}
+                      onBlur={field.onBlur}
+                      name={field.name}
+                      ref={field.ref}
+                    />
+                  )}
+                />
+              </div>
 
-              {/* Select Multiple City */}
-              {selectedStates.length > 0 && (
-                <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
-                  <Label className="text-sm font-medium text-gray-900 mb-3 block" translate="no">
-                    {t("select_multiple_city")}
-                  </Label>
-                  <Controller
-                    name="sellCityIds"
-                    control={form.control}
-                    render={({ field }) => (
-                      <ReactSelect
-                        isMulti
-                        isDisabled={!watchUpdateWhereToSell}
-                        onChange={(newValues: MultiValue<IOption>) => {
-                          const newCities = newValues || [];
-                          field.onChange(newCities);
-                          setSelectedCities([...newCities]);
-                        }}
-                        options={selectedStates.flatMap(
-                          (state) => citiesByState[state.value] || []
-                        )}
-                        value={selectedCities}
-                        styles={customStyles}
-                        instanceId="sellCityIds"
-                        placeholder={t("select")}
-                        onBlur={field.onBlur}
-                        name={field.name}
-                        ref={field.ref}
-                      />
-                    )}
-                  />
-                </div>
-              )}
+              {/* Select Multiple City - Always Available */}
+              <div className="p-3 bg-gray-50 rounded border border-gray-200">
+                <Label className="text-xs font-medium text-gray-900 mb-2 block" translate="no">
+                  {t("select_multiple_city")}
+                </Label>
+                <Controller
+                  name="sellCityIds"
+                  control={form.control}
+                  render={({ field }) => (
+                    <ReactSelect
+                      isMulti
+                      isDisabled={!watchUpdateWhereToSell}
+                      onChange={(newValues: MultiValue<IOption>) => {
+                        const newCities = newValues || [];
+                        field.onChange(newCities);
+                        setSelectedCities([...newCities]);
+                      }}
+                      options={selectedStates.length > 0 
+                        ? selectedStates.flatMap((state) => citiesByState[state.value] || [])
+                        : []
+                      }
+                      value={selectedCities}
+                      styles={customStyles}
+                      instanceId="sellCityIds"
+                      placeholder={selectedStates.length > 0 ? t("select") : "Select states first"}
+                      onBlur={field.onBlur}
+                      name={field.name}
+                      ref={field.ref}
+                    />
+                  )}
+                />
+              </div>
 
               {/* Place of Origin */}
-              <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
-                <Label className="text-sm font-medium text-gray-900 mb-3 block" translate="no">
+              <div className="p-3 bg-gray-50 rounded border border-gray-200">
+                <Label className="text-xs font-medium text-gray-900 mb-2 block" translate="no">
                   {t("place_of_origin")}
                 </Label>
                 <Controller
@@ -571,13 +1048,13 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
                       onChange={(newValue) => {
                         field.onChange(newValue?.value || "");
                       }}
-                      options={memoizedCountries}
-                      value={memoizedCountries.find(
+                      options={memoizedAllCountries}
+                      value={memoizedAllCountries.find(
                         (item: IOption) => item.value === field.value,
                       )}
                       styles={customStyles}
                       instanceId="placeOfOriginId"
-                      placeholder={t("select")}
+                      placeholder={memoizedAllCountries.length > 0 ? t("select") : "Loading countries..."}
                       onBlur={field.onBlur}
                       name={field.name}
                       ref={field.ref}
@@ -585,12 +1062,122 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
                   )}
                 />
               </div>
+
+              {/* Update Where to Sell Button */}
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={() => handleBulkWhereToSellUpdate()}
+                  disabled={!watchUpdateWhereToSell || (!selectedCountries.length && !selectedStates.length && !selectedCities.length)}
+                  className={`w-full px-3 py-1.5 text-xs font-medium rounded focus:outline-none focus:ring-1 focus:ring-offset-1 transition-colors ${
+                    watchUpdateWhereToSell && (selectedCountries.length > 0 || selectedStates.length > 0 || selectedCities.length > 0)
+                      ? 'bg-purple-600 text-white hover:bg-purple-700 focus:ring-purple-500'
+                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  }`}
+                >
+                  Update Where to Sell
+                </button>
+              </div>
+            </div>
+          </div>
+            </>
+          )}
+
+          {/* Product & Basic Tab */}
+          {activeTab === 'product-basic' && (
+            <>
+              {/* Product Condition Section */}
+              <div className="space-y-2">
+            <div className="flex items-center space-x-2 mb-2">
+              <div className="h-px bg-gray-300 flex-1"></div>
+              <div className="flex items-center space-x-2 px-3 bg-white">
+                <span className="text-sm font-medium text-gray-900" translate="no">
+                  Product Condition
+                </span>
+              </div>
+              <div className="h-px bg-gray-300 flex-1"></div>
+            </div>
+
+            {/* Product Condition Update */}
+            <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <div className="space-y-3">
+                <Label className="text-sm font-medium text-gray-900 mb-3 block" translate="no">
+                  Update Product Condition
+                </Label>
+                <Controller
+                  name="productCondition"
+                  control={form.control}
+                  render={({ field }) => (
+                    <select
+                      {...field}
+                      className="w-full h-10 rounded-md border border-gray-300 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="">{t("select")}</option>
+                      {productConditions().map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                />
+                <button
+                  type="button"
+                  onClick={() => handleBulkProductCondition()}
+                  disabled={!watchProductCondition}
+                  className={`w-full px-4 py-2 text-xs font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors ${
+                    watchProductCondition
+                      ? 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500'
+                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  }`}
+                >
+                  Update Product Condition
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Customer Visibility Section */}
+          <div className="space-y-2">
+            <div className="flex items-center space-x-2 mb-2">
+              <div className="h-px bg-gray-300 flex-1"></div>
+              <div className="flex items-center space-x-2 px-3 bg-white">
+                <span className="text-sm font-medium text-gray-900" translate="no">
+                  Customer Visibility
+                </span>
+              </div>
+              <div className="h-px bg-gray-300 flex-1"></div>
+            </div>
+
+            {/* Hide All Selected */}
+            <div className="p-3 bg-gray-50 rounded border border-gray-200">
+              <div className="space-y-2">
+                <Label className="text-xs font-medium text-gray-900" translate="no">
+                  Control Customer Visibility
+                </Label>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => showConfirmation(true)}
+                    className="flex-1 px-3 py-2 bg-red-600 text-white text-xs font-medium rounded hover:bg-red-700 focus:outline-none focus:ring-1 focus:ring-red-500 focus:ring-offset-1 transition-colors"
+                  >
+                    ⚠️ Hide from Customers
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => showConfirmation(false)}
+                    className="flex-1 px-3 py-2 bg-green-600 text-white text-xs font-medium rounded hover:bg-green-700 focus:outline-none focus:ring-1 focus:ring-green-500 focus:ring-offset-1 transition-colors"
+                  >
+                    ✅ Show to Customers
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Basic Section */}
-          <div className="space-y-4">
-            <div className="flex items-center space-x-2 mb-4">
+          <div className="space-y-2">
+            <div className="flex items-center space-x-2 mb-2">
               <div className="h-px bg-gray-300 flex-1"></div>
               <div className="flex items-center space-x-2 px-3 bg-white">
                 <Controller
@@ -616,34 +1203,9 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
             </div>
 
             {/* Basic Fields */}
-            <div className={`space-y-4 ${!watchUpdateBasic ? 'opacity-50 pointer-events-none' : ''}`}>
-              {/* Hide All Selected */}
-              <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
-                <div className="flex items-center space-x-3">
-                  <Controller
-                    name="hideAllSelected"
-                    control={form.control}
-                    render={({ field }) => (
-                      <input
-                        type="checkbox"
-                        checked={field.value}
-                        onChange={field.onChange}
-                        onBlur={field.onBlur}
-                        name={field.name}
-                        ref={field.ref}
-                        disabled={!watchUpdateBasic}
-                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed"
-                      />
-                    )}
-                  />
-                  <Label className="text-sm font-medium text-gray-900" translate="no">
-                    Hide All Selected
-                  </Label>
-                </div>
-              </div>
-
+            <div className={`space-y-2 ${!watchUpdateBasic ? 'opacity-50 pointer-events-none' : ''}`}>
               {/* Enable Chat */}
-              <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <div className="p-3 bg-gray-50 rounded border border-gray-200">
                 <div className="flex items-center space-x-3">
                   <Controller
                     name="enableChat"
@@ -667,84 +1229,113 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
                 </div>
               </div>
 
-              {/* Product Condition */}
-              <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
-                <Label className="text-sm font-medium text-gray-900 mb-3 block" translate="no">
-                  Product Condition
+            </div>
+          </div>
+            </>
+          )}
+
+          {/* Ask For Settings Tab */}
+          {activeTab === 'ask-for' && (
+            <>
+              {/* Ask For Section */}
+              <div className="space-y-2">
+            <div className="flex items-center space-x-2 mb-2">
+              <div className="h-px bg-gray-300 flex-1"></div>
+              <div className="flex items-center space-x-2 px-3 bg-white">
+                <Controller
+                  name="updateAskFor"
+                  control={form.control}
+                  render={({ field }) => (
+                    <input
+                      type="checkbox"
+                      checked={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                      name={field.name}
+                      ref={field.ref}
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    />
+                  )}
+                />
+                <span className="text-sm font-medium text-gray-900" translate="no">
+                  Ask For Settings
+                </span>
+              </div>
+              <div className="h-px bg-gray-300 flex-1"></div>
+            </div>
+
+            {/* Ask For Fields */}
+            <div className={`space-y-2 ${!watchUpdateAskFor ? 'opacity-50 pointer-events-none' : ''}`}>
+              {/* Ask for Price */}
+              <div className="p-3 bg-gray-50 rounded border border-gray-200">
+                <Label className="text-xs font-medium text-gray-900 mb-2 block" translate="no">
+                  Ask for Price
                 </Label>
                 <Controller
-                  name="productCondition"
+                  name="askForPrice"
                   control={form.control}
                   render={({ field }) => (
                     <select
                       {...field}
-                      disabled={!watchUpdateBasic}
-                      className="w-full h-10 rounded-md border border-gray-300 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+                      disabled={!watchUpdateAskFor}
+                      className="w-full h-8 capitalize rounded border border-gray-300 px-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
                     >
-                      <option value="">{t("select")}</option>
-                      <option value="NEW">New</option>
-                      <option value="USED">Used</option>
-                      <option value="REFURBISHED">Refurbished</option>
+                      <option value="">Select</option>
+                      <option value="true">Yes</option>
+                      <option value="false">No</option>
                     </select>
                   )}
                 />
               </div>
 
-              {/* Ask for Price */}
-              <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
-                <div className="flex items-center space-x-3">
-                  <Controller
-                    name="askForPrice"
-                    control={form.control}
-                    render={({ field }) => (
-                      <input
-                        type="checkbox"
-                        checked={field.value}
-                        onChange={field.onChange}
-                        onBlur={field.onBlur}
-                        name={field.name}
-                        ref={field.ref}
-                        disabled={!watchUpdateBasic}
-                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed"
-                      />
-                    )}
-                  />
-                  <Label className="text-sm font-medium text-gray-900" translate="no">
-                    Ask for Price
-                  </Label>
-                </div>
+              {/* Ask for Stock */}
+              <div className="p-3 bg-gray-50 rounded border border-gray-200">
+                <Label className="text-xs font-medium text-gray-900 mb-2 block" translate="no">
+                  Ask for Stock
+                </Label>
+                <Controller
+                  name="askForStock"
+                  control={form.control}
+                  render={({ field }) => (
+                    <select
+                      {...field}
+                      disabled={!watchUpdateAskFor}
+                      className="w-full h-8 capitalize rounded border border-gray-300 px-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+                    >
+                      <option value="">Select</option>
+                      <option value="true">Yes</option>
+                      <option value="false">No</option>
+                    </select>
+                  )}
+                />
               </div>
 
-              {/* Ask for Sell */}
-              <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
-                <div className="flex items-center space-x-3">
-                  <Controller
-                    name="askForSell"
-                    control={form.control}
-                    render={({ field }) => (
-                      <input
-                        type="checkbox"
-                        checked={field.value}
-                        onChange={field.onChange}
-                        onBlur={field.onBlur}
-                        name={field.name}
-                        ref={field.ref}
-                        disabled={!watchUpdateBasic}
-                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed"
-                      />
-                    )}
-                  />
-                  <Label className="text-sm font-medium text-gray-900" translate="no">
-                    Ask for Sell
-                  </Label>
-                </div>
+              {/* Update Ask For Button */}
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={() => handleBulkAskForUpdate()}
+                  disabled={!watchUpdateAskFor || (!watchAskForPrice && !watchAskForStock) || (watchAskForPrice === "" && watchAskForStock === "")}
+                  className={`w-full px-3 py-1.5 text-xs font-medium rounded focus:outline-none focus:ring-1 focus:ring-offset-1 transition-colors ${
+                    watchUpdateAskFor && (watchAskForPrice && watchAskForPrice !== "" || watchAskForStock && watchAskForStock !== "")
+                      ? 'bg-orange-600 text-white hover:bg-orange-700 focus:ring-orange-500'
+                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  }`}
+                >
+                  Update Ask For Settings
+                </button>
               </div>
             </div>
           </div>
+            </>
+          )}
 
-          {/* Discounts Section */}
-          <div className="space-y-4">
-            <div className="flex items-center space-x-2 mb-4">
+          {/* Discounts Tab */}
+          {activeTab === 'discounts' && (
+            <>
+              {/* Discounts Section */}
+              <div className="space-y-2">
+            <div className="flex items-center space-x-2 mb-2">
               <div className="h-px bg-gray-300 flex-1"></div>
               <div className="flex items-center space-x-2 px-3 bg-white">
                 <Controller
@@ -1136,7 +1727,7 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
                 />
               </div>
 
-              {/* Quantity Per Customer - show for BUYGROUP or WHOLESALE_PRODUCT sell type */}
+              {/* Quantity Per Customer - show for BUYGROUP or WHOLESALE_PRODUCT sell type with any consumer type */}
               {(watchSellType === "BUYGROUP" || watchSellType === "WHOLESALE_PRODUCT") && (
                 <>
                   {/* Min Quantity Per Customer */}
@@ -1381,8 +1972,8 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
                 </div>
               )}
 
-              {/* Trial Product Fields - Show for TRIAL_PRODUCT sell type and EVERYONE consumer type */}
-              {watchSellType === "TRIAL_PRODUCT" && watchConsumerType === "EVERYONE" && (
+              {/* Trial Product Fields - Show for TRIAL_PRODUCT sell type with any consumer type */}
+              {watchSellType === "TRIAL_PRODUCT" && (
                 <>
                   {/* Max Quantity Per Customer for Trial Product */}
                   <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
@@ -1448,12 +2039,25 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
                 </div>
               )
             )}
+
+            {/* Update Discounts Button - Show only when Consumer Type and Sell Type are selected */}
+            {watchConsumerType && watchSellType && watchUpdateDiscounts && (
+              <div className="pt-4">
+                <button
+                  type="button"
+                  onClick={() => handleBulkDiscountUpdate()}
+                  className="w-full px-4 py-2 bg-green-600 text-white text-xs font-medium rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors"
+                >
+                  Update Discounts
+                </button>
+              </div>
+            )}
           </div>
-
-
+            </>
+          )}
 
           {/* Submit Button */}
-          <div className="pt-4">
+          {/* <div className="pt-4">
             <Button
               type="submit"
               disabled={isLoading}
@@ -1474,9 +2078,59 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
                 </span>
               )}
             </Button>
-          </div>
+          </div> */}
         </form>
       </div>
+
+      {/* Custom Confirmation Dialog */}
+      {showConfirmDialog && confirmAction && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded shadow-xl max-w-sm w-full mx-4">
+            <div className="p-4">
+              <div className="flex items-center mb-3">
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center mr-2 ${
+                  confirmAction.type === 'hide' 
+                    ? 'bg-red-100 text-red-600' 
+                    : 'bg-green-100 text-green-600'
+                }`}>
+                  {confirmAction.type === 'hide' ? '⚠️' : '✅'}
+                </div>
+                <h3 className="text-base font-medium text-gray-900">
+                  Confirm Action
+                </h3>
+              </div>
+              
+              <p className="text-sm text-gray-600 mb-4">
+                {confirmAction.message}
+              </p>
+              
+              <div className="flex gap-2 justify-end">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowConfirmDialog(false);
+                    setConfirmAction(null);
+                  }}
+                  className="px-3 py-1.5 text-xs text-gray-600 border border-gray-300 rounded hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-gray-500 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={confirmAction.onConfirm}
+                  className={`px-3 py-1.5 text-xs text-white rounded focus:outline-none focus:ring-1 transition-colors ${
+                    confirmAction.type === 'hide'
+                      ? 'bg-red-600 hover:bg-red-700 focus:ring-red-500'
+                      : 'bg-green-600 hover:bg-green-700 focus:ring-green-500'
+                  }`}
+                >
+                  {confirmAction.type === 'hide' ? 'Hide Products' : 'Show Products'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </aside>
   );
 };

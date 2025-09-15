@@ -713,8 +713,8 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
               </>
             ) : null}
 
-            {/* Trial Product Fields */}
-            {watchSellType === "TRIAL_PRODUCT" && watchConsumerType === "EVERYONE" ? (
+            {/* Trial Product Fields - Show for TRIAL_PRODUCT sell type with any consumer type */}
+            {watchSellType === "TRIAL_PRODUCT" ? (
               <>
                 <CounterTextInputField
                   label={t("max_quantity_per_customer")}
@@ -729,35 +729,9 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
               </>
             ) : null}
 
-            {/* Wholesale Product Fields */}
-            {watchSellType === "WHOLESALE_PRODUCT" && watchConsumerType === "EVERYONE" ? (
-              <>
-                <CounterTextInputField
-                  label={t("min_quantity_per_customer")}
-                  name="productPriceList.[0].minQuantityPerCustomer"
-                  placeholder={t("min")}
-                  errorMessage={
-                    minQuantityPerCustomerMessage
-                      ? minQuantityPerCustomerMessage.toString()
-                      : undefined
-                  }
-                />
 
-                <CounterTextInputField
-                  label={t("max_quantity_per_customer")}
-                  name="productPriceList.[0].maxQuantityPerCustomer"
-                  placeholder={t("max")}
-                  errorMessage={
-                    maxQuantityPerCustomerMessage
-                      ? maxQuantityPerCustomerMessage.toString()
-                      : undefined
-                  }
-                />
-              </>
-            ) : null}
-
-
-            {watchSellType === "NORMALSELL" || watchSellType === "BUYGROUP" ? (
+            {/* Min/Max Quantity Per Customer - Show for NORMALSELL, BUYGROUP, or WHOLESALE_PRODUCT sell types */}
+            {watchSellType === "NORMALSELL" || watchSellType === "BUYGROUP" || watchSellType === "WHOLESALE_PRODUCT" ? (
               <>
                 <CounterTextInputField
                   label={t("min_quantity_per_customer")}

@@ -114,7 +114,8 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
 
   const updateStatus = async (status: string) => {
     try {
-      const newStatus = status === "ACTIVE" ? "INACTIVE" : "ACTIVE";
+      // Toggle between ACTIVE and HIDDEN for customer visibility
+      const newStatus = status === "ACTIVE" ? "HIDDEN" : "ACTIVE";
       const response = await statusUpdate.mutateAsync({
         productPriceId: id,
         status: newStatus,
@@ -993,8 +994,8 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                </div>
              )}
 
-             {/* Min Quantity Per Customer - Show only for BUYGROUP sell type */}
-             {sellType === "BUYGROUP" && (
+             {/* Min Quantity Per Customer - Show for BUYGROUP or WHOLESALE_PRODUCT sell type */}
+             {(sellType === "BUYGROUP" || sellType === "WHOLESALE_PRODUCT") && (
                <div className="space-y-1">
                  <Label className="text-xs font-medium">{t("min_quantity_per_customer")}</Label>
                  <div className="flex items-center space-x-1">
@@ -1020,8 +1021,8 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                </div>
              )}
 
-             {/* Max Quantity Per Customer - Show only for BUYGROUP sell type */}
-             {sellType === "BUYGROUP" && (
+             {/* Max Quantity Per Customer - Show for BUYGROUP or WHOLESALE_PRODUCT sell type */}
+             {(sellType === "BUYGROUP" || sellType === "WHOLESALE_PRODUCT") && (
                <div className="space-y-1">
                  <Label className="text-xs font-medium">{t("max_quantity_per_customer")}</Label>
                  <div className="flex items-center space-x-1">
@@ -1047,61 +1048,65 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                </div>
              )}
 
-             {/* Trial Product Fields - Show only for TRIAL_PRODUCT sell type and EVERYONE consumer type */}
-             {sellType === "TRIAL_PRODUCT" && consumerType === "EVERYONE" && (
+             {/* Trial Product Fields - Show for TRIAL_PRODUCT sell type with any consumer type */}
+             {sellType === "TRIAL_PRODUCT" && (
                <>
-                 {/* Vendor Discount for Trial Product */}
-                 <div className="space-y-1">
-                   <Label className="text-xs font-medium">{t("vendor_discount")}</Label>
-                   <div className="flex items-center space-x-1">
-                     <button
-                       onClick={(e) => { e.preventDefault(); decreaseVendorDiscount() }}
-                       className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
-                     >
-                       -
-                     </button>
-                     <input
-                       type="number"
-                       value={vendorDiscount}
-                       onChange={(e) => setVendor(Number(e.target.value))}
-                       className="h-6 w-12 rounded border border-gray-300 text-center text-xs"
-                     />
-                     <button
-                       onClick={(e) => { e.preventDefault(); increaseVendorDiscount() }}
-                       className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
-                     >
-                       +
-                     </button>
+                 {/* Vendor Discount for Trial Product - Show for VENDORS/EVERYONE consumer type */}
+                 {(consumerType === "VENDORS" || consumerType === "EVERYONE") && (
+                   <div className="space-y-1">
+                     <Label className="text-xs font-medium">{t("vendor_discount")}</Label>
+                     <div className="flex items-center space-x-1">
+                       <button
+                         onClick={(e) => { e.preventDefault(); decreaseVendorDiscount() }}
+                         className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                       >
+                         -
+                       </button>
+                       <input
+                         type="number"
+                         value={vendorDiscount}
+                         onChange={(e) => setVendor(Number(e.target.value))}
+                         className="h-6 w-12 rounded border border-gray-300 text-center text-xs"
+                       />
+                       <button
+                         onClick={(e) => { e.preventDefault(); increaseVendorDiscount() }}
+                         className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                       >
+                         +
+                       </button>
+                     </div>
                    </div>
-                 </div>
+                 )}
 
-                 {/* Consumer Discount for Trial Product */}
-                 <div className="space-y-1">
-                   <Label className="text-xs font-medium">{t("consumer_discount")}</Label>
-                   <div className="flex items-center space-x-1">
-                     <button
-                       onClick={(e) => { e.preventDefault(); decreaseConsumerDiscount() }}
-                       className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
-                     >
-                       -
-                     </button>
-                     <input
-                       type="number"
-                       value={consumerDiscount}
-                       onChange={(e) => setConsumerDiscount(Number(e.target.value))}
-                       className="h-6 w-12 rounded border border-gray-300 text-center text-xs"
-                     />
-                     <button
-                       onClick={(e) => { e.preventDefault(); increaseConsumerDiscount() }}
-                       className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
-                     >
-                       +
-                     </button>
+                 {/* Consumer Discount for Trial Product - Show for CONSUMER/EVERYONE consumer type */}
+                 {(consumerType === "CONSUMER" || consumerType === "EVERYONE") && (
+                   <div className="space-y-1">
+                     <Label className="text-xs font-medium">{t("consumer_discount")}</Label>
+                     <div className="flex items-center space-x-1">
+                       <button
+                         onClick={(e) => { e.preventDefault(); decreaseConsumerDiscount() }}
+                         className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                       >
+                         -
+                       </button>
+                       <input
+                         type="number"
+                         value={consumerDiscount}
+                         onChange={(e) => setConsumerDiscount(Number(e.target.value))}
+                         className="h-6 w-12 rounded border border-gray-300 text-center text-xs"
+                       />
+                       <button
+                         onClick={(e) => { e.preventDefault(); increaseConsumerDiscount() }}
+                         className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                       >
+                         +
+                       </button>
+                     </div>
                    </div>
-                 </div>
+                 )}
 
-                 {/* Vendor Discount Type for Trial Product */}
-                 {(vendorDiscount > 0 || vendorDiscountType) && (
+                 {/* Vendor Discount Type for Trial Product - Show for VENDORS/EVERYONE consumer type */}
+                 {(consumerType === "VENDORS" || consumerType === "EVERYONE") && (vendorDiscount > 0 || vendorDiscountType) && (
                    <div className="space-y-1">
                      <Label className="text-xs font-medium">{t("vendor_discount_type")}</Label>
                      <select
@@ -1115,8 +1120,8 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                    </div>
                  )}
 
-                 {/* Consumer Discount Type for Trial Product */}
-                 {(consumerDiscount > 0 || consumerDiscountType) && (
+                 {/* Consumer Discount Type for Trial Product - Show for CONSUMER/EVERYONE consumer type */}
+                 {(consumerType === "CONSUMER" || consumerType === "EVERYONE") && (consumerDiscount > 0 || consumerDiscountType) && (
                    <div className="space-y-1">
                      <Label className="text-xs font-medium">{t("consumer_discount_type")}</Label>
                      <select
@@ -1157,61 +1162,65 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                </>
              )}
 
-             {/* Wholesale Product Fields - Show only for WHOLESALE_PRODUCT sell type and EVERYONE consumer type */}
-             {sellType === "WHOLESALE_PRODUCT" && consumerType === "EVERYONE" && (
+             {/* Wholesale Product Fields - Show for WHOLESALE_PRODUCT sell type with any consumer type */}
+             {sellType === "WHOLESALE_PRODUCT" && (
                <>
-                 {/* Vendor Discount for Wholesale Product */}
-                 <div className="space-y-1">
-                   <Label className="text-xs font-medium">{t("vendor_discount")}</Label>
-                   <div className="flex items-center space-x-1">
-                     <button
-                       onClick={(e) => { e.preventDefault(); decreaseVendorDiscount() }}
-                       className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
-                     >
-                       -
-                     </button>
-                     <input
-                       type="number"
-                       value={vendorDiscount}
-                       onChange={(e) => setVendor(Number(e.target.value))}
-                       className="h-6 w-12 rounded border border-gray-300 text-center text-xs"
-                     />
-                     <button
-                       onClick={(e) => { e.preventDefault(); increaseVendorDiscount() }}
-                       className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
-                     >
-                       +
-                     </button>
+                 {/* Vendor Discount for Wholesale Product - Show for VENDORS/EVERYONE consumer type */}
+                 {(consumerType === "VENDORS" || consumerType === "EVERYONE") && (
+                   <div className="space-y-1">
+                     <Label className="text-xs font-medium">{t("vendor_discount")}</Label>
+                     <div className="flex items-center space-x-1">
+                       <button
+                         onClick={(e) => { e.preventDefault(); decreaseVendorDiscount() }}
+                         className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                       >
+                         -
+                       </button>
+                       <input
+                         type="number"
+                         value={vendorDiscount}
+                         onChange={(e) => setVendor(Number(e.target.value))}
+                         className="h-6 w-12 rounded border border-gray-300 text-center text-xs"
+                       />
+                       <button
+                         onClick={(e) => { e.preventDefault(); increaseVendorDiscount() }}
+                         className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                       >
+                         +
+                       </button>
+                     </div>
                    </div>
-                 </div>
+                 )}
 
-                 {/* Consumer Discount for Wholesale Product */}
-                 <div className="space-y-1">
-                   <Label className="text-xs font-medium">{t("consumer_discount")}</Label>
-                   <div className="flex items-center space-x-1">
-                     <button
-                       onClick={(e) => { e.preventDefault(); decreaseConsumerDiscount() }}
-                       className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
-                     >
-                       -
-                     </button>
-                     <input
-                       type="number"
-                       value={consumerDiscount}
-                       onChange={(e) => setConsumerDiscount(Number(e.target.value))}
-                       className="h-6 w-12 rounded border border-gray-300 text-center text-xs"
-                     />
-                     <button
-                       onClick={(e) => { e.preventDefault(); increaseConsumerDiscount() }}
-                       className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
-                     >
-                       +
-                     </button>
+                 {/* Consumer Discount for Wholesale Product - Show for CONSUMER/EVERYONE consumer type */}
+                 {(consumerType === "CONSUMER" || consumerType === "EVERYONE") && (
+                   <div className="space-y-1">
+                     <Label className="text-xs font-medium">{t("consumer_discount")}</Label>
+                     <div className="flex items-center space-x-1">
+                       <button
+                         onClick={(e) => { e.preventDefault(); decreaseConsumerDiscount() }}
+                         className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                       >
+                         -
+                       </button>
+                       <input
+                         type="number"
+                         value={consumerDiscount}
+                         onChange={(e) => setConsumerDiscount(Number(e.target.value))}
+                         className="h-6 w-12 rounded border border-gray-300 text-center text-xs"
+                       />
+                       <button
+                         onClick={(e) => { e.preventDefault(); increaseConsumerDiscount() }}
+                         className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
+                       >
+                         +
+                       </button>
+                     </div>
                    </div>
-                 </div>
+                 )}
 
-                 {/* Vendor Discount Type for Wholesale Product */}
-                 {(vendorDiscount > 0 || vendorDiscountType) && (
+                 {/* Vendor Discount Type for Wholesale Product - Show for VENDORS/EVERYONE consumer type */}
+                 {(consumerType === "VENDORS" || consumerType === "EVERYONE") && (vendorDiscount > 0 || vendorDiscountType) && (
                    <div className="space-y-1">
                      <Label className="text-xs font-medium">{t("vendor_discount_type")}</Label>
                      <select
@@ -1225,8 +1234,8 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                    </div>
                  )}
 
-                 {/* Consumer Discount Type for Wholesale Product */}
-                 {(consumerDiscount > 0 || consumerDiscountType) && (
+                 {/* Consumer Discount Type for Wholesale Product - Show for CONSUMER/EVERYONE consumer type */}
+                 {(consumerType === "CONSUMER" || consumerType === "EVERYONE") && (consumerDiscount > 0 || consumerDiscountType) && (
                    <div className="space-y-1">
                      <Label className="text-xs font-medium">{t("consumer_discount_type")}</Label>
                      <select
@@ -1240,55 +1249,6 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                    </div>
                  )}
 
-                 {/* Min Quantity Per Customer for Wholesale Product */}
-                 <div className="space-y-1">
-                   <Label className="text-xs font-medium">{t("min_quantity_per_customer")}</Label>
-                   <div className="flex items-center space-x-1">
-                     <button
-                       onClick={(e) => { e.preventDefault(); decreaseMinQuantityCustomer() }}
-                       className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
-                     >
-                       -
-                     </button>
-                     <input
-                       type="number"
-                       value={minQuantityCustomer}
-                       onChange={(e) => setMinQuantityCustomer(Number(e.target.value))}
-                       className="h-6 w-12 rounded border border-gray-300 text-center text-xs"
-                     />
-                     <button
-                       onClick={(e) => { e.preventDefault(); increaseMinQuantityCustomer() }}
-                       className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
-                     >
-                       +
-                     </button>
-                   </div>
-                 </div>
-
-                 {/* Max Quantity Per Customer for Wholesale Product */}
-                 <div className="space-y-1">
-                   <Label className="text-xs font-medium">{t("max_quantity_per_customer")}</Label>
-                   <div className="flex items-center space-x-1">
-                     <button
-                       onClick={(e) => { e.preventDefault(); decreaseMaxQuantityCustomer() }}
-                       className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
-                     >
-                       -
-                     </button>
-                     <input
-                       type="number"
-                       value={maxQuantityCustomer}
-                       onChange={(e) => setMaxQuantityCustomer(Number(e.target.value))}
-                       className="h-6 w-12 rounded border border-gray-300 text-center text-xs"
-                     />
-                     <button
-                       onClick={(e) => { e.preventDefault(); increaseMaxQuantityCustomer() }}
-                       className="flex h-6 w-6 items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 text-xs"
-                     >
-                       +
-                     </button>
-                   </div>
-                 </div>
                </>
              )}
 

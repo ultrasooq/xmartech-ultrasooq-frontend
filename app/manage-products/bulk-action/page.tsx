@@ -110,14 +110,13 @@ const BulkActionPage = () => {
         if (updateData.sellStateIds !== undefined) productPriceData.sellStateIds = updateData.sellStateIds;
         if (updateData.sellCityIds !== undefined) productPriceData.sellCityIds = updateData.sellCityIds;
         if (updateData.placeOfOriginId !== undefined) productPriceData.placeOfOriginId = updateData.placeOfOriginId;
-        if (updateData.hideAllSelected !== undefined) productPriceData.hideAllSelected = updateData.hideAllSelected;
+        if (updateData.enableChat !== undefined) productPriceData.enableChat = updateData.enableChat;
         if (updateData.productCondition !== undefined) productPriceData.productCondition = updateData.productCondition;
         if (updateData.askForPrice !== undefined) productPriceData.askForPrice = updateData.askForPrice;
         if (updateData.askForSell !== undefined) productPriceData.askForSell = updateData.askForSell;
         
         // Other fields
         if (updateData.deliveryAfter !== undefined) productPriceData.deliveryAfter = Number(updateData.deliveryAfter);
-        if (updateData.status !== undefined) productPriceData.status = updateData.status;
         if (updateData.consumerType !== undefined) productPriceData.consumerType = updateData.consumerType;
         if (updateData.sellType !== undefined) productPriceData.sellType = updateData.sellType;
         if (updateData.vendorDiscount !== undefined) productPriceData.vendorDiscount = Number(updateData.vendorDiscount);
@@ -255,24 +254,25 @@ const BulkActionPage = () => {
                 Managing Products: {selectedProducts.length} products selected
               </p>
             </div>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setDebugMode(!debugMode)}
-                className={`px-4 py-2 rounded transition-colors ${
-                  debugMode 
-                    ? 'bg-yellow-500 text-white hover:bg-yellow-600' 
-                    : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
-                }`}
+            <button
+              onClick={() => router.push("/manage-products")}
+              className="flex items-center gap-2 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors"
+            >
+              <svg 
+                className="w-4 h-4" 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
               >
-                {debugMode ? '🐛 Debug ON' : '🐛 Debug OFF'}
-              </button>
-              <button
-                onClick={() => router.push("/manage-products")}
-                className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors"
-              >
-                Back to Manage Products
-              </button>
-            </div>
+                <path 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  strokeWidth={2} 
+                  d="M15 19l-7-7 7-7" 
+                />
+              </svg>
+              Back to Manage Products
+            </button>
           </div>
         </div>
 
@@ -340,6 +340,8 @@ const BulkActionPage = () => {
                 <div className="sticky top-6">
               <BulkEditSidebar
                 onBulkUpdate={handleBulkUpdate}
+                selectedProducts={selectedProducts.map(product => product.id)}
+                onUpdate={() => allProductsQuery.refetch()}
                 isLoading={isUpdating || updateMultipleProductPriceMutation.isPending}
               />
               </div>

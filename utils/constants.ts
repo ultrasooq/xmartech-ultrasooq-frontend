@@ -389,6 +389,10 @@ export const PRODUCT_CONDITION_LIST = [
     label: "old",
     value: "OLD",
   },
+  {
+    label: "refurbished",
+    value: "REFURBISHED",
+  },
 ];
 
 export const MONTHS: string[] = [
