@@ -1,33 +1,33 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
 import AccordionMultiSelectV2 from "@/components/shared/AccordionMultiSelectV2";
-import { Label } from "@/components/ui/label";
-import { Controller, useFormContext } from "react-hook-form";
 import { FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import Image from "next/image";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
+import Image from "next/image";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Controller, useFormContext } from "react-hook-form";
 // import { useUploadFile } from "@/apis/queries/upload.queries";
-import { v4 as uuidv4 } from "uuid";
-import { ISelectOptions } from "@/utils/types/common.types";
 import {
   // useCategories,
   useCategory,
   useSubCategoryById,
 } from "@/apis/queries/category.queries";
-import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
-import AddImageContent from "../profile/AddImageContent";
 import { fetchSubCategoriesById } from "@/apis/requests/category.requests";
-import CloseWhiteIcon from "@/public/images/close-white.svg";
-import ReactPlayer from "react-player/lazy";
 import BrandSelect from "@/components/shared/BrandSelect";
-import { PRODUCT_CONDITION_LIST } from "@/utils/constants";
-import DescriptionSection from "../createProduct/DescriptionSection";
-import PriceSection from "../createProduct/PriceSection";
-import DynamicFormViewSection from "../createProduct/DynamicFormViewSection";
-import ReactSelect from "react-select";
-import { isImage, isVideo } from "@/utils/helper";
-import { useTranslations } from "next-intl";
+import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import { useAuth } from "@/context/AuthContext";
+import CloseWhiteIcon from "@/public/images/close-white.svg";
+import { PRODUCT_CONDITION_LIST } from "@/utils/constants";
+import { isImage, isVideo } from "@/utils/helper";
+import { ISelectOptions } from "@/utils/types/common.types";
+import { useTranslations } from "next-intl";
+import ReactPlayer from "react-player";
+import ReactSelect from "react-select";
+import { v4 as uuidv4 } from "uuid";
+import DescriptionSection from "../createProduct/DescriptionSection";
+import DynamicFormViewSection from "../createProduct/DynamicFormViewSection";
+import PriceSection from "../createProduct/PriceSection";
+import AddImageContent from "../profile/AddImageContent";
 
 const customStyles = {
   control: (base: any) => ({
@@ -154,7 +154,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
       <div className="grid w-full grid-cols-4 gap-x-5">
         <div className="col-span-4 mx-auto mb-3 w-full max-w-[950px] rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-xs sm:p-4 lg:p-8">
           <div className="flex w-full flex-wrap">
-            <div className=" w-full">
+            <div className="w-full">
               <div className="flex flex-wrap">
                 <div className="form-groups-common-sec-s1">
                   <h3 dir={langDir} translate="no">
@@ -324,7 +324,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                   <div className="relative mb-4 w-full">
                     <div className="space-y-2">
                       <label
-                        className="text-sm font-medium leading-none text-color-dark"
+                        className="text-color-dark text-sm leading-none font-medium"
                         translate="no"
                       >
                         {t("product_image")}
@@ -480,7 +480,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                           )}
                           <div className="relative mb-3 w-full pl-2">
                             <div className="absolute m-auto flex h-48 w-full cursor-pointer flex-wrap items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-white text-center">
-                              <div className="text-sm font-medium leading-4 text-color-dark">
+                              <div className="text-color-dark text-sm leading-4 font-medium">
                                 <Image
                                   src="/images/plus.png"
                                   className="m-auto mb-3"

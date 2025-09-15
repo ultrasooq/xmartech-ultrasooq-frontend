@@ -1,22 +1,23 @@
 "use client";
-import React, { useEffect, useMemo, useRef, useState, use } from "react";
-import {
-  IBrands,
-  ISelectOptions,
-  TrendingProduct,
-} from "@/utils/types/common.types";
 import { useBrands } from "@/apis/queries/masters.queries";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   useAllBuyGroupProducts,
   useProductVariant,
 } from "@/apis/queries/product.queries";
-import ProductCard from "@/components/modules/trending/ProductCard";
+import FilterMenuIcon from "@/components/icons/FilterMenuIcon";
 import GridIcon from "@/components/icons/GridIcon";
 import ListIcon from "@/components/icons/ListIcon";
-import FilterMenuIcon from "@/components/icons/FilterMenuIcon";
+import ProductCard from "@/components/modules/trending/ProductCard";
 import ProductTable from "@/components/modules/trending/ProductTable";
-import { debounce } from "lodash";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -26,53 +27,51 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+  IBrands,
+  ISelectOptions,
+  TrendingProduct,
+} from "@/utils/types/common.types";
+import { debounce } from "lodash";
+import { use, useEffect, useMemo, useRef, useState } from "react";
 import ReactSlider from "react-slider";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 // import { stripHTML } from "@/utils/helper";
 // import Image from "next/image";
 // import TrendingBannerImage from "@/public/images/trending-product-inner-banner.png";
 // import ChevronRightIcon from "@/public/images/nextarow.svg";
 // import InnerBannerImage from "@/public/images/trending-product-inner-banner-pic.png";
-import Footer from "@/components/shared/Footer";
-import Pagination from "@/components/shared/Pagination";
-import { useToast } from "@/components/ui/use-toast";
-import {
-  useAddToWishList,
-  useDeleteFromWishList,
-} from "@/apis/queries/wishlist.queries";
-import { useQueryClient } from "@tanstack/react-query";
-import { useMe } from "@/apis/queries/user.queries";
 import {
   useCartListByDevice,
   useCartListByUserId,
 } from "@/apis/queries/cart.queries";
-import { getOrCreateDeviceId } from "@/utils/helper";
-import { getCookie } from "cookies-next";
-import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
+import { useMe } from "@/apis/queries/user.queries";
+import {
+  useAddToWishList,
+  useDeleteFromWishList,
+} from "@/apis/queries/wishlist.queries";
 import BannerSection from "@/components/modules/trending/BannerSection";
-import SkeletonProductCardLoader from "@/components/shared/SkeletonProductCardLoader";
-import { useCategoryStore } from "@/lib/categoryStore";
 import TrendingCategories from "@/components/modules/trending/TrendingCategories";
-import { useTranslations } from "next-intl";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import Footer from "@/components/shared/Footer";
+import Pagination from "@/components/shared/Pagination";
+import SkeletonProductCardLoader from "@/components/shared/SkeletonProductCardLoader";
 import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/context/AuthContext";
+import { useCategoryStore } from "@/lib/categoryStore";
+import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
+import { getOrCreateDeviceId } from "@/utils/helper";
+import { useQueryClient } from "@tanstack/react-query";
+import { getCookie } from "cookies-next";
+import { useTranslations } from "next-intl";
 // @ts-ignore
 import { startDebugger } from "remove-child-node-error-debugger";
-import Cart from "@/components/modules/cartList/Cart";
 
 interface TrendingPageProps {
   searchParams?: Promise<{ term?: string }>;
 }
 
 const TrendingPage = (props0: TrendingPageProps) => {
-  const searchParams = use(props0.searchParams);
+  const searchParams = use(props0.searchParams || Promise.resolve({}));
   const t = useTranslations();
   const { langDir, currency } = useAuth();
   const queryClient = useQueryClient();
@@ -94,7 +93,7 @@ const TrendingPage = (props0: TrendingPageProps) => {
   const [productVariants, setProductVariants] = useState<any[]>([]);
   const [haveAccessToken, setHaveAccessToken] = useState(false);
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
-  const searchUrlTerm = searchParams?.term || "";
+  const searchUrlTerm = (searchParams as any)?.term || "";
   const category = useCategoryStore();
 
   const minPriceInputRef = useRef<HTMLInputElement>(null);
@@ -115,15 +114,16 @@ const TrendingPage = (props0: TrendingPageProps) => {
     priceMax: priceRange[1] || Number(maxPriceInput) || undefined,
     brandIds:
       selectedBrandIds.map((item) => item.toString()).join(",") || undefined,
-    userId: me?.data?.data?.tradeRole == "BUYER"
-      ? undefined 
-      : me?.data?.data?.tradeRole == "MEMBER"
-      ? me?.data?.data?.addedBy
-      : me?.data?.data?.id,
+    userId:
+      me?.data?.data?.tradeRole == "BUYER"
+        ? undefined
+        : me?.data?.data?.tradeRole == "MEMBER"
+          ? me?.data?.data?.addedBy
+          : me?.data?.data?.id,
     categoryIds: category.categoryIds ? category.categoryIds : undefined,
     isOwner: displayMyProducts == "1" ? "me" : "",
     related: displayRelatedProducts,
-    userType: me?.data?.data?.tradeRole == "BUYER" ? "BUYER" : ""
+    userType: me?.data?.data?.tradeRole == "BUYER" ? "BUYER" : "",
   });
   const fetchProductVariant = useProductVariant();
   const brandsQuery = useBrands({
@@ -440,7 +440,7 @@ const TrendingPage = (props0: TrendingPageProps) => {
                           <div key={item.value} className="div-li">
                             <Checkbox
                               id={item.label}
-                              className="border border-solid border-gray-300 data-[state=checked]:bg-dark-orange!"
+                              className="data-[state=checked]:bg-dark-orange! border border-solid border-gray-300"
                               onCheckedChange={(checked) =>
                                 handleBrandChange(checked, item)
                               }
@@ -449,7 +449,7 @@ const TrendingPage = (props0: TrendingPageProps) => {
                             <div className="grid gap-1.5 leading-none">
                               <label
                                 htmlFor={item.label}
-                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                               >
                                 {item.label}
                               </label>
@@ -588,10 +588,14 @@ const TrendingPage = (props0: TrendingPageProps) => {
                     <li>
                       {haveAccessToken ? (
                         <>
-                          <Checkbox 
-                            onClick={(e) => setDisplayRelatedProducts(!displayRelatedProducts)}
+                          <Checkbox
+                            onClick={(e) =>
+                              setDisplayRelatedProducts(!displayRelatedProducts)
+                            }
                           />
-                          <label className="ml-2" translate="no" dir={langDir}>{t("recommended")}</label>
+                          <label className="ml-2" translate="no" dir={langDir}>
+                            {t("recommended")}
+                          </label>
                         </>
                       ) : null}
                     </li>
@@ -675,7 +679,7 @@ const TrendingPage = (props0: TrendingPageProps) => {
               ) : null}
 
               {viewType === "grid" ? (
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 items-stretch">
+                <div className="grid grid-cols-1 items-stretch gap-6 sm:grid-cols-2 lg:grid-cols-4">
                   {memoizedProductList.map((item: TrendingProduct) => {
                     const cartItem = cartList?.find(
                       (el: any) => el.productId == item.id,

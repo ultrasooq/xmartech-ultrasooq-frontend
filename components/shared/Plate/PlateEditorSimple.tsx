@@ -9,7 +9,7 @@ interface PlateEditorProps {
   [key: string]: any;
 }
 
-const PlateEditor: React.FC<PlateEditorProps> = ({
+const PlateEditorSimple: React.FC<PlateEditorProps> = ({
   description,
   readOnly = false,
   fixedToolbar = false,
@@ -26,4 +26,4 @@ const PlateEditor: React.FC<PlateEditorProps> = ({
   );
 };
 
-export default PlateEditor;
+export default PlateEditorSimple;

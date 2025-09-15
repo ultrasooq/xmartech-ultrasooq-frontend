@@ -69,6 +69,7 @@
     "@udecode/plate-line-height": "^49.0.0",
     "@udecode/plate-link": "^49.0.0",
     "@udecode/plate-list": "^49.0.0",
+    "@udecode/plate-markdown": "^49.0.0",
     "@udecode/plate-media": "^49.0.0",
     "@udecode/plate-mention": "^49.0.0",
     "@udecode/plate-node-id": "^49.0.0",

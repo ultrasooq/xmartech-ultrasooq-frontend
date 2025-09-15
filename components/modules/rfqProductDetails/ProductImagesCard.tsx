@@ -1,10 +1,5 @@
+import { useMe } from "@/apis/queries/user.queries";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
-import Image from "next/image";
-import Link from "next/link";
-import React, { useEffect, useRef, useState } from "react";
-import validator from "validator";
 import {
   Carousel,
   CarouselApi,
@@ -13,17 +8,19 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import PlaceholderImage from "@/public/images/product-placeholder.png";
-import { FaHeart } from "react-icons/fa";
-import { FaRegHeart } from "react-icons/fa";
-import ReactPlayer from "react-player/lazy";
-import { isImage, isVideo } from "@/utils/helper";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { useMe } from "@/apis/queries/user.queries";
-import { useSellerRewards } from "@/apis/queries/seller-reward.queries";
-import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/context/AuthContext";
+import { cn } from "@/lib/utils";
+import PlaceholderImage from "@/public/images/product-placeholder.png";
+import { isImage, isVideo } from "@/utils/helper";
+import { useTranslations } from "next-intl";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
+import ReactPlayer from "react-player";
+import validator from "validator";
 
 type ProductImagesCardProps = {
   productDetails: any;
@@ -44,7 +41,7 @@ type ProductImagesCardProps = {
   cartQuantity?: number;
   offerPriceFrom?: number;
   offerPriceTo?: number;
-  productNote?: string
+  productNote?: string;
 };
 
 const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
@@ -59,7 +56,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
   cartQuantity = 0,
   offerPriceFrom,
   offerPriceTo,
-  productNote
+  productNote,
 }) => {
   const t = useTranslations();
   const { langDir } = useAuth();
@@ -79,13 +76,15 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
     if (!tempImages) return;
 
     setPreviewImages(
-      tempImages?.filter((item: any) => item.image)?.map((item: any) =>
-        item?.image && validator.isURL(item.image)
-          ? item.image
-          : item?.video && validator.isURL(item.video)
-            ? item.video
-            : PlaceholderImage,
-      ),
+      tempImages
+        ?.filter((item: any) => item.image)
+        ?.map((item: any) =>
+          item?.image && validator.isURL(item.image)
+            ? item.image
+            : item?.video && validator.isURL(item.video)
+              ? item.video
+              : PlaceholderImage,
+        ),
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [productSellerImage, productDetails?.productImages]);
@@ -98,7 +97,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
       const index = emblaApi.selectedScrollSnap();
       setCurrentImageIndex(index);
     });
-  }, [api]);;
+  }, [api]);
 
   const me = useMe();
   const loginUserId = me?.data?.data?.id;
@@ -110,7 +109,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
           {!isLoading ? (
             <button
               type="button"
-              className="absolute right-2.5 top-2.5 z-10 rounded-full bg-white p-2"
+              className="absolute top-2.5 right-2.5 z-10 rounded-full bg-white p-2"
               onClick={onWishlist}
             >
               {inWishlist ? <FaHeart color="red" /> : <FaRegHeart />}
@@ -176,35 +175,37 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
         <div className="col-span-1 m-auto flex h-full! w-full flex-wrap gap-4 self-start lg:w-auto lg:flex-col">
           {isLoading
             ? Array.from({ length: 3 }).map((_, index) => (
-              <Skeleton className="h-28 w-28" key={index} />
-            ))
+                <Skeleton className="h-28 w-28" key={index} />
+              ))
             : null}
 
-          {productDetails?.productImages?.filter((item: any) => item.image)?.map((item: any, index: number) => (
-            <Button
-              variant="ghost"
-              className={cn(
-                previewImages[currentImageIndex] === item?.image ||
-                  previewImages[currentImageIndex] === item?.video
-                  ? "border-2 border-red-500"
-                  : "",
-                "relative h-28 w-28 rounded-none bg-gray-100",
-              )}
-              key={item?.id}
-              onClick={() => api?.scrollTo(index)}
-            >
-              <Image
-                src={
-                  item?.image && validator.isURL(item.image)
-                    ? item.image
-                    : PlaceholderImage
-                }
-                alt="primary-image"
-                fill
-                className="rounded-none object-cover"
-              />
-            </Button>
-          ))}
+          {productDetails?.productImages
+            ?.filter((item: any) => item.image)
+            ?.map((item: any, index: number) => (
+              <Button
+                variant="ghost"
+                className={cn(
+                  previewImages[currentImageIndex] === item?.image ||
+                    previewImages[currentImageIndex] === item?.video
+                    ? "border-2 border-red-500"
+                    : "",
+                  "relative h-28 w-28 rounded-none bg-gray-100",
+                )}
+                key={item?.id}
+                onClick={() => api?.scrollTo(index)}
+              >
+                <Image
+                  src={
+                    item?.image && validator.isURL(item.image)
+                      ? item.image
+                      : PlaceholderImage
+                  }
+                  alt="primary-image"
+                  fill
+                  className="rounded-none object-cover"
+                />
+              </Button>
+            ))}
         </div>
       </div>
 
@@ -214,7 +215,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
             <Button
               type="button"
               onClick={onEdit}
-              className="h-14 max-w-[205px] flex-1 rounded-none bg-color-blue text-base"
+              className="bg-color-blue h-14 max-w-[205px] flex-1 rounded-none text-base"
               dir={langDir}
               translate="no"
             >
@@ -228,7 +229,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
         <Link href={`/seller-rfq-request?product_id=${productDetails?.id}`}>
           <Button
             type="button"
-            className="h-14 w-full flex-1 rounded-none bg-color-yellow text-base"
+            className="bg-color-yellow h-14 w-full flex-1 rounded-none text-base"
             dir={langDir}
             translate="no"
           >
@@ -248,7 +249,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
             );
           }}
           disabled={isAddedToCart}
-          className="h-14 max-w-[205px] flex-1 rounded-none bg-color-yellow text-base"
+          className="bg-color-yellow h-14 max-w-[205px] flex-1 rounded-none text-base"
           translate="no"
         >
           {isAddedToCart ? t("added_to_rfq_cart") : t("add_to_rfq_cart")}

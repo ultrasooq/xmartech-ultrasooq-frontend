@@ -1,22 +1,20 @@
-import { Metadata } from "next";
-import "@/app/ui/global.css";
 import { inter } from "@/app/ui/fonts";
-import DisableRouteAnnouncerRouteAnnocomponentsfDisableRouteAnnouncerDisableRouteAnnouncer";
-import SessionWrappernWrapper componentssSessionWrapperonWrapper";
-import { Toaster }@/componecomponents/uiatoaster
-import { AuthProvidervider } frocontextAAuthContextext";
-import { SidebarProvider }ider } @/context/SidebarContextSidebarContext";
-import { SocketProvider }er } fromcontexttSocketContext";
-import Header "@/lay@Mlayout/MainLayout/Headerut/Header";
-import Sidebar/MainLayolayout/MainLayoutdSidebar
-import ReactQueryProviderQueryPr@/providers/ReactQueryProviderr from "@/providers/ReactQueryProvider";
-import { getUserLocalee } from "@src/servicesrlocalee";
-import { PUREMOON_TOKEN_KEY_KEY } fromutilslconstants";
-import axios from "axios
+import "@/app/ui/global.css";
+import SessionWrapper from "@/components/SessionWrapper";
+import { Toaster } from "@/components/ui/toaster";
+import { AuthProvider } from "@/context/AuthContext";
+import { SidebarProvider } from "@/context/SidebarContext";
+import { SocketProvider } from "@/context/SocketContext";
+import Header from "@/layout/MainLayout/Header";
+import Sidebar from "@/layout/MainLayout/Sidebar";
+import ReactQueryProvider from "@/providers/ReactQueryProvider";
+import { getUserLocale } from "@/src/services/locale";
+import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import axios from "axios";
-import { NextIntlClientProvider } from 'next-intl';
-import { cookiestM /headenextheaders
-import NextTopLoader"nextjsnextjs-toploader
+import { Metadata } from "next";
+import { NextIntlClientProvider } from "next-intl";
+import { cookies } from "next/headers";
+import NextTopLoader from "nextjs-toploader";
 
 export const metadata: Metadata = {
   title: {
@@ -88,8 +86,8 @@ export default async function RootLayout({
 
   const permissions = await getUserPermissions();
 
-  const locale = await getLocale();
-  const messages = await getMessages();
+  const locale = await getUserLocale();
+  const messages = {};
 
   return (
     <SessionWrapper>
@@ -98,8 +96,16 @@ export default async function RootLayout({
           {/* <DisableRouteAnnouncer /> */}
           <ReactQueryProvider>
             <AuthProvider
-              user={{ id: userData?.data?.id, firstName: userData?.data?.firstName, lastName: userData?.data?.lastName, tradeRole: userData?.data?.tradeRole }}
-              permissions={[...(permissions?.data?.userRoleDetail?.userRolePermission || [])]}
+              user={{
+                id: userData?.data?.id,
+                firstName: userData?.data?.firstName,
+                lastName: userData?.data?.lastName,
+                tradeRole: userData?.data?.tradeRole,
+              }}
+              permissions={[
+                ...(permissions?.data?.userRoleDetail?.userRolePermission ||
+                  []),
+              ]}
               locale={locale}
             >
               <SocketProvider>

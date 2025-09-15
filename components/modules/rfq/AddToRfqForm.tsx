@@ -1,19 +1,3 @@
-import React, { useEffect, useRef } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
-import { DialogTitle } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
-import Image from "next/image";
-import { IoCloseSharp } from "react-icons/io5";
-import ControlledTextareaInput from "@/components/shared/Forms/ControlledTextareaInput";
-import { Input } from "@/components/ui/input";
-import AddImageContent from "../profile/AddImageContent";
-import { v4 as uuidv4 } from "uuid";
-import { useUploadMultipleFile } from "@/apis/queries/upload.queries";
-import { useQueryClient } from "@tanstack/react-query";
 import {
   useCreateProduct,
   useRfqProductById,
@@ -23,18 +7,33 @@ import {
   useAddProductDuplicateRfq,
   useUpdateRfqCartWithLogin,
 } from "@/apis/queries/rfq.queries";
-import { imageExtensions, videoExtensions } from "@/utils/constants";
-import ReactPlayer from "react-player/lazy";
+import { useUploadMultipleFile } from "@/apis/queries/upload.queries";
+import ControlledTextareaInput from "@/components/shared/Forms/ControlledTextareaInput";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
+import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
+import { Button } from "@/components/ui/button";
+import { DialogTitle } from "@/components/ui/dialog";
+import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/use-toast";
+import { useAuth } from "@/context/AuthContext";
+import { imageExtensions, videoExtensions } from "@/utils/constants";
 import {
   generateRandomSkuNoWithTimeStamp,
   isBrowser,
   isImage,
   isVideo,
 } from "@/utils/helper";
-import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { useAuth } from "@/context/AuthContext";
+import Image from "next/image";
+import React, { useEffect, useRef } from "react";
+import { useForm } from "react-hook-form";
+import { IoCloseSharp } from "react-icons/io5";
+import ReactPlayer from "react-player";
+import { v4 as uuidv4 } from "uuid";
+import { z } from "zod";
 
 type AddToRfqFormProps = {
   onClose: () => void;
@@ -46,41 +45,47 @@ type AddToRfqFormProps = {
 };
 
 const addFormSchema = (t: any) => {
-  return z.object({
-    offerPriceFrom: z.coerce
-      .number({ invalid_type_error: t("offer_price_from_required") })
-      .min(1, {
-        message: t("offer_price_from_required")
-      })
-      .max(1000000, {
-        message: t("offer_price_from_must_be_less_than_price", { price: 1000000 }),
-      }),
-    offerPriceTo: z.coerce
-      .number({ invalid_type_error: t("offer_price_to_required") })
-      .min(1, {
-        message: t("offer_price_to_required")
-      })
-      .max(1000000, {
-        message: t("offer_price_to_must_be_less_than_price", { price: 1000000 }),
-      }),
-    note: z
-      .string()
-      .trim()
-      .max(100, {
-        message: t("description_must_be_less_than_n_chars", { n: 100 }),
-      })
-      .optional(),
-    productImagesList: z.any().optional(),
-  }).refine(
-    ({ offerPriceFrom, offerPriceTo }) => {
-      return Number(offerPriceFrom) < Number(offerPriceTo);
-    },
-    {
-      message: t("offer_price_from_must_be_less_than_offer_price_to"),
-      path: ["offerPriceFrom"],
-    }
-  );
-}
+  return z
+    .object({
+      offerPriceFrom: z.coerce
+        .number({ invalid_type_error: t("offer_price_from_required") })
+        .min(1, {
+          message: t("offer_price_from_required"),
+        })
+        .max(1000000, {
+          message: t("offer_price_from_must_be_less_than_price", {
+            price: 1000000,
+          }),
+        }),
+      offerPriceTo: z.coerce
+        .number({ invalid_type_error: t("offer_price_to_required") })
+        .min(1, {
+          message: t("offer_price_to_required"),
+        })
+        .max(1000000, {
+          message: t("offer_price_to_must_be_less_than_price", {
+            price: 1000000,
+          }),
+        }),
+      note: z
+        .string()
+        .trim()
+        .max(100, {
+          message: t("description_must_be_less_than_n_chars", { n: 100 }),
+        })
+        .optional(),
+      productImagesList: z.any().optional(),
+    })
+    .refine(
+      ({ offerPriceFrom, offerPriceTo }) => {
+        return Number(offerPriceFrom) < Number(offerPriceTo);
+      },
+      {
+        message: t("offer_price_from_must_be_less_than_offer_price_to"),
+        path: ["offerPriceFrom"],
+      },
+    );
+};
 
 const editFormSchema = (t: any) => {
   return z.object({
@@ -113,23 +118,24 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
   selectedQuantity,
   offerPriceFrom,
   offerPriceTo,
-  note
+  note,
 }) => {
   const t = useTranslations();
   const { langDir } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const form = useForm({
-    resolver: zodResolver(selectedQuantity ? addFormSchema(t) : editFormSchema(t)),
-    defaultValues: selectedQuantity ? Object.assign(
-      addDefaultValues, 
-      { 
-        offerPriceFrom: offerPriceFrom,
-        offerPriceTo: offerPriceTo,
-        note: note || ""
-      }
-    ) : editDefaultValues,
-  }); 
+    resolver: zodResolver(
+      selectedQuantity ? addFormSchema(t) : editFormSchema(t),
+    ),
+    defaultValues: selectedQuantity
+      ? Object.assign(addDefaultValues, {
+          offerPriceFrom: offerPriceFrom,
+          offerPriceTo: offerPriceTo,
+          note: note || "",
+        })
+      : editDefaultValues,
+  });
   const photosRef = useRef<HTMLInputElement>(null);
 
   const watchProductImages = form.watch("productImages");
@@ -445,19 +451,21 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
       const product = productQueryById?.data?.data;
 
       const productImages = product?.productImages?.length
-        ? product?.productImages?.filter((item: any) => item.image)?.map((item: any) => {
-            if (item?.image) {
-              return {
-                path: item?.image,
-                id: uuidv4(),
-              };
-            } else if (item?.video) {
-              return {
-                path: item?.video,
-                id: uuidv4(),
-              };
-            }
-          })
+        ? product?.productImages
+            ?.filter((item: any) => item.image)
+            ?.map((item: any) => {
+              if (item?.image) {
+                return {
+                  path: item?.image,
+                  id: uuidv4(),
+                };
+              } else if (item?.video) {
+                return {
+                  path: item?.video,
+                  id: uuidv4(),
+                };
+              }
+            })
         : [];
 
       const productImagesList = product?.productImages
@@ -493,7 +501,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
         </DialogTitle>
         <Button
           onClick={onClose}
-          className="absolute right-2 top-2 z-10 bg-white! text-black! shadow-none"
+          className="absolute top-2 right-2 z-10 bg-white! text-black! shadow-none"
         >
           <IoCloseSharp size={20} />
         </Button>
@@ -501,11 +509,15 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="card-item card-payment-form px-5 pb-5 pt-3"
+          className="card-item card-payment-form px-5 pt-3 pb-5"
         >
           <div className="relative mb-4 w-full">
             <div className="space-y-2">
-              <label className="text-sm font-medium leading-none text-color-dark" dir={langDir} translate="no">
+              <label
+                className="text-color-dark text-sm leading-none font-medium"
+                dir={langDir}
+                translate="no"
+              >
                 {t("product_image")}
               </label>
               <div className="flex w-full flex-wrap">
@@ -564,8 +576,10 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
                                             524288000
                                           ) {
                                             toast({
-                                              title:
-                                                t("one_of_file_should_be_less_than_size", { size: "500MB" }),
+                                              title: t(
+                                                "one_of_file_should_be_less_than_size",
+                                                { size: "500MB" },
+                                              ),
                                               variant: "danger",
                                             });
                                             return;
@@ -598,7 +612,11 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
                                     </div>
 
                                     <div className="absolute h-20 w-full p-5">
-                                      <p className="rounded-lg border border-gray-300 bg-gray-100 py-2 text-sm font-semibold" dir={langDir} translate="no">
+                                      <p
+                                        className="rounded-lg border border-gray-300 bg-gray-100 py-2 text-sm font-semibold"
+                                        dir={langDir}
+                                        translate="no"
+                                      >
                                         {t("upload_video")}
                                       </p>
                                     </div>
@@ -614,8 +632,10 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
                                             524288000
                                           ) {
                                             toast({
-                                              title:
-                                                t("one_of_file_should_be_less_than_size", { size: "500MB" }),
+                                              title: t(
+                                                "one_of_file_should_be_less_than_size",
+                                                { size: "500MB" },
+                                              ),
                                               variant: "danger",
                                             });
                                             return;
@@ -640,7 +660,10 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
                   ))}
                   <div className="relative mb-3 w-full pl-2">
                     <div className="absolute m-auto flex h-48 w-full cursor-pointer flex-wrap items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-white text-center">
-                      <div className="text-sm font-medium leading-4 text-color-dark" dir={langDir}>
+                      <div
+                        className="text-color-dark text-sm leading-4 font-medium"
+                        dir={langDir}
+                      >
                         <Image
                           src="/images/plus.png"
                           className="m-auto mb-3"
@@ -666,7 +689,10 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
                               filesArray.some((file) => file.size > 524288000)
                             ) {
                               toast({
-                                title: t("one_of_file_should_be_less_than_size", { size: "500MB" }),
+                                title: t(
+                                  "one_of_file_should_be_less_than_size",
+                                  { size: "500MB" },
+                                ),
                                 variant: "danger",
                               });
                               return;
@@ -745,7 +771,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
               updateRfqCartWithLogin.isPending
             }
             type="submit"
-            className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6 mt-2"
+            className="theme-primary-btn bg-dark-orange mt-2 h-12 w-full rounded text-center text-lg leading-6 font-bold"
             translate="no"
           >
             {uploadMultiple.isPending ||
