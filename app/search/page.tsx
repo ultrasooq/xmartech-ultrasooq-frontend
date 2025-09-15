@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, use } from "react";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import { getCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
@@ -15,10 +15,11 @@ import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 
 interface SearchPageProps {
-    searchParams?: { term?: string };
+    searchParams?: Promise<{ term?: string }>;
 }
 
-const SearchPage = ({ searchParams }: SearchPageProps) => {
+const SearchPage = (props: SearchPageProps) => {
+    const searchParams = use(props.searchParams);
     const t = useTranslations();
     const { langDir } = useAuth();
     const router = useRouter();

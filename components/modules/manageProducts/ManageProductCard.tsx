@@ -453,7 +453,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
   };
 
   return (
-    <div className="mb-4 w-full rounded-lg border border-gray-200 bg-white shadow-sm">
+    <div className="mb-4 w-full rounded-lg border border-gray-200 bg-white shadow-xs">
       {/* Compact View - Always Visible */}
       <div className="flex items-center justify-between p-4">
         {/* Left Section - Product Info */}
@@ -463,7 +463,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
             <div className="flex flex-col items-center space-y-2">
               {!hideCheckbox && (
                 <Checkbox
-                  className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                  className="border border-solid border-gray-300 data-[state=checked]:bg-dark-orange!"
                   checked={selectedIds?.includes(id)}
                   onCheckedChange={(checked) => {
                     onSelectedId?.(checked, id);

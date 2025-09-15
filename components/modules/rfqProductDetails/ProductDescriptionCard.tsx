@@ -115,10 +115,10 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
         <Skeleton className="mb-2 h-28 w-full" />
       ) : (
         <div className="info-col mb-2">
-          <div className="brand_sold_info !items-start">
+          <div className="brand_sold_info items-start!">
             <div className="lediv w-full sm:w-1/2">
               <h5>
-                <span className="inline-block w-20 sm:!w-20" translate="no">
+                <span className="inline-block w-20 sm:w-20!" translate="no">
                   {t("brand")}:
                 </span>{" "}
                 {brand}
@@ -127,7 +127,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
 
             <div className="rgdiv flex w-full flex-wrap gap-x-2 sm:w-1/2">
               <h5
-                className="w-20 !capitalize !text-dark-orange sm:!w-20"
+                className="w-20 capitalize! text-dark-orange! sm:w-20!"
                 translate="no"
               >
                 {t("sold_by")}:
@@ -150,7 +150,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
             <span className="mt-1">({productReview?.length} Reviews)</span>
           </div>
           <h3
-            className="w-fit rounded !bg-dark-orange px-4 py-2 !font-semibold !normal-case !text-white !no-underline shadow-md"
+            className="w-fit rounded bg-dark-orange! px-4 py-2 font-semibold! normal-case! text-white! no-underline! shadow-md"
             translate="no"
             onClick={() => {
               onAdd(
@@ -197,7 +197,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
       <div className="flex items-center gap-x-3">
         <Button
           variant="outline"
-          className="relative hover:shadow-sm"
+          className="relative hover:shadow-xs"
           onClick={() => {
             setQuantity(quantity - 1);
             onAdd(
@@ -216,7 +216,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
         {quantity}
         <Button
           variant="outline"
-          className="relative hover:shadow-sm"
+          className="relative hover:shadow-xs"
           onClick={() => {
             setQuantity(quantity + 1);
             onAdd(

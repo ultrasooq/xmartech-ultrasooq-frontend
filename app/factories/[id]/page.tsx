@@ -702,7 +702,7 @@ const ProductDetailsPage = () => {
                   <TabsList className="flex h-auto w-full flex-wrap rounded-none bg-transparent px-0 sm:grid sm:min-h-[80px] sm:grid-cols-6">
                     <TabsTrigger
                       value="description"
-                      className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
+                      className="w-[50%] rounded-none border-b-2 border-b-transparent bg-[#F8F8F8]! font-semibold text-[#71717A]! data-[state=active]:border-b-2! data-[state=active]:border-b-dark-orange! data-[state=active]:text-dark-orange! data-[state=active]:shadow-none! sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
                       dir={langDir}
                       translate="no"
                     >
@@ -710,7 +710,7 @@ const ProductDetailsPage = () => {
                     </TabsTrigger>
                     <TabsTrigger
                       value="specification"
-                      className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
+                      className="w-[50%] rounded-none border-b-2 border-b-transparent bg-[#F8F8F8]! font-semibold text-[#71717A]! data-[state=active]:border-b-2! data-[state=active]:border-b-dark-orange! data-[state=active]:text-dark-orange! data-[state=active]:shadow-none! sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
                       dir={langDir}
                       translate="no"
                     >
@@ -718,7 +718,7 @@ const ProductDetailsPage = () => {
                     </TabsTrigger>
                     <TabsTrigger
                       value="vendor"
-                      className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
+                      className="w-[50%] rounded-none border-b-2 border-b-transparent bg-[#F8F8F8]! font-semibold text-[#71717A]! data-[state=active]:border-b-2! data-[state=active]:border-b-dark-orange! data-[state=active]:text-dark-orange! data-[state=active]:shadow-none! sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
                       dir={langDir}
                       translate="no"
                     >
@@ -726,7 +726,7 @@ const ProductDetailsPage = () => {
                     </TabsTrigger>
                     <TabsTrigger
                       value="reviews"
-                      className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
+                      className="w-[50%] rounded-none border-b-2 border-b-transparent bg-[#F8F8F8]! font-semibold text-[#71717A]! data-[state=active]:border-b-2! data-[state=active]:border-b-dark-orange! data-[state=active]:text-dark-orange! data-[state=active]:shadow-none! sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
                       dir={langDir}
                       translate="no"
                     >
@@ -734,7 +734,7 @@ const ProductDetailsPage = () => {
                     </TabsTrigger>
                     <TabsTrigger
                       value="qanda"
-                      className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
+                      className="w-[50%] rounded-none border-b-2 border-b-transparent bg-[#F8F8F8]! font-semibold text-[#71717A]! data-[state=active]:border-b-2! data-[state=active]:border-b-dark-orange! data-[state=active]:text-dark-orange! data-[state=active]:shadow-none! sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
                       dir={langDir}
                       translate="no"
                     >
@@ -742,7 +742,7 @@ const ProductDetailsPage = () => {
                     </TabsTrigger>
                     <TabsTrigger
                       value="offers"
-                      className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
+                      className="w-[50%] rounded-none border-b-2 border-b-transparent bg-[#F8F8F8]! font-semibold text-[#71717A]! data-[state=active]:border-b-2! data-[state=active]:border-b-dark-orange! data-[state=active]:text-dark-orange! data-[state=active]:shadow-none! sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
                       dir={langDir}
                       translate="no"
                     >
@@ -750,7 +750,7 @@ const ProductDetailsPage = () => {
                     </TabsTrigger>
                     <TabsTrigger
                       value="services"
-                      className="w-[50%] rounded-none border-b-2 border-b-transparent !bg-[#F8F8F8] font-semibold !text-[#71717A] data-[state=active]:!border-b-2 data-[state=active]:!border-b-dark-orange data-[state=active]:!text-dark-orange data-[state=active]:!shadow-none sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
+                      className="w-[50%] rounded-none border-b-2 border-b-transparent bg-[#F8F8F8]! font-semibold text-[#71717A]! data-[state=active]:border-b-2! data-[state=active]:border-b-dark-orange! data-[state=active]:text-dark-orange! data-[state=active]:shadow-none! sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
                       dir={langDir}
                       translate="no"
                     >
@@ -1059,14 +1059,14 @@ const ProductDetailsPage = () => {
       <Footer />
       <Dialog open={isConfirmDialogOpen} onOpenChange={handleConfirmDialog}>
         <DialogContent
-          className="add-new-address-modal add_member_modal gap-0 p-0 md:!max-w-2xl"
+          className="add-new-address-modal add_member_modal gap-0 p-0 md:max-w-2xl!"
           ref={confirmDialogRef}
         >
-          <div className="modal-header !justify-between" dir={langDir}>
+          <div className="modal-header justify-between!" dir={langDir}>
             <DialogTitle className="text-center text-xl font-bold text-dark-orange"></DialogTitle>
             <Button
               onClick={onCancelRemove}
-              className={`${langDir == "ltr" ? "absolute" : ""} right-2 top-2 z-10 !bg-white !text-black shadow-none`}
+              className={`${langDir == "ltr" ? "absolute" : ""} right-2 top-2 z-10 bg-white! text-black! shadow-none`}
             >
               <IoCloseSharp size={20} />
             </Button>

@@ -43,7 +43,7 @@ const CounterTextInputField: React.FC<CounterTextInputFieldProps> = ({
             <div className="relative">
               <button
                 type="button"
-                className="absolute left-2 top-[6px] z-10 flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                className="absolute left-2 top-[6px] z-10 flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]!"
                 onClick={() => {
                   setCounter(Number(counter) - 1);
                   field.onChange(Number(counter) - 1);
@@ -56,7 +56,7 @@ const CounterTextInputField: React.FC<CounterTextInputFieldProps> = ({
                 type="number"
                 onWheel={(e) => e.currentTarget.blur()}
                 placeholder={placeholder}
-                className="!h-[48px] rounded border-gray-300 px-12 text-center focus-visible:!ring-0"
+                className="h-[48px]! rounded border-gray-300 px-12 text-center focus-visible:ring-0!"
                 {...field}
                 value={counter}
                 onChange={(e) => {
@@ -66,7 +66,7 @@ const CounterTextInputField: React.FC<CounterTextInputFieldProps> = ({
               />
               <button
                 type="button"
-                className="absolute right-2 top-[6px] z-10 flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                className="absolute right-2 top-[6px] z-10 flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]!"
                 onClick={() => {
                   setCounter(Number(counter) + 1);
                   field.onChange(Number(counter) + 1);

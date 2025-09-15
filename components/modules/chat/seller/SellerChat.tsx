@@ -869,7 +869,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                     onChange={(e) => setMessage(e.target.value)}
                     value={message}
                     placeholder="Type your message...."
-                    className="h-[32px] w-full resize-none text-sm focus:outline-none"
+                    className="h-[32px] w-full resize-none text-sm focus:outline-hidden"
                     onKeyDown={handleSendMessageKeyDown}
                   ></textarea>
                 </div>

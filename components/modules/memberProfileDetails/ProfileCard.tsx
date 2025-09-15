@@ -63,7 +63,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails }) => {
                     </AvatarFallback>
                 </Avatar>
             </div>
-            <div className="w-full pl-3 md:w-[calc(100%_-_10rem)] md:pl-7">
+            <div className="w-full pl-3 md:w-[calc(100%-10rem)] md:pl-7">
                 <div className="flex w-full flex-wrap items-center justify-between">
                     <h2 className="left-8 text-3xl font-semibold text-color-dark" translate="no">
                         {userDetails?.firstName || "NA"} {userDetails?.lastName}

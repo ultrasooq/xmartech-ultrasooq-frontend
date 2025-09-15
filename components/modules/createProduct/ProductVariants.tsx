@@ -128,7 +128,7 @@ const ProductVariants: React.FC<ProductVariantsTypes> = ({ index }) => {
                                     type="file"
                                     accept="image/*"
                                     multiple={false}
-                                    className="!bottom-0 h-44 !w-full cursor-pointer opacity-0"
+                                    className="bottom-0! h-44 w-full! cursor-pointer opacity-0"
                                     onChange={(event) => {
                                         if (event.target.files) {
                                             if (event.target.files[0].size > 524288000) {

@@ -48,7 +48,7 @@ const ProductTable: React.FC<ProducTableProps> = ({ list }) => {
 
   return (
     <CardContent className="main-content w-full">
-      <Card className="main-content-card !p-0 shadow-none">
+      <Card className="main-content-card p-0! shadow-none">
         <div className="table-responsive theme-table-s1">
           <Table>
             <TableHeader>

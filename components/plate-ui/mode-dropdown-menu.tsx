@@ -50,7 +50,7 @@ export function ModeDropdownMenu(props: DropdownMenuProps) {
           pressed={openState.open}
           tooltip="Editing mode"
           isDropdown
-          className="min-w-[auto] lg:min-w-[130px]"
+          className="min-w-auto lg:min-w-[130px]"
         >
           {item[value]}
         </ToolbarButton>

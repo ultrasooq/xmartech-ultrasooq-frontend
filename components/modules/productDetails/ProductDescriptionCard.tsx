@@ -358,10 +358,10 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
         <Skeleton className="mb-2 h-28 w-full" />
       ) : (
         <div className="info-col mb-2">
-          <div className="brand_sold_info !items-start">
+          <div className="brand_sold_info items-start!">
             <div className="lediv w-full sm:w-[40%]">
               <h5>
-                <span className="inline-block w-20 sm:!w-20" translate="no">
+                <span className="inline-block w-20 sm:w-20!" translate="no">
                   {t("brand")}:
                 </span>{" "}
                 {brand}
@@ -370,7 +370,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
 
             <div className="rgdiv flex w-full flex-wrap gap-x-2 sm:w-[60%]">
               <h5
-                className="w-20 !capitalize !text-dark-orange sm:!w-20"
+                className="w-20 capitalize! text-dark-orange! sm:w-20!"
                 translate="no"
               >
                 {t("sold_by")}:
@@ -394,7 +394,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
           </div>
           {askForPrice === "true" ? (
             <h3
-              className="w-fit rounded !bg-dark-orange px-4 py-2 !font-semibold !normal-case !text-white !no-underline shadow-md"
+              className="w-fit rounded bg-dark-orange! px-4 py-2 font-semibold! normal-case! text-white! no-underline! shadow-md"
               translate="no"
             >
               {t("ask_for_price")}
@@ -482,7 +482,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
 
                 selectProductVariant?.(selectedVariants);
               }}
-              className="rounded-sm border-[#DBDBDB] px-2 py-1 focus:shadow-none focus:outline-none"
+              className="rounded-sm border-[#DBDBDB] px-2 py-1 focus:shadow-none focus:outline-hidden"
             >
               {productVariants
                 ?.filter((item: any) => item.type == type)
@@ -501,7 +501,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
       <div className="flex items-center gap-x-3">
         <Button
           variant="outline"
-          className="relative hover:shadow-sm"
+          className="relative hover:shadow-xs"
           onClick={() => updateQuantity(quantity - 1, "remove")}
           disabled={quantity === 0}
         >
@@ -510,7 +510,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
         <input
           type="text"
           value={quantity}
-          className="h-auto w-[35px] border-none bg-transparent text-center focus:border-none focus:outline-none"
+          className="h-auto w-[35px] border-none bg-transparent text-center focus:border-none focus:outline-hidden"
           onChange={(e) => {
             const value = Number(e.target.value);
             setQuantity(isNaN(value) ? productQuantity : value);
@@ -519,7 +519,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
         />
         <Button
           variant="outline"
-          className="relative hover:shadow-sm"
+          className="relative hover:shadow-xs"
           onClick={() => updateQuantity(quantity + 1, "add")}
         >
           <Image src={PlusIcon} alt="plus-icon" fill className="p-3" />

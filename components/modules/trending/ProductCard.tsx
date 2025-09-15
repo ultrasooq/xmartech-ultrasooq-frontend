@@ -488,7 +488,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       {isSelectable ? (
         <div className="absolute left-3 top-3 z-20">
           <Checkbox
-            className="border-2 border-gray-300 data-[state=checked]:!bg-blue-600 data-[state=checked]:!border-blue-600"
+            className="border-2 border-gray-300 data-[state=checked]:bg-blue-600! data-[state=checked]:border-blue-600!"
             checked={selectedIds?.includes(item.id)}
             onCheckedChange={(checked) => onSelectedId?.(checked, item.id)}
           />
@@ -508,7 +508,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       <Link href={`/trending/${item.id}`} className="block">
         {/* Discount Badge */}
         {item?.askForPrice !== "true" && item.consumerDiscount ? (
-          <div className="absolute right-3 top-12 z-20 bg-gradient-to-r from-orange-500 to-red-500 text-white px-2 py-1 rounded-full text-xs font-bold shadow-lg">
+          <div className="absolute right-3 top-12 z-20 bg-linear-to-r from-orange-500 to-red-500 text-white px-2 py-1 rounded-full text-xs font-bold shadow-lg">
             {item.consumerDiscountType === "PERCENTAGE" 
               ? `${item.consumerDiscount}%` 
               : `${currency.symbol}${item.consumerDiscount}`
@@ -540,7 +540,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <Button
               variant="secondary"
               size="sm"
-              className="h-8 w-8 rounded-full bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white hover:scale-110 transition-all duration-200"
+              className="h-8 w-8 rounded-full bg-white/90 backdrop-blur-xs shadow-lg hover:bg-white hover:scale-110 transition-all duration-200"
               onClick={() => handleAddToCart(-1, "add")}
             >
               <ShoppingIcon />
@@ -548,7 +548,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           ) : null}
           <Link
             href={`/trending/${item.id}`}
-            className="h-8 w-8 rounded-full bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white hover:scale-110 transition-all duration-200 flex items-center justify-center"
+            className="h-8 w-8 rounded-full bg-white/90 backdrop-blur-xs shadow-lg hover:bg-white hover:scale-110 transition-all duration-200 flex items-center justify-center"
           >
             <FiEye size={16} className="text-gray-700" />
           </Link>
@@ -556,7 +556,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <Button
               variant="secondary"
               size="sm"
-              className="h-8 w-8 rounded-full bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white hover:scale-110 transition-all duration-200"
+              className="h-8 w-8 rounded-full bg-white/90 backdrop-blur-xs shadow-lg hover:bg-white hover:scale-110 transition-all duration-200"
               onClick={onWishlist}
             >
               {inWishlist ? (
@@ -595,7 +595,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <Link href={`/seller-rfq-request?product_id=${item?.id}`}>
               <button
                 type="button"
-                className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-md text-sm"
+                className="w-full bg-linear-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-md text-sm"
                 dir={langDir}
                 translate="no"
               >
@@ -740,7 +740,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           ) : (
             <button
               type="button"
-              className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-md disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none text-sm"
+              className="w-full bg-linear-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-md disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none text-sm"
               onClick={() => handleAddToCart(quantity, "add")}
               disabled={quantity == 0}
               dir={langDir}
@@ -761,7 +761,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 <div className="mt-3 space-y-2">
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div
-                      className="bg-gradient-to-r from-yellow-400 to-orange-500 h-2 rounded-full transition-all duration-300"
+                      className="bg-linear-to-r from-yellow-400 to-orange-500 h-2 rounded-full transition-all duration-300"
                       style={{ width: `${percentage}%` }}
                     />
                   </div>

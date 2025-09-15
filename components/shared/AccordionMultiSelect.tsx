@@ -81,7 +81,7 @@ const AccordionMultiSelect = ({
         className="mb-4 w-full rounded border border-solid border-gray-300 bg-white"
       >
         <AccordionItem value="item-1" className="border-b-0 px-5">
-          <AccordionTrigger className="flex h-auto min-h-[65px] justify-between py-0 hover:!no-underline">
+          <AccordionTrigger className="flex h-auto min-h-[65px] justify-between py-0 hover:no-underline!">
             <div className="my-2 flex flex-wrap">
               {selectedItems.length || formContext.getValues(name)?.length ? (
                 (selectedItems.length
@@ -116,7 +116,7 @@ const AccordionMultiSelect = ({
                             handleSelectChange(option);
                             field.onChange(option.value);
                           }}
-                          className="data-[state=checked]:!bg-dark-orange"
+                          className="data-[state=checked]:bg-dark-orange!"
                         />
                       </FormControl>
                       <div className="space-y-1 leading-none">

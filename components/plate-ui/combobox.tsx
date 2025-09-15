@@ -31,7 +31,7 @@ export const ComboboxItem = withRef<'div', ComboboxContentItemProps>(
       <div
         ref={ref}
         className={cn(
-          'relative flex h-9 cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors',
+          'relative flex h-9 cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-hidden transition-colors',
           'hover:bg-accent hover:text-accent-foreground data-[highlighted=true]:bg-accent data-[highlighted=true]:text-accent-foreground',
           className
         )}
@@ -72,7 +72,7 @@ export function ComboboxContent(props: ComboboxContentProps) {
           side="bottom"
           align="start"
           className={cn(
-            'z-[500] m-0 max-h-[288px] w-[300px] overflow-scroll rounded-md bg-popover p-0 shadow-md'
+            'z-500 m-0 max-h-[288px] w-[300px] overflow-scroll rounded-md bg-popover p-0 shadow-md'
           )}
           onOpenAutoFocus={(event) => event.preventDefault()}
         >

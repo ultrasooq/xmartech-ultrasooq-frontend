@@ -179,7 +179,7 @@ const CompleteOrderPage = () => {
                                                                     />
                                                                 </div>
                                                                 <figcaption>
-                                                                    <h4 className="!text-lg !font-bold">
+                                                                    <h4 className="text-lg! font-bold!">
                                                                         {item.orderProduct_product.productName}
                                                                     </h4>
                                                                     <div className="custom-form-group">
@@ -225,7 +225,7 @@ const CompleteOrderPage = () => {
                                                                         />
                                                                     </div>
                                                                     <figcaption>
-                                                                        <h4 className="!text-lg !font-bold">
+                                                                        <h4 className="text-lg! font-bold!">
                                                                             {feature.name}
                                                                         </h4>
                                                                         <div className="custom-form-group">
@@ -276,7 +276,7 @@ const CompleteOrderPage = () => {
                                                                 <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 infocardbox">
                                                                     <div className="left-address-with-right-btn">
                                                                         <div>
-                                                                            <h4 className="!mt-0">
+                                                                            <h4 className="mt-0!">
                                                                                 {firstName} {lastName}
                                                                             </h4>
                                                                             <ul>
@@ -339,7 +339,7 @@ const CompleteOrderPage = () => {
                                                                 <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 infocardbox">
                                                                     <div className="left-address-with-right-btn">
                                                                         <div>
-                                                                            <h4 className="!mt-0">
+                                                                            <h4 className="mt-0!">
                                                                                 {firstName} {lastName}
                                                                             </h4>
                                                                             <ul>
@@ -428,7 +428,7 @@ const CompleteOrderPage = () => {
                                                 setAdvanceAmount(0);
                                             }
                                         }}
-                                        className="m-0 data-[state=checked]:!bg-dark-orange"
+                                        className="m-0 data-[state=checked]:bg-dark-orange!"
                                     />
                                 </div>
                                 <div className="mt-0 flex items-center justify-start gap-2 sm:grid">
@@ -438,7 +438,7 @@ const CompleteOrderPage = () => {
                                         onCheckedChange={(checked) => {
                                             if (checked) setPaymentType("ADVANCE");
                                         }}
-                                        className="m-0 data-[state=checked]:!bg-dark-orange"
+                                        className="m-0 data-[state=checked]:bg-dark-orange!"
                                     />
                                 </div>
                                 {paymentType == "ADVANCE" ? (

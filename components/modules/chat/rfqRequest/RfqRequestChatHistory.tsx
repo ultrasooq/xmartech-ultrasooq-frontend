@@ -222,8 +222,8 @@ const RfqRequestChatHistory: React.FC<RfqRequestChatHistoryProps> = ({ roomId, s
                                                         </p>
                                                         {chat.rfqProductPriceRequest?.status === "PENDING" ? (
                                                             <div className="mt-2">
-                                                                <button onClick={() => handlePriceStatus(chat.rfqProductPriceRequest, RfqProductPriceRequestStatus.APPROVED)} type="button" className="text-white bg-blue-700 hover:bg-blue-800 rounded-lg px-2 py-2 me-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Accept</button>
-                                                                <button onClick={() => handlePriceStatus(chat.rfqProductPriceRequest, RfqProductPriceRequestStatus.REJECTED)} type="button" className="focus:outline-none text-white bg-red-700 hover:bg-red-800 rounded-lg px-2 py-2 me-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Reject</button>
+                                                                <button onClick={() => handlePriceStatus(chat.rfqProductPriceRequest, RfqProductPriceRequestStatus.APPROVED)} type="button" className="text-white bg-blue-700 hover:bg-blue-800 rounded-lg px-2 py-2 me-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-hidden dark:focus:ring-blue-800">Accept</button>
+                                                                <button onClick={() => handlePriceStatus(chat.rfqProductPriceRequest, RfqProductPriceRequestStatus.REJECTED)} type="button" className="focus:outline-hidden text-white bg-red-700 hover:bg-red-800 rounded-lg px-2 py-2 me-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">Reject</button>
                                                             </div>
                                                         ) : null}
                                                     </div>

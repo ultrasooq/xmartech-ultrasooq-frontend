@@ -66,7 +66,7 @@ const AddressPage: React.FC<AddressPageProps> = ({}) => {
         <div className="card-item cart-items for-add">
           <div className="top-heading" dir={langDir}>
             <button
-              className="add-new-address-btn inline-flex h-9 items-center justify-center whitespace-nowrap rounded-md border border-none border-input bg-background p-0 text-sm font-medium !normal-case shadow-none transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+              className="add-new-address-btn inline-flex h-9 items-center justify-center whitespace-nowrap rounded-md border border-none border-input bg-background p-0 text-sm font-medium normal-case! shadow-none transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
               type="button"
               onClick={() => handleToggleAddModal()}
               translate="no"

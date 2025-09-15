@@ -278,7 +278,7 @@ const CompleteOrderPage = () => {
                     setAdvanceAmount(0);
                   }
                 }}
-                className="m-0 data-[state=checked]:!bg-dark-orange"
+                className="m-0 data-[state=checked]:bg-dark-orange!"
               />
             </div>
             <div className="mt-3 flex items-center justify-start gap-2 sm:grid">
@@ -288,7 +288,7 @@ const CompleteOrderPage = () => {
                 onCheckedChange={(checked) => {
                   if (checked) setPaymentType("ADVANCE");
                 }}
-                className="m-0 data-[state=checked]:!bg-dark-orange"
+                className="m-0 data-[state=checked]:bg-dark-orange!"
               />
             </div>
             {paymentType == "ADVANCE" ? (
@@ -308,7 +308,7 @@ const CompleteOrderPage = () => {
                     setAdvanceAmount(0);
                   }
                 }}
-                className="m-0 data-[state=checked]:!bg-dark-orange"
+                className="m-0 data-[state=checked]:bg-dark-orange!"
               />
               {paymentLink ? (
                 <>
@@ -333,7 +333,7 @@ const CompleteOrderPage = () => {
                     setAdvanceAmount(0);
                   }
                 }}
-                className="m-0 data-[state=checked]:!bg-dark-orange"
+                className="m-0 data-[state=checked]:bg-dark-orange!"
               />
               {paymentType == "EMI" ? (
                 <>

@@ -157,7 +157,7 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
           ) : (
             <h5 className="py-1 text-[#1D77D1]">
               {currency.symbol}{calculateDiscountedPrice()}{" "}
-              <span className="text-gray-500 !line-through">
+              <span className="text-gray-500 line-through!">
                 {currency.symbol}{wishlistData?.product_productPrice?.[0]?.offerPrice}
               </span>
             </h5>

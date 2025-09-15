@@ -354,11 +354,11 @@ function HomePage() {
               <div className="relative h-auto w-full sm:h-96">
                 <Image
                   src={AdBannerOne}
-                  className="static h-full w-full object-cover object-right-top"
+                  className="static h-full w-full object-cover object-top-right"
                   alt="hs-1"
                   fill
                 />
-                <div className="relative left-0 top-0 flex h-full w-full items-center justify-start bg-gradient-to-r from-slate-100 to-transparent p-8 md:absolute">
+                <div className="relative left-0 top-0 flex h-full w-full items-center justify-start bg-linear-to-r from-slate-100 to-transparent p-8 md:absolute">
                   <div className="text-sm font-normal text-light-gray md:w-10/12 lg:w-9/12">
                     <h6 className="m-0 text-sm font-normal uppercase text-dark-orange">
                       SAMSUNG
@@ -389,7 +389,7 @@ function HomePage() {
                   alt="hs-2"
                   fill
                 />
-                <div className="relative left-0 top-0 flex h-full w-full items-center justify-start bg-gradient-to-r from-slate-100 to-transparent px-8 py-4 md:absolute">
+                <div className="relative left-0 top-0 flex h-full w-full items-center justify-start bg-linear-to-r from-slate-100 to-transparent px-8 py-4 md:absolute">
                   <div className="w-4/5 text-sm font-normal text-light-gray lg:w-3/5">
                     <h3 className="mb-2.5 text-xl font-medium capitalize text-color-dark lg:text-2xl">
                       <b>Fluence</b> Minimal Speaker
@@ -408,7 +408,7 @@ function HomePage() {
                   alt="hs-3"
                   fill
                 />
-                <div className="relative left-0 top-0 flex h-full w-full items-center justify-start bg-gradient-to-r from-slate-100 to-transparent px-8 py-2 md:absolute">
+                <div className="relative left-0 top-0 flex h-full w-full items-center justify-start bg-linear-to-r from-slate-100 to-transparent px-8 py-2 md:absolute">
                   <div className="w-4/5 text-sm font-normal text-light-gray lg:w-3/5">
                     <h6 className="m-0 text-xs font-normal uppercase text-dark-orange">
                       CAMERA

@@ -107,7 +107,7 @@ const VendorsSection: React.FC<VendorsSectionProps> = ({
           </div>
           <div className="space-y-8">
             {Array.from({ length: 3 }).map((_, index) => (
-              <div key={index} className="bg-white rounded-lg shadow-sm p-6">
+              <div key={index} className="bg-white rounded-lg shadow-xs p-6">
                 <div className="flex items-center space-x-4 mb-6">
                   <div className="h-12 w-12 bg-gray-300 rounded-full animate-pulse"></div>
                   <div className="space-y-2">
@@ -267,7 +267,7 @@ const VendorsSection: React.FC<VendorsSectionProps> = ({
                   return (
                     <Button
                       key={pageNumber}
-                      variant={currentPage === pageNumber ? "default" : "outline"}
+                      variant={currentPage === pageNumber ? "default" : "outline-solid"}
                       size="sm"
                       onClick={() => setCurrentPage(pageNumber)}
                       className="w-8 h-8 p-0"
@@ -332,7 +332,7 @@ const VendorWithProducts: React.FC<{
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6">
+    <div className="bg-white rounded-lg shadow-xs p-6">
       {/* Vendor Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-4">
@@ -396,7 +396,7 @@ const VendorWithProducts: React.FC<{
             }}
           >
             {products.map((product) => (
-              <div key={product.id} className="flex-shrink-0 w-64">
+              <div key={product.id} className="shrink-0 w-64">
                 <ProductCard
                   productVariants={[]}
                   item={product}

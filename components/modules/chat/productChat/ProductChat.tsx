@@ -482,7 +482,7 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
                   <div className="flex w-[calc(100%-6.5rem)] items-center">
                     <textarea
                       placeholder="Type your message...."
-                      className="h-[32px] w-full resize-none text-sm focus:outline-none"
+                      className="h-[32px] w-full resize-none text-sm focus:outline-hidden"
                       onChange={(e) => setMessage(e.target.value)}
                       value={message}
                       onKeyDown={handleSendMessageKeyDown}

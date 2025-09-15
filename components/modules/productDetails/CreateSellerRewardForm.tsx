@@ -149,13 +149,13 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
 
     return (
         <>
-            <div className="modal-header !justify-between">
+            <div className="modal-header justify-between!">
                 <DialogTitle className="text-center text-xl font-bold" dir={langDir} translate="no">
                     {t("create_seller_reward")}
                 </DialogTitle>
                 <Button
                     onClick={onClose}
-                    className="absolute right-2 top-2 z-10 !bg-white !text-black shadow-none"
+                    className="absolute right-2 top-2 z-10 bg-white! text-black! shadow-none"
                 >
                     <IoCloseSharp size={20} />
                 </Button>
@@ -206,7 +206,7 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
                                 <FormControl>
                                     <Input
                                         type="number"
-                                        className="!h-[48px] rounded border-gray-300 focus-visible:!ring-0"
+                                        className="h-[48px]! rounded border-gray-300 focus-visible:ring-0!"
                                         {...field}
                                         dir={langDir}
                                     />
@@ -225,7 +225,7 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
                                 <FormControl>
                                     <Input
                                         type="number"
-                                        className="!h-[48px] rounded border-gray-300 focus-visible:!ring-0"
+                                        className="h-[48px]! rounded border-gray-300 focus-visible:ring-0!"
                                         {...field}
                                         dir={langDir}
                                     />
@@ -244,7 +244,7 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
                                 <FormControl>
                                     <Input
                                         type="number"
-                                        className="!h-[48px] rounded border-gray-300 focus-visible:!ring-0"
+                                        className="h-[48px]! rounded border-gray-300 focus-visible:ring-0!"
                                         {...field}
                                         dir={langDir}
                                     />
@@ -263,7 +263,7 @@ const CreateSellerRewardForm: React.FC<CreateSellerRewardFormProps> = ({ onClose
                                 <FormControl>
                                     <Input
                                         type="number"
-                                        className="!h-[48px] rounded border-gray-300 focus-visible:!ring-0"
+                                        className="h-[48px]! rounded border-gray-300 focus-visible:ring-0!"
                                         {...field}
                                         dir={langDir}
                                     />

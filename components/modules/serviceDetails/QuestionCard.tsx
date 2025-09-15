@@ -66,7 +66,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
         ) : null}
 
         {/* {hasAccessToken && !answers?.length ? (
-          <div className="!my-2 text-center">
+          <div className="my-2! text-center">
             <Button variant="secondary" onClick={handleToggleQuestionModal}>
               Reply
             </Button>

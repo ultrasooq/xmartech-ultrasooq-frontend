@@ -44,7 +44,7 @@ const OtherItemCard: React.FC<OtherItemCardProps> = ({
   return (
     <div className="my-order-item">
       <div className="my-order-card">
-        <div className="cardTitle !mb-2">Other Items in this order</div>
+        <div className="cardTitle mb-2!">Other Items in this order</div>
         <h5 className="mb-2" dir={langDir} translate="no">
           {t("order_id")}: <span className="font-semibold">{orderNo}</span>
         </h5>

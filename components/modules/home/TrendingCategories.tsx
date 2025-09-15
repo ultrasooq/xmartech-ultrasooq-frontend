@@ -211,7 +211,7 @@ const TrendingCategories: React.FC<TrendingCategoriesProps> = ({
                     const container = document.getElementById('main-categories-scroll');
                     if (container) container.scrollBy({ left: -300, behavior: 'smooth' });
                   }}
-                  className="hidden md:flex items-center justify-center w-12 h-12 rounded-full bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white transition-all duration-300 hover:scale-110"
+                  className="hidden md:flex items-center justify-center w-12 h-12 rounded-full bg-white/90 backdrop-blur-xs shadow-lg hover:bg-white transition-all duration-300 hover:scale-110"
                 >
                   <ChevronRight className="h-5 w-5 text-gray-600 rotate-180" />
                 </button>
@@ -222,7 +222,7 @@ const TrendingCategories: React.FC<TrendingCategoriesProps> = ({
                     const container = document.getElementById('main-categories-scroll');
                     if (container) container.scrollBy({ left: 300, behavior: 'smooth' });
                   }}
-                  className="hidden md:flex items-center justify-center w-12 h-12 rounded-full bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white transition-all duration-300 hover:scale-110"
+                  className="hidden md:flex items-center justify-center w-12 h-12 rounded-full bg-white/90 backdrop-blur-xs shadow-lg hover:bg-white transition-all duration-300 hover:scale-110"
                 >
                   <ChevronRight className="h-5 w-5 text-gray-600" />
                 </button>
@@ -239,7 +239,7 @@ const TrendingCategories: React.FC<TrendingCategoriesProps> = ({
             {mainCategories.map((category: CategoryProps, index: number) => (
               <div 
                 key={category.id} 
-                className="group relative flex-shrink-0"
+                className="group relative shrink-0"
                 style={{ animationDelay: `${index * 50}ms` }}
               >
                 <button
@@ -255,7 +255,7 @@ const TrendingCategories: React.FC<TrendingCategoriesProps> = ({
                   <div className="absolute inset-0 rounded-2xl overflow-hidden">
                     {renderCategoryBackground(category)}
                     {/* Dark Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-black/10" />
+                    <div className="absolute inset-0 bg-linear-to-t from-black/60 via-black/30 to-black/10" />
                   </div>
                   
                   
@@ -267,14 +267,14 @@ const TrendingCategories: React.FC<TrendingCategoriesProps> = ({
                     </h3>
                     
                     {/* Subtitle */}
-                    <p className="text-xs text-gray-200 mb-2 drop-shadow">
+                    <p className="text-xs text-gray-200 mb-2 drop-shadow-sm">
                       {category.children?.length || 0} {t("subcategories")}
                     </p>
                     
                     {/* Expand Indicator */}
                     {category.children && category.children.length > 0 && (
                       <div className="flex justify-center">
-                        <div className="rounded-full p-1 bg-white/20 text-white backdrop-blur-sm">
+                        <div className="rounded-full p-1 bg-white/20 text-white backdrop-blur-xs">
                           {expandedMainCategory === category.id ? (
                             <ChevronDown className="h-3 w-3" />
                           ) : (
@@ -359,7 +359,7 @@ const TrendingCategories: React.FC<TrendingCategoriesProps> = ({
                 ?.children?.map((subCategory: CategoryProps, index: number) => (
                   <div 
                     key={subCategory.id} 
-                    className="group flex-shrink-0"
+                    className="group shrink-0"
                     style={{ animationDelay: `${index * 30}ms` }}
                   >
                     <button
@@ -375,7 +375,7 @@ const TrendingCategories: React.FC<TrendingCategoriesProps> = ({
                       <div className="absolute inset-0 rounded-xl overflow-hidden">
                         {renderCategoryBackground(subCategory)}
                         {/* Dark Overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-black/20" />
+                        <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/40 to-black/20" />
                       </div>
                       
                       {/* Content */}
@@ -388,7 +388,7 @@ const TrendingCategories: React.FC<TrendingCategoriesProps> = ({
                         {/* Expand Indicator */}
                         {subCategory.children && subCategory.children.length > 0 && (
                           <div className="relative flex justify-center">
-                            <div className="rounded-full p-0.5 bg-white/20 text-white backdrop-blur-sm">
+                            <div className="rounded-full p-0.5 bg-white/20 text-white backdrop-blur-xs">
                               {expandedSubCategory === subCategory.id ? (
                                 <ChevronDown className="h-2 w-2" />
                               ) : (
@@ -480,7 +480,7 @@ const TrendingCategories: React.FC<TrendingCategoriesProps> = ({
                 ?.children?.map((subSubCategory: CategoryProps, index: number) => (
                   <div 
                     key={subSubCategory.id} 
-                    className="group flex-shrink-0"
+                    className="group shrink-0"
                     style={{ animationDelay: `${index * 20}ms` }}
                   >
                     <button
@@ -497,7 +497,7 @@ const TrendingCategories: React.FC<TrendingCategoriesProps> = ({
                       <div className="absolute inset-0 rounded-lg overflow-hidden">
                         {renderCategoryBackground(subSubCategory)}
                         {/* Dark Overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-black/20" />
+                        <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/40 to-black/20" />
                       </div>
                       
                       {/* Content */}

@@ -58,7 +58,7 @@ export const ColorPickerContent = withRef<
         {color ? (
           <DropdownMenuItem
             className={buttonVariants({
-              variant: 'outline',
+              variant: 'outline-solid',
               isMenu: true,
             })}
             onClick={clearColor}

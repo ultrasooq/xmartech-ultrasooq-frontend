@@ -80,7 +80,7 @@ const FactoriesCartMenuCard: React.FC<FactoriesCartMenuCardProps> = ({
   };
 
   return (
-    <div className="rfq_cart_wrap !pb-0">
+    <div className="rfq_cart_wrap pb-0!">
       <div className="rfq_cart_wrap_image relative">
       {customizeProductImages?.[0]?.link
              ? 
@@ -116,7 +116,7 @@ const FactoriesCartMenuCard: React.FC<FactoriesCartMenuCardProps> = ({
             <div className="flex items-center gap-x-4">
               <Button
                 variant="outline"
-                className="relative hover:shadow-sm"
+                className="relative hover:shadow-xs"
                 onClick={() => {
                   if (quantity > 0) {
                     const newQuantity = quantity - 1;
@@ -133,10 +133,10 @@ const FactoriesCartMenuCard: React.FC<FactoriesCartMenuCardProps> = ({
                   className="p-3"
                 />
               </Button>
-              <p className="!text-black">{quantity}</p>
+              <p className="text-black!">{quantity}</p>
               <Button
                 variant="outline"
-                className="relative hover:shadow-sm"
+                className="relative hover:shadow-xs"
                 onClick={() => {
                   const newQuantity = quantity + 1;
                   setQuantity(newQuantity);
@@ -154,7 +154,7 @@ const FactoriesCartMenuCard: React.FC<FactoriesCartMenuCardProps> = ({
           </div>
           <Button
             variant="link"
-            className="relative hover:shadow-sm"
+            className="relative hover:shadow-xs"
             onClick={() => {
               onRemove(factoriesCartId);
             }}

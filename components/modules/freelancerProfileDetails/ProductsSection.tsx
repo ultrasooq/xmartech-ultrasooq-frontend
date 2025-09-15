@@ -398,7 +398,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
           >
             <AccordionItem value="brand">
               <AccordionTrigger
-                className="px-3 text-base hover:!no-underline"
+                className="px-3 text-base hover:no-underline!"
                 dir={langDir}
                 translate="no"
               >
@@ -430,7 +430,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
                       <div key={item.value} className="div-li">
                         <Checkbox
                           id={item.label}
-                          className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                          className="border border-solid border-gray-300 data-[state=checked]:bg-dark-orange!"
                           onCheckedChange={(checked) =>
                             handleBrandChange(checked, item)
                           }
@@ -458,7 +458,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
           >
             <AccordionItem value="brand">
               <AccordionTrigger
-                className="px-3 text-base hover:!no-underline"
+                className="px-3 text-base hover:no-underline!"
                 translate="no"
               >
                 {t("by_menu")}
@@ -469,7 +469,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
                     <div className="div-li">
                       <Checkbox
                         id="displayStoreProducts"
-                        className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                        className="border border-solid border-gray-300 data-[state=checked]:bg-dark-orange!"
                         onCheckedChange={(checked: boolean) =>
                           setDisplayStoreProducts(checked)
                         }
@@ -489,7 +489,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
                     <div className="div-li">
                       <Checkbox
                         id="displayBuyGroupProducts"
-                        className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                        className="border border-solid border-gray-300 data-[state=checked]:bg-dark-orange!"
                         onCheckedChange={(checked: boolean) => {
                           setDisplayBuyGroupProducts(checked);
                           setDisplayExpiredProducts(
@@ -513,7 +513,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
                       <div className="div-li">
                         <Checkbox
                           id="displayExpiredProducts"
-                          className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                          className="border border-solid border-gray-300 data-[state=checked]:bg-dark-orange!"
                           onCheckedChange={(checked: boolean) =>
                             setDisplayExpiredProducts(checked)
                           }
@@ -535,7 +535,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
                       <div className="div-li">
                         <Checkbox
                           id="displayHiddenProducts"
-                          className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                          className="border border-solid border-gray-300 data-[state=checked]:bg-dark-orange!"
                           onCheckedChange={(checked: boolean) =>
                             setDisplayHiddenProducts(checked)
                           }
@@ -556,7 +556,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
                     <div className="div-li">
                       <Checkbox
                         id="displayDiscountedProducts"
-                        className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                        className="border border-solid border-gray-300 data-[state=checked]:bg-dark-orange!"
                         onCheckedChange={(checked: boolean) =>
                           setDisplayDiscountedProducts(checked)
                         }

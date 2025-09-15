@@ -268,7 +268,7 @@ const Sidebar: React.FC<SidebarProps> = ({ notificationCount }) => {
                   onClick={item.onClick}
                 >
                   <div className="flex items-center space-x-3">
-                    <div className="flex-shrink-0 relative">
+                    <div className="shrink-0 relative">
                       {item.icon}
                       {item.isLogout && (
                         <div className="absolute -top-1 -right-1 h-2 w-2 bg-red-500 rounded-full"></div>

@@ -20,7 +20,7 @@ const SelectInput: React.FC<SelectInputProps> = ({
 }) => {
   return (
     <Select {...props}>
-      <SelectTrigger className="theme-form-control-s1 data-[placeholder]:text-muted-foreground">
+      <SelectTrigger className="theme-form-control-s1 data-placeholder:text-muted-foreground">
         <SelectValue placeholder={`Select ${label}`} />
       </SelectTrigger>
       <SelectContent>

@@ -1,23 +1,22 @@
 import { Metadata } from "next";
 import "@/app/ui/global.css";
 import { inter } from "@/app/ui/fonts";
-import Sidebar from "@/layout/MainLayout/Sidebar";
-import Header from "@/layout/MainLayout/Header";
-import ReactQueryProvider from "@/providers/ReactQueryProvider";
-import { Toaster } from "@/components/ui/toaster";
-import NextTopLoader from "nextjs-toploader";
-import SessionWrapper from "@/components/SessionWrapper";
-import { cookies } from "next/headers";
-import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
+import DisableRouteAnnouncerRouteAnnocomponentsfDisableRouteAnnouncerDisableRouteAnnouncer";
+import SessionWrappernWrapper componentssSessionWrapperonWrapper";
+import { Toaster }@/componecomponents/uiatoaster
+import { AuthProvidervider } frocontextAAuthContextext";
+import { SidebarProvider }ider } @/context/SidebarContextSidebarContext";
+import { SocketProvider }er } fromcontexttSocketContext";
+import Header "@/lay@Mlayout/MainLayout/Headerut/Header";
+import Sidebar/MainLayolayout/MainLayoutdSidebar
+import ReactQueryProviderQueryPr@/providers/ReactQueryProviderr from "@/providers/ReactQueryProvider";
+import { getUserLocalee } from "@src/servicesrlocalee";
+import { PUREMOON_TOKEN_KEY_KEY } fromutilslconstants";
+import axios from "axios
 import axios from "axios";
-import { AuthProvider } from "@/context/AuthContext";
-import { SocketProvider } from "@/context/SocketContext";
 import { NextIntlClientProvider } from 'next-intl';
-import { useEffect, useState } from "react";
-import { getLocale, getMessages } from "next-intl/server";
-import { getUserLocale } from "@/src/services/locale";
-import DisableRouteAnnouncer from "@/components/DisableRouteAnnouncer";
-import { SidebarProvider } from "@/context/SidebarContext";
+import { cookiestM /headenextheaders
+import NextTopLoader"nextjsnextjs-toploader
 
 export const metadata: Metadata = {
   title: {
@@ -28,7 +27,7 @@ export const metadata: Metadata = {
 
 async function authorizeUser() {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const token = cookieStore.get(PUREMOON_TOKEN_KEY);
     if (token?.value) {
       const res = await axios({
@@ -55,7 +54,7 @@ async function authorizeUser() {
 
 async function getUserPermissions() {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const token = cookieStore.get(PUREMOON_TOKEN_KEY);
     if (token?.value) {
       const res = await axios({

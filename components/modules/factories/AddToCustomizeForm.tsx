@@ -353,13 +353,13 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
 
   return (
     <>
-      <div className="modal-header !justify-between">
+      <div className="modal-header justify-between!">
         <DialogTitle className="text-center text-xl font-bold" dir={langDir} translate="no">
           {t("add_customize_cart")}
         </DialogTitle>
         <Button
           onClick={onClose}
-          className="absolute right-2 top-2 z-10 !bg-white !text-black shadow-none"
+          className="absolute right-2 top-2 z-10 bg-white! text-black! shadow-none"
         >
           <IoCloseSharp size={20} />
         </Button>
@@ -422,7 +422,7 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
                                       type="file"
                                       accept="image/*"
                                       multiple={false}
-                                      className="!bottom-0 h-44 !w-full cursor-pointer opacity-0"
+                                      className="bottom-0! h-44 w-full! cursor-pointer opacity-0"
                                       onChange={(event) => {
                                         if (event.target.files) {
                                           if (
@@ -471,7 +471,7 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
                                       type="file"
                                       accept="video/*"
                                       multiple={false}
-                                      className="!bottom-0 h-20 !w-full cursor-pointer opacity-0"
+                                      className="bottom-0! h-20 w-full! cursor-pointer opacity-0"
                                       onChange={(event) => {
                                         if (event.target.files) {
                                           if (
@@ -522,7 +522,7 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
                       type="file"
                       accept="image/*, video/*"
                       multiple
-                      className="!bottom-0 h-48 !w-full cursor-pointer opacity-0"
+                      className="bottom-0! h-48 w-full! cursor-pointer opacity-0"
                       onChange={(event) =>
                       // handleFileChanges(event, field, item)
                       {
@@ -562,7 +562,7 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
                 </div>
               </div>
 
-              <p className="text-[13px] !text-red-500" dir={langDir}>
+              <p className="text-[13px] text-red-500!" dir={langDir}>
                 {!watchProductImages?.length
                   ? form.formState.errors?.productImages?.message
                   : ""}

@@ -50,9 +50,9 @@ const ControlledDatePicker: React.FC<ControlledDatePickerProps> = ({
             <PopoverTrigger asChild>
               <FormControl dir={langDir}>
                 <Button
-                  variant={"outline"}
+                  variant={"outline-solid"}
                   className={cn(
-                    "!h-12 rounded border-gray-300 pl-3 text-left font-normal focus-visible:!ring-0",
+                    "h-12! rounded border-gray-300 pl-3 text-left font-normal focus-visible:ring-0!",
                     !field.value && "text-muted-foreground",
                   )}
                   translate="no"

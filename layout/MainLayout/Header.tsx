@@ -1,80 +1,79 @@
 "use client";
-import React, {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  useTransition,
-} from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { deleteCookie, getCookie, setCookie } from "cookies-next";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { DialogTitle } from "@/components/ui/dialog";
+import r useCurrentAccount } from "@/apis/queries/auth.queries";ountWithLogin,
+import {CountWithoutLogin,
+} useCartCountWithLoginapis/queries/cart.queries";
+imuseCartCountWithoutLoginegory } from "@/apis/queries/category.queries";
+import {@/apis/queries/cart.queriese } from "@/apis/queries/user.queries";
+import { useCategory/wishlist@/apisrqueries/category.queries
+import { useMei/ip.requ@/apis/queries/user.queries
+import GouseWishlistCount/componentsapisnqueriesawishlist.queries
+import QufetchIpInfom "@/componapiserequestsQip.requestsrm";
+import GoogleTranslate DropdowncomponentsoGoogleTranslate
+  DropdQueryFormmport { useSidebar }modulesrQueryForm/SidebarContext";
+import StatusDisplay@/components/sharedStatusDisplay
+  PERMISSButtoncomponents/ui/button
+  PERMISSDialog,EDialogContent SSAGE_SYSTcomponentsuidialog
+  PERMISSDialogTitlecomponentsuidialog
+  PERMIS
+  DropdownMenuS
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+componentsui/dropdown-menu
+  PERMISSuseToastcomponentsui/use-toast
+  PERMISSuseAuthLER_REQUESTcontextAuthContext
+  PERMISSuseSidebarLLER_REWARDcontextSidebarContext
+  PERMIS
+  PERMISSION_DASHBOARD,
+  PERMISSION_MESSAGE_SYSTEM,
+  PERMISSION_ORDERS,
+  PERMISSION_PRODUCTS,
+  PERMISSION_RFQ_QUOTES,
+  PERMISSION_RFQ_SELLER_REQUESTS,
+  PERMISSION_SELLER_REWARDS,
+  PERMISSION_SERVICES,
+  PERMISSION_SHARE_LINKS,
+  PERMISSION_TEAM_MEMBERS,
+  getPermissions,
+@/helpers/permission
+  PERMI{ useAccessControl }N_SHARE@/hooksKuseAccessControl
+  PERMIS useCategoryStore import { ulibccategoryStore/hooks/useAccessControl";
+import { cn} from "@@/lib/utilsategoryStore";
+import CartIcon/lib/utils";cart.svg
+import HamburgerDownIconm "@/public/images/carthumberger-down-icon.svg
+import HamburgerIconrDownIcon from "@/publihumberger-icon.svg/humberger-down-icon.svg";
+import UnAuthUserIcon from "@/public/images/login.svg";
+import LogoIconom "@/public/images/loglogov2.png
+import WishlistIcon from "@/public/images/wishlist.svg";
+import WisetUserLocale"@/public/isrcsservicesslocale
 import {
   CURRENCIES,
   LANGUAGES,
   PRODUCT_CATEGORY_ID,
   PUREMOON_TOKEN_KEY,
   menuBarIconList,
-} from "@/utils/constants";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import Image from "next/image";
-import { useQueryClient } from "@tanstack/react-query";
-import { useMe } from "@/apis/queries/user.queries";
-import { useCurrentAccount } from "@/apis/queries/auth.queries";
-import { getInitials, getOrCreateDeviceId } from "@/utils/helper";
-import { useAccessControl } from "@/hooks/useAccessControl";
-import { useCategory } from "@/apis/queries/category.queries";
-import { Button } from "@/components/ui/button";
-import { useClickOutside } from "use-events";
-import Link from "next/link";
-import {
-  useCartCountWithLogin,
-  useCartCountWithoutLogin,
-} from "@/apis/queries/cart.queries";
-import { debounce, isArray } from "lodash";
-import UnAuthUserIcon from "@/public/images/login.svg";
-import WishlistIcon from "@/public/images/wishlist.svg";
-import CartIcon from "@/public/images/cart.svg";
-import HamburgerIcon from "@/public/images/humberger-icon.svg";
-import HamburgerDownIcon from "@/public/images/humberger-down-icon.svg";
-import LogoIcon from "@/public/images/logo-v2.png";
-import { useWishlistCount } from "@/apis/queries/wishlist.queries";
-import { signOut } from "next-auth/react";
-import { useAuth } from "@/context/AuthContext";
-import { useToast } from "@/components/ui/use-toast";
-import { cn } from "@/lib/utils";
-import { useSidebar } from "@/context/SidebarContext";
-import { MenuIcon } from "lucide-react";
-import { MdOutlineImageNotSupported } from "react-icons/md";
-import { useCategoryStore } from "@/lib/categoryStore";
-import GoogleTranslate from "@/components/GoogleTranslate";
-import { IoCloseOutline, IoCloseSharp } from "react-icons/io5";
-import {
-  PERMISSION_DASHBOARD,
-  PERMISSION_ORDERS,
-  PERMISSION_PRODUCTS,
-  PERMISSION_SERVICES,
-  PERMISSION_RFQ_QUOTES,
-  PERMISSION_RFQ_SELLER_REQUESTS,
-  PERMISSION_SELLER_REWARDS,
-  PERMISSION_SHARE_LINKS,
-  PERMISSION_TEAM_MEMBERS,
-  PERMISSION_MESSAGE_SYSTEM,
-  getPermissions,
-} from "@/helpers/permission";
-import QueryForm from "@/components/modules/QueryForm";
-import { useTranslations } from "next-intl";
-import { cookies } from "next/headers";
-import { setUserLocale } from "@/src/services/locale";
-import { fetchIpInfo } from "@/apis/requests/ip.requests";
-import StatusDisplay from "@/components/shared/StatusDisplay";
+ocale } @/utilsrconstantsvices/locale";
+import {getInitials, getOrCreateDeviceIdutilshelper
+  CURRENCuseQueryClienttanstackreactquery
+  LANGUAGdeleteCookie, getCookie, setCookie,cookies-next
+  PRODUCTdebounce, isArrayID,lodash
+  PUREMOON_TOKEN_KEY,
+  menuBarsignOutnextauthreact
+} from "@useTranslations";next-intl
+import ImagegetOrCrnextaimage";
+import Link from "next link/helper";
+import { usePathname }useRouter, useSearchParamstack/reacnextnavigation
+import React, { deleteCookie, getCookie, setCookie } from "cookies-next";
+imuseEffectrray } from "lodash";
+imuseMemouter, useSearchParams } from "next/navigation";
+imuseRef
+  useState
+  useTransition
+  useStareact
+  useTr{IoCloseOutline,IoCloseSharpreacticons/io5
+import { MdOutlineImageNotSupportede, IoClosreact-iconsSmdicons/io5";
+import { useClickOutsideageNotSupuse-events
 
 type CategoryProps = {
   id: number;
@@ -528,7 +527,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                   <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
                     <select
                       dir={langDir}
-                      className="border-0 bg-transparent text-white focus:outline-none"
+                      className="border-0 bg-transparent text-white focus:outline-hidden"
                       value={selectedCurrency}
                       onChange={(e: any) => {
                         setSelectedCurrency(e.target?.value || "USD");
@@ -556,7 +555,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                     <GoogleTranslate />
                     <select
                       dir={langDir}
-                      className="border-0 bg-transparent text-white focus:outline-none"
+                      className="border-0 bg-transparent text-white focus:outline-hidden"
                       value={selectedLocale}
                       onChange={(e) => {
                         setSelectedLocale(e.target.value);
@@ -636,7 +635,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
               </div>
               <div className="order-3 flex w-[80%] items-center py-4 md:order-2 md:w-7/12 md:px-3 lg:w-4/6">
                 {/* <div className="h-11 w-24 md:w-24 lg:w-auto">
-                  <select className="h-full w-full focus:outline-none">
+                  <select className="h-full w-full focus:outline-hidden">
                     <option>All</option>
                     <option>Apps & Games</option>
                     <option>Beauty</option>
@@ -650,7 +649,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                 <div className="h-11 w-3/4 border-l border-solid border-indigo-200 md:w-5/6">
                   <input
                     type="text"
-                    className="form-control h-full w-full p-2.5 text-black focus:outline-none"
+                    className="form-control h-full w-full p-2.5 text-black focus:outline-hidden"
                     placeholder={t("global_search_placeholder")}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
@@ -1366,7 +1365,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
 
       <Dialog open={isQueryModalOpen} onOpenChange={handleToggleQueryModal}>
         <DialogContent
-          className="add-new-address-modal add_member_modal gap-0 p-0 md:!max-w-2xl"
+          className="add-new-address-modal add_member_modal gap-0 p-0 md:max-w-2xl!"
           ref={wrapperRef}
         >
           <QueryForm onClose={handleToggleQueryModal} />

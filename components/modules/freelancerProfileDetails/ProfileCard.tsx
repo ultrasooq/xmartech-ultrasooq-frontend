@@ -116,7 +116,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails }) => {
           />
         </div> */}
       </div>
-      <div className="w-full pl-3 md:w-[calc(100%_-_10rem)] md:pl-7">
+      <div className="w-full pl-3 md:w-[calc(100%-10rem)] md:pl-7">
         <div className="flex w-full flex-wrap items-center justify-between">
           <h2 className="left-8 text-3xl font-semibold text-color-dark" translate="no">
             {userDetails?.firstName || "NA"} {userDetails?.lastName}
@@ -204,7 +204,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails }) => {
               </span>
             </div>
             <select
-              className="!h-12 w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+              className="h-12! w-full rounded border border-gray-300! px-3 text-sm focus-visible:ring-0!"
               onChange={handleTimeChange}
               value={userDetails?.onlineOffline || "0"}
             >

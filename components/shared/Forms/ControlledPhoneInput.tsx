@@ -58,7 +58,7 @@ const ControlledPhoneInput: React.FC<ControlledPhoneInputProps> = ({
               formContext.setValue(countryName, `+${country.dialCode}`);
               field.onChange(`+${phone}`);
             }}
-            inputClass="theme-form-control-s1 !w-full"
+            inputClass="theme-form-control-s1 w-full!"
           />
         )}
       />

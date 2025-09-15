@@ -73,7 +73,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
               <div className="flex items-center gap-x-4">
                 <Button
                   variant="outline"
-                  className="relative hover:shadow-sm"
+                  className="relative hover:shadow-xs"
                   onClick={() => {
                     setQuantity(quantity - 1);
                     onAdd(
@@ -94,10 +94,10 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                     className="p-3"
                   />
                 </Button>
-                <p className="!text-black">{quantity}</p>
+                <p className="text-black!">{quantity}</p>
                 <Button
                   variant="outline"
-                  className="relative hover:shadow-sm"
+                  className="relative hover:shadow-xs"
                   onClick={() => {
                     setQuantity(quantity + 1);
                     onAdd(
@@ -121,7 +121,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
             </div>
             <Button
               variant="link"
-              className="relative hover:shadow-sm"
+              className="relative hover:shadow-xs"
               onClick={() => {
                 onRemove(id);
               }}

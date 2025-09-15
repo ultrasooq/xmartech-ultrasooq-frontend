@@ -71,7 +71,7 @@ const TransactionsPage = () => {
                                                         <td>{convertDateTime(transaction.updatedAt)}</td>
                                                         <td>
                                                             <button
-                                                                className="relative flex h-8 w-8 items-center justify-center rounded-full !shadow-md"
+                                                                className="relative flex h-8 w-8 items-center justify-center rounded-full shadow-md!"
                                                                 onClick={() => {
                                                                     handleTransactionModal();
                                                                     setSelectedTransaction(transaction);
@@ -108,10 +108,10 @@ const TransactionsPage = () => {
 
                 {selectedTransaction ? (<Dialog open={isTransactionModalOpen} onOpenChange={handleTransactionModal}>
                     <DialogContent
-                        className="add-new-address-modal add_member_modal gap-0 p-0 md:!max-w-2xl"
+                        className="add-new-address-modal add_member_modal gap-0 p-0 md:max-w-2xl!"
                         ref={wrapperRef}
                     >
-                        <div className="modal-header !justify-between">
+                        <div className="modal-header justify-between!">
                             <DialogTitle className="text-center text-xl font-bold" dir={langDir} translate="no">
                                 {t("transaction")}
                             </DialogTitle>
@@ -120,7 +120,7 @@ const TransactionsPage = () => {
                                     handleTransactionModal();
                                     setSelectedTransaction(undefined);
                                 }}
-                                className="absolute right-2 top-2 z-10 !bg-white !text-black shadow-none"
+                                className="absolute right-2 top-2 z-10 bg-white! text-black! shadow-none"
                             >
                                 <IoCloseSharp size={20} />
                             </Button>

@@ -753,9 +753,9 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
 
   return (
     <aside className="h-fit">
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+      <div className="bg-white rounded-lg shadow-xs border border-gray-200 overflow-hidden">
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-200">
+        <div className="bg-linear-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-200">
           <h2 className="text-xl font-semibold text-gray-900" dir={langDir} translate="no">
             {t("bulk_edit")}
           </h2>
@@ -861,7 +861,7 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
                     <select
                       {...field}
                       disabled={!watchUpdateWarehouse}
-                      className="w-full h-8 capitalize rounded border border-gray-300 px-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+                      className="w-full h-8 capitalize rounded border border-gray-300 px-2 text-xs focus:outline-hidden focus:ring-1 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
                     >
                       <option value="">{t("select")}</option>
                       {memoizedBranches.map((branch: IOption) => (
@@ -1069,7 +1069,7 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
                   type="button"
                   onClick={() => handleBulkWhereToSellUpdate()}
                   disabled={!watchUpdateWhereToSell || (!selectedCountries.length && !selectedStates.length && !selectedCities.length)}
-                  className={`w-full px-3 py-1.5 text-xs font-medium rounded focus:outline-none focus:ring-1 focus:ring-offset-1 transition-colors ${
+                  className={`w-full px-3 py-1.5 text-xs font-medium rounded focus:outline-hidden focus:ring-1 focus:ring-offset-1 transition-colors ${
                     watchUpdateWhereToSell && (selectedCountries.length > 0 || selectedStates.length > 0 || selectedCities.length > 0)
                       ? 'bg-purple-600 text-white hover:bg-purple-700 focus:ring-purple-500'
                       : 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -1110,7 +1110,7 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
                   render={({ field }) => (
                     <select
                       {...field}
-                      className="w-full h-10 rounded-md border border-gray-300 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full h-10 rounded-md border border-gray-300 px-3 text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     >
                       <option value="">{t("select")}</option>
                       {productConditions().map((option) => (
@@ -1125,7 +1125,7 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
                   type="button"
                   onClick={() => handleBulkProductCondition()}
                   disabled={!watchProductCondition}
-                  className={`w-full px-4 py-2 text-xs font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors ${
+                  className={`w-full px-4 py-2 text-xs font-medium rounded-md focus:outline-hidden focus:ring-2 focus:ring-offset-2 transition-colors ${
                     watchProductCondition
                       ? 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500'
                       : 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -1159,14 +1159,14 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
                   <button
                     type="button"
                     onClick={() => showConfirmation(true)}
-                    className="flex-1 px-3 py-2 bg-red-600 text-white text-xs font-medium rounded hover:bg-red-700 focus:outline-none focus:ring-1 focus:ring-red-500 focus:ring-offset-1 transition-colors"
+                    className="flex-1 px-3 py-2 bg-red-600 text-white text-xs font-medium rounded hover:bg-red-700 focus:outline-hidden focus:ring-1 focus:ring-red-500 focus:ring-offset-1 transition-colors"
                   >
                     ⚠️ Hide from Customers
                   </button>
                   <button
                     type="button"
                     onClick={() => showConfirmation(false)}
-                    className="flex-1 px-3 py-2 bg-green-600 text-white text-xs font-medium rounded hover:bg-green-700 focus:outline-none focus:ring-1 focus:ring-green-500 focus:ring-offset-1 transition-colors"
+                    className="flex-1 px-3 py-2 bg-green-600 text-white text-xs font-medium rounded hover:bg-green-700 focus:outline-hidden focus:ring-1 focus:ring-green-500 focus:ring-offset-1 transition-colors"
                   >
                     ✅ Show to Customers
                   </button>
@@ -1278,7 +1278,7 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
                     <select
                       {...field}
                       disabled={!watchUpdateAskFor}
-                      className="w-full h-8 capitalize rounded border border-gray-300 px-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+                      className="w-full h-8 capitalize rounded border border-gray-300 px-2 text-xs focus:outline-hidden focus:ring-1 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
                     >
                       <option value="">Select</option>
                       <option value="true">Yes</option>
@@ -1300,7 +1300,7 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
                     <select
                       {...field}
                       disabled={!watchUpdateAskFor}
-                      className="w-full h-8 capitalize rounded border border-gray-300 px-2 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+                      className="w-full h-8 capitalize rounded border border-gray-300 px-2 text-xs focus:outline-hidden focus:ring-1 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
                     >
                       <option value="">Select</option>
                       <option value="true">Yes</option>
@@ -1316,7 +1316,7 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
                   type="button"
                   onClick={() => handleBulkAskForUpdate()}
                   disabled={!watchUpdateAskFor || (!watchAskForPrice && !watchAskForStock) || (watchAskForPrice === "" && watchAskForStock === "")}
-                  className={`w-full px-3 py-1.5 text-xs font-medium rounded focus:outline-none focus:ring-1 focus:ring-offset-1 transition-colors ${
+                  className={`w-full px-3 py-1.5 text-xs font-medium rounded focus:outline-hidden focus:ring-1 focus:ring-offset-1 transition-colors ${
                     watchUpdateAskFor && (watchAskForPrice && watchAskForPrice !== "" || watchAskForStock && watchAskForStock !== "")
                       ? 'bg-orange-600 text-white hover:bg-orange-700 focus:ring-orange-500'
                       : 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -1372,7 +1372,7 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
                   <select
                     {...field}
                     disabled={!watchUpdateDiscounts}
-                    className={`w-full h-10 rounded-md border px-3 text-sm focus:outline-none focus:ring-2 focus:border-transparent ${
+                    className={`w-full h-10 rounded-md border px-3 text-sm focus:outline-hidden focus:ring-2 focus:border-transparent ${
                       watchUpdateDiscounts 
                         ? 'border-gray-300 focus:ring-blue-500' 
                         : 'border-gray-300 bg-gray-100 cursor-not-allowed'
@@ -1401,7 +1401,7 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
                   <select
                     {...field}
                     disabled={!watchUpdateDiscounts}
-                    className={`w-full h-10 rounded-md border px-3 text-sm focus:outline-none focus:ring-2 focus:border-transparent ${
+                    className={`w-full h-10 rounded-md border px-3 text-sm focus:outline-hidden focus:ring-2 focus:border-transparent ${
                       watchUpdateDiscounts 
                         ? 'border-gray-300 focus:ring-blue-500' 
                         : 'border-gray-300 bg-gray-100 cursor-not-allowed'
@@ -1433,7 +1433,7 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
                     <div className="relative">
                       <button
                         type="button"
-                        className="absolute left-2 top-[6px] z-10 flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                        className="absolute left-2 top-[6px] z-10 flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]!"
                         onClick={() => {
                           const newValue = Number(field.value) - 1;
                           field.onChange(newValue >= 0 ? newValue : 0);
@@ -1451,7 +1451,7 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
                       />
                       <button
                         type="button"
-                        className="absolute right-2 top-[6px] z-10 flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                        className="absolute right-2 top-[6px] z-10 flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]!"
                         onClick={() => {
                           const newValue = Number(field.value) + 1;
                           field.onChange(newValue);
@@ -1479,7 +1479,7 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
                         <div className="relative">
                           <button
                             type="button"
-                            className="absolute left-2 top-[6px] z-10 flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                            className="absolute left-2 top-[6px] z-10 flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]!"
                             onClick={() => {
                               const newValue = Number(field.value) - 1;
                               field.onChange(newValue >= 0 ? newValue : 0);
@@ -1497,7 +1497,7 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
                           />
                           <button
                             type="button"
-                            className="absolute right-2 top-[6px] z-10 flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                            className="absolute right-2 top-[6px] z-10 flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]!"
                             onClick={() => {
                               const newValue = Number(field.value) + 1;
                               field.onChange(newValue);
@@ -1522,7 +1522,7 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
                         <div className="relative">
                           <button
                             type="button"
-                            className="absolute left-2 top-[6px] z-10 flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                            className="absolute left-2 top-[6px] z-10 flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]!"
                             onClick={() => {
                               const newValue = Number(field.value) - 1;
                               field.onChange(newValue >= 0 ? newValue : 0);
@@ -1540,7 +1540,7 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
                           />
                           <button
                             type="button"
-                            className="absolute right-2 top-[6px] z-10 flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                            className="absolute right-2 top-[6px] z-10 flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]!"
                             onClick={() => {
                               const newValue = Number(field.value) + 1;
                               field.onChange(newValue);
@@ -1565,7 +1565,7 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
                         <div className="relative">
                           <button
                             type="button"
-                            className="absolute left-2 top-[6px] z-10 flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                            className="absolute left-2 top-[6px] z-10 flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]!"
                             onClick={() => {
                               const newValue = Number(field.value) - 1;
                               field.onChange(newValue >= 0 ? newValue : 0);
@@ -1583,7 +1583,7 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
                           />
                           <button
                             type="button"
-                            className="absolute right-2 top-[6px] z-10 flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                            className="absolute right-2 top-[6px] z-10 flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]!"
                             onClick={() => {
                               const newValue = Number(field.value) + 1;
                               field.onChange(newValue);
@@ -1608,7 +1608,7 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
                         <div className="relative">
                           <button
                             type="button"
-                            className="absolute left-2 top-[6px] z-10 flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                            className="absolute left-2 top-[6px] z-10 flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]!"
                             onClick={() => {
                               const newValue = Number(field.value) - 1;
                               field.onChange(newValue >= 0 ? newValue : 0);
@@ -1626,7 +1626,7 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
                           />
                           <button
                             type="button"
-                            className="absolute right-2 top-[6px] z-10 flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                            className="absolute right-2 top-[6px] z-10 flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]!"
                             onClick={() => {
                               const newValue = Number(field.value) + 1;
                               field.onChange(newValue);
@@ -1653,7 +1653,7 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
                     <div className="relative">
                       <button
                         type="button"
-                        className="absolute left-2 top-[6px] z-10 flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                        className="absolute left-2 top-[6px] z-10 flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]!"
                         onClick={() => {
                           const newValue = Number(field.value) - 1;
                           field.onChange(newValue >= 0 ? newValue : 0);
@@ -1671,7 +1671,7 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
                       />
                       <button
                         type="button"
-                        className="absolute right-2 top-[6px] z-10 flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                        className="absolute right-2 top-[6px] z-10 flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]!"
                         onClick={() => {
                           const newValue = Number(field.value) + 1;
                           field.onChange(newValue);
@@ -1696,7 +1696,7 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
                     <div className="relative">
                       <button
                         type="button"
-                        className="absolute left-2 top-[6px] z-10 flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                        className="absolute left-2 top-[6px] z-10 flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]!"
                         onClick={() => {
                           const newValue = Number(field.value) - 1;
                           field.onChange(newValue >= 0 ? newValue : 0);
@@ -1714,7 +1714,7 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
                       />
                       <button
                         type="button"
-                        className="absolute right-2 top-[6px] z-10 flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                        className="absolute right-2 top-[6px] z-10 flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]!"
                         onClick={() => {
                           const newValue = Number(field.value) + 1;
                           field.onChange(newValue);
@@ -1839,7 +1839,7 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
                       <div className="relative">
                         <button
                           type="button"
-                          className="absolute left-2 top-[6px] z-10 flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                          className="absolute left-2 top-[6px] z-10 flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]!"
                           onClick={() => {
                             const newValue = Number(field.value) - 1;
                             field.onChange(newValue);
@@ -1856,7 +1856,7 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
                         />
                         <button
                           type="button"
-                          className="absolute right-2 top-[6px] z-10 flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                          className="absolute right-2 top-[6px] z-10 flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]!"
                           onClick={() => {
                             const newValue = Number(field.value) + 1;
                             field.onChange(newValue);
@@ -1883,7 +1883,7 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
                       <div className="relative">
                         <button
                           type="button"
-                          className="absolute left-2 top-[6px] z-10 flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                          className="absolute left-2 top-[6px] z-10 flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]!"
                           onClick={() => {
                             const newValue = Number(field.value) - 1;
                             field.onChange(newValue);
@@ -1900,7 +1900,7 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
                         />
                         <button
                           type="button"
-                          className="absolute right-2 top-[6px] z-10 flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]"
+                          className="absolute right-2 top-[6px] z-10 flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]!"
                           onClick={() => {
                             const newValue = Number(field.value) + 1;
                             field.onChange(newValue);
@@ -1929,7 +1929,7 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
                         onChange={field.onChange}
                         onBlur={field.onBlur}
                         name={field.name}
-                        className="w-full h-10 rounded-md border border-gray-300 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full h-10 rounded-md border border-gray-300 px-3 text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       >
                         <option value="">Select Type</option>
                         {discountTypes().map((option) => (
@@ -1958,7 +1958,7 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
                         onChange={field.onChange}
                         onBlur={field.onBlur}
                         name={field.name}
-                        className="w-full h-10 rounded-md border border-gray-300 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full h-10 rounded-md border border-gray-300 px-3 text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       >
                         <option value="">Select Type</option>
                         {discountTypes().map((option) => (
@@ -2046,7 +2046,7 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
                 <button
                   type="button"
                   onClick={() => handleBulkDiscountUpdate()}
-                  className="w-full px-4 py-2 bg-green-600 text-white text-xs font-medium rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors"
+                  className="w-full px-4 py-2 bg-green-600 text-white text-xs font-medium rounded-md hover:bg-green-700 focus:outline-hidden focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors"
                 >
                   Update Discounts
                 </button>
@@ -2061,7 +2061,7 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium py-3 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md"
+              className="w-full bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium py-3 rounded-lg transition-all duration-200 shadow-xs hover:shadow-md"
               translate="no"
             >
               {isLoading ? (
@@ -2111,14 +2111,14 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
                     setShowConfirmDialog(false);
                     setConfirmAction(null);
                   }}
-                  className="px-3 py-1.5 text-xs text-gray-600 border border-gray-300 rounded hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-gray-500 transition-colors"
+                  className="px-3 py-1.5 text-xs text-gray-600 border border-gray-300 rounded hover:bg-gray-50 focus:outline-hidden focus:ring-1 focus:ring-gray-500 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="button"
                   onClick={confirmAction.onConfirm}
-                  className={`px-3 py-1.5 text-xs text-white rounded focus:outline-none focus:ring-1 transition-colors ${
+                  className={`px-3 py-1.5 text-xs text-white rounded focus:outline-hidden focus:ring-1 transition-colors ${
                     confirmAction.type === 'hide'
                       ? 'bg-red-600 hover:bg-red-700 focus:ring-red-500'
                       : 'bg-green-600 hover:bg-green-700 focus:ring-green-500'

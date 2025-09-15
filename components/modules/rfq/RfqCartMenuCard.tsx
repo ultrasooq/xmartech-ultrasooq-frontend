@@ -51,7 +51,7 @@ const RfqCartMenuCard: React.FC<RfqCartMenuCardProps> = ({
   }, [productQuantity]);
 
   return (
-    <div className="rfq_cart_wrap !pb-0">
+    <div className="rfq_cart_wrap pb-0!">
       <div className="rfq_cart_wrap_image relative">
         <Image
           src={
@@ -73,7 +73,7 @@ const RfqCartMenuCard: React.FC<RfqCartMenuCardProps> = ({
             <div className="flex items-center gap-x-3 md:gap-x-4">
               <Button
                 variant="outline"
-                className="relative hover:shadow-sm"
+                className="relative hover:shadow-xs"
                 onClick={() => {
                   setQuantity(quantity - 1);
                   onAdd(
@@ -94,10 +94,10 @@ const RfqCartMenuCard: React.FC<RfqCartMenuCardProps> = ({
                   className="p-3"
                 />
               </Button>
-              <p className="!text-black">{quantity}</p>
+              <p className="text-black!">{quantity}</p>
               <Button
                 variant="outline"
-                className="relative hover:shadow-sm"
+                className="relative hover:shadow-xs"
                 onClick={() => {
                   setQuantity(quantity + 1);
                   onAdd(
@@ -121,7 +121,7 @@ const RfqCartMenuCard: React.FC<RfqCartMenuCardProps> = ({
           </div>
           <Button
             variant="link"
-            className="relative hover:shadow-sm"
+            className="relative hover:shadow-xs"
             onClick={() => {
               onRemove(id);
             }}

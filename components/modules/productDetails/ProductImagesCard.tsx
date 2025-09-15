@@ -175,7 +175,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
                             className="object-contain"
                           />
                         ) : isVideo(item) ? (
-                          <div className="player-wrapper !py-[30%]">
+                          <div className="player-wrapper py-[30%]!">
                             <ReactPlayer
                               url={item}
                               width="100%"
@@ -213,7 +213,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
           {isLoading ? <Skeleton className="min-h-[250px] w-full" /> : null}
         </div>
 
-        <div className="col-span-1 m-auto flex !h-full w-full flex-wrap gap-4 self-start lg:w-auto lg:flex-col">
+        <div className="col-span-1 m-auto flex h-full! w-full flex-wrap gap-4 self-start lg:w-auto lg:flex-col">
           {isLoading
             ? Array.from({ length: 3 }).map((_, index) => (
                 <Skeleton className="h-28 w-28" key={index} />
@@ -338,7 +338,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
 
       <Dialog open={isEditModalOpen} onOpenChange={handleToggleEditModal}>
         <DialogContent
-          className="add-new-address-modal h-screen gap-0 overflow-y-scroll p-0 md:!max-w-2xl"
+          className="add-new-address-modal h-screen gap-0 overflow-y-scroll p-0 md:max-w-2xl!"
           ref={wrapperRef}
         >
           <ProductEditForm
@@ -354,7 +354,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
       {/* For Customize Dialog */}
       <Dialog open={isCustomizeModalOpen} onOpenChange={handleToCustomizeModal}>
         <DialogContent
-          className="add-new-address-modal gap-0 p-0 md:!max-w-2xl"
+          className="add-new-address-modal gap-0 p-0 md:max-w-2xl!"
           ref={wrapperRef}
         >
           <AddToCustomizeForm
@@ -373,7 +373,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
           onOpenChange={handleSellerRewardDetailModal}
         >
           <DialogContent
-            className="add-new-address-modal gap-0 p-0 md:!max-w-2xl"
+            className="add-new-address-modal gap-0 p-0 md:max-w-2xl!"
             ref={wrapperRef}
           >
             <SellerRewardDetail

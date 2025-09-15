@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState, use } from "react";
 import {
   IBrands,
   ISelectOptions,
@@ -68,10 +68,11 @@ import { startDebugger } from "remove-child-node-error-debugger";
 import Cart from "@/components/modules/cartList/Cart";
 
 interface TrendingPageProps {
-  searchParams?: { term?: string };
+  searchParams?: Promise<{ term?: string }>;
 }
 
-const TrendingPage = ({ searchParams }: TrendingPageProps) => {
+const TrendingPage = (props0: TrendingPageProps) => {
+  const searchParams = use(props0.searchParams);
   const t = useTranslations();
   const { langDir, currency } = useAuth();
   const queryClient = useQueryClient();
@@ -411,7 +412,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
               >
                 <AccordionItem value="brand">
                   <AccordionTrigger
-                    className="px-3 text-base hover:!no-underline"
+                    className="px-3 text-base hover:no-underline!"
                     dir={langDir}
                     translate="no"
                   >
@@ -439,7 +440,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
                           <div key={item.value} className="div-li">
                             <Checkbox
                               id={item.label}
-                              className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                              className="border border-solid border-gray-300 data-[state=checked]:bg-dark-orange!"
                               onCheckedChange={(checked) =>
                                 handleBrandChange(checked, item)
                               }
@@ -462,7 +463,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
 
                 <AccordionItem value="price">
                   <AccordionTrigger
-                    className="px-3 text-base hover:!no-underline"
+                    className="px-3 text-base hover:no-underline!"
                     dir={langDir}
                     translate="no"
                   >

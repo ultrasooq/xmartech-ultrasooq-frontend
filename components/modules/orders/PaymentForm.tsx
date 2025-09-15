@@ -195,9 +195,9 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                               onChange={(e) => setName(e.target.value)}
                               placeholder={t("card_holder_name")}
                               className="theme-form-control-s1 flex h-9 w-full rounded-md border
-           border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors 
+           border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors 
            file:border-0 file:bg-transparent file:text-sm file:font-medium 
-           placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring 
+           placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring 
            disabled:cursor-not-allowed disabled:opacity-50"
                               dir={langDir}
                               translate="no"
@@ -247,7 +247,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                               type="number"
                               value={inputValue}
                               onChange={(e) => setInputValue(e.target.value)} // Allow empty value
-                              className="h-12 w-full rounded-[5px] bg-white px-4 py-3 text-lg text-black focus:shadow-none focus:outline-none"
+                              className="h-12 w-full rounded-[5px] bg-white px-4 py-3 text-lg text-black focus:shadow-none focus:outline-hidden"
                             />
                           </div>
                           <div className="relative mb-3 flex w-[20%] items-end justify-center text-center">
@@ -311,7 +311,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                               value={name}
                               onChange={(e) => setName(e.target.value)}
                               placeholder={t("card_holder_name")}
-                              className="theme-form-control-s1 flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:ring-1"
+                              className="theme-form-control-s1 flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors focus-visible:ring-1"
                               dir={langDir}
                               translate="no"
                             />

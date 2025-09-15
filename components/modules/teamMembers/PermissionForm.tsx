@@ -132,7 +132,7 @@ const PermissionForm: React.FC<PermissionFormProps> = ({
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
-              className="m-auto mb-0 max-h-[95vh] w-11/12 overflow-y-auto rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-8 md:w-10/12 lg:w-10/12 lg:p-10"
+              className="m-auto mb-0 max-h-[95vh] w-11/12 overflow-y-auto rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-xs sm:p-8 md:w-10/12 lg:w-10/12 lg:p-10"
             >
               <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
                 <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10" translate="no">

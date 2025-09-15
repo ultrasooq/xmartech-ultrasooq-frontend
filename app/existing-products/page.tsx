@@ -209,7 +209,7 @@ const ExistingProductsPage = () => {
                 className="filter-col"
               >
                 <AccordionItem value="brand">
-                  <AccordionTrigger className="px-3 text-base hover:!no-underline" translate="no">
+                  <AccordionTrigger className="px-3 text-base hover:no-underline!" translate="no">
                     {t("by_brand")}
                   </AccordionTrigger>
                   <AccordionContent>
@@ -234,7 +234,7 @@ const ExistingProductsPage = () => {
                           <div key={item.value} className="div-li">
                             <Checkbox
                               id={item.label}
-                              className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                              className="border border-solid border-gray-300 data-[state=checked]:bg-dark-orange!"
                               onCheckedChange={(checked) =>
                                 handleBrandChange(checked, item)
                               }

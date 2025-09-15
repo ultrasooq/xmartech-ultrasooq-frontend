@@ -433,7 +433,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
 
   return (
     <div className="form-groups-common-sec-s1">
-      <h3 className={cn(activeProductType === "R" ? "!mb-0" : "")} dir={langDir} translate="no">
+      <h3 className={cn(activeProductType === "R" ? "mb-0!" : "")} dir={langDir} translate="no">
         {t("price")}
       </h3>
       {activeProductType !== "R" ? (
@@ -448,7 +448,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                     <Checkbox
                       checked={field.value}
                       onCheckedChange={field.onChange}
-                      className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                      className="border border-solid border-gray-300 data-[state=checked]:bg-dark-orange!"
                     />
                   </FormControl>
                   <div className="space-y-1 leading-none">
@@ -543,7 +543,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                         render={({ field }) => (
                           <select
                             {...field}
-                            className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                            className="h-[48px]! w-full rounded border border-gray-300! px-3 text-sm focus-visible:ring-0!"
                           >
                             <option value="" dir={langDir}></option>
                             <option value="FLAT" dir={langDir} translate="no">
@@ -577,7 +577,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                         render={({ field }) => (
                           <select
                             {...field}
-                            className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                            className="h-[48px]! w-full rounded border border-gray-300! px-3 text-sm focus-visible:ring-0!"
                           >
                             <option value="" dir={langDir}></option>
                             <option value="FLAT" dir={langDir} translate="no">
@@ -788,7 +788,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                       <Switch
                         checked={!!field.value}
                         onCheckedChange={field.onChange}
-                        className="data-[state=checked]:!bg-dark-orange"
+                        className="data-[state=checked]:bg-dark-orange!"
                       />
                     )}
                   />
@@ -803,7 +803,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                       <Switch
                         checked={!!field.value}
                         onCheckedChange={field.onChange}
-                        className="data-[state=checked]:!bg-dark-orange"
+                        className="data-[state=checked]:bg-dark-orange!"
                       />
                     )}
                   />
@@ -818,7 +818,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                       <Switch
                         checked={!!field.value}
                         onCheckedChange={field.onChange}
-                        className="data-[state=checked]:!bg-dark-orange"
+                        className="data-[state=checked]:bg-dark-orange!"
                       />
                     )}
                   />
@@ -838,14 +838,14 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                     <FormLabel dir={langDir} translate="no">{t("service_price")}</FormLabel>
                     <FormControl>
                       <div className="relative">
-                        <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]">
+                        <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]!">
                           {currency.symbol}
                         </div>
                         <Input
                           type="number"
                           onWheel={(e) => e.currentTarget.blur()}
                           placeholder={t("service_price")}
-                          className="!h-[48px] rounded border-gray-300 pl-12 pr-10 focus-visible:!ring-0"
+                          className="h-[48px]! rounded border-gray-300 pl-12 pr-10 focus-visible:ring-0!"
                           disabled={watchIsOfferPriceRequired}
                           {...field}
                           dir={langDir}
@@ -867,14 +867,14 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                     <FormLabel dir={langDir} translate="no">{t("offer_price")}</FormLabel>
                     <FormControl>
                       <div className="relative">
-                        <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center !bg-[#F6F6F6]">
+                        <div className="absolute left-2 top-[6px] flex h-[34px] w-[32px] items-center justify-center bg-[#F6F6F6]!">
                           {currency.symbol}
                         </div>
                         <Input
                           type="number"
                           onWheel={(e) => e.currentTarget.blur()}
                           placeholder={t("offer_price")}
-                          className="!h-[48px] rounded border-gray-300 pl-12 pr-10 focus-visible:!ring-0"
+                          className="h-[48px]! rounded border-gray-300 pl-12 pr-10 focus-visible:ring-0!"
                           disabled={watchIsOfferPriceRequired}
                           {...field}
                           dir={langDir}
@@ -900,7 +900,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                         type="number"
                         onWheel={(e) => e.currentTarget.blur()}
                         placeholder={t("stock")}
-                        className="!h-[48px] rounded border-gray-300 focus-visible:!ring-0"
+                        className="h-[48px]! rounded border-gray-300 focus-visible:ring-0!"
                         disabled={watchIsStockRequired}
                         {...field}
                         dir={langDir}

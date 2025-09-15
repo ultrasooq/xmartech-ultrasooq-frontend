@@ -140,7 +140,7 @@ const AddFromExistingProductPage = () => {
         </div>
 
         {/* Search Section */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+        <div className="bg-white rounded-lg shadow-xs p-6 mb-6">
           <div className="mb-4">
             <p className="text-sm text-gray-600 mb-3" dir={langDir}>
               {t("search_existing_product_description")}

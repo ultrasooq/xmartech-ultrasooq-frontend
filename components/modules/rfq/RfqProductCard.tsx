@@ -100,7 +100,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
         </Button>
         <Link
           href={`/rfq/${id}`}
-          className="relative flex h-8 w-8 items-center justify-center rounded-full !shadow-md"
+          className="relative flex h-8 w-8 items-center justify-center rounded-full shadow-md!"
         >
           <FiEye size={18} />
         </Link>
@@ -129,7 +129,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                 <Button
                   type="button"
                   variant="outline"
-                  className="relative px-4 hover:shadow-sm"
+                  className="relative px-4 hover:shadow-xs"
                   onClick={() => {
                     setQuantity(quantity - 1);
                     onAdd(
@@ -150,13 +150,13 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
                     className="p-3"
                   />
                 </Button>
-                <p className="!mb-0 flex items-center !text-black">
+                <p className="mb-0! flex items-center text-black!">
                   {quantity}
                 </p>
                 <Button
                   type="button"
                   variant="outline"
-                  className="relative px-4 hover:shadow-sm"
+                  className="relative px-4 hover:shadow-xs"
                   onClick={() => {
                     setQuantity(quantity + 1);
                     onAdd(

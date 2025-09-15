@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState, use } from "react";
 import { debounce } from "lodash";
 import {
   useRfqCartListByUserId,
@@ -52,10 +52,11 @@ import { useAuth } from "@/context/AuthContext";
 import  { startDebugger }  from "remove-child-node-error-debugger";
 
 interface RfqPageProps {
-  searchParams?: { term?: string };
+  searchParams?: Promise<{ term?: string }>;
 }
 
-const RfqPage = ({ searchParams }: RfqPageProps) => {
+const RfqPage = (props: RfqPageProps) => {
+  const searchParams = use(props.searchParams);
   const t = useTranslations();
   const { langDir } = useAuth();
   const queryClient = useQueryClient();
@@ -283,7 +284,7 @@ const RfqPage = ({ searchParams }: RfqPageProps) => {
         </div>
         <div className="rfq-container px-3">
           <div className="row">
-            <div className="rfq_main_box !justify-center">
+            <div className="rfq_main_box justify-center!">
               <div className="rfq_left" dir={langDir}>
                 <div className="all_select_button">
                   <button type="button" onClick={selectAll} translate="no">
@@ -508,7 +509,7 @@ const RfqPage = ({ searchParams }: RfqPageProps) => {
         </div>
         <Dialog open={isAddToCartModalOpen} onOpenChange={handleToggleAddModal}>
           <DialogContent
-            className="add-new-address-modal gap-0 p-0 md:!max-w-2xl"
+            className="add-new-address-modal gap-0 p-0 md:max-w-2xl!"
             ref={wrapperRef}
           >
             <AddToRfqForm

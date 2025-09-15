@@ -368,7 +368,7 @@ export default function MyAccountsPage() {
                 {getStatusInfo(currentAccount).statusNote && (
                   <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
                     <div className="flex items-start space-x-2">
-                      <div className="flex-shrink-0">
+                      <div className="shrink-0">
                         <svg className="w-5 h-5 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                         </svg>
@@ -476,7 +476,7 @@ export default function MyAccountsPage() {
                       {statusInfo.statusNote && (statusInfo.status === 'REJECT' || statusInfo.status === 'INACTIVE') && (
                         <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
                           <div className="flex items-start space-x-2">
-                            <div className="flex-shrink-0">
+                            <div className="shrink-0">
                               <svg className="w-4 h-4 text-red-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                               </svg>
@@ -545,7 +545,7 @@ export default function MyAccountsPage() {
                       {statusInfo.statusNote && (statusInfo.status === 'REJECT' || statusInfo.status === 'INACTIVE') && (
                         <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
                           <div className="flex items-start space-x-2">
-                            <div className="flex-shrink-0">
+                            <div className="shrink-0">
                               <svg className="w-4 h-4 text-red-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                               </svg>
@@ -608,7 +608,7 @@ export default function MyAccountsPage() {
                       {statusInfo.statusNote && (statusInfo.status === 'REJECT' || statusInfo.status === 'INACTIVE') && (
                         <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
                           <div className="flex items-start space-x-2">
-                            <div className="flex-shrink-0">
+                            <div className="shrink-0">
                               <svg className="w-4 h-4 text-red-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                               </svg>
@@ -665,7 +665,7 @@ export default function MyAccountsPage() {
                       {statusInfo.statusNote && (statusInfo.status === 'REJECT' || statusInfo.status === 'INACTIVE') && (
                         <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
                           <div className="flex items-start space-x-2">
-                            <div className="flex-shrink-0">
+                            <div className="shrink-0">
                               <svg className="w-4 h-4 text-red-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                               </svg>
@@ -701,7 +701,7 @@ export default function MyAccountsPage() {
         {/* Create Account Modal */}
         <Dialog open={showCreateForm} onOpenChange={setShowCreateForm}>
           <DialogContent className="max-w-md max-h-[90vh] flex flex-col">
-            <DialogHeader className="pb-4 border-b border-gray-200 flex-shrink-0">
+            <DialogHeader className="pb-4 border-b border-gray-200 shrink-0">
               <DialogTitle dir={langDir} className="text-dark-cyan text-xl font-semibold">
                 Create New Account
               </DialogTitle>
@@ -766,7 +766,7 @@ export default function MyAccountsPage() {
                   <div className="space-y-3 border-t border-gray-200 pt-4">
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                       <div className="flex items-start space-x-2">
-                        <div className="flex-shrink-0">
+                        <div className="shrink-0">
                           <svg className="w-5 h-5 text-blue-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                           </svg>
@@ -882,7 +882,7 @@ export default function MyAccountsPage() {
                   <div className="space-y-3 border-t border-gray-200 pt-4">
                     <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
                       <div className="flex items-start space-x-2">
-                        <div className="flex-shrink-0">
+                        <div className="shrink-0">
                           <svg className="w-5 h-5 text-yellow-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
                           </svg>
@@ -898,7 +898,7 @@ export default function MyAccountsPage() {
               </Form>
             </div>
 
-            <div className="flex justify-end space-x-2 pt-4 border-t border-gray-200 flex-shrink-0">
+            <div className="flex justify-end space-x-2 pt-4 border-t border-gray-200 shrink-0">
               <Button
                 variant="outline"
                 onClick={() => setShowCreateForm(false)}

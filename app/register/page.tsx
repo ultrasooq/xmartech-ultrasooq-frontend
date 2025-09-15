@@ -211,7 +211,7 @@ export default function RegisterPage() {
         </div>
         <div className="container relative z-10 m-auto">
           <div className="flex">
-            <div className="auth-page-box m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-7 shadow-sm sm:p-12 md:w-9/12 lg:w-7/12">
+            <div className="auth-page-box m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-7 shadow-xs sm:p-12 md:w-9/12 lg:w-7/12">
               <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
                 <h2
                   className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10"
@@ -345,7 +345,7 @@ export default function RegisterPage() {
                             <Checkbox
                               checked={field.value}
                               onCheckedChange={field.onChange}
-                              className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                              className="border border-solid border-gray-300 data-[state=checked]:bg-dark-orange!"
                             />
                           </FormControl>
                           <div className="flex flex-col leading-none">
@@ -420,7 +420,7 @@ export default function RegisterPage() {
         </div>
 
         <Dialog open={isTermsModalOpen} onOpenChange={handleToggleTermsModal}>
-          <DialogContent className="max-h-[93vh] max-w-[90%] gap-0 p-0 md:!max-w-[90%] lg:!max-w-5xl">
+          <DialogContent className="max-h-[93vh] max-w-[90%] gap-0 p-0 md:max-w-[90%]! lg:max-w-5xl!">
             <DialogHeader className="border-b border-light-gray py-4">
               <DialogTitle
                 className="text-center text-xl font-bold"
@@ -440,7 +440,7 @@ export default function RegisterPage() {
           open={isPrivacyModalOpen}
           onOpenChange={handleTogglePrivacyModal}
         >
-          <DialogContent className="max-h-[93vh] max-w-[90%] gap-0 p-0 md:!max-w-[90%] lg:!max-w-5xl">
+          <DialogContent className="max-h-[93vh] max-w-[90%] gap-0 p-0 md:max-w-[90%]! lg:max-w-5xl!">
             <DialogHeader className="border-b border-light-gray py-4">
               <DialogTitle
                 className="text-center text-xl font-bold"
