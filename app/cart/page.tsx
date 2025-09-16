@@ -72,7 +72,10 @@ const CartListPage = () => {
     const price = offerPrice ? Number(offerPrice) : 0;
     if (discountType == 'PERCENTAGE') {
       return Number((price - (price * discount) / 100).toFixed(2));
+    } else if (discountType == 'FIXED' || discountType == 'FLAT') {
+      return Number((price - discount).toFixed(2));
     }
+    // If no discount type is specified, treat as fixed discount
     return Number((price - discount).toFixed(2));
   };
 
@@ -98,17 +101,28 @@ const CartListPage = () => {
           },
         ) => {
           if (curr.cartType == "DEFAULT") {
-            let discount = curr?.productPriceDetails?.consumerDiscount;
-            let discountType = curr?.productPriceDetails?.consumerDiscountType;
-            if (user?.tradeRole && user.tradeRole != 'BUYER') {
-              discount = curr?.productPriceDetails?.vendorDiscount;
-              discountType = curr?.productPriceDetails?.vendorDiscountType;
-            }
+            // Always use consumer discount for cart total - this is what customers see
+            const discount = curr?.productPriceDetails?.consumerDiscount || 0;
+            const discountType = curr?.productPriceDetails?.consumerDiscountType || '';
+            
+            console.log('Cart Total - Simple Discount Logic:', {
+              productName: curr?.productPriceDetails?.productPrice_product?.productName,
+              offerPrice: curr.productPriceDetails?.offerPrice,
+              consumerDiscount: curr?.productPriceDetails?.consumerDiscount,
+              consumerDiscountType: curr?.productPriceDetails?.consumerDiscountType,
+              discount,
+              discountType,
+              quantity: curr.quantity
+            });
+            
             const calculatedDiscount = calculateDiscountedPrice(
               curr.productPriceDetails?.offerPrice ?? 0,
-              discount || 0,
+              discount,
               discountType
             );
+            
+            console.log('✅ Cart Total - Calculated discounted price:', calculatedDiscount);
+            
             return (
               Number((acc + calculatedDiscount * curr.quantity).toFixed(2))
             );
@@ -137,6 +151,10 @@ const CartListPage = () => {
             cartType: "DEFAULT" | "SERVICE";
             productPriceDetails: {
               offerPrice: string;
+              consumerDiscount?: number;
+              consumerDiscountType?: string;
+              vendorDiscount?: number;
+              vendorDiscountType?: string;
             };
             quantity: number;
             cartServiceFeatures: any[];
@@ -146,8 +164,17 @@ const CartListPage = () => {
           },
         ) => {
           if (curr.cartType == "DEFAULT") {
+            // Always use consumer discount for device-based cart - this is what customers see
+            const discount = curr?.productPriceDetails?.consumerDiscount || 0;
+            const discountType = curr?.productPriceDetails?.consumerDiscountType || '';
+            
+            const calculatedDiscount = calculateDiscountedPrice(
+              curr.productPriceDetails?.offerPrice ?? 0,
+              discount,
+              discountType
+            );
             return (
-              Number((acc + Number(curr.productPriceDetails?.offerPrice || 0) * curr.quantity).toFixed(2))
+              Number((acc + calculatedDiscount * curr.quantity).toFixed(2))
             );
           }
 

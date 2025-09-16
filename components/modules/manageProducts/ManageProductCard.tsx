@@ -563,7 +563,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
           {/* Action Buttons - Iconic Only */}
           {!hideCopyButton && !hideActionButtons && (
             <div className="flex space-x-2">
-              {/* {!hideCopyButton && (
+              {!hideCopyButton && (
                 <Link href={`/product?copy=${productId}`}>
                   <button
                     type="button"
@@ -573,7 +573,7 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
                     <IoMdCopy size={18} />
                   </button>
                 </Link>
-              )} */}
+              )}
               
               {!hideActionButtons && (
                 <button

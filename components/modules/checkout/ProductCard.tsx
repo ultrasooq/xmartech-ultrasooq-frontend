@@ -54,16 +54,20 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
   const calculateDiscountedPrice = () => {
     const price = offerPrice ? Number(offerPrice) : 0;
-    let discount = consumerDiscount;
+    let discount = consumerDiscount || 0;
     let discountType = consumerDiscountType;
     if (user?.tradeRole && user?.tradeRole != 'BUYER') {
-      discount = vendorDiscount;
+      discount = vendorDiscount || 0;
       discountType = vendorDiscountType;
     }
     if (discountType == 'PERCENTAGE') {
       return Number((price - (price * discount) / 100).toFixed(2));
-    } else if (discountType == 'FLAT') {
+    } else if (discountType == 'FIXED' || discountType == 'FLAT') {
       return Number((price - discount).toFixed(2));
+    }
+    // If no discount or discount type, return original price
+    if (!discount) {
+      return price;
     }
     // Default fallback for any other discount type
     return Number((price - discount).toFixed(2));

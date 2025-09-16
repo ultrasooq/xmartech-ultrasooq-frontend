@@ -76,19 +76,36 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
   const calculateDiscountedPrice = () => {
     const price = offerPrice ? Number(offerPrice) : 0;
-    let discount = consumerDiscount;
-    let discountType = consumerDiscountType;
-    if (user?.tradeRole && user?.tradeRole != 'BUYER') {
-      discount = vendorDiscount;
-      discountType = vendorDiscountType;
+    
+    // Always use consumer discount for cart display - this is what customers see
+    const discount = consumerDiscount || 0;
+    const discountType = consumerDiscountType || '';
+    
+    console.log('Cart ProductCard - Simple Discount Logic:', {
+      productName,
+      price,
+      consumerDiscount,
+      consumerDiscountType,
+      discount,
+      discountType
+    });
+    
+    // Apply discount calculation
+    if (discount > 0 && discountType) {
+      if (discountType === 'PERCENTAGE') {
+        const discountedPrice = Number((price - (price * discount) / 100).toFixed(2));
+        console.log('✅ Percentage discount applied:', { originalPrice: price, discount, discountedPrice });
+        return discountedPrice;
+      } else if (discountType === 'FIXED' || discountType === 'FLAT') {
+        const discountedPrice = Number((price - discount).toFixed(2));
+        console.log('✅ Fixed discount applied:', { originalPrice: price, discount, discountedPrice });
+        return discountedPrice;
+      }
     }
-    if (discountType == 'PERCENTAGE') {
-      return Number((price - (price * discount) / 100).toFixed(2));
-    } else if (discountType == 'FLAT') {
-      return Number((price - discount).toFixed(2));
-    }
-    // Default fallback for any other discount type
-    return Number((price - discount).toFixed(2));
+    
+    // If no discount, return original price
+    console.log('❌ No discount applied, returning original price:', { originalPrice: price, discount, discountType });
+    return price;
   };
 
   useEffect(() => {

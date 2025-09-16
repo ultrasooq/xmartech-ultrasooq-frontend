@@ -189,7 +189,10 @@ const CheckoutPage = () => {
     const price = offerPrice ? Number(offerPrice) : 0;
     if (discountType == "PERCENTAGE") {
       return Number((price - (price * discount) / 100).toFixed(2));
+    } else if (discountType == 'FIXED' || discountType == 'FLAT') {
+      return Number((price - discount).toFixed(2));
     }
+    // If no discount type is specified, treat as fixed discount
     return Number((price - discount).toFixed(2));
   };
 
