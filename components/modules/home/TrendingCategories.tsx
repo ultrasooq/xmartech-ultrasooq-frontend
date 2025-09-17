@@ -233,7 +233,7 @@ const TrendingCategories: React.FC<TrendingCategoriesProps> = ({
           {/* Scrollable Container */}
           <div 
             id="main-categories-scroll"
-            className="flex gap-4 overflow-x-auto pb-4 scroll-smooth scrollbar-hide justify-center"
+            className="flex gap-4 overflow-x-auto pb-4 scroll-smooth scrollbar-hide pl-4 pr-8"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
             {mainCategories.map((category: CategoryProps, index: number) => (
@@ -351,7 +351,7 @@ const TrendingCategories: React.FC<TrendingCategoriesProps> = ({
             {/* Scrollable Container */}
             <div 
               id="sub-categories-scroll"
-              className="flex gap-3 overflow-x-auto pb-4 scroll-smooth scrollbar-hide justify-center"
+              className="flex gap-3 overflow-x-auto pb-4 scroll-smooth scrollbar-hide pl-4 pr-8"
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
               {mainCategories
@@ -471,7 +471,7 @@ const TrendingCategories: React.FC<TrendingCategoriesProps> = ({
             {/* Scrollable Container */}
             <div 
               id="sub-sub-categories-scroll"
-              className="flex gap-2 overflow-x-auto pb-4 scroll-smooth scrollbar-hide justify-center"
+              className="flex gap-2 overflow-x-auto pb-4 scroll-smooth scrollbar-hide pl-4 pr-8"
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
               {mainCategories

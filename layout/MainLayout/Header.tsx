@@ -86,8 +86,7 @@ const ButtonLink: React.FC<ButtonLinkProps> = ({
   ...props
 }) => {
   return (
-    <Link href={href} passHref legacyBehavior>
-      <a onClick={onClick} {...props}>
+    <Link href={href} onClick={onClick} {...props}>
         <button
           type="button"
           className="flex cursor-pointer text-sm font-semibold text-white uppercase md:px-8 md:py-10 md:text-sm lg:text-base xl:text-lg"
@@ -95,7 +94,6 @@ const ButtonLink: React.FC<ButtonLinkProps> = ({
         >
           {children}
         </button>
-      </a>
     </Link>
   );
 };
@@ -1031,7 +1029,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
             </div>
 
             <div
-              className={`me menu h-[44px] w-full px-3 md:flex md:px-0 ${isActive ? "show_menu" : "hidden"}`}
+              className={`me menu h-[44px] w-full px-3 md:flex md:px-0 ${isActive ? "show_menu" : ""}`}
             >
               <div className="close" onClick={handleClick}>
                 <IoCloseOutline />

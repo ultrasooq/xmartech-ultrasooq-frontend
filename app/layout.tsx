@@ -1,5 +1,6 @@
 import { inter } from "@/app/ui/fonts";
 import "@/app/ui/global.css";
+import "@/scss/main.scss";
 import SessionWrapper from "@/components/SessionWrapper";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "@/context/AuthContext";
@@ -87,7 +88,7 @@ export default async function RootLayout({
   const permissions = await getUserPermissions();
 
   const locale = await getUserLocale();
-  const messages = {};
+  const messages = (await import(`../translations/${locale}.json`)).default;
 
   return (
     <SessionWrapper>

@@ -1,6 +1,10 @@
 {
     "welcome": "مرحبًا بك في Ultrasooq",
     "home": "بيت",
+    "dashboard": "لوحة القيادة",
+    "Message System": "نظام الرسائل",
+    "left": "متبقي",
+    "confirm_removal": "تأكيد الإزالة",
     "location": "موقع",
     "store_location": "موقع المتجر",
     "track_your_order": "تتبع طلبك",
