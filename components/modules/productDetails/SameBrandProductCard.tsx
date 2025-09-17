@@ -153,7 +153,7 @@ const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
 
           <Link
             href={`/trending/${id}`}
-            className="relative flex h-8 w-8 items-center justify-center rounded-full !shadow-md"
+            className="relative flex h-8 w-8 items-center justify-center rounded-full shadow-md!"
           >
             <FiEye size={18} />
           </Link>
@@ -207,7 +207,7 @@ const SameBrandProductCard: React.FC<SameBrandProductCardProps> = ({
           ) : (
             <h5 className="py-1 text-[#1D77D1]">
               {currency.symbol}{calculateDiscountedPrice()}{" "}
-              <span className="text-gray-500 !line-through">
+              <span className="text-gray-500 line-through!">
                 {currency.symbol}{productProductPrice}
               </span>
             </h5>

@@ -90,14 +90,14 @@ const ProductCard: React.FC<ProductCardProps> = ({
             />
           </div>
           <figcaption>
-            <h4 className="!text-lg !font-bold">{productName}</h4>
+            <h4 className="text-lg! font-bold!">{productName}</h4>
             <div className="custom-form-group">
               <label dir={langDir} translate="no">{t("quantity")}</label>
               <div className="qty-up-down-s1-with-rgMenuAction">
                 <div className="flex items-center gap-x-4">
                   <Button
                     variant="outline"
-                    className="relative hover:shadow-sm"
+                    className="relative hover:shadow-xs"
                     onClick={() => {
                       setQuantity(quantity - 1);
                       onAdd(quantity - 1, "remove", productPriceId, productVariant);
@@ -114,7 +114,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                   <p>{quantity}</p>
                   <Button
                     variant="outline"
-                    className="relative hover:shadow-sm"
+                    className="relative hover:shadow-xs"
                     onClick={() => {
                       setQuantity(quantity + 1);
                       onAdd(quantity + 1, "add", productPriceId, productQuantity);

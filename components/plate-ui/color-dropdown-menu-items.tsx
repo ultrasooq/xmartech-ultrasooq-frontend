@@ -32,7 +32,7 @@ export function ColorDropdownMenuItem({
     <DropdownMenuItem
       className={cn(
         buttonVariants({
-          variant: 'outline',
+          variant: 'outline-solid',
           isMenu: true,
         }),
         'size-6 border border-solid border-muted p-0',

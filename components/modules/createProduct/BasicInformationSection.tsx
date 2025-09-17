@@ -104,7 +104,7 @@ const VideoPreviewCompo = ({
         type="file"
         accept="video/*"
         multiple={false}
-        className="!bottom-0 h-20 !w-full cursor-pointer opacity-0"
+        className="bottom-0! h-20 w-full! cursor-pointer opacity-0"
         onChange={(event) => {
           if (event.target.files) {
             if (
@@ -260,7 +260,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
   return (
     <>
       <div className="grid w-full grid-cols-4 gap-x-5">
-        <div className="col-span-4 mx-auto mb-3 w-full max-w-[950px] rounded-lg border border-solid border-gray-300 bg-white p-2 shadow-sm sm:p-3 lg:p-4">
+        <div className="col-span-4 mx-auto mb-3 w-full max-w-[950px] rounded-lg border border-solid border-gray-300 bg-white p-2 shadow-xs sm:p-3 lg:p-4">
           <div className="flex w-full flex-wrap">
             <div className=" w-full">
               <div className="flex flex-wrap">
@@ -279,7 +279,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                         render={({ field }) => (
                           <select
                             {...field}
-                            className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                            className="h-[48px]! w-full rounded border border-gray-300! px-3 text-sm focus-visible:ring-0!"
                             onChange={(e) => {
                               if (e.target.value === "") {
                                 return;
@@ -339,7 +339,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                 {t("sub_category")}
                               </Label>
                               <select
-                                className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                                className="h-[48px]! w-full rounded border border-gray-300! px-3 text-sm focus-visible:ring-0!"
                                 onChange={(e) => {
                                   if (e.target.value === "") {
                                     return;
@@ -527,7 +527,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                                 type="file"
                                                 accept="image/*"
                                                 multiple={false}
-                                                className="!bottom-0 h-44 !w-full cursor-pointer opacity-0"
+                                                className="bottom-0! h-44 w-full! cursor-pointer opacity-0"
                                                 onChange={(event) => {
                                                   if (event.target.files) {
                                                     if (
@@ -591,7 +591,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                               type="file"
                               accept="image/*, video/*"
                               multiple
-                              className="!bottom-0 h-48 !w-full cursor-pointer opacity-0"
+                              className="bottom-0! h-48 w-full! cursor-pointer opacity-0"
                               onChange={(event) => {
                                 if (event.target.files) {
                                   const filesArray = Array.from(

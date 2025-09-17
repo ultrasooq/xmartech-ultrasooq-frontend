@@ -105,7 +105,7 @@ const MyOrderDetailsPage = ({ }) => {
           <div className="my-order-wrapper">
             <div className="right-div mx-w-100">
               <div className="my-order-lists for-delivery-address">
-                <ul className="page-indicator-s1 !mb-0">
+                <ul className="page-indicator-s1 mb-0!">
                   <li>
                     <Link href="/home" dir={langDir} translate="no">
                       {t("home")}
@@ -145,7 +145,7 @@ const MyOrderDetailsPage = ({ }) => {
                           </address>
                           <p dir={langDir}>
                             <span translate="no">{t("phone_number")} </span>
-                            <span className="!text-red-500" dir={langDir}>
+                            <span className="text-red-500!" dir={langDir}>
                               {shippingDetails?.phone}
                             </span>
                           </p>
@@ -162,7 +162,7 @@ const MyOrderDetailsPage = ({ }) => {
                           </address>
                           <p>
                             <span translate="no">{t("phone_number")} </span>
-                            <span className="!text-red-500" dir={langDir}>
+                            <span className="text-red-500!" dir={langDir}>
                               {billingDetails?.phone}
                             </span>
                           </p>
@@ -207,7 +207,7 @@ const MyOrderDetailsPage = ({ }) => {
                     <div className="my-order-card">
                       <div className="mb-2 w-full gap-2 sm:grid sm:grid-cols-3">
                         <div className="gap-2 sm:flex">
-                          <h3 className="!font-bold" translate="no">
+                          <h3 className="font-bold!" translate="no">
                             {t("shipping_mode")}:
                           </h3>
                           <span>
@@ -218,7 +218,7 @@ const MyOrderDetailsPage = ({ }) => {
                           </span>
                         </div>
                         <div className="gap-2 sm:flex">
-                          <h3 className="!font-bold" translate="no">
+                          <h3 className="font-bold!" translate="no">
                             {t("delivery_charge")}:
                           </h3>
                           <span>
@@ -231,7 +231,7 @@ const MyOrderDetailsPage = ({ }) => {
                       "PICKUP" ? (
                         <div className="w-full gap-2 sm:grid sm:grid-cols-3">
                           <div className="gap-2 sm:flex">
-                            <h3 className="!font-bold" translate="no">
+                            <h3 className="font-bold!" translate="no">
                               {t("shipping_date")}:
                             </h3>
                             <span>
@@ -241,7 +241,7 @@ const MyOrderDetailsPage = ({ }) => {
                             </span>
                           </div>
                           <div className="gap-2 sm:flex">
-                            <h3 className="!font-bold" translate="no">
+                            <h3 className="font-bold!" translate="no">
                               {t("from_time")}:
                             </h3>
                             <span>
@@ -251,7 +251,7 @@ const MyOrderDetailsPage = ({ }) => {
                             </span>
                           </div>
                           <div className="gap-2 sm:flex">
-                            <h3 className="!font-bold" translate="no">
+                            <h3 className="font-bold!" translate="no">
                               {t("to_time")}:
                             </h3>
                             <span>
@@ -529,7 +529,7 @@ const MyOrderDetailsPage = ({ }) => {
                                     className={cn(
                                       orderDetails?.orderProductStatus ===
                                         "CANCELLED"
-                                        ? "!bg-red-500"
+                                        ? "bg-red-500!"
                                         : "",
                                     )}
                                   ></small>

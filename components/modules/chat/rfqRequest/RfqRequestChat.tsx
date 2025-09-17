@@ -860,7 +860,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
               <div className="flex w-[calc(100%-6.5rem)] items-center">
                 <textarea
                   placeholder="Type your message...."
-                  className="h-[32px] w-full resize-none focus:outline-none"
+                  className="h-[32px] w-full resize-none focus:outline-hidden"
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   onKeyDown={handleSendMessageKeyDown}

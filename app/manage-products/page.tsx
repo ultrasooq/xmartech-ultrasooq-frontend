@@ -1027,7 +1027,7 @@ const ManageProductsPage = () => {
                 <div className="flex flex-col lg:flex-row gap-6">
                   {/* Filters - Left Side */}
                   <div className="lg:w-1/4">
-                    <div className="bg-white rounded-lg shadow-sm p-6">
+                    <div className="bg-white rounded-lg shadow-xs p-6">
                       <div className="mb-4">
                         <div className="flex gap-2 mb-4">
                           <button 
@@ -1054,7 +1054,7 @@ const ManageProductsPage = () => {
                         className="mb-4"
                       >
                         <AccordionItem value="category_filter">
-                          <AccordionTrigger className="text-base hover:!no-underline">
+                          <AccordionTrigger className="text-base hover:no-underline!">
                             {t("by_category")}
                           </AccordionTrigger>
                           <AccordionContent>
@@ -1074,7 +1074,7 @@ const ManageProductsPage = () => {
                         className="mb-4"
                       >
                         <AccordionItem value="brand">
-                          <AccordionTrigger className="text-base hover:!no-underline">
+                          <AccordionTrigger className="text-base hover:no-underline!">
                             {t("by_brand")}
                           </AccordionTrigger>
                           <AccordionContent>
@@ -1109,7 +1109,7 @@ const ManageProductsPage = () => {
                                 <div key={item.value} className="flex items-center space-x-2">
                                   <Checkbox
                                     id={item.label}
-                                    className="border border-gray-300 data-[state=checked]:!bg-blue-600"
+                                    className="border border-gray-300 data-[state=checked]:bg-blue-600!"
                                     onCheckedChange={(checked) =>
                                       handleBrandChange(checked, item)
                                     }
@@ -1134,7 +1134,7 @@ const ManageProductsPage = () => {
                       defaultValue={["product_conditions"]}
                     >
                       <AccordionItem value="product_conditions">
-                        <AccordionTrigger className="text-base hover:!no-underline">
+                        <AccordionTrigger className="text-base hover:no-underline!">
                           {t("by_menu")}
                         </AccordionTrigger>
                         <AccordionContent>
@@ -1142,7 +1142,7 @@ const ManageProductsPage = () => {
                             <div className="flex items-center space-x-2">
                               <Checkbox
                                 id="displayStoreProducts"
-                                className="border border-gray-300 data-[state=checked]:!bg-blue-600"
+                                className="border border-gray-300 data-[state=checked]:bg-blue-600!"
                                 onCheckedChange={(checked: boolean) =>
                                   setDisplayStoreProducts(checked)
                                 }
@@ -1160,7 +1160,7 @@ const ManageProductsPage = () => {
                             <div className="flex items-center space-x-2">
                               <Checkbox
                                 id="displayBuyGroupProducts"
-                                className="border border-gray-300 data-[state=checked]:!bg-blue-600"
+                                className="border border-gray-300 data-[state=checked]:bg-blue-600!"
                                 onCheckedChange={(checked: boolean) => {
                                   setDisplayBuyGroupProducts(checked);
                                   setDisplayExpiredProducts(
@@ -1183,7 +1183,7 @@ const ManageProductsPage = () => {
                             <div className="flex items-center space-x-2">
                               <Checkbox
                                 id="displayTrialProducts"
-                                className="border border-gray-300 data-[state=checked]:!bg-blue-600"
+                                className="border border-gray-300 data-[state=checked]:bg-blue-600!"
                                 onCheckedChange={(checked: boolean) =>
                                   setDisplayTrialProducts(checked)
                                 }
@@ -1201,7 +1201,7 @@ const ManageProductsPage = () => {
                             <div className="flex items-center space-x-2">
                               <Checkbox
                                 id="displayWholesaleProducts"
-                                className="border border-gray-300 data-[state=checked]:!bg-blue-600"
+                                className="border border-gray-300 data-[state=checked]:bg-blue-600!"
                                 onCheckedChange={(checked: boolean) =>
                                   setDisplayWholesaleProducts(checked)
                                 }
@@ -1220,7 +1220,7 @@ const ManageProductsPage = () => {
                               <div className="flex items-center space-x-2">
                                 <Checkbox
                                   id="displayExpiredProducts"
-                                  className="border border-gray-300 data-[state=checked]:!bg-blue-600"
+                                  className="border border-gray-300 data-[state=checked]:bg-blue-600!"
                                   onCheckedChange={(checked: boolean) =>
                                     setDisplayExpiredProducts(checked)
                                   }
@@ -1239,7 +1239,7 @@ const ManageProductsPage = () => {
                             <div className="flex items-center space-x-2">
                               <Checkbox
                                 id="displayHiddenProducts"
-                                className="border border-gray-300 data-[state=checked]:!bg-blue-600"
+                                className="border border-gray-300 data-[state=checked]:bg-blue-600!"
                                 onCheckedChange={(checked: boolean) =>
                                   setDisplayHiddenProducts(checked)
                                 }
@@ -1257,7 +1257,7 @@ const ManageProductsPage = () => {
                             <div className="flex items-center space-x-2">
                               <Checkbox
                                 id="displayDiscountedProducts"
-                                className="border border-gray-300 data-[state=checked]:!bg-blue-600"
+                                className="border border-gray-300 data-[state=checked]:bg-blue-600!"
                                 onCheckedChange={(checked: boolean) =>
                                   setDisplayDiscountedProducts(checked)
                                 }
@@ -1282,7 +1282,7 @@ const ManageProductsPage = () => {
 
                 {/* Products List - Right Side */}
                 <div className="lg:w-3/4">
-                  <div className="bg-white rounded-lg shadow-sm p-6">
+                  <div className="bg-white rounded-lg shadow-xs p-6">
                     <div className="mb-4">
                       <div className="flex items-center justify-between">
                         <h2 className="text-xl font-semibold">
@@ -1317,7 +1317,7 @@ const ManageProductsPage = () => {
                             <select
                               value={limit}
                               onChange={(e) => handleLimitChange(Number(e.target.value))}
-                              className="h-8 px-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              className="h-8 px-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-hidden focus:ring-2 focus:ring-blue-500"
                             >
                               <option value={3}>3</option>
                               <option value={6}>6</option>
@@ -1490,7 +1490,7 @@ const ManageProductsPage = () => {
             <div className="flex flex-col lg:flex-row gap-6">
               {/* Filters - Left Side */}
               <div className="lg:w-1/4">
-                <div className="bg-white rounded-lg shadow-sm p-6">
+                <div className="bg-white rounded-lg shadow-xs p-6">
                   <div className="mb-4">
                     <div className="flex gap-2 mb-4">
                       <button 
@@ -1531,7 +1531,7 @@ const ManageProductsPage = () => {
                     className="mb-4"
                   >
                     <AccordionItem value="category">
-                      <AccordionTrigger className="text-base hover:!no-underline">
+                      <AccordionTrigger className="text-base hover:no-underline!">
                         {t("by_category")}
                       </AccordionTrigger>
                       <AccordionContent>
@@ -1551,7 +1551,7 @@ const ManageProductsPage = () => {
                     className="mb-4"
                   >
                     <AccordionItem value="brand">
-                      <AccordionTrigger className="text-base hover:!no-underline">
+                      <AccordionTrigger className="text-base hover:no-underline!">
                         {t("by_brand")}
                       </AccordionTrigger>
                       <AccordionContent>
@@ -1586,7 +1586,7 @@ const ManageProductsPage = () => {
                             <div key={item.value} className="flex items-center space-x-2">
                               <Checkbox
                                 id={`existing-${item.label}`}
-                                className="border border-gray-300 data-[state=checked]:!bg-blue-600"
+                                className="border border-gray-300 data-[state=checked]:bg-blue-600!"
                                 onCheckedChange={(checked) =>
                                   handleExistingProductsBrandChange(checked, item)
                                 }
@@ -1613,7 +1613,7 @@ const ManageProductsPage = () => {
                     className="mb-4"
                   >
                     <AccordionItem value="type">
-                      <AccordionTrigger className="text-base hover:!no-underline">
+                      <AccordionTrigger className="text-base hover:no-underline!">
                         {t("by_product_type")}
                       </AccordionTrigger>
                       <AccordionContent>
@@ -1621,7 +1621,7 @@ const ManageProductsPage = () => {
                           <div className="flex items-center space-x-2">
                             <Checkbox
                               id="existing-type-p"
-                              className="border border-gray-300 data-[state=checked]:!bg-blue-600"
+                              className="border border-gray-300 data-[state=checked]:bg-blue-600!"
                               onCheckedChange={(checked) => {
                                 if (checked) {
                                   setExistingProductsSelectedType("P");
@@ -1641,7 +1641,7 @@ const ManageProductsPage = () => {
                           <div className="flex items-center space-x-2">
                             <Checkbox
                               id="existing-type-r"
-                              className="border border-gray-300 data-[state=checked]:!bg-blue-600"
+                              className="border border-gray-300 data-[state=checked]:bg-blue-600!"
                               onCheckedChange={(checked) => {
                                 if (checked) {
                                   setExistingProductsSelectedType("R");
@@ -1667,7 +1667,7 @@ const ManageProductsPage = () => {
 
               {/* Products List - Right Side */}
               <div className="lg:w-3/4">
-                <div className="bg-white rounded-lg shadow-sm p-6">
+                <div className="bg-white rounded-lg shadow-xs p-6">
                   <div className="mb-4">
                     <div className="flex items-center justify-between">
                       <h2 className="text-xl font-semibold">

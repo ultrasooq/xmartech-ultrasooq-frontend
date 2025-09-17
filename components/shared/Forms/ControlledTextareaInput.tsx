@@ -33,7 +33,7 @@ const ControlledTextareaInput: React.FC<ControlledTextareaInputProps> = ({
           <FormControl>
             <Textarea
               {...props}
-              className="theme-form-control-s1 !h-auto"
+              className="theme-form-control-s1 h-auto!"
               {...field}
             />
           </FormControl>

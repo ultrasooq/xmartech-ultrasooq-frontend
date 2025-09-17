@@ -337,7 +337,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
     <div
       className={cn(
         item.status === "INACTIVE" ? "opacity-50" : "",
-        "product-list-s1-col border-[1px] !border-transparent border-slate-300 p-3 hover:!border-slate-200 hover:bg-slate-100",
+        "product-list-s1-col border-[1px] border-transparent! border-slate-300 p-3 hover:border-slate-200! hover:bg-slate-100",
       )}
     >
       <div className="product-list-s1-box relative cursor-pointer ">
@@ -388,7 +388,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
             <Link
               href={`/trending/${item.id}`}
-              className="relative flex h-8 w-8 items-center justify-center rounded-full !shadow-md"
+              className="relative flex h-8 w-8 items-center justify-center rounded-full shadow-md!"
             >
               <FiEye size={18} />
             </Link>
@@ -453,7 +453,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <h5 className="py-1 text-[#1D77D1]">
               {currency.symbol}
               {calculateDiscountedPrice()}{" "}
-              <span className="text-gray-500 !line-through">
+              <span className="text-gray-500 line-through!">
                 {currency.symbol}
                 {item.productProductPrice}
               </span>
@@ -516,7 +516,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <Button
               type="button"
               variant="outline"
-              className="relative hover:shadow-sm"
+              className="relative hover:shadow-xs"
               onClick={() => handleQuantity(quantity - 1, "remove")}
               disabled={
                 quantity === 0 ||
@@ -534,7 +534,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <input
               type="text"
               value={quantity}
-              className="h-auto w-[35px] border-none bg-transparent text-center focus:border-none focus:outline-none"
+              className="h-auto w-[35px] border-none bg-transparent text-center focus:border-none focus:outline-hidden"
               onChange={(e) => {
                 const value = Number(e.target.value);
                 setQuantity(isNaN(value) ? cartQuantity : value);
@@ -544,7 +544,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <Button
               type="button"
               variant="outline"
-              className="relative hover:shadow-sm"
+              className="relative hover:shadow-xs"
               onClick={() => handleQuantity(quantity + 1, "add")}
               disabled={
                 item.status === "INACTIVE" || updateCartWithLogin?.isPending
@@ -594,14 +594,14 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
       <Dialog open={isConfirmDialogOpen} onOpenChange={handleConfirmDialog}>
         <DialogContent
-          className="add-new-address-modal add_member_modal gap-0 p-0 md:!max-w-2xl"
+          className="add-new-address-modal add_member_modal gap-0 p-0 md:max-w-2xl!"
           ref={confirmDialogRef}
         >
-          <div className="modal-header !justify-between" dir={langDir}>
+          <div className="modal-header justify-between!" dir={langDir}>
             <DialogTitle className="text-center text-xl font-bold text-dark-orange"></DialogTitle>
             <Button
               onClick={onCancelRemove}
-              className={`${langDir == "ltr" ? "absolute" : ""} right-2 top-2 z-10 !bg-white !text-black shadow-none`}
+              className={`${langDir == "ltr" ? "absolute" : ""} right-2 top-2 z-10 bg-white! text-black! shadow-none`}
             >
               <IoCloseSharp size={20} />
             </Button>

@@ -272,7 +272,7 @@ export default function EditProfilePage() {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-8 md:w-10/12 lg:w-10/12 lg:p-12"
+            className="m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-xs sm:p-8 md:w-10/12 lg:w-10/12 lg:p-12"
           >
             <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
               <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10" translate="no">
@@ -349,7 +349,7 @@ export default function EditProfilePage() {
                                 type="file"
                                 accept="image/*"
                                 multiple={false}
-                                className="!bottom-0 h-64 !w-full opacity-0"
+                                className="bottom-0! h-64 w-full! opacity-0"
                                 {...field}
                                 onChange={(event) => {
                                   if (event.target.files?.[0]) {

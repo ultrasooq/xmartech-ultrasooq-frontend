@@ -454,7 +454,7 @@ const ServiceCard: React.FC<any> = ({
         {isSelectable ? (
           <div className="absolute left-[10px] top-[20px]">
             <Checkbox
-              className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+              className="border border-solid border-gray-300 data-[state=checked]:bg-dark-orange!"
               checked={selectedIds?.includes(item.id)}
               onCheckedChange={(checked) => onSelectedId?.(checked, item.id)}
             />
@@ -507,7 +507,7 @@ const ServiceCard: React.FC<any> = ({
 
             <Link
               href={manageService ? "#" : `/services/${item.id}`}
-              className="relative flex h-8 w-8 items-center justify-center rounded-full !shadow-md"
+              className="relative flex h-8 w-8 items-center justify-center rounded-full shadow-md!"
             >
               <FiEye size={18} />
             </Link>
@@ -584,7 +584,7 @@ const ServiceCard: React.FC<any> = ({
                         <h5 className="py-1 text-[#1D77D1]">
                             {currency.symbol}
                             {calculateDiscountedPrice()}{" "}
-                            <span className="text-gray-500 !line-through">
+                            <span className="text-gray-500 line-through!">
                                 {currency.symbol}
                                 {item.productProductPrice}
                             </span>
@@ -615,7 +615,7 @@ const ServiceCard: React.FC<any> = ({
                             <Button
                                 type="button"
                                 variant="outline"
-                                className="relative hover:shadow-sm"
+                                className="relative hover:shadow-xs"
                                 onClick={() => handleQuantity(quantity - 1, "remove")}
                                 disabled={
                                     quantity === 0 ||
@@ -633,7 +633,7 @@ const ServiceCard: React.FC<any> = ({
                             <input
                                 type="text"
                                 value={quantity}
-                                className="h-auto w-[35px] border-none bg-transparent text-center focus:border-none focus:outline-none"
+                                className="h-auto w-[35px] border-none bg-transparent text-center focus:border-none focus:outline-hidden"
                                 onChange={(e) => {
                                     const value = Number(e.target.value);
                                     setQuantity(isNaN(value) ? productQuantity : value);
@@ -643,7 +643,7 @@ const ServiceCard: React.FC<any> = ({
                             <Button
                                 type="button"
                                 variant="outline"
-                                className="relative hover:shadow-sm"
+                                className="relative hover:shadow-xs"
                                 onClick={() => handleQuantity(quantity + 1, "add")}
                                 disabled={
                                     updateCartWithLogin?.isPending ||
@@ -719,14 +719,14 @@ const ServiceCard: React.FC<any> = ({
       </div>
       <Dialog open={isConfirmDialogOpen} onOpenChange={handleConfirmDialog}>
         <DialogContent
-          className="add-new-address-modal add_member_modal gap-0 p-0 md:!max-w-2xl"
+          className="add-new-address-modal add_member_modal gap-0 p-0 md:max-w-2xl!"
           ref={confirmDialogRef}
         >
-          <div className="modal-header !justify-between" dir={langDir}>
+          <div className="modal-header justify-between!" dir={langDir}>
             <DialogTitle className="text-center text-xl font-bold text-dark-orange"></DialogTitle>
             <Button
               onClick={onCancelRemove}
-              className={`${langDir == "ltr" ? "absolute" : ""} right-2 top-2 z-10 !bg-white !text-black shadow-none`}
+              className={`${langDir == "ltr" ? "absolute" : ""} right-2 top-2 z-10 bg-white! text-black! shadow-none`}
             >
               <IoCloseSharp size={20} />
             </Button>

@@ -253,13 +253,13 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
 
   return (
     <>
-      <div className="modal-header !justify-between" dir={langDir}>
+      <div className="modal-header justify-between!" dir={langDir}>
         <DialogTitle className="text-center text-xl font-bold" translate="no">
           {`${addressId}` ? t("edit_address") : t("add_address")}
         </DialogTitle>
         <Button
           onClick={onClose}
-          className={`${langDir == "ltr" ? "absolute" : ""} right-2 top-2 z-10 !bg-white !text-black shadow-none`}
+          className={`${langDir == "ltr" ? "absolute" : ""} right-2 top-2 z-10 bg-white! text-black! shadow-none`}
         >
           <IoCloseSharp size={20} />
         </Button>
@@ -288,7 +288,7 @@ const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
             />
           </div>
 
-          <div className="relative z-[99999999] mt-2 grid w-full grid-cols-1 gap-1 md:grid-cols-1">
+          <div className="relative z-99999999 mt-2 grid w-full grid-cols-1 gap-1 md:grid-cols-1">
             <ControlledPhoneInput
               label={t("phone_number")}
               name="phoneNumber"

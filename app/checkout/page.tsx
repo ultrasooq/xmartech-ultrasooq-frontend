@@ -1266,7 +1266,7 @@ const CheckoutPage = () => {
                       <Button
                         variant="outline"
                         type="button"
-                        className="add-new-address-btn border-none p-0 !normal-case shadow-none"
+                        className="add-new-address-btn border-none p-0 normal-case! shadow-none"
                         onClick={() => {
                           setAddressType("shipping");
                           handleToggleAddModal();
@@ -1301,7 +1301,7 @@ const CheckoutPage = () => {
                       <div className="textwithcheckbox">
                         <Checkbox
                           id="same_as_shipping"
-                          className="border border-solid border-gray-300 bg-white data-[state=checked]:!bg-dark-orange"
+                          className="border border-solid border-gray-300 bg-white data-[state=checked]:bg-dark-orange!"
                           onCheckedChange={() => {
                             setSameAsShipping(!sameAsShipping);
 
@@ -1421,7 +1421,7 @@ const CheckoutPage = () => {
                       <Button
                         variant="outline"
                         type="button"
-                        className="add-new-address-btn border-none p-0 !normal-case shadow-none"
+                        className="add-new-address-btn border-none p-0 normal-case! shadow-none"
                         onClick={() => {
                           setAddressType("billing");
                           handleToggleAddModal();
@@ -1447,7 +1447,7 @@ const CheckoutPage = () => {
                     <Button
                       variant="outline"
                       type="button"
-                      className="add-new-address-btn border-none p-0 !normal-case shadow-none"
+                      className="add-new-address-btn border-none p-0 normal-case! shadow-none"
                       onClick={handleToggleAddModal}
                       dir={langDir}
                       translate="no"
@@ -1566,14 +1566,14 @@ const CheckoutPage = () => {
 
       <Dialog open={isConfirmDialogOpen} onOpenChange={handleConfirmDialog}>
         <DialogContent
-          className="add-new-address-modal add_member_modal gap-0 p-0 md:!max-w-2xl"
+          className="add-new-address-modal add_member_modal gap-0 p-0 md:max-w-2xl!"
           ref={confirmDialogRef}
         >
-          <div className="modal-header !justify-between" dir={langDir}>
+          <div className="modal-header justify-between!" dir={langDir}>
             <DialogTitle className="text-center text-xl font-bold text-dark-orange"></DialogTitle>
             <Button
               onClick={onCancelRemove}
-              className={`${langDir == "ltr" ? "absolute" : ""} right-2 top-2 z-10 !bg-white !text-black shadow-none`}
+              className={`${langDir == "ltr" ? "absolute" : ""} right-2 top-2 z-10 bg-white! text-black! shadow-none`}
             >
               <IoCloseSharp size={20} />
             </Button>
@@ -1607,7 +1607,7 @@ const CheckoutPage = () => {
 
       <Dialog open={isShippingModalOpen} onOpenChange={handleShippingModal}>
         <DialogContent
-          className="add-new-address-modal add_member_modal gap-0 p-0 md:!max-w-2xl"
+          className="add-new-address-modal add_member_modal gap-0 p-0 md:max-w-2xl!"
           ref={shippingModalRef}
         >
           <Shipping

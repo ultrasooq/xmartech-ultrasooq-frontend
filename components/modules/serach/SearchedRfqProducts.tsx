@@ -206,7 +206,7 @@ const SearchedRfqProducts: React.FC<SearchedRfqProductsType> = ({
         <section className="rfq_section pb-8 pt-0">
             <div className="rfq-container px-8">
                 <div className="row">
-                    <div className="rfq_main_box !justify-center">
+                    <div className="rfq_main_box justify-center!">
                         <div className="rfq_middle" style={{ maxWidth: "100%" }}>
                             <div className="flex flex-wrap">
                                 <div className="flex w-full flex-wrap items-center justify-between border-b border-solid border-gray-300 bg-neutral-100 px-3.5 py-3.5">
@@ -303,7 +303,7 @@ const SearchedRfqProducts: React.FC<SearchedRfqProductsType> = ({
 
             <Dialog open={isAddToCartModalOpen} onOpenChange={handleToggleAddModal}>
                 <DialogContent
-                    className="add-new-address-modal gap-0 p-0 md:!max-w-2xl"
+                    className="add-new-address-modal gap-0 p-0 md:max-w-2xl!"
                     ref={wrapperRef}
                 >
                     <AddToRfqForm

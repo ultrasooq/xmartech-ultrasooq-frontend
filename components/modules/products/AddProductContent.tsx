@@ -230,7 +230,7 @@ const AddProductContent: React.FC<AddProductContentProps> = ({ productId, onClos
           <div className="import-pickup-type-selector-item">
             <button
               onClick={handleAddNewProduct}
-              className="import-pickup-type-selector-box hover:!bg-gray-100 w-full text-left"
+              className="import-pickup-type-selector-box hover:bg-gray-100! w-full text-left"
             >
               <div className="icon-container">
                 <Image src={AddProductIcon} alt="add-product-icon" />
@@ -247,7 +247,7 @@ const AddProductContent: React.FC<AddProductContentProps> = ({ productId, onClos
           <div className="import-pickup-type-selector-item">
             <button
               onClick={handleAddFromExisting}
-              className="import-pickup-type-selector-box hover:!bg-gray-100 w-full text-left"
+              className="import-pickup-type-selector-box hover:bg-gray-100! w-full text-left"
             >
               <div className="icon-container">
                 <Image src={ExistingProductIcon} alt="existing-product-icon" />

@@ -128,7 +128,7 @@ export default function ChangePasswordPage() {
       </div>
       <div className="container relative z-10 m-auto">
         <div className="flex">
-          <div className="w-full rounded-lg border border-solid border-gray-300 bg-white p-4 shadow-sm">
+          <div className="w-full rounded-lg border border-solid border-gray-300 bg-white p-4 shadow-xs">
             {showSuccess ? (
               <div className="px-4 py-6">
                 <PasswordChangeSuccessContent />
@@ -154,7 +154,7 @@ export default function ChangePasswordPage() {
                               <Input
                                 type="password"
                                 placeholder="**********"
-                                className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
+                                className="h-12! rounded border-gray-300 focus-visible:ring-0!"
                                 {...field}
                                 dir={langDir}
                               />
@@ -174,7 +174,7 @@ export default function ChangePasswordPage() {
                               <Input
                                 type="password"
                                 placeholder="**********"
-                                className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
+                                className="h-12! rounded border-gray-300 focus-visible:ring-0!"
                                 {...field}
                                 dir={langDir}
                               />
@@ -194,7 +194,7 @@ export default function ChangePasswordPage() {
                               <Input
                                 type="password"
                                 placeholder="**********"
-                                className="!h-12 rounded border-gray-300 focus-visible:!ring-0"
+                                className="h-12! rounded border-gray-300 focus-visible:ring-0!"
                                 {...field}
                                 dir={langDir}
                               />

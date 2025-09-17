@@ -56,7 +56,7 @@ const ProductReviewCard: React.FC<ProductReviewCardProps> = ({
               className="rounded-sm"
             />
           </div>
-          <div className="w-[calc(100%_-_2rem)] pl-3.5 text-sm font-normal leading-5 text-gray-500">
+          <div className="w-[calc(100%-2rem)] pl-3.5 text-sm font-normal leading-5 text-gray-500">
             <div className="flex w-full items-start justify-between">
               <h4 className="text-base font-semibold text-color-dark">
                 {productName}

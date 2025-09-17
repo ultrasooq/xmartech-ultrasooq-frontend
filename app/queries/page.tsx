@@ -86,7 +86,7 @@ const QueriesPage = () => {
                                                         <td>{convertDateTime(query.createdAt)}</td>
                                                         <td>
                                                             <button
-                                                                className="relative flex h-8 w-8 items-center justify-center rounded-full !shadow-md"
+                                                                className="relative flex h-8 w-8 items-center justify-center rounded-full shadow-md!"
                                                                 onClick={() => {
                                                                     handleQueryModal();
                                                                     setSelectedQuery(query);
@@ -123,16 +123,16 @@ const QueriesPage = () => {
 
                 {selectedQuery ? (<Dialog open={isQueryModalOpen} onOpenChange={handleQueryModal}>
                     <DialogContent
-                        className="add-new-address-modal add_member_modal gap-0 p-0 md:!max-w-2xl"
+                        className="add-new-address-modal add_member_modal gap-0 p-0 md:max-w-2xl!"
                         ref={wrapperRef}
                     >
-                        <div className="modal-header !justify-between">
+                        <div className="modal-header justify-between!">
                             <DialogTitle className="text-center text-xl font-bold" dir={langDir} translate="no">
                                 {t("query")}
                             </DialogTitle>
                             <Button
                                 onClick={handleQueryModal}
-                                className="absolute right-2 top-2 z-10 !bg-white !text-black shadow-none"
+                                className="absolute right-2 top-2 z-10 bg-white! text-black! shadow-none"
                             >
                                 <IoCloseSharp size={20} />
                             </Button>

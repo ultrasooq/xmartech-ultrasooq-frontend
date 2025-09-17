@@ -29,14 +29,14 @@ export default function House() {
                     <a href="#">Track Your Order</a>
                   </li>
                   <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
-                    <select className="border-0 bg-transparent text-white focus:outline-none">
+                    <select className="border-0 bg-transparent text-white focus:outline-hidden">
                       <option className="bg-dark-cyan">USD</option>
                       <option className="bg-dark-cyan">INR</option>
                       <option className="bg-dark-cyan">AUD</option>
                     </select>
                   </li>
                   <li className="px-2 pr-0 text-sm font-normal text-white">
-                    <select className="border-0 bg-transparent text-white focus:outline-none">
+                    <select className="border-0 bg-transparent text-white focus:outline-hidden">
                       <option className="bg-dark-cyan">English</option>
                       <option className="bg-dark-cyan">German</option>
                       <option className="bg-dark-cyan">French</option>
@@ -48,7 +48,7 @@ export default function House() {
             <div className="flex flex-wrap sm:flex sm:flex-wrap md:flex md:flex-wrap">
               <div className="order-3 flex w-10/12 items-center py-4 sm:order-3 sm:w-10/12 md:order-2 md:w-7/12 md:px-3 lg:w-4/6">
                 <div className="h-11 w-24 md:w-24 lg:w-auto">
-                  <select className="h-full w-full focus:outline-none">
+                  <select className="h-full w-full focus:outline-hidden">
                     <option>All</option>
                     <option>Apps & Games</option>
                     <option>Beauty</option>
@@ -62,7 +62,7 @@ export default function House() {
                 <div className="h-11 w-4/6 border-l border-solid border-indigo-200">
                   <input
                     type="search"
-                    className="form-control h-full w-full p-2.5 text-black focus:outline-none"
+                    className="form-control h-full w-full p-2.5 text-black focus:outline-hidden"
                     placeholder="I’m shopping for..."
                   />
                 </div>
@@ -205,20 +205,20 @@ export default function House() {
 
       <div className="space-y-5">
         <div
-          className="rounded-lg bg-white p-3 shadow"
+          className="rounded-lg bg-white p-3 shadow-sm"
           onClick={(e) => handleClick(e, "house")}
         >
           <h3 className="border-b text-xs">font-sans</h3>
           <p className="font-sans">House Page</p>
         </div>
         <div
-          className="rounded-lg bg-white p-3 shadow"
+          className="rounded-lg bg-white p-3 shadow-sm"
           onClick={(e) => handleClick(e, "home")}
         >
           <h3 className="border-b text-xs">font-serif</h3>
           <p className="font-serif">project page</p>
         </div>
-        <div className="rounded-lg bg-white p-3 shadow">
+        <div className="rounded-lg bg-white p-3 shadow-sm">
           <h3 className="border-b text-xs">font-mono</h3>
           <p className="font-mono">
             The quick brown fox jumps over the lazy dog.

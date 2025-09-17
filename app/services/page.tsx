@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState, use } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
     IBrands,
@@ -40,10 +40,11 @@ import ListIcon from "@/components/icons/ListIcon";
 import { time } from "console";
 
 interface ServicesPageProps {
-    searchParams?: { term?: string };
+    searchParams?: Promise<{ term?: string }>;
 }
 
-const Services = ({ searchParams }: ServicesPageProps) => {
+const Services = (props: ServicesPageProps) => {
+    const searchParams = use(props.searchParams);
     const t = useTranslations();
     const { langDir } = useAuth();
     const router = useRouter();

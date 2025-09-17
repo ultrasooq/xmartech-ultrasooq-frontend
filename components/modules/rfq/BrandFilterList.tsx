@@ -96,7 +96,7 @@ const BrandFilterList: React.FC<BrandFilterListTypes> = ({
             className="filter-col"
           >
             <AccordionItem value="brand">
-              <AccordionTrigger className="px-3 text-base hover:!no-underline" dir={langDir} translate="no">
+              <AccordionTrigger className="px-3 text-base hover:no-underline!" dir={langDir} translate="no">
                 {t("by_brand")}
               </AccordionTrigger>
               <AccordionContent>
@@ -121,7 +121,7 @@ const BrandFilterList: React.FC<BrandFilterListTypes> = ({
                       <div key={item.value} className="div-li">
                         <Checkbox
                           id={item.label}
-                          className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                          className="border border-solid border-gray-300 data-[state=checked]:bg-dark-orange!"
                           onCheckedChange={(checked) =>
                             handleBrandChange(checked, item)
                           }

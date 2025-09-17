@@ -170,7 +170,7 @@ const TeamMembersPage = () => {
       </div>
       <Dialog open={isAddToMemberModalOpen} onOpenChange={handleToggleAddModal}>
         <DialogContent
-          className="add-new-address-modal add_member_modal gap-0 p-0 md:!max-w-2xl"
+          className="add-new-address-modal add_member_modal gap-0 p-0 md:max-w-2xl!"
           ref={wrapperRef}
         >
           <AddToMemberForm

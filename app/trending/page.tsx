@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState, use } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   IBrands,
@@ -74,10 +74,11 @@ import Cart from "@/components/modules/cartList/Cart";
 import CategoryFilter from "@/components/modules/manageProducts/CategoryFilter";
 
 interface TrendingPageProps {
-  searchParams?: { term?: string };
+  searchParams?: Promise<{ term?: string }>;
 }
 
-const TrendingPage = ({ searchParams }: TrendingPageProps) => {
+const TrendingPage = (props0: TrendingPageProps) => {
+  const searchParams = use(props0.searchParams);
   const t = useTranslations();
   const { langDir, currency } = useAuth();
   const queryClient = useQueryClient();
@@ -114,7 +115,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
   const me = useMe();
   const addToWishlist = useAddToWishList();
   const deleteFromWishlist = useDeleteFromWishList();
-  
+
   const allProductsQuery = useAllProducts({
     page,
     limit,
@@ -541,7 +542,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
         <div className="trending-search-sec">
           <div className="container m-auto px-3">
              <div
-               className={`${productFilter ? "left-filter show" : "left-filter"} bg-white rounded-lg shadow-sm p-6`}
+               className={`${productFilter ? "left-filter show" : "left-filter"} bg-white rounded-lg shadow-xs p-6`}
                dir={langDir}
              >
                <div className="mb-4">
@@ -570,7 +571,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
                  className="mb-4"
                >
                  <AccordionItem value="category_filter">
-                   <AccordionTrigger className="text-base hover:!no-underline">
+                   <AccordionTrigger className="text-base hover:no-underline!">
                      {t("by_category")}
                    </AccordionTrigger>
                    <AccordionContent>
@@ -590,7 +591,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
                  className="mb-4"
                >
                  <AccordionItem value="brand">
-                   <AccordionTrigger className="text-base hover:!no-underline">
+                   <AccordionTrigger className="text-base hover:no-underline!">
                      {t("by_brand")}
                    </AccordionTrigger>
                    <AccordionContent>
@@ -625,7 +626,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
                          <div key={item.value} className="flex items-center space-x-2">
                            <Checkbox
                              id={item.label}
-                             className="border border-gray-300 data-[state=checked]:!bg-blue-600"
+                             className="border border-gray-300 data-[state=checked]:bg-blue-600!"
                              onCheckedChange={(checked) =>
                                handleBrandChange(checked, item)
                              }
@@ -650,7 +651,7 @@ const TrendingPage = ({ searchParams }: TrendingPageProps) => {
                  defaultValue={["price"]}
                >
                  <AccordionItem value="price">
-                   <AccordionTrigger className="text-base hover:!no-underline">
+                   <AccordionTrigger className="text-base hover:no-underline!">
                      {t("price")}
                    </AccordionTrigger>
                    <AccordionContent>

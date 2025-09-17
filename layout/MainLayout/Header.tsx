@@ -1,22 +1,17 @@
 "use client";
-import React, {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  useTransition,
-} from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { deleteCookie, getCookie, setCookie } from "cookies-next";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { DialogTitle } from "@/components/ui/dialog";
+import { useCurrentAccount } from "@/apis/queries/auth.queries";
 import {
-  CURRENCIES,
-  LANGUAGES,
-  PRODUCT_CATEGORY_ID,
-  PUREMOON_TOKEN_KEY,
-  menuBarIconList,
-} from "@/utils/constants";
+  useCartCountWithLogin,
+  useCartCountWithoutLogin,
+} from "@/apis/queries/cart.queries";
+import { useCategory } from "@/apis/queries/category.queries";
+import { useMe } from "@/apis/queries/user.queries";
+import { useWishlistCount } from "@/apis/queries/wishlist.queries";
+import { fetchIpInfo } from "@/apis/requests/ip.requests";
+import GoogleTranslate from "@/components/GoogleTranslate";
+import QueryForm from "@/components/modules/QueryForm";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,57 +19,49 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import Image from "next/image";
-import { useQueryClient } from "@tanstack/react-query";
-import { useMe } from "@/apis/queries/user.queries";
-import { useCurrentAccount } from "@/apis/queries/auth.queries";
-import { getInitials, getOrCreateDeviceId } from "@/utils/helper";
-import { useAccessControl } from "@/hooks/useAccessControl";
-import { useCategory } from "@/apis/queries/category.queries";
-import { Button } from "@/components/ui/button";
-import { useClickOutside } from "use-events";
-import Link from "next/link";
-import {
-  useCartCountWithLogin,
-  useCartCountWithoutLogin,
-} from "@/apis/queries/cart.queries";
-import { debounce, isArray } from "lodash";
-import UnAuthUserIcon from "@/public/images/login.svg";
-import WishlistIcon from "@/public/images/wishlist.svg";
-import CartIcon from "@/public/images/cart.svg";
-import HamburgerIcon from "@/public/images/humberger-icon.svg";
-import HamburgerDownIcon from "@/public/images/humberger-down-icon.svg";
-import LogoIcon from "@/public/images/logo-v2.png";
-import { useWishlistCount } from "@/apis/queries/wishlist.queries";
-import { signOut } from "next-auth/react";
-import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/components/ui/use-toast";
-import { cn } from "@/lib/utils";
+import { useAuth } from "@/context/AuthContext";
 import { useSidebar } from "@/context/SidebarContext";
-import { MenuIcon } from "lucide-react";
-import { MdOutlineImageNotSupported } from "react-icons/md";
-import { useCategoryStore } from "@/lib/categoryStore";
-import GoogleTranslate from "@/components/GoogleTranslate";
-import { IoCloseOutline, IoCloseSharp } from "react-icons/io5";
 import {
-  PERMISSION_DASHBOARD,
+  PERMISSION_MESSAGE_SYSTEM,
   PERMISSION_ORDERS,
   PERMISSION_PRODUCTS,
-  PERMISSION_SERVICES,
   PERMISSION_RFQ_QUOTES,
   PERMISSION_RFQ_SELLER_REQUESTS,
   PERMISSION_SELLER_REWARDS,
+  PERMISSION_SERVICES,
   PERMISSION_SHARE_LINKS,
   PERMISSION_TEAM_MEMBERS,
-  PERMISSION_MESSAGE_SYSTEM,
   getPermissions,
 } from "@/helpers/permission";
-import QueryForm from "@/components/modules/QueryForm";
+import { useAccessControl } from "@/hooks/useAccessControl";
+import { useCategoryStore } from "@/lib/categoryStore";
+import { cn } from "@/lib/utils";
+import CartIcon from "@/public/images/cart.svg";
+import UnAuthUserIcon from "@/public/images/login.svg";
+import LogoIcon from "@/public/images/logo-v2.png";
+import WishlistIcon from "@/public/images/wishlist.svg";
+import {
+  CURRENCIES,
+  LANGUAGES,
+  PRODUCT_CATEGORY_ID,
+  PUREMOON_TOKEN_KEY,
+  menuBarIconList,
+} from "@/utils/constants";
+import { getInitials, getOrCreateDeviceId } from "@/utils/helper";
+import { useQueryClient } from "@tanstack/react-query";
+import { deleteCookie, getCookie, setCookie } from "cookies-next";
+import { debounce, isArray } from "lodash";
+import { MenuIcon } from "lucide-react";
+import { signOut } from "next-auth/react";
 import { useTranslations } from "next-intl";
-import { cookies } from "next/headers";
-import { setUserLocale } from "@/src/services/locale";
-import { fetchIpInfo } from "@/apis/requests/ip.requests";
-import StatusDisplay from "@/components/shared/StatusDisplay";
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { IoCloseOutline } from "react-icons/io5";
+import { MdOutlineImageNotSupported } from "react-icons/md";
+import { useClickOutside } from "use-events";
 
 type CategoryProps = {
   id: number;
@@ -103,7 +90,7 @@ const ButtonLink: React.FC<ButtonLinkProps> = ({
       <a onClick={onClick} {...props}>
         <button
           type="button"
-          className="flex cursor-pointer text-sm font-semibold uppercase text-white md:px-8 md:py-10 md:text-sm lg:text-base xl:text-lg"
+          className="flex cursor-pointer text-sm font-semibold text-white uppercase md:px-8 md:py-10 md:text-sm lg:text-base xl:text-lg"
           onClick={onClick}
         >
           {children}
@@ -144,7 +131,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
   const me = useMe(!!accessToken);
   const currentAccount = useCurrentAccount();
   const categoryQuery = useCategory("7");
-  
+
   const subCategoryQuery = useCategory(
     PRODUCT_CATEGORY_ID.toString(), //categoryId ? categoryId : "",
     true, //!!categoryId,
@@ -152,9 +139,10 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
 
   // Get access control information
   const accessControl = useAccessControl();
-  const currentTradeRole = currentAccount?.data?.data?.account?.tradeRole || me?.data?.data?.tradeRole;
+  const currentTradeRole =
+    currentAccount?.data?.data?.account?.tradeRole || me?.data?.data?.tradeRole;
   const userStatus = accessControl.userStatus;
-  
+
   // Debug logging for account switching
   console.log("Header - currentTradeRole:", currentTradeRole);
   console.log("Header - userStatus:", userStatus);
@@ -162,7 +150,10 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
   console.log("Header - me data:", me?.data?.data);
   console.log("Header - accessControl.userStatus:", accessControl.userStatus);
   console.log("Header - accessControl.isActive:", accessControl.isActive);
-  console.log("Header - accessControl.hasFullAccess:", accessControl.hasFullAccess);
+  console.log(
+    "Header - accessControl.hasFullAccess:",
+    accessControl.hasFullAccess,
+  );
 
   const [searchTerm, setSearchTerm] = useState(searchParams?.get("term") || "");
 
@@ -209,38 +200,42 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
     }
   };
 
-  const memoizedInitials = useMemo(
-    () => {
-      let firstName, lastName;
-      
-      if (currentAccount?.data?.data?.isMainAccount) {
-        // Main account - get from currentAccount
-        const account = currentAccount.data.data.account;
-        if ('firstName' in account) {
-          firstName = account.firstName;
-          lastName = account.lastName;
-        }
-      } else if (currentAccount?.data?.data?.account) {
-        // Sub-account - use me data for user info
-        firstName = me.data?.data?.firstName;
-        lastName = me.data?.data?.lastName;
-      } else {
-        // Fallback to me data
-        firstName = me.data?.data?.firstName;
-        lastName = me.data?.data?.lastName;
+  const memoizedInitials = useMemo(() => {
+    let firstName, lastName;
+
+    if (currentAccount?.data?.data?.isMainAccount) {
+      // Main account - get from currentAccount
+      const account = currentAccount.data.data.account;
+      if ("firstName" in account) {
+        firstName = account.firstName;
+        lastName = account.lastName;
       }
-      
-      const initials = getInitials(firstName, lastName);
-      console.log("Header - memoizedInitials:", initials);
-      console.log("Header - currentAccount data:", currentAccount?.data?.data);
-      console.log("Header - me.data?.data:", me.data?.data);
-      console.log("Header - firstName:", firstName);
-      console.log("Header - lastName:", lastName);
-      console.log("Header - isMainAccount:", currentAccount?.data?.data?.isMainAccount);
-      return initials;
-    },
-    [currentAccount?.data?.data, me.data?.data?.firstName, me.data?.data?.lastName],
-  );
+    } else if (currentAccount?.data?.data?.account) {
+      // Sub-account - use me data for user info
+      firstName = me.data?.data?.firstName;
+      lastName = me.data?.data?.lastName;
+    } else {
+      // Fallback to me data
+      firstName = me.data?.data?.firstName;
+      lastName = me.data?.data?.lastName;
+    }
+
+    const initials = getInitials(firstName, lastName);
+    console.log("Header - memoizedInitials:", initials);
+    console.log("Header - currentAccount data:", currentAccount?.data?.data);
+    console.log("Header - me.data?.data:", me.data?.data);
+    console.log("Header - firstName:", firstName);
+    console.log("Header - lastName:", lastName);
+    console.log(
+      "Header - isMainAccount:",
+      currentAccount?.data?.data?.isMainAccount,
+    );
+    return initials;
+  }, [
+    currentAccount?.data?.data,
+    me.data?.data?.firstName,
+    me.data?.data?.lastName,
+  ]);
 
   const memoizedMenu = useMemo(() => {
     let tempArr: any = [];
@@ -360,8 +355,10 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
               );
 
               let localeKey = response.data.languages.split(",")[0];
-              localeKey = localeKey.split('-')[0];
-              localeKey = languages.find((language) => language.locale == localeKey)?.locale || 'en';
+              localeKey = localeKey.split("-")[0];
+              localeKey =
+                languages.find((language) => language.locale == localeKey)
+                  ?.locale || "en";
               window.localStorage.setItem("locale", localeKey);
               applyTranslation(localeKey);
 
@@ -423,17 +420,21 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
       case "BUYER":
         return (
           <>
-            <li className="py-1.5 text-sm font-normal capitalize text-light-gray sm:text-base md:text-lg">
-              <Link href="/my-orders" className="text-light-gray" translate="no">
+            <li className="text-light-gray py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
+              <Link
+                href="/my-orders"
+                className="text-light-gray"
+                translate="no"
+              >
                 {t("my_orders")}
               </Link>
             </li>
-            <li className="py-1.5 text-sm font-normal capitalize text-light-gray sm:text-base md:text-lg">
+            <li className="text-light-gray py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
               <Link href="/wishlist" className="text-light-gray" translate="no">
                 {t("wishlist")}
               </Link>
             </li>
-            <li className="py-1.5 text-sm font-normal capitalize text-light-gray sm:text-base md:text-lg">
+            <li className="text-light-gray py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
               <Link href="/rfq-cart" className="text-light-gray" translate="no">
                 {t("rfq_cart")}
               </Link>
@@ -443,18 +444,30 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
       case "FREELANCER":
         return (
           <>
-            <li className="py-1.5 text-sm font-normal capitalize text-light-gray sm:text-base md:text-lg">
-              <Link href="/manage-services" className="text-light-gray" translate="no">
+            <li className="text-light-gray py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
+              <Link
+                href="/manage-services"
+                className="text-light-gray"
+                translate="no"
+              >
                 {t("my_services")}
               </Link>
             </li>
-            <li className="py-1.5 text-sm font-normal capitalize text-light-gray sm:text-base md:text-lg">
-              <Link href="/rfq-quotes" className="text-light-gray" translate="no">
+            <li className="text-light-gray py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
+              <Link
+                href="/rfq-quotes"
+                className="text-light-gray"
+                translate="no"
+              >
                 {t("rfq_quotes")}
               </Link>
             </li>
-            <li className="py-1.5 text-sm font-normal capitalize text-light-gray sm:text-base md:text-lg">
-              <Link href="/seller-rewards" className="text-light-gray" translate="no">
+            <li className="text-light-gray py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
+              <Link
+                href="/seller-rewards"
+                className="text-light-gray"
+                translate="no"
+              >
                 {t("rewards")}
               </Link>
             </li>
@@ -463,23 +476,39 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
       case "COMPANY":
         return (
           <>
-            <li className="py-1.5 text-sm font-normal capitalize text-light-gray sm:text-base md:text-lg">
-              <Link href="/manage-products" className="text-light-gray" translate="no">
+            <li className="text-light-gray py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
+              <Link
+                href="/manage-products"
+                className="text-light-gray"
+                translate="no"
+              >
                 {t("my_products")}
               </Link>
             </li>
-            <li className="py-1.5 text-sm font-normal capitalize text-light-gray sm:text-base md:text-lg">
-              <Link href="/seller-orders" className="text-light-gray" translate="no">
+            <li className="text-light-gray py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
+              <Link
+                href="/seller-orders"
+                className="text-light-gray"
+                translate="no"
+              >
                 {t("orders")}
               </Link>
             </li>
-            <li className="py-1.5 text-sm font-normal capitalize text-light-gray sm:text-base md:text-lg">
-              <Link href="/rfq-seller-requests" className="text-light-gray" translate="no">
+            <li className="text-light-gray py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
+              <Link
+                href="/rfq-seller-requests"
+                className="text-light-gray"
+                translate="no"
+              >
                 {t("rfq_requests")}
               </Link>
             </li>
-            <li className="py-1.5 text-sm font-normal capitalize text-light-gray sm:text-base md:text-lg">
-              <Link href="/seller-rewards" className="text-light-gray" translate="no">
+            <li className="text-light-gray py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
+              <Link
+                href="/seller-rewards"
+                className="text-light-gray"
+                translate="no"
+              >
                 {t("rewards")}
               </Link>
             </li>
@@ -488,7 +517,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
       default:
         return (
           <>
-            <li className="py-1.5 text-sm font-normal capitalize text-light-gray sm:text-base md:text-lg">
+            <li className="text-light-gray py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
               <a href="#" className="text-light-gray" translate="no">
                 {t("buyer_central")}
               </a>
@@ -500,8 +529,11 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
 
   return (
     <>
-      <header className="relative w-full" key={`header-${currentTradeRole}-${currentAccount?.data?.data?.account?.id}`}>
-        <div className="w-full bg-dark-cyan">
+      <header
+        className="relative w-full"
+        key={`header-${currentTradeRole}-${currentAccount?.data?.data?.account?.id}`}
+      >
+        <div className="bg-dark-cyan w-full">
           <div className="container m-auto px-3 pt-5">
             <div className="hidden sm:hidden md:flex md:gap-x-2.5">
               <div className="py-4 text-sm font-normal text-white md:w-4/12 lg:w-4/12">
@@ -623,7 +655,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                   {isLoggedIn && (
                     <button
                       onClick={openSidebar}
-                      className="mr-3 flex h-8 w-8 items-center justify-center rounded hover:bg-gray-100 transition-colors"
+                      className="mr-3 flex h-8 w-8 items-center justify-center rounded transition-colors hover:bg-gray-100"
                       title="Open Menu"
                     >
                       <MenuIcon className="h-5 w-5 text-gray-700" />
@@ -662,7 +694,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                 <div className="h-11 w-1/4 md:w-1/6">
                   <button
                     type="button"
-                    className="btn h-full w-full bg-dark-orange text-sm font-semibold text-white"
+                    className="btn bg-dark-orange h-full w-full text-sm font-semibold text-white"
                     onClick={() => updateURL(searchTerm)} // Update URL when clicking search
                     dir={langDir}
                     translate="no"
@@ -673,7 +705,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
               </div>
               <div className="order-2 flex w-7/12 justify-end sm:order-2 sm:w-7/12 md:order-3 md:w-3/12 md:py-4 lg:w-1/6">
                 <ul className="flex items-center justify-end gap-x-4">
-                  <li className="relative flex pb-3 pl-0 pr-1 pt-0">
+                  <li className="relative flex pt-0 pr-1 pb-3 pl-0">
                     <Link
                       href="/wishlist"
                       className="flex flex-wrap items-center"
@@ -684,14 +716,14 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                         width={28}
                         alt="wishlist"
                       />
-                      <div className="absolute bottom-0 right-0 flex h-6 w-6 items-center justify-center rounded-full bg-dark-orange text-xs font-bold text-white">
+                      <div className="bg-dark-orange absolute right-0 bottom-0 flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold text-white">
                         {wishlistCount.data?.data
                           ? wishlistCount.data?.data
                           : 0}
                       </div>
                     </Link>
                   </li>
-                  <li className="relative flex pb-3 pl-0 pr-1 pt-0">
+                  <li className="relative flex pt-0 pr-1 pb-3 pl-0">
                     <Link href="/cart" className="flex flex-wrap items-center">
                       <Image
                         src={CartIcon}
@@ -699,7 +731,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                         width={26}
                         alt="wishlist"
                       />
-                      <div className="absolute bottom-0 right-0 flex h-6 w-6 items-center justify-center rounded-full bg-dark-orange text-xs font-bold text-white">
+                      <div className="bg-dark-orange absolute right-0 bottom-0 flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold text-white">
                         {hasAccessToken
                           ? !isArray(cartCountWithLogin.data?.data)
                             ? cartCountWithLogin.data?.data
@@ -714,226 +746,256 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                     {isLoggedIn ? (
                       <div className="flex items-center gap-2">
                         <DropdownMenu>
-                        <DropdownMenuTrigger className="h-[44px] w-[44px] relative">
-                          {me?.data?.data?.profilePicture ? (
-                            <Image
-                              src={me?.data?.data?.profilePicture}
-                              alt="image-icon"
-                              height={44}
-                              width={44}
-                              className="h-full w-full rounded-full object-cover"
-                            />
-                          ) : (
-                            <div className="h-[44px] w-[44px] rounded-full bg-gray-300">
-                              <p className="p-2 text-lg font-bold">
-                                {memoizedInitials}
-                              </p>
-                            </div>
-                          )}
-                          {/* Status indicator - only show for non-active users */}
-                          {userStatus && userStatus !== "ACTIVE" && (
-                            <div className={`absolute -top-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${
-                              userStatus === "INACTIVE" ? "bg-red-500" : 
-                              userStatus === "WAITING" ? "bg-yellow-500" : 
-                              userStatus === "REJECT" ? "bg-red-600" : "bg-gray-500"
-                            }`} title={`Status: ${userStatus}`} />
-                          )}
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                          {/* Status indicator - only show for non-active users */}
-                          {userStatus && userStatus !== "ACTIVE" && (
-                            <div className="px-2 py-1.5 text-xs text-gray-500 border-b border-gray-200">
-                              Status: <span className={`font-medium ${
-                                userStatus === "INACTIVE" ? "text-red-600" : 
-                                userStatus === "WAITING" ? "text-yellow-600" : 
-                                userStatus === "REJECT" ? "text-red-700" : "text-gray-600"
-                              }`}>{userStatus}</span>
-                            </div>
-                          )}
-                          
-                          {/* Always show Profile Information */}
-                          <Link href={handleProfile()}>
-                            <DropdownMenuItem
-                              className="cursor-pointer"
-                              dir={langDir}
-                              translate="no"
-                            >
-                              {t("profile_information")}
-                            </DropdownMenuItem>
-                          </Link>
-                          
-                          {/* Check user status - if WAITING or INACTIVE, only show Profile and Logout */}
-                          {userStatus === "WAITING" || userStatus === "INACTIVE" ? (
-                            <>
-                              <DropdownMenuSeparator />
+                          <DropdownMenuTrigger className="relative h-[44px] w-[44px]">
+                            {me?.data?.data?.profilePicture ? (
+                              <Image
+                                src={me?.data?.data?.profilePicture}
+                                alt="image-icon"
+                                height={44}
+                                width={44}
+                                className="h-full w-full rounded-full object-cover"
+                              />
+                            ) : (
+                              <div className="h-[44px] w-[44px] rounded-full bg-gray-300">
+                                <p className="p-2 text-lg font-bold">
+                                  {memoizedInitials}
+                                </p>
+                              </div>
+                            )}
+                            {/* Status indicator - only show for non-active users */}
+                            {userStatus && userStatus !== "ACTIVE" && (
+                              <div
+                                className={`absolute -top-1 -right-1 h-4 w-4 rounded-full border-2 border-white ${
+                                  userStatus === "INACTIVE"
+                                    ? "bg-red-500"
+                                    : userStatus === "WAITING"
+                                      ? "bg-yellow-500"
+                                      : userStatus === "REJECT"
+                                        ? "bg-red-600"
+                                        : "bg-gray-500"
+                                }`}
+                                title={`Status: ${userStatus}`}
+                              />
+                            )}
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent>
+                            {/* Status indicator - only show for non-active users */}
+                            {userStatus && userStatus !== "ACTIVE" && (
+                              <div className="border-b border-gray-200 px-2 py-1.5 text-xs text-gray-500">
+                                Status:{" "}
+                                <span
+                                  className={`font-medium ${
+                                    userStatus === "INACTIVE"
+                                      ? "text-red-600"
+                                      : userStatus === "WAITING"
+                                        ? "text-yellow-600"
+                                        : userStatus === "REJECT"
+                                          ? "text-red-700"
+                                          : "text-gray-600"
+                                  }`}
+                                >
+                                  {userStatus}
+                                </span>
+                              </div>
+                            )}
+
+                            {/* Always show Profile Information */}
+                            <Link href={handleProfile()}>
                               <DropdownMenuItem
-                                onClick={handleLogout}
                                 className="cursor-pointer"
                                 dir={langDir}
                                 translate="no"
                               >
-                                {t("logout")}
+                                {t("profile_information")}
                               </DropdownMenuItem>
-                            </>
-                          ) : (
-                            <>
-                              {/* Dashboard - Only for ACTIVE users */}
-                              {accessControl.canAccessDashboard && (
-                                <Link href="/vendor-dashboard">
-                                  <DropdownMenuItem
-                                    className="cursor-pointer"
-                                    dir={langDir}
-                                    translate="no"
-                                  >
-                                    {t("dashboard")}
-                                  </DropdownMenuItem>
-                                </Link>
-                              )}
-                              
-                              {/* Company-specific options for active users */}
-                              {currentTradeRole !== "BUYER" && accessControl.hasFullAccess ? (
-                                <>
-                                  {hideMenu(PERMISSION_TEAM_MEMBERS) ? (
-                                    <Link href="/team-members">
-                                      <DropdownMenuItem
-                                        dir={langDir}
-                                        translate="no"
-                                      >
-                                        {t("team_members")}
-                                      </DropdownMenuItem>
-                                    </Link>
-                                  ) : null}
-                                  
-                                  {hideMenu(PERMISSION_PRODUCTS) ? (
-                                    <Link href="/manage-products">
-                                      <DropdownMenuItem
-                                        dir={langDir}
-                                        translate="no"
-                                      >
-                                        {t("products")}
-                                      </DropdownMenuItem>
-                                    </Link>
-                                  ) : null}
-                                  
-                                  {hideMenu(PERMISSION_SERVICES) ? (
-                                    <Link href="/manage-services">
-                                      <DropdownMenuItem
-                                        dir={langDir}
-                                        translate="no"
-                                      >
-                                        {t("services")}
-                                      </DropdownMenuItem>
-                                    </Link>
-                                  ) : null}
-                                  
-                                  {hideMenu(PERMISSION_ORDERS) ? (
-                                    <Link href="/seller-orders">
-                                      <DropdownMenuItem
-                                        dir={langDir}
-                                        translate="no"
-                                      >
-                                        {t("orders")}
-                                      </DropdownMenuItem>
-                                    </Link>
-                                  ) : null}
-                                  
-                                  {hideMenu(PERMISSION_RFQ_QUOTES) ? (
-                                    <Link href="/rfq-quotes">
-                                      <DropdownMenuItem
-                                        dir={langDir}
-                                        translate="no"
-                                      >
-                                        {t("rfq_quotes")}
-                                      </DropdownMenuItem>
-                                    </Link>
-                                  ) : null}
-                                  
-                                  {hideMenu(PERMISSION_RFQ_SELLER_REQUESTS) ? (
-                                    <Link href="/seller-rfq-request">
-                                      <DropdownMenuItem
-                                        dir={langDir}
-                                        translate="no"
-                                      >
-                                        {t("rfq_seller_requests")}
-                                      </DropdownMenuItem>
-                                    </Link>
-                                  ) : null}
-                                  
-                                  {hideMenu(PERMISSION_MESSAGE_SYSTEM) ? (
-                                    <Link href="/seller-rfq-request">
-                                      <DropdownMenuItem
-                                        dir={langDir}
-                                        translate="no"
-                                      >
-                                        {t("Message System")}
-                                      </DropdownMenuItem>
-                                    </Link>
-                                  ) : null}
-                                  
-                                  {hideMenu(PERMISSION_SELLER_REWARDS) ? (
-                                    <Link href="/seller-rewards">
-                                      <DropdownMenuItem
-                                        dir={langDir}
-                                        translate="no"
-                                      >
-                                        {t("seller_rewards")}
-                                      </DropdownMenuItem>
-                                    </Link>
-                                  ) : null}
-                                </>
-                              ) : null}
-                              
-                              {hideMenu(PERMISSION_SHARE_LINKS) ? (
-                                <Link href="/share-links">
-                                  <DropdownMenuItem dir={langDir} translate="no">
-                                    {t("share_links")}
-                                  </DropdownMenuItem>
-                                </Link>
-                              ) : null}
-                              
-                              {/* My Settings - Available for all authenticated users */}
-                              {accessControl.canAccessSettings && (
-                                <Link href="/my-settings/address">
-                                  <DropdownMenuItem dir={langDir} translate="no">
-                                    {t("my_settings")}
-                                  </DropdownMenuItem>
-                                </Link>
-                              )}
-                              
-                              {/* Transactions - Only for ACTIVE users */}
-                              {accessControl.canAccessTransactions && (
-                                <Link href="/transactions">
-                                  <DropdownMenuItem dir={langDir} translate="no">
-                                    {t("transactions")}
-                                  </DropdownMenuItem>
-                                </Link>
-                              )}
-                              
-                              {/* Queries - Only for ACTIVE users */}
-                              {accessControl.canAccessQueries && (
-                                <Link href="/queries">
-                                  <DropdownMenuItem
-                                    dir={langDir} translate="no"
-                                  >
-                                    {t("queries")}
-                                  </DropdownMenuItem>
-                                </Link>
-                              )}
-                              
-                              <DropdownMenuSeparator />
-                              
-                              <DropdownMenuItem
-                                onClick={handleLogout}
-                                className="cursor-pointer"
-                                dir={langDir}
-                                translate="no"
-                              >
-                                {t("logout")}
-                              </DropdownMenuItem>
-                            </>
-                          )}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                            </Link>
+
+                            {/* Check user status - if WAITING or INACTIVE, only show Profile and Logout */}
+                            {userStatus === "WAITING" ||
+                            userStatus === "INACTIVE" ? (
+                              <>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem
+                                  onClick={handleLogout}
+                                  className="cursor-pointer"
+                                  dir={langDir}
+                                  translate="no"
+                                >
+                                  {t("logout")}
+                                </DropdownMenuItem>
+                              </>
+                            ) : (
+                              <>
+                                {/* Dashboard - Only for ACTIVE users */}
+                                {accessControl.canAccessDashboard && (
+                                  <Link href="/vendor-dashboard">
+                                    <DropdownMenuItem
+                                      className="cursor-pointer"
+                                      dir={langDir}
+                                      translate="no"
+                                    >
+                                      {t("dashboard")}
+                                    </DropdownMenuItem>
+                                  </Link>
+                                )}
+
+                                {/* Company-specific options for active users */}
+                                {currentTradeRole !== "BUYER" &&
+                                accessControl.hasFullAccess ? (
+                                  <>
+                                    {hideMenu(PERMISSION_TEAM_MEMBERS) ? (
+                                      <Link href="/team-members">
+                                        <DropdownMenuItem
+                                          dir={langDir}
+                                          translate="no"
+                                        >
+                                          {t("team_members")}
+                                        </DropdownMenuItem>
+                                      </Link>
+                                    ) : null}
+
+                                    {hideMenu(PERMISSION_PRODUCTS) ? (
+                                      <Link href="/manage-products">
+                                        <DropdownMenuItem
+                                          dir={langDir}
+                                          translate="no"
+                                        >
+                                          {t("products")}
+                                        </DropdownMenuItem>
+                                      </Link>
+                                    ) : null}
+
+                                    {hideMenu(PERMISSION_SERVICES) ? (
+                                      <Link href="/manage-services">
+                                        <DropdownMenuItem
+                                          dir={langDir}
+                                          translate="no"
+                                        >
+                                          {t("services")}
+                                        </DropdownMenuItem>
+                                      </Link>
+                                    ) : null}
+
+                                    {hideMenu(PERMISSION_ORDERS) ? (
+                                      <Link href="/seller-orders">
+                                        <DropdownMenuItem
+                                          dir={langDir}
+                                          translate="no"
+                                        >
+                                          {t("orders")}
+                                        </DropdownMenuItem>
+                                      </Link>
+                                    ) : null}
+
+                                    {hideMenu(PERMISSION_RFQ_QUOTES) ? (
+                                      <Link href="/rfq-quotes">
+                                        <DropdownMenuItem
+                                          dir={langDir}
+                                          translate="no"
+                                        >
+                                          {t("rfq_quotes")}
+                                        </DropdownMenuItem>
+                                      </Link>
+                                    ) : null}
+
+                                    {hideMenu(
+                                      PERMISSION_RFQ_SELLER_REQUESTS,
+                                    ) ? (
+                                      <Link href="/seller-rfq-request">
+                                        <DropdownMenuItem
+                                          dir={langDir}
+                                          translate="no"
+                                        >
+                                          {t("rfq_seller_requests")}
+                                        </DropdownMenuItem>
+                                      </Link>
+                                    ) : null}
+
+                                    {hideMenu(PERMISSION_MESSAGE_SYSTEM) ? (
+                                      <Link href="/seller-rfq-request">
+                                        <DropdownMenuItem
+                                          dir={langDir}
+                                          translate="no"
+                                        >
+                                          {t("Message System")}
+                                        </DropdownMenuItem>
+                                      </Link>
+                                    ) : null}
+
+                                    {hideMenu(PERMISSION_SELLER_REWARDS) ? (
+                                      <Link href="/seller-rewards">
+                                        <DropdownMenuItem
+                                          dir={langDir}
+                                          translate="no"
+                                        >
+                                          {t("seller_rewards")}
+                                        </DropdownMenuItem>
+                                      </Link>
+                                    ) : null}
+                                  </>
+                                ) : null}
+
+                                {hideMenu(PERMISSION_SHARE_LINKS) ? (
+                                  <Link href="/share-links">
+                                    <DropdownMenuItem
+                                      dir={langDir}
+                                      translate="no"
+                                    >
+                                      {t("share_links")}
+                                    </DropdownMenuItem>
+                                  </Link>
+                                ) : null}
+
+                                {/* My Settings - Available for all authenticated users */}
+                                {accessControl.canAccessSettings && (
+                                  <Link href="/my-settings/address">
+                                    <DropdownMenuItem
+                                      dir={langDir}
+                                      translate="no"
+                                    >
+                                      {t("my_settings")}
+                                    </DropdownMenuItem>
+                                  </Link>
+                                )}
+
+                                {/* Transactions - Only for ACTIVE users */}
+                                {accessControl.canAccessTransactions && (
+                                  <Link href="/transactions">
+                                    <DropdownMenuItem
+                                      dir={langDir}
+                                      translate="no"
+                                    >
+                                      {t("transactions")}
+                                    </DropdownMenuItem>
+                                  </Link>
+                                )}
+
+                                {/* Queries - Only for ACTIVE users */}
+                                {accessControl.canAccessQueries && (
+                                  <Link href="/queries">
+                                    <DropdownMenuItem
+                                      dir={langDir}
+                                      translate="no"
+                                    >
+                                      {t("queries")}
+                                    </DropdownMenuItem>
+                                  </Link>
+                                )}
+
+                                <DropdownMenuSeparator />
+
+                                <DropdownMenuItem
+                                  onClick={handleLogout}
+                                  className="cursor-pointer"
+                                  dir={langDir}
+                                  translate="no"
+                                >
+                                  {t("logout")}
+                                </DropdownMenuItem>
+                              </>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div>
                     ) : (
                       <div dir={langDir}>
@@ -966,7 +1028,6 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                   </li>
                 </ul>
               </div>
-
             </div>
 
             <div
@@ -1041,8 +1102,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                                 ? "/factories"
                                 : item.name.toLowerCase().includes("service")
                                   ? "/services"
-                                  : item
-                                        .name
+                                  : item.name
                                         .toLowerCase()
                                         .includes("buy group")
                                     ? "/buygroup"
@@ -1331,7 +1391,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                         }}
                         variant="link"
                         className={cn(
-                          "p-1 text-sm font-semibold capitalize text-color-dark sm:text-base md:py-3",
+                          "text-color-dark p-1 text-sm font-semibold capitalize sm:text-base md:py-3",
                           item?.id === assignedToId
                             ? "underline"
                             : "no-underline",
@@ -1347,7 +1407,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
               <div className="flex w-full items-center justify-end md:w-auto">
                 <ul className="flex items-center justify-end gap-x-4">
                   {getRoleBasedHeaderOptions()}
-                  <li className="py-1.5 text-sm font-normal capitalize text-light-gray sm:text-base md:text-lg">
+                  <li className="text-light-gray py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
                     <a
                       href="#"
                       className="text-light-gray"

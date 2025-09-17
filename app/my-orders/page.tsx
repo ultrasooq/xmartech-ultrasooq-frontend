@@ -222,7 +222,7 @@ const MyOrdersPage = () => {
               <div className="relative flex flex-1">
                 <input
                   type="text"
-                  className="custom-form-control-s1 !w-full"
+                  className="custom-form-control-s1 w-full!"
                   placeholder={t("search")}
                   onChange={handleDebounce}
                   ref={searchRef}

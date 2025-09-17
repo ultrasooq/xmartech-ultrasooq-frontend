@@ -263,7 +263,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
                   onCheckedChange={(checked) => 
                     handleMainCategoryChange(checked as boolean, category)
                   }
-                  className="border border-gray-300 data-[state=checked]:!bg-blue-600"
+                  className="border border-gray-300 data-[state=checked]:bg-blue-600!"
                 />
                 <div className="flex items-center space-x-2 flex-1">
                   {category.icon ? (
@@ -329,7 +329,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
                     onCheckedChange={(checked) => 
                       handleSubCategoryChange(checked as boolean, category)
                     }
-                    className="border border-gray-300 data-[state=checked]:!bg-blue-600"
+                    className="border border-gray-300 data-[state=checked]:bg-blue-600!"
                   />
                   <div className="flex items-center space-x-2 flex-1">
                     {category.icon ? (
@@ -391,7 +391,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
                     onCheckedChange={(checked) => 
                       handleSubSubCategoryChange(checked as boolean, category)
                     }
-                    className="border border-gray-300 data-[state=checked]:!bg-blue-600"
+                    className="border border-gray-300 data-[state=checked]:bg-blue-600!"
                   />
                   <div className="flex items-center space-x-2 flex-1">
                     {category.icon ? (

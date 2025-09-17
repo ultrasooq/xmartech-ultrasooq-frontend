@@ -162,13 +162,13 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
   };
   return (
     <>
-      <div className="modal-header !justify-between" dir={langDir}>
+      <div className="modal-header justify-between!" dir={langDir}>
         <DialogTitle className="text-center text-xl font-bold" translate="no">
           {memberDetails ? t("edit_member") : t("add_member")}
         </DialogTitle>
         <Button
           onClick={onClose}
-          className={`${langDir == 'ltr' ? 'absolute' : ''} right-2 top-2 z-10 !bg-white !text-black shadow-none`}
+          className={`${langDir == 'ltr' ? 'absolute' : ''} right-2 top-2 z-10 bg-white! text-black! shadow-none`}
         >
           <IoCloseSharp size={20} />
         </Button>
@@ -242,7 +242,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
                   } // Default to memberDetails value if not set
                   styles={customStyles}
                   instanceId="userRoleId"
-                  className="z-[9999]"
+                  className="z-9999"
                   isSearchable={true} // Keep search enabled
                   placeholder={t("select")}
                   isRtl={langDir == 'rtl'}
@@ -272,7 +272,7 @@ const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
                 onChange={(selectedOption) =>
                   field.onChange(selectedOption?.value)
                 }
-                className="z-[999]"
+                className="z-999"
                 instanceId="status"
                 styles={customStyles}
                 placeholder={t("select")}

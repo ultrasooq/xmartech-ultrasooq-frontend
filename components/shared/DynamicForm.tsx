@@ -60,7 +60,7 @@ const DynamicForm: React.FC<DynamicFormProps> = ({ form }) => {
                       />
                     ) : field?.type === "textarea" ? (
                       <Textarea
-                        className="theme-form-control-s1 !h-auto"
+                        className="theme-form-control-s1 h-auto!"
                         placeholder={field?.placeholder || "Enter here"}
                       />
                     ) : field?.type === "checkbox" ? (
@@ -77,14 +77,14 @@ const DynamicForm: React.FC<DynamicFormProps> = ({ form }) => {
                       </div>
                     ) : field?.type === "select" ? (
                       <Select>
-                        <SelectTrigger className="theme-form-control-s1 data-[placeholder]:text-muted-foreground">
+                        <SelectTrigger className="theme-form-control-s1 data-placeholder:text-muted-foreground">
                           <SelectValue placeholder={field?.placeholder} />
                         </SelectTrigger>
                         <SelectContent>
                           {field?.options?.map((option: any) => (
                             <SelectItem
                               key={option}
-                              className="!py-2"
+                              className="py-2!"
                               value={option}
                             >
                               {option}

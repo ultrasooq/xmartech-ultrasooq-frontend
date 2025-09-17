@@ -357,7 +357,7 @@ const BulkAddExistingProductsPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Bulk Settings */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="bg-white rounded-lg shadow-xs p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
                 {t("bulk_settings")}
               </h3>
@@ -427,7 +427,7 @@ const BulkAddExistingProductsPage = () => {
                       ...prev,
                       productCondition: e.target.value
                     }))}
-                    className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="NEW">{t("new")}</option>
                     <option value="OLD">{t("old")}</option>
@@ -443,7 +443,7 @@ const BulkAddExistingProductsPage = () => {
                       ...prev,
                       consumerType: e.target.value
                     }))}
-                    className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="CONSUMER">{t("consumer")}</option>
                     <option value="BUSINESS">{t("business")}</option>
@@ -459,7 +459,7 @@ const BulkAddExistingProductsPage = () => {
                       ...prev,
                       sellType: e.target.value
                     }))}
-                    className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="NORMALSELL">{t("normal_sell")}</option>
                     <option value="BUYGROUP">{t("buy_group")}</option>
@@ -472,7 +472,7 @@ const BulkAddExistingProductsPage = () => {
 
           {/* Selected Products List */}
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="bg-white rounded-lg shadow-xs p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
                 {t("selected_products")} ({selectedProducts.length})
               </h3>

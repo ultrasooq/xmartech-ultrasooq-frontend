@@ -148,7 +148,7 @@ const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({
                 }}
               >
                 <Checkbox
-                  className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                  className="border border-solid border-gray-300 data-[state=checked]:bg-dark-orange!"
                   checked={
                     multiSubCategoryList?.filter(
                       (ele: any) => ele.id === item.id,
@@ -238,7 +238,7 @@ const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({
                   }}
                 >
                   <Checkbox
-                    className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                    className="border border-solid border-gray-300 data-[state=checked]:bg-dark-orange!"
                     checked={
                       multiSubSubCategoryList?.filter(
                         (ele: any) => ele.id === item.id,
@@ -328,7 +328,7 @@ const MultiSelectCategory: React.FC<MultiSelectCategoryProps> = ({
                   }}
                 >
                   <Checkbox
-                    className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                    className="border border-solid border-gray-300 data-[state=checked]:bg-dark-orange!"
                     checked={
                       multiSubSubSubCategoryList?.filter(
                         (ele: any) => ele.id === item.id,

@@ -281,7 +281,7 @@ const BulkActionPage = () => {
             <div className="flex flex-col lg:flex-row gap-6">
               {/* Products List - Left Side */}
               <div className="lg:w-2/3">
-                <div className="bg-white rounded-lg shadow-sm p-6">
+                <div className="bg-white rounded-lg shadow-xs p-6">
                   <h2 className="text-xl font-semibold mb-4">
                   Selected Products ({selectedProducts.length})
                   </h2>

@@ -1,7 +1,24 @@
+import { useAuth } from "@/context/AuthContext";
 import React from "react";
 import { Controller, useFormContext } from "react-hook-form";
-import PlateEditor from "../Plate/PlateEditor";
-import { useAuth } from "@/context/AuthContext";
+
+// Simple fallback component for PlateEditor
+const PlateEditor = ({
+  description,
+  readOnly = false,
+  fixedToolbar = false,
+  ...props
+}: any) => {
+  return (
+    <div
+      className="prose max-w-none"
+      dangerouslySetInnerHTML={{
+        __html: description || "",
+      }}
+      {...props}
+    />
+  );
+};
 
 interface ControlledRichTextEditorProps {
   label: string;
@@ -23,7 +40,10 @@ const ControlledRichTextEditor: React.FC<ControlledRichTextEditorProps> = ({
 
   return (
     <div className="space-y-2">
-      <label className="text-sm font-medium leading-none text-color-dark" dir={langDir}>
+      <label
+        className="text-color-dark text-sm leading-none font-medium"
+        dir={langDir}
+      >
         {label}
       </label>
       <Controller

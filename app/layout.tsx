@@ -1,23 +1,20 @@
-import { Metadata } from "next";
-import "@/app/ui/global.css";
 import { inter } from "@/app/ui/fonts";
-import Sidebar from "@/layout/MainLayout/Sidebar";
-import Header from "@/layout/MainLayout/Header";
-import ReactQueryProvider from "@/providers/ReactQueryProvider";
-import { Toaster } from "@/components/ui/toaster";
-import NextTopLoader from "nextjs-toploader";
+import "@/app/ui/global.css";
 import SessionWrapper from "@/components/SessionWrapper";
-import { cookies } from "next/headers";
+import { Toaster } from "@/components/ui/toaster";
+import { AuthProvider } from "@/context/AuthContext";
+import { SidebarProvider } from "@/context/SidebarContext";
+import { SocketProvider } from "@/context/SocketContext";
+import Header from "@/layout/MainLayout/Header";
+import Sidebar from "@/layout/MainLayout/Sidebar";
+import ReactQueryProvider from "@/providers/ReactQueryProvider";
+import { getUserLocale } from "@/src/services/locale";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import axios from "axios";
-import { AuthProvider } from "@/context/AuthContext";
-import { SocketProvider } from "@/context/SocketContext";
-import { NextIntlClientProvider } from 'next-intl';
-import { useEffect, useState } from "react";
-import { getLocale, getMessages } from "next-intl/server";
-import { getUserLocale } from "@/src/services/locale";
-import DisableRouteAnnouncer from "@/components/DisableRouteAnnouncer";
-import { SidebarProvider } from "@/context/SidebarContext";
+import { Metadata } from "next";
+import { NextIntlClientProvider } from "next-intl";
+import { cookies } from "next/headers";
+import NextTopLoader from "nextjs-toploader";
 
 export const metadata: Metadata = {
   title: {
@@ -28,7 +25,7 @@ export const metadata: Metadata = {
 
 async function authorizeUser() {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const token = cookieStore.get(PUREMOON_TOKEN_KEY);
     if (token?.value) {
       const res = await axios({
@@ -55,7 +52,7 @@ async function authorizeUser() {
 
 async function getUserPermissions() {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const token = cookieStore.get(PUREMOON_TOKEN_KEY);
     if (token?.value) {
       const res = await axios({
@@ -89,8 +86,8 @@ export default async function RootLayout({
 
   const permissions = await getUserPermissions();
 
-  const locale = await getLocale();
-  const messages = await getMessages();
+  const locale = await getUserLocale();
+  const messages = {};
 
   return (
     <SessionWrapper>
@@ -99,8 +96,16 @@ export default async function RootLayout({
           {/* <DisableRouteAnnouncer /> */}
           <ReactQueryProvider>
             <AuthProvider
-              user={{ id: userData?.data?.id, firstName: userData?.data?.firstName, lastName: userData?.data?.lastName, tradeRole: userData?.data?.tradeRole }}
-              permissions={[...(permissions?.data?.userRoleDetail?.userRolePermission || [])]}
+              user={{
+                id: userData?.data?.id,
+                firstName: userData?.data?.firstName,
+                lastName: userData?.data?.lastName,
+                tradeRole: userData?.data?.tradeRole,
+              }}
+              permissions={[
+                ...(permissions?.data?.userRoleDetail?.userRolePermission ||
+                  []),
+              ]}
               locale={locale}
             >
               <SocketProvider>

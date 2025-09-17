@@ -108,7 +108,7 @@ const UserRatingCard: React.FC<UserRatingCardProps> = ({
             className="rounded-full"
           />
         </div>
-        <div className="w-[calc(100%_-_3rem)] pl-3.5 text-sm font-normal leading-5 text-gray-500">
+        <div className="w-[calc(100%-3rem)] pl-3.5 text-sm font-normal leading-5 text-gray-500">
           <div className="flex w-full items-start justify-between">
             <h4 className="text-base font-semibold text-color-dark">{name}</h4>
             {isBuyer ? (

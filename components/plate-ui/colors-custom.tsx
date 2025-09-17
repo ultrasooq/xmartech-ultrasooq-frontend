@@ -38,7 +38,7 @@ export function ColorsCustom({
       <ColorInput {...inputProps}>
         <DropdownMenuItem
           className={buttonVariants({
-            variant: 'outline',
+            variant: 'outline-solid',
             isMenu: true,
           })}
           {...menuItemProps}

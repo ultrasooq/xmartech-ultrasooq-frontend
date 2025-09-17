@@ -101,7 +101,7 @@ export default function CompanyProfileDetailsPage() {
                 <TabsList className="mb-0 flex h-auto grid-cols-3 flex-wrap justify-start gap-4 rounded-none bg-transparent px-0 pt-3 sm:mb-1 sm:gap-x-6 md:grid md:min-h-[80px] md:w-[560px] md:pt-7">
                   <TabsTrigger
                     value="profile-info"
-                    className="w-auto rounded-b-none !bg-[#d1d5db] px-2 py-2 text-sm font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white sm:w-auto md:w-full md:px-3 md:py-4 md:text-base"
+                    className="w-auto rounded-b-none bg-[#d1d5db]! px-2 py-2 text-sm font-bold text-[#71717A]! data-[state=active]:bg-dark-orange! data-[state=active]:text-white! sm:w-auto md:w-full md:px-3 md:py-4 md:text-base"
                     translate="no"
                   >
                     {t("profile_info")}
@@ -109,7 +109,7 @@ export default function CompanyProfileDetailsPage() {
 
                   <TabsTrigger
                     value="ratings"
-                    className="w-auto rounded-b-none !bg-[#d1d5db] px-2 py-2 text-sm font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white sm:w-auto md:w-full md:py-4 md:text-base"
+                    className="w-auto rounded-b-none bg-[#d1d5db]! px-2 py-2 text-sm font-bold text-[#71717A]! data-[state=active]:bg-dark-orange! data-[state=active]:text-white! sm:w-auto md:w-full md:py-4 md:text-base"
                     translate="no"
                   >
                     {t("ratings_n_reviews")}
@@ -117,7 +117,7 @@ export default function CompanyProfileDetailsPage() {
 
                   <TabsTrigger
                     value="products"
-                    className="w-auto rounded-b-none !bg-[#d1d5db] px-2 py-2 text-sm font-bold !text-[#71717A] data-[state=active]:!bg-dark-orange data-[state=active]:!text-white sm:w-auto md:w-full md:py-4 md:text-base"
+                    className="w-auto rounded-b-none bg-[#d1d5db]! px-2 py-2 text-sm font-bold text-[#71717A]! data-[state=active]:bg-dark-orange! data-[state=active]:text-white! sm:w-auto md:w-full md:py-4 md:text-base"
                     translate="no"
                   >
                     {t("products")}

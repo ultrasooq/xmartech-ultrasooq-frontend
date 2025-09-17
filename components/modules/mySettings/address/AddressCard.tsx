@@ -46,7 +46,7 @@ const AddressCard: React.FC<AddressCardProps> = ({
       <label htmlFor={id?.toString()} className="infocardbox">
         <div className="left-address-with-right-btn">
           <div>
-            <h4 className="!mt-0">
+            <h4 className="mt-0!">
               {firstName} {lastName}
             </h4>
             <ul>

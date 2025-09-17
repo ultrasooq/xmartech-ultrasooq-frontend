@@ -159,7 +159,7 @@ const ServiceQuestionAndAnswers: React.FC<QuestionAndAnswersProps> = ({
                           ) : null}
                         </React.Fragment>
                       )) : ''}
-                    {serviceAddedBy == me?.data?.data?.id ? (<div className="!my-2 text-center">
+                    {serviceAddedBy == me?.data?.data?.id ? (<div className="my-2! text-center">
                       <Button
                         variant="secondary"
                         onClick={() => reply(question.id)}
@@ -178,7 +178,7 @@ const ServiceQuestionAndAnswers: React.FC<QuestionAndAnswersProps> = ({
         open={isQuestionModalOpen}
         onOpenChange={handleToggleQuestionModal}
       >
-        <DialogContent className="max-h-[93vh] max-w-[90%] gap-0 md:!max-w-[90%] lg:!max-w-5xl">
+        <DialogContent className="max-h-[93vh] max-w-[90%] gap-0 md:max-w-[90%]! lg:max-w-5xl!">
           <AnswerForm
             onClose={handleToggleQuestionModal}
             serviceId={serviceId}

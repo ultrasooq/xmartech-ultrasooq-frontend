@@ -83,7 +83,7 @@ const AccordionMultiSelectV2: React.FC<AccordionMultiSelectV2Props> = ({
       >
         <AccordionItem value="item-1" className="border-b-0 px-2 md:px-3">
           <AccordionTrigger
-            className="flex h-auto min-h-[48px] justify-between py-0 hover:!no-underline"
+            className="flex h-auto min-h-[48px] justify-between py-0 hover:no-underline!"
             dir={langDir}
           >
             <div className="my-2 flex flex-wrap">
@@ -171,7 +171,7 @@ const AccordionMultiSelectV2: React.FC<AccordionMultiSelectV2Props> = ({
                               }
                               field.onChange(tempArr);
                             }}
-                            className="border border-solid border-gray-300 data-[state=checked]:!bg-dark-orange"
+                            className="border border-solid border-gray-300 data-[state=checked]:bg-dark-orange!"
                           />
                         </FormControl>
                         <FormLabel className="text-sm font-normal">

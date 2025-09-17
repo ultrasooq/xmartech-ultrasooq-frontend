@@ -54,7 +54,7 @@ const ControlledSelectInput: React.FC<ControlledSelectInputProps> = ({
             dir={langDir}
           >
             <FormControl>
-              <SelectTrigger className="theme-form-control-s1 data-[placeholder]:text-muted-foreground">
+              <SelectTrigger className="theme-form-control-s1 data-placeholder:text-muted-foreground">
                 <SelectValue placeholder={placeholder || `${t('select')} ${label}`} translate="no" />
               </SelectTrigger>
             </FormControl>

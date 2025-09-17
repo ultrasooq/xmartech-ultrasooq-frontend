@@ -51,7 +51,7 @@ const ExistingProductCard: React.FC<ExistingProductCardProps> = ({
   };
 
   return (
-    <div className="mb-4 w-full rounded-lg border border-gray-200 bg-white shadow-sm">
+    <div className="mb-4 w-full rounded-lg border border-gray-200 bg-white shadow-xs">
       {/* Compact View - Always Visible */}
       <div className="flex items-center justify-between p-4">
         {/* Left Section - Product Info */}
@@ -60,7 +60,7 @@ const ExistingProductCard: React.FC<ExistingProductCardProps> = ({
           {productType !== "R" && (
             <div className="flex flex-col items-center space-y-2">
               <Checkbox
-                className="border border-solid border-gray-300 data-[state=checked]:!bg-blue-600"
+                className="border border-solid border-gray-300 data-[state=checked]:bg-blue-600!"
                 checked={selectedIds?.includes(id)}
                 onCheckedChange={(checked) => {
                   onSelectedId?.(checked, id);

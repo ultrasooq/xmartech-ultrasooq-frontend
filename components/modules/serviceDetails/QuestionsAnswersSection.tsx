@@ -172,7 +172,7 @@ const QuestionsAnswersSection: React.FC<QuestionsAnswersSectionProps> = ({
         open={isQuestionModalOpen}
         onOpenChange={handleToggleQuestionModal}
       >
-        <DialogContent className="max-h-[93vh] max-w-[90%] gap-0 md:!max-w-[90%] lg:!max-w-5xl">
+        <DialogContent className="max-h-[93vh] max-w-[90%] gap-0 md:max-w-[90%]! lg:max-w-5xl!">
           <QuestionForm onClose={handleToggleQuestionModal} />
         </DialogContent>
       </Dialog>

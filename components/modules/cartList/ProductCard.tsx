@@ -230,14 +230,14 @@ const ProductCard: React.FC<ProductCardProps> = ({
           />
         </div>
         <figcaption dir={langDir}>
-          <h4 className="!text-lg !font-bold">{productName}</h4>
+          <h4 className="text-lg! font-bold!">{productName}</h4>
           <div className="custom-form-group">
             <label dir={langDir} translate="no">{t("quantity")}</label>
             <div className="qty-up-down-s1-with-rgMenuAction">
               <div className="flex items-center gap-x-1">
                 <Button
                   variant="outline"
-                  className="relative border border-solid border-gray-300 hover:shadow-sm"
+                  className="relative border border-solid border-gray-300 hover:shadow-xs"
                   onClick={() => {
                     setQuantity(quantity - 1);
                     handleAddToCart(quantity - 1, "remove");
@@ -258,7 +258,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 <input
                   type="text"
                   value={quantity}
-                  className="h-auto w-[35px] border-none bg-transparent text-center focus:border-none focus:outline-none"
+                  className="h-auto w-[35px] border-none bg-transparent text-center focus:border-none focus:outline-hidden"
                   onChange={(e) => {
                     const value = Number(e.target.value);
                     setQuantity(isNaN(value) ? productQuantity : value);
@@ -267,7 +267,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 />
                 <Button
                   variant="outline"
-                  className="relative border border-solid border-gray-300 hover:shadow-sm"
+                  className="relative border border-solid border-gray-300 hover:shadow-xs"
                   onClick={() => {
                     setQuantity(quantity + 1);
                     handleAddToCart(quantity + 1, "add");
@@ -319,14 +319,14 @@ const ProductCard: React.FC<ProductCardProps> = ({
       </div>
       <Dialog open={isConfirmDialogOpen} onOpenChange={handleConfirmDialog}>
         <DialogContent
-          className="add-new-address-modal add_member_modal gap-0 p-0 md:!max-w-2xl"
+          className="add-new-address-modal add_member_modal gap-0 p-0 md:max-w-2xl!"
           ref={confirmDialogRef}
         >
-          <div className="modal-header !justify-between" dir={langDir}>
+          <div className="modal-header justify-between!" dir={langDir}>
             <DialogTitle className="text-center text-xl text-dark-orange font-bold"></DialogTitle>
             <Button
               onClick={onCancelRemove}
-              className={`${langDir == 'ltr' ? 'absolute' : ''} right-2 top-2 z-10 !bg-white !text-black shadow-none`}
+              className={`${langDir == 'ltr' ? 'absolute' : ''} right-2 top-2 z-10 bg-white! text-black! shadow-none`}
             >
               <IoCloseSharp size={20} />
             </Button>

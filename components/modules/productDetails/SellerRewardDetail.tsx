@@ -41,13 +41,13 @@ const SellerRewardDetail: React.FC<SellerRewardDetailProps> = ({ reward, onClose
     };
     return (
         <>
-            <div className="modal-header !justify-between">
+            <div className="modal-header justify-between!">
                 <DialogTitle className="text-center text-xl font-bold" dir={langDir} translate="no">
                     {t("seller_reward")}
                 </DialogTitle>
                 <Button
                     onClick={onClose}
-                    className="absolute right-2 top-2 z-10 !bg-white !text-black shadow-none"
+                    className="absolute right-2 top-2 z-10 bg-white! text-black! shadow-none"
                 >
                     <IoCloseSharp size={20} />
                 </Button>

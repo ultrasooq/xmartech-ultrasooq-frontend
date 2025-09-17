@@ -1,10 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
-import Image from "next/image";
-import Link from "next/link";
-import React, { useEffect, useRef, useState } from "react";
-import validator from "validator";
 import {
   Carousel,
   CarouselApi,
@@ -13,21 +7,26 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
+import Image from "next/image";
+import Link from "next/link";
+import React, { useEffect, useRef, useState } from "react";
+import validator from "validator";
 // import WishlistIcon from "@/public/images/wishlist.svg";
-import { FaHeart } from "react-icons/fa";
-import { FaRegHeart } from "react-icons/fa";
-import ReactPlayer from "react-player/lazy";
-import { isImage, isVideo } from "@/utils/helper";
-import ProductEditForm from "../factories/ProductEditForm";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { useMe } from "@/apis/queries/user.queries";
-import AddToCustomizeForm from "../factories/AddToCustomizeForm";
 import { useSellerRewards } from "@/apis/queries/seller-reward.queries";
-import SellerRewardDetail from "./SellerRewardDetail";
+import { useMe } from "@/apis/queries/user.queries";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { useAuth } from "@/context/AuthContext";
+import { isImage, isVideo } from "@/utils/helper";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/context/AuthContext";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
+import ReactPlayer from "react-player";
+import AddToCustomizeForm from "../factories/AddToCustomizeForm";
+import ProductEditForm from "../factories/ProductEditForm";
+import SellerRewardDetail from "./SellerRewardDetail";
 
 type ProductImagesCardProps = {
   productDetails: any;
@@ -150,7 +149,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
           {!isLoading && haveAccessToken ? (
             <button
               type="button"
-              className="absolute right-2.5 top-2.5 z-10 rounded-full bg-white p-2"
+              className="absolute top-2.5 right-2.5 z-10 rounded-full bg-white p-2"
               onClick={onWishlist}
             >
               {inWishlist ? <FaHeart color="red" /> : <FaRegHeart />}
@@ -175,7 +174,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
                             className="object-contain"
                           />
                         ) : isVideo(item) ? (
-                          <div className="player-wrapper !py-[30%]">
+                          <div className="player-wrapper py-[30%]!">
                             <ReactPlayer
                               url={item}
                               width="100%"
@@ -213,7 +212,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
           {isLoading ? <Skeleton className="min-h-[250px] w-full" /> : null}
         </div>
 
-        <div className="col-span-1 m-auto flex !h-full w-full flex-wrap gap-4 self-start lg:w-auto lg:flex-col">
+        <div className="col-span-1 m-auto flex h-full! w-full flex-wrap gap-4 self-start lg:w-auto lg:flex-col">
           {isLoading
             ? Array.from({ length: 3 }).map((_, index) => (
                 <Skeleton className="h-28 w-28" key={index} />
@@ -257,7 +256,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
               <Button
                 type="button"
                 onClick={handleToCustomizeModal}
-                className="h-14 max-w-[205px] flex-1 rounded-none bg-color-blue text-base"
+                className="bg-color-blue h-14 max-w-[205px] flex-1 rounded-none text-base"
                 dir={langDir}
                 translate="no"
               >
@@ -267,7 +266,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
                 type="button"
                 // onClick={onToCheckout}
                 onClick={onToCart}
-                className="h-14 max-w-[205px] flex-1 rounded-none bg-color-blue text-base"
+                className="bg-color-blue h-14 max-w-[205px] flex-1 rounded-none text-base"
                 dir={langDir}
                 translate="no"
               >
@@ -292,7 +291,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
         <Link href={`/seller-rfq-request?product_id=${productDetails?.id}`}>
           <Button
             type="button"
-            className="h-14 w-full flex-1 rounded-none bg-color-yellow text-base"
+            className="bg-color-yellow h-14 w-full flex-1 rounded-none text-base"
             dir={langDir}
             translate="no"
           >
@@ -305,7 +304,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
           <Button
             type="button"
             onClick={onAdd}
-            className="h-14 max-w-[205px] flex-1 rounded-none bg-color-yellow text-base"
+            className="bg-color-yellow h-14 max-w-[205px] flex-1 rounded-none text-base"
             disabled={isAddedToCart || cartQuantity == 0}
             translate="no"
           >
@@ -314,7 +313,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
           <Button
             type="button"
             onClick={onToCart}
-            className="h-14 max-w-[205px] flex-1 rounded-none bg-dark-orange text-base"
+            className="bg-dark-orange h-14 max-w-[205px] flex-1 rounded-none text-base"
             dir={langDir}
             translate="no"
           >
@@ -324,7 +323,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
             <Button
               type="button"
               onClick={() => setIsSellerRewardDetailModalOpen(true)}
-              className="h-14 flex-1 rounded-none bg-dark-orange text-base"
+              className="bg-dark-orange h-14 flex-1 rounded-none text-base"
               dir={langDir}
               translate="no"
             >
@@ -338,7 +337,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
 
       <Dialog open={isEditModalOpen} onOpenChange={handleToggleEditModal}>
         <DialogContent
-          className="add-new-address-modal h-screen gap-0 overflow-y-scroll p-0 md:!max-w-2xl"
+          className="add-new-address-modal h-screen gap-0 overflow-y-scroll p-0 md:max-w-2xl!"
           ref={wrapperRef}
         >
           <ProductEditForm
@@ -354,7 +353,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
       {/* For Customize Dialog */}
       <Dialog open={isCustomizeModalOpen} onOpenChange={handleToCustomizeModal}>
         <DialogContent
-          className="add-new-address-modal gap-0 p-0 md:!max-w-2xl"
+          className="add-new-address-modal gap-0 p-0 md:max-w-2xl!"
           ref={wrapperRef}
         >
           <AddToCustomizeForm
@@ -373,7 +372,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
           onOpenChange={handleSellerRewardDetailModal}
         >
           <DialogContent
-            className="add-new-address-modal gap-0 p-0 md:!max-w-2xl"
+            className="add-new-address-modal gap-0 p-0 md:max-w-2xl!"
             ref={wrapperRef}
           >
             <SellerRewardDetail

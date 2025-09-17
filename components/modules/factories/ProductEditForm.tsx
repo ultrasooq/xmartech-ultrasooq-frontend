@@ -415,13 +415,13 @@ const ProductEditForm: React.FC<EditFormProps> = ({
 
   return (
     <>
-      <div className="modal-header !justify-between">
+      <div className="modal-header justify-between!">
         <DialogTitle className="text-center text-xl font-bold" dir={langDir} translate="no">
           {t("edit_product")}
         </DialogTitle>
         <Button
           onClick={onClose}
-          className="absolute right-2 top-2 z-10 !bg-white !text-black shadow-none"
+          className="absolute right-2 top-2 z-10 bg-white! text-black! shadow-none"
         >
           <IoCloseSharp size={20} />
         </Button>
@@ -451,7 +451,7 @@ const ProductEditForm: React.FC<EditFormProps> = ({
                 {!searchParams?.id ? <ProductDetailsSection /> : null}
 
                 <div className="grid w-full grid-cols-4 gap-x-5">
-                  <div className="col-span-4 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-4 lg:p-8">
+                  <div className="col-span-4 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-xs sm:p-4 lg:p-8">
                     <div className="form-groups-common-sec-s1">
                       <DescriptionAndSpecificationSection />
                     </div>

@@ -79,7 +79,7 @@ const VendorCard: React.FC<VendorCardProps> = ({
       {/* Header */}
       <div className="flex items-start space-x-4">
         {/* Vendor Avatar */}
-        <div className="relative h-16 w-16 flex-shrink-0">
+        <div className="relative h-16 w-16 shrink-0">
           <Image
             src={vendor.profilePicture || NoImagePlaceholder}
             alt={`${vendor.firstName} ${vendor.lastName}`}
@@ -119,19 +119,19 @@ const VendorCard: React.FC<VendorCardProps> = ({
           <div className="mt-3 space-y-1">
             {vendor.email && (
               <div className="flex items-center space-x-2 text-sm text-gray-600">
-                <Mail className="h-3 w-3 flex-shrink-0" />
+                <Mail className="h-3 w-3 shrink-0" />
                 <span className="truncate">{vendor.email}</span>
               </div>
             )}
             {vendor.phoneNumber && (
               <div className="flex items-center space-x-2 text-sm text-gray-600">
-                <Phone className="h-3 w-3 flex-shrink-0" />
+                <Phone className="h-3 w-3 shrink-0" />
                 <span>{vendor.phoneNumber}</span>
               </div>
             )}
             {vendor.location && (
               <div className="flex items-center space-x-2 text-sm text-gray-600">
-                <MapPin className="h-3 w-3 flex-shrink-0" />
+                <MapPin className="h-3 w-3 shrink-0" />
                 <span className="truncate">{vendor.location}</span>
               </div>
             )}
@@ -198,7 +198,7 @@ const VendorCard: React.FC<VendorCardProps> = ({
       </div>
 
       {/* Hover Effect */}
-      <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500/5 via-purple-500/5 to-pink-500/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+      <div className="absolute inset-0 rounded-2xl bg-linear-to-r from-blue-500/5 via-purple-500/5 to-pink-500/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
     </div>
   );
 };

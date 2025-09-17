@@ -85,7 +85,7 @@ const MyOrderDetailsPage = () => {
           <div className="my-order-wrapper">
             <div className="right-div mx-w-100">
               <div className="my-order-lists for-delivery-address">
-                <ul className="page-indicator-s1 !mb-0">
+                <ul className="page-indicator-s1 mb-0!">
                   <li>
                     <Link href="/home" dir={langDir} translate="no">{t("home")}</Link>
                   </li>
@@ -119,7 +119,7 @@ const MyOrderDetailsPage = () => {
                           </address>
                           <p dir={langDir}>
                             <span translate="no">{t("phone_number")}{" "}</span>
-                            <span className="!text-red-500" dir={langDir}>
+                            <span className="text-red-500!" dir={langDir}>
                               {shippingDetails?.phone}
                             </span>
                           </p>
@@ -136,7 +136,7 @@ const MyOrderDetailsPage = () => {
                           </address>
                           <p dir={langDir}>
                             {t("phone_number")}{" "}
-                            <span className="!text-red-500" dir={langDir}>
+                            <span className="text-red-500!" dir={langDir}>
                               {billingDetails?.phone}
                             </span>
                           </p>
@@ -178,26 +178,26 @@ const MyOrderDetailsPage = () => {
                     <div className="my-order-card">
                       <div className="sm:grid sm:grid-cols-3 w-full gap-2 mb-2">
                         <div className="sm:flex gap-2">
-                          <h3 className="!font-bold" translate="no">{t("shipping_mode")}:</h3>
+                          <h3 className="font-bold!" translate="no">{t("shipping_mode")}:</h3>
                           <span>{orderDetails?.orderShippingDetail?.orderShippingType}</span>
                         </div>
                         <div className="sm:flex gap-2">
-                          <h3 className="!font-bold" translate="no">{t("delivery_charge")}:</h3>
+                          <h3 className="font-bold!" translate="no">{t("delivery_charge")}:</h3>
                           <span>{currency.symbol}{orderDetails?.orderShippingDetail?.shippingCharge}</span>
                         </div>
                       </div>
                       {orderDetails?.orderShippingDetail?.orderShippingType == "PICKUP" ? (
                         <div className="sm:grid sm:grid-cols-3 w-full gap-2">
                           <div className="sm:flex gap-2">
-                            <h3 className="!font-bold" translate="no">{t("shipping_date")}:</h3>
+                            <h3 className="font-bold!" translate="no">{t("shipping_date")}:</h3>
                             <span>{convertDate(orderDetails?.orderShippingDetail?.shippingDate)}</span>
                           </div>
                           <div className="sm:flex gap-2">
-                            <h3 className="!font-bold" translate="no">{t("from_time")}:</h3>
+                            <h3 className="font-bold!" translate="no">{t("from_time")}:</h3>
                             <span>{convertTime(orderDetails?.orderShippingDetail?.fromTime)}</span>
                           </div>
                           <div className="sm:flex gap-2">
-                            <h3 className="!font-bold" translate="no">{t("to_time")}:</h3>
+                            <h3 className="font-bold!" translate="no">{t("to_time")}:</h3>
                             <span>{convertTime(orderDetails?.orderShippingDetail?.toTime)}</span>
                           </div>
                         </div>
@@ -447,7 +447,7 @@ const MyOrderDetailsPage = () => {
                                     className={cn(
                                       orderDetails?.orderProductStatus ===
                                         "CANCELLED"
-                                        ? "!bg-red-500"
+                                        ? "bg-red-500!"
                                         : "",
                                     )}
                                   ></small>

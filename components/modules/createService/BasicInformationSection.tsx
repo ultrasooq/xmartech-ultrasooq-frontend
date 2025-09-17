@@ -1,32 +1,26 @@
-import React, { memo, useEffect, useMemo, useRef, useState } from "react";
 import AccordionMultiSelectV2 from "@/components/shared/AccordionMultiSelectV2";
-import { Label } from "@/components/ui/label";
-import { Controller, useFormContext } from "react-hook-form";
 import { FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import Image from "next/image";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
+import Image from "next/image";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Controller, useFormContext } from "react-hook-form";
 // import { useUploadFile } from "@/apis/queries/upload.queries";
-import { v4 as uuidv4 } from "uuid";
-import { ISelectOptions } from "@/utils/types/common.types";
 import {
   // useCategories,
   useCategory,
   useSubCategoryById,
 } from "@/apis/queries/category.queries";
-import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
-import AddImageContent from "../profile/AddImageContent";
-import CloseWhiteIcon from "@/public/images/close-white.svg";
-import ReactPlayer from "react-player/lazy";
-import BrandSelect from "@/components/shared/BrandSelect";
-import { PRODUCT_CONDITION_LIST } from "@/utils/constants";
-import ReactSelect from "react-select";
-import PriceSection from "./PriceSection";
-import DescriptionSection from "./DescriptionSection";
-import { isImage, isVideo } from "@/utils/helper";
 import { useCreateTag } from "@/apis/queries/tags.queries";
-import { useTranslations } from "next-intl";
+import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import { useAuth } from "@/context/AuthContext";
+import CloseWhiteIcon from "@/public/images/close-white.svg";
+import { isImage, isVideo } from "@/utils/helper";
+import { ISelectOptions } from "@/utils/types/common.types";
+import { useTranslations } from "next-intl";
+import { v4 as uuidv4 } from "uuid";
+import AddImageContent from "../profile/AddImageContent";
 
 const customStyles = {
   control: (base: any) => ({
@@ -50,21 +44,14 @@ type BasicInformationProps = {
   tagsList: any;
   selectedCategoryIds?: string[];
 };
-const VideoPreviewCompo = ({
-  item,
-  handleEditPreviewImage
-}: any) => {
+const VideoPreviewCompo = ({ item, handleEditPreviewImage }: any) => {
   const t = useTranslations();
   const { langDir } = useAuth();
   const { toast } = useToast();
-  const [videoUrl, setVideoUrl] = React.useState<string | null>(
-    null,
-  );
+  const [videoUrl, setVideoUrl] = React.useState<string | null>(null);
   React.useEffect(() => {
     if (typeof item.path === "object") {
-      const url = URL.createObjectURL(
-        item.path,
-      );
+      const url = URL.createObjectURL(item.path);
       setVideoUrl(url);
       return () => {
         URL.revokeObjectURL(url);
@@ -80,7 +67,7 @@ const VideoPreviewCompo = ({
     <div className="relative h-44">
       <div className="player-wrapper px-2">
         <video
-          src={videoUrl || ''}
+          src={videoUrl || ""}
           width="100%"
           height="100%"
           controls
@@ -104,33 +91,26 @@ const VideoPreviewCompo = ({
         type="file"
         accept="video/*"
         multiple={false}
-        className="!bottom-0 h-20 !w-full cursor-pointer opacity-0"
+        className="bottom-0! h-20 w-full! cursor-pointer opacity-0"
         onChange={(event) => {
           if (event.target.files) {
-            if (
-              event.target.files[0]
-                .size > 524288000
-            ) {
+            if (event.target.files[0].size > 524288000) {
               toast({
-                title: t(
-                  "one_of_file_should_be_less_than_size",
-                  { size: "500MB" },
-                ),
+                title: t("one_of_file_should_be_less_than_size", {
+                  size: "500MB",
+                }),
                 variant: "danger",
               });
               return;
             }
-            handleEditPreviewImage(
-              item?.id,
-              event.target.files,
-            );
+            handleEditPreviewImage(item?.id, event.target.files);
           }
         }}
         id="images"
       />
     </div>
   );
-}
+};
 const BasicInformationSection: React.FC<BasicInformationProps> = ({
   editId,
   tagsList,
@@ -269,9 +249,9 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
   return (
     <>
       <div className="grid w-full grid-cols-4 gap-x-5">
-        <div className="col-span-4 mx-auto mb-3 w-full max-w-[950px] rounded-lg border border-solid border-gray-300 bg-white p-2 shadow-sm sm:p-3 lg:p-4">
+        <div className="col-span-4 mx-auto mb-3 w-full max-w-[950px] rounded-lg border border-solid border-gray-300 bg-white p-2 shadow-xs sm:p-3 lg:p-4">
           <div className="flex w-full flex-wrap">
-            <div className=" w-full">
+            <div className="w-full">
               <div className="flex flex-wrap">
                 <div className="form-groups-common-sec-s1 product-form-groups-common-sec-s1">
                   <h3 dir={langDir} translate="no">
@@ -288,7 +268,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                         render={({ field }) => (
                           <select
                             {...field}
-                            className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
+                            className="h-[48px]! w-full rounded border border-gray-300! px-3 text-sm focus-visible:ring-0!"
                             onChange={(e) => {
                               if (e.target.value === "") {
                                 return;
@@ -337,66 +317,70 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
 
                     {catList.length > 0
                       ? catList
-                        .filter((item) => item.children?.length)
-                        .map((item, index) => {
-                          return (
-                            <div
-                              key={item?.id}
-                              className="mb-3 grid w-full grid-cols-1 gap-x-5 gap-y-3"
-                            >
-                              <div className="flex w-full flex-col justify-between gap-y-2">
-                                <Label dir={langDir} translate="no">
-                                  {t("sub_category")}
-                                </Label>
-                                <select
-                                  className="!h-[48px] w-full rounded border !border-gray-300 px-3 text-sm focus-visible:!ring-0"
-                                  onChange={(e) => {
-                                    if (e.target.value === "") {
-                                      return;
-                                    }
+                          .filter((item) => item.children?.length)
+                          .map((item, index) => {
+                            return (
+                              <div
+                                key={item?.id}
+                                className="mb-3 grid w-full grid-cols-1 gap-x-5 gap-y-3"
+                              >
+                                <div className="flex w-full flex-col justify-between gap-y-2">
+                                  <Label dir={langDir} translate="no">
+                                    {t("sub_category")}
+                                  </Label>
+                                  <select
+                                    className="h-[48px]! w-full rounded border border-gray-300! px-3 text-sm focus-visible:ring-0!"
+                                    onChange={(e) => {
+                                      if (e.target.value === "") {
+                                        return;
+                                      }
 
-                                    setCurrentId(e.target.value);
-                                    setCurrentIndex(index + 1);
+                                      setCurrentId(e.target.value);
+                                      setCurrentIndex(index + 1);
 
-                                    if (listIds[index]) {
-                                      let tempIds = listIds;
-                                      tempIds[index] = e.target.value;
-                                      tempIds = tempIds.slice(0, index + 1);
-                                      setListIds([...tempIds]);
-                                      return;
-                                    }
-                                    setListIds([...listIds, e.target.value]);
-                                  }}
-                                  value={item?.children
-                                    ?.find((item: any) =>
-                                      listIds.includes(item.id?.toString())
-                                        ? item
-                                        : "",
-                                    )
-                                    ?.id?.toString()}
-                                >
-                                  <option value="" dir={langDir} translate="no">
-                                    {t("select_sub_category")}
-                                  </option>
-                                  {item?.children?.map((item: any) => (
+                                      if (listIds[index]) {
+                                        let tempIds = listIds;
+                                        tempIds[index] = e.target.value;
+                                        tempIds = tempIds.slice(0, index + 1);
+                                        setListIds([...tempIds]);
+                                        return;
+                                      }
+                                      setListIds([...listIds, e.target.value]);
+                                    }}
+                                    value={item?.children
+                                      ?.find((item: any) =>
+                                        listIds.includes(item.id?.toString())
+                                          ? item
+                                          : "",
+                                      )
+                                      ?.id?.toString()}
+                                  >
                                     <option
-                                      value={item.id?.toString()}
-                                      key={item.id}
+                                      value=""
                                       dir={langDir}
+                                      translate="no"
                                     >
-                                      {item.name}
+                                      {t("select_sub_category")}
                                     </option>
-                                  ))}
-                                </select>
+                                    {item?.children?.map((item: any) => (
+                                      <option
+                                        value={item.id?.toString()}
+                                        key={item.id}
+                                        dir={langDir}
+                                      >
+                                        {item.name}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </div>
                               </div>
-                            </div>
-                          );
-                        })
+                            );
+                          })
                       : null}
                   </div>
                   <div className="space-y-2">
                     <label
-                      className="text-sm font-medium leading-none text-color-dark"
+                      className="text-color-dark text-sm leading-none font-medium"
                       dir={langDir}
                       translate="no"
                     >
@@ -427,7 +411,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                   <div className="relative mb-4 w-full">
                     <div className="space-y-2">
                       <label
-                        className="text-sm font-medium leading-none text-color-dark"
+                        className="text-color-dark text-sm leading-none font-medium"
                         dir={langDir}
                         translate="no"
                       >
@@ -473,10 +457,10 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                                 src={
                                                   typeof item.path === "object"
                                                     ? URL.createObjectURL(
-                                                      item.path,
-                                                    )
+                                                        item.path,
+                                                      )
                                                     : typeof item.path ===
-                                                      "string"
+                                                        "string"
                                                       ? item.path
                                                       : "/images/no-image.jpg"
                                                 }
@@ -507,7 +491,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                                 type="file"
                                                 accept="image/*"
                                                 multiple={false}
-                                                className="!bottom-0 h-44 !w-full cursor-pointer opacity-0"
+                                                className="bottom-0! h-44 w-full! cursor-pointer opacity-0"
                                                 onChange={(event) => {
                                                   if (event.target.files) {
                                                     if (
@@ -536,7 +520,9 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                             isVideo(item.path) ? (
                                             <VideoPreviewCompo
                                               item={item}
-                                              handleEditPreviewImage={handleEditPreviewImage}
+                                              handleEditPreviewImage={
+                                                handleEditPreviewImage
+                                              }
                                             />
                                           ) : (
                                             <AddImageContent
@@ -549,11 +535,11 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                                   </FormItem>
                                 )}
                               />
-                            )
+                            ),
                           )}
                           <div className="relative mb-3 w-full pl-2">
                             <div className="absolute m-auto flex h-48 w-full cursor-pointer flex-wrap items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-white text-center">
-                              <div className="text-sm font-medium leading-4 text-color-dark">
+                              <div className="text-color-dark text-sm leading-4 font-medium">
                                 <Image
                                   src="/images/plus.png"
                                   className="m-auto mb-3"
@@ -571,7 +557,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                               type="file"
                               accept="image/*, video/*"
                               multiple
-                              className="!bottom-0 h-48 !w-full cursor-pointer opacity-0"
+                              className="bottom-0! h-48 w-full! cursor-pointer opacity-0"
                               onChange={(event) => {
                                 if (event.target.files) {
                                   const filesArray = Array.from(

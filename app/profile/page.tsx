@@ -406,7 +406,7 @@ export default function ProfilePage() {
       </div>
       <div className="container relative z-10 m-auto">
         <div className="flex">
-          <div className="m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-sm sm:p-8 md:w-9/12 lg:w-7/12 lg:p-12">
+          <div className="m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-6 shadow-xs sm:p-8 md:w-9/12 lg:w-7/12 lg:p-12">
             <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
               <h2
                 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10"
@@ -477,7 +477,7 @@ export default function ProfilePage() {
                                 type="file"
                                 accept="image/*"
                                 multiple={false}
-                                className="!bottom-0 h-44 !w-full opacity-0"
+                                className="bottom-0! h-44 w-full! opacity-0"
                                 {...field}
                                 onChange={(event) => {
                                   if (event.target.files?.[0]) {
@@ -535,7 +535,7 @@ export default function ProfilePage() {
                         </FormLabel>
                         <FormControl>
                           <RadioGroup
-                            className="!mt-0 flex items-center gap-4"
+                            className="mt-0! flex items-center gap-4"
                             onValueChange={field.onChange}
                             defaultValue="MALE"
                             value={field.value}
@@ -597,7 +597,7 @@ export default function ProfilePage() {
                         className={cn(
                           "block text-left text-sm font-medium capitalize leading-4 text-color-dark",
                           form.formState.errors.phoneNumberList
-                            ? "!text-red-500"
+                            ? "text-red-500!"
                             : "",
                         )}
                         translate="no"
@@ -686,7 +686,7 @@ export default function ProfilePage() {
                           className="mt-2 border-b-0"
                           dir={langDir}
                         >
-                          <AccordionTrigger className="flex justify-between py-0 hover:!no-underline">
+                          <AccordionTrigger className="flex justify-between py-0 hover:no-underline!">
                             <div className="mb-2 flex items-center text-sm font-normal leading-4 text-color-dark">
                               {watchSocialMedia[index]?.linkType !== "" ? (
                                 <Image
@@ -832,7 +832,7 @@ export default function ProfilePage() {
                                       type="file"
                                       accept="image/*"
                                       multiple={false}
-                                      className="!bottom-0 h-48 !w-full opacity-0"
+                                      className="bottom-0! h-48 w-full! opacity-0"
                                       {...field}
                                       onChange={(event) => {
                                         if (event.target.files?.[0]) {
@@ -924,7 +924,7 @@ export default function ProfilePage() {
                                       type="file"
                                       accept="image/*"
                                       multiple={false}
-                                      className="!bottom-0 h-48 !w-full opacity-0"
+                                      className="bottom-0! h-48 w-full! opacity-0"
                                       {...field}
                                       onChange={(event) => {
                                         if (event.target.files?.[0]) {
