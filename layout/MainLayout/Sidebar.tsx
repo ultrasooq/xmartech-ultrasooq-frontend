@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useSidebar } from "@/context/SidebarContext";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
@@ -42,6 +42,12 @@ const Sidebar: React.FC<SidebarProps> = ({ notificationCount }) => {
   const router = useRouter();
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
   const { data: currentAccountData } = useCurrentAccount();
+  const [isClient, setIsClient] = useState(false);
+
+  // Ensure component only renders on client side
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Get current user's trade role
   const currentTradeRole = currentAccountData?.data?.data?.account?.tradeRole || 'BUYER';
@@ -234,6 +240,11 @@ const Sidebar: React.FC<SidebarProps> = ({ notificationCount }) => {
 
   const menuItems = getMenuItems();
 
+  // Show loading state when not on client side
+  if (!isClient) {
+    return null;
+  }
+
   return (
     <>
       {/* Invisible Backdrop for click-to-close */}
@@ -247,7 +258,6 @@ const Sidebar: React.FC<SidebarProps> = ({ notificationCount }) => {
       {/* Sidebar */}
       {accessToken && (
         <div
-          key={`sidebar-${currentTradeRole}-${currentAccountData?.data?.data?.account?.id}`}
           className={`fixed top-0 ${langDir === "rtl" ? "right-0" : "left-0"} w-80 h-full bg-white shadow-xl transform transition-transform duration-300 ease-in-out z-50 ${
             isOpen ? "translate-x-0" : langDir === "rtl" ? "translate-x-full" : "-translate-x-full"
           }`}

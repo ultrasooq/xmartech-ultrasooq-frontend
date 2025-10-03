@@ -12,6 +12,7 @@ import {
   useAllProducts,
   useProductVariant,
 } from "@/apis/queries/product.queries";
+import { useDropshipProducts } from "@/apis/queries/dropship.queries";
 import ProductCard from "@/components/modules/trending/ProductCard";
 import GridIcon from "@/components/icons/GridIcon";
 import ListIcon from "@/components/icons/ListIcon";
@@ -141,16 +142,53 @@ const TrendingPage = (props0: TrendingPageProps) => {
     userType: me?.data?.data?.tradeRole == "BUYER" ? "BUYER" : ""
   });
 
+  // Fetch dropship products
+  const dropshipProductsQuery = useDropshipProducts({
+    page,
+    limit,
+    status: "ACTIVE"
+  });
+
+  // Combine regular products and dropship products
+  const combinedProducts = useMemo(() => {
+    const regularProducts = allProductsQuery?.data?.data || [];
+    const dropshipProducts = dropshipProductsQuery?.data?.data || [];
+    
+    
+    // Transform dropship products to match regular product format
+    const transformedDropshipProducts = dropshipProducts.map((dropshipProduct: any) => ({
+      ...dropshipProduct,
+      // Ensure dropship products have the same structure as regular products
+      productType: 'D', // Mark as dropship product
+      isDropshipped: true,
+      // Preserve marketing content and images
+      customMarketingContent: dropshipProduct.customMarketingContent || {},
+      productImages: dropshipProduct.productImages || [],
+      additionalMarketingImages: dropshipProduct.additionalMarketingImages || [],
+      // Use the original product's data for display
+      originalProductName: dropshipProduct.originalProduct?.productName || dropshipProduct.productName,
+      originalProductDescription: dropshipProduct.originalProduct?.productDescription || dropshipProduct.productDescription,
+    }));
+    
+    return [...regularProducts, ...transformedDropshipProducts];
+  }, [allProductsQuery?.data?.data, dropshipProductsQuery?.data?.data]);
+
+  // Combined loading state
+  const isLoading = allProductsQuery.isLoading || dropshipProductsQuery.isLoading;
+
+  // Combined total count
+  const totalCount = (allProductsQuery?.data?.totalCount || 0) + (dropshipProductsQuery?.data?.totalCount || 0);
+
   // Get unique user IDs from products
   const uniqueUserIds = useMemo(() => {
     const userIds = new Set<number>();
-    allProductsQuery?.data?.data?.forEach((item: any) => {
+    combinedProducts.forEach((item: any) => {
       if (item?.userId) {
         userIds.add(item.userId);
       }
     });
     return Array.from(userIds);
-  }, [allProductsQuery?.data?.data]);
+  }, [combinedProducts]);
 
   // Use custom hook to get user accounts
   const { usersMap, isLoading: usersLoading } = useUserAccounts(uniqueUserIds);
@@ -216,16 +254,54 @@ const TrendingPage = (props0: TrendingPageProps) => {
 
   const memoizedProductList = useMemo(() => {
     return (
-      allProductsQuery?.data?.data?.map((item: any) => ({
+      combinedProducts?.map((item: any) => ({
         id: item.id,
-        productName: item?.productName || "-",
+        productName: (() => {
+          // For dropship products, use the customized name
+          if (item?.isDropshipped && item?.customMarketingContent?.customName) {
+            return item.customMarketingContent.customName;
+          }
+          
+          // For regular products, use the original product name
+          return item?.productName || "-";
+        })(),
         productPrice: item?.productPrice || 0,
         offerPrice: item?.offerPrice || 0,
-        productImage: item?.product_productPrice?.[0]
-          ?.productPrice_productSellerImage?.length
-          ? item?.product_productPrice?.[0]
-            ?.productPrice_productSellerImage?.[0]?.image
-          : item?.productImages?.[0]?.image,
+        productImage: (() => {
+          // For dropship products, prioritize marketing images
+          if (item?.isDropshipped) {
+            // First priority: additionalMarketingImages (base64 marketing images)
+            if (item?.additionalMarketingImages && Array.isArray(item.additionalMarketingImages) && item.additionalMarketingImages.length > 0) {
+              return item.additionalMarketingImages[0];
+            }
+            
+            // Second priority: marketing images in productImages array
+            if (item?.productImages && Array.isArray(item.productImages)) {
+              const marketingImage = item.productImages.find((img: any) => 
+                img.variant?.type === 'marketing'
+              );
+              if (marketingImage) {
+                return marketingImage.image;
+              }
+              // Fallback to first image in productImages
+              if (item.productImages[0]?.image) {
+                return item.productImages[0].image;
+              }
+            }
+            
+            // Third priority: original product images
+            if (item?.originalProduct?.productImages && Array.isArray(item.originalProduct.productImages) && item.originalProduct.productImages.length > 0) {
+              return item.originalProduct.productImages[0]?.image;
+            }
+          }
+          
+          // For regular products, use existing logic
+          return item?.product_productPrice?.[0]
+            ?.productPrice_productSellerImage?.length
+            ? item?.product_productPrice?.[0]
+              ?.productPrice_productSellerImage?.[0]?.image
+            : item?.productImages?.[0]?.image;
+        })(),
         categoryName: item?.category?.name || "-",
         skuNo: item?.skuNo,
         brandName: item?.brand?.brandName || "-",
@@ -234,9 +310,17 @@ const TrendingPage = (props0: TrendingPageProps) => {
         inWishlist: item?.product_wishlist?.find(
           (ele: any) => ele?.userId === me.data?.data?.id,
         ),
-        shortDescription: item?.product_productShortDescription?.length
-          ? item?.product_productShortDescription?.[0]?.shortDescription
-          : "-",
+        shortDescription: (() => {
+          // For dropship products, prioritize marketing text
+          if (item?.isDropshipped && item?.customMarketingContent?.marketingText) {
+            return item.customMarketingContent.marketingText;
+          }
+          
+          // For regular products, use existing logic
+          return item?.product_productShortDescription?.length
+            ? item?.product_productShortDescription?.[0]?.shortDescription
+            : "-";
+        })(),
         productProductPriceId: item?.product_productPrice?.[0]?.id,
         productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
         consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
@@ -252,15 +336,6 @@ const TrendingPage = (props0: TrendingPageProps) => {
            const userId = item?.userId;
            const user = usersMap.get(userId);
            
-           console.log("=== VENDOR DEBUG ===");
-           console.log("Product ID:", item.id);
-           console.log("Product userId:", userId);
-           console.log("User from map:", user);
-           console.log("Account name:", user?.accountName);
-           console.log("First name:", user?.firstName);
-           console.log("Last name:", user?.lastName);
-           console.log("Users map size:", usersMap.size);
-           console.log("==================");
            
            // Priority order for vendor name:
            // 1. Account name (sub-account name)
@@ -299,8 +374,8 @@ const TrendingPage = (props0: TrendingPageProps) => {
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    allProductsQuery?.data?.data,
-    allProductsQuery?.data?.data?.length,
+    combinedProducts,
+    combinedProducts?.length,
     sortBy,
     searchUrlTerm,
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -724,7 +799,7 @@ const TrendingPage = (props0: TrendingPageProps) => {
                     <Package className="h-4 w-4" />
                     <span>{t("products")}</span>
                     <span className="ml-2 text-xs bg-gray-100 px-2 py-1 rounded-full">
-                      {allProductsQuery.data?.totalCount || 0}
+                      {totalCount}
                     </span>
                   </TabsTrigger>
                   <TabsTrigger value="vendors" className="flex items-center space-x-2">
@@ -746,7 +821,7 @@ const TrendingPage = (props0: TrendingPageProps) => {
                 <div className="rg-filter">
                   <p dir={langDir} translate="no">
                     {t("n_products_found", {
-                      n: allProductsQuery.data?.totalCount,
+                      n: totalCount,
                     })}
                   </p>
                   <ul>
@@ -821,7 +896,7 @@ const TrendingPage = (props0: TrendingPageProps) => {
                 </div>
               </div>
 
-              {allProductsQuery.isLoading && viewType === "grid" ? (
+              {isLoading && viewType === "grid" ? (
                 <div className="grid grid-cols-4 gap-5">
                   {Array.from({ length: 8 }).map((_, index: number) => (
                     <SkeletonProductCardLoader key={index} />
@@ -829,7 +904,7 @@ const TrendingPage = (props0: TrendingPageProps) => {
                 </div>
               ) : null}
 
-              {!memoizedProductList.length && !allProductsQuery.isLoading ? (
+              {!memoizedProductList.length && !isLoading ? (
                 <p
                   className="text-center text-sm font-medium"
                   dir={langDir}
@@ -892,11 +967,11 @@ const TrendingPage = (props0: TrendingPageProps) => {
                 </div>
               ) : null}
 
-              {allProductsQuery.data?.totalCount > page ? (
+              {totalCount > page ? (
                 <Pagination
                   page={page}
                   setPage={setPage}
-                  totalCount={allProductsQuery.data?.totalCount}
+                  totalCount={totalCount}
                   limit={limit}
                 />
               ) : null}
@@ -905,7 +980,7 @@ const TrendingPage = (props0: TrendingPageProps) => {
                 <TabsContent value="vendors" className="space-y-6">
                   <VendorsSection 
                     vendors={memoizedVendors}
-                    isLoading={allProductsQuery.isLoading || usersLoading}
+                    isLoading={isLoading || usersLoading}
                     products={memoizedProductList}
                   />
                 </TabsContent>

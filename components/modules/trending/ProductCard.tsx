@@ -519,7 +519,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <div className="relative w-full h-48 bg-gray-50 overflow-hidden">
           <Image
             src={
-              item?.productImage && validator.isURL(item.productImage)
+              item?.productImage && (validator.isURL(item.productImage) || item.productImage.startsWith('data:image/'))
                 ? item.productImage
                 : PlaceholderImage
             }

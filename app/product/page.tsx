@@ -9,6 +9,7 @@ import { useTags } from "@/apis/queries/tags.queries";
 import BasicInformationSection from "@/components/modules/createProduct/BasicInformationSection";
 import ProductDetailsSection from "@/components/modules/createProduct/ProductDetailsSection";
 import DescriptionAndSpecificationSection from "@/components/modules/createProduct/DescriptionAndSpecificationSection";
+import DropshipProductForm from "@/components/modules/createProduct/DropshipProductForm";
 import Footer from "@/components/shared/Footer";
 import { useCreateProduct, useProductById, useProductVariant, useExistingProductById, useUpdateSingleProduct, useOneProductByProductCondition } from "@/apis/queries/product.queries";
 import { useCurrentAccount } from "@/apis/queries/auth.queries";
@@ -637,6 +638,8 @@ const CreateProductPage = () => {
   const editProductPriceId = searchParams?.get('productPriceId');
   const { toast } = useToast();
   const [activeProductType, setActiveProductType] = useState<string>();
+  const [activeTab, setActiveTab] = useState<'create' | 'dropship'>('create');
+  const [isClient, setIsClient] = useState(false);
   const form = useForm({
     resolver: zodResolver(
       activeProductType === "R" ? formSchemaForTypeR(t) : formSchemaForTypeP(t),
@@ -644,6 +647,23 @@ const CreateProductPage = () => {
     defaultValues,
   });
   
+  // Ensure component only renders on client side
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Handle tab parameter from URL
+  useEffect(() => {
+    if (isClient && searchParams) {
+      const tab = searchParams.get('tab');
+      if (tab === 'dropship') {
+        setActiveTab('dropship');
+      } else {
+        setActiveTab('create');
+      }
+    }
+  }, [isClient, searchParams]);
+
   // Debug form state
   useEffect(() => {
     console.log('=== FORM STATE DEBUG ===');
@@ -1915,6 +1935,15 @@ const CreateProductPage = () => {
     }
   }, []);
 
+  // Show loading state when not on client side
+  if (!isClient) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <LoaderWithMessage message={t("loading")} />
+      </div>
+    );
+  }
+
   // Show loading state when fetching product data for editing
   if (isEditMode && editProductQuery.isLoading) {
     return (
@@ -1956,18 +1985,47 @@ const CreateProductPage = () => {
           />
         </div>
         <div className="container relative z-10 m-auto mx-auto max-w-[950px] px-3">
-          <div className="flex flex-wrap">
-            <Form {...form}>
-              <form 
-                onSubmit={(e) => {
-                  console.log('=== FORM onSubmit EVENT TRIGGERED ===');
-                  console.log('Form event:', e);
-                  console.log('Form errors before submit:', form.formState.errors);
-                  console.log('Form isValid before submit:', form.formState.isValid);
-                  return form.handleSubmit(onSubmit)(e);
-                }} 
-                className="w-full"
+          {/* Tab Navigation for Product Creation */}
+          <div className="mb-6 flex justify-center">
+            <div className="flex rounded-lg border border-gray-300 bg-white p-1">
+              <button
+                type="button"
+                className={`px-6 py-3 rounded-md text-sm font-medium transition-colors ${
+                  activeTab === 'create'
+                    ? 'bg-blue-600 text-white shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
+                onClick={() => setActiveTab('create')}
               >
+                Create New Product
+              </button>
+              <button
+                type="button"
+                className={`px-6 py-3 rounded-md text-sm font-medium transition-colors ${
+                  activeTab === 'dropship'
+                    ? 'bg-blue-600 text-white shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                }`}
+                onClick={() => setActiveTab('dropship')}
+              >
+                Dropship Product
+              </button>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap">
+            {activeTab === 'create' ? (
+              <Form {...form}>
+                <form 
+                  onSubmit={(e) => {
+                    console.log('=== FORM onSubmit EVENT TRIGGERED ===');
+                    console.log('Form event:', e);
+                    console.log('Form errors before submit:', form.formState.errors);
+                    console.log('Form isValid before submit:', form.formState.isValid);
+                    return form.handleSubmit(onSubmit)(e);
+                  }} 
+                  className="w-full"
+                >
                 <BasicInformationSection
                   tagsList={memoizedTags}
                   activeProductType={activeProductType}
@@ -2026,6 +2084,9 @@ const CreateProductPage = () => {
                 </div>
               </form>
             </Form>
+            ) : (
+              <DropshipProductForm />
+            )}
           </div>
         </div>
       </section>

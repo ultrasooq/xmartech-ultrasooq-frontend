@@ -5,10 +5,12 @@ import {
   useExistingProduct,
   useAddMultiplePriceForProduct,
 } from "@/apis/queries/product.queries";
+import { useDropshipProducts, useDeleteDropshipProduct } from "@/apis/queries/dropship.queries";
 import { useCategory } from "@/apis/queries/category.queries";
 import { PRODUCT_CATEGORY_ID } from "@/utils/constants";
 import ManageProductCard from "@/components/modules/manageProducts/ManageProductCard";
 import ExistingProductCard from "@/components/modules/manageProducts/ExistingProductCard";
+import DropshipProductCard from "@/components/modules/manageProducts/DropshipProductCard";
 import ProductCard from "@/components/modules/trending/ProductCard";
 import Pagination from "@/components/shared/Pagination";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -25,6 +27,7 @@ import { debounce } from "lodash";
 import { getCookie } from "cookies-next";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import Image from "next/image";
 import LoaderPrimaryIcon from "@/public/images/load-primary.png";
 import SkeletonProductCardLoader from "@/components/shared/SkeletonProductCardLoader";
@@ -153,11 +156,15 @@ const ManageProductsPage = () => {
   const [page, setPage] = useState(1);
   
   // Tab state management
-  const [activeTab, setActiveTab] = useState<'my-products' | 'existing-products'>('my-products');
+  const [activeTab, setActiveTab] = useState<'my-products' | 'existing-products' | 'dropship-products'>('my-products');
   
   // Search and filter states
   const [searchTerm, setSearchTerm] = useState("");
   const [searchTermBrand, setSearchTermBrand] = useState("");
+  
+  // Dropship products state
+  const [dropshipPage, setDropshipPage] = useState(1);
+  const [dropshipStatus, setDropshipStatus] = useState<string>('');
   
   // Actual search terms used in queries (separate from input values)
   const [activeSearchTerm, setActiveSearchTerm] = useState("");
@@ -182,6 +189,10 @@ const ManageProductsPage = () => {
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
     // Don't clear selections when changing pages
+  };
+
+  const handleDropshipPageChange = (newPage: number) => {
+    setDropshipPage(newPage);
   };
 
   // Handle limit change
@@ -235,6 +246,38 @@ const ManageProductsPage = () => {
 
 
   const existingProductsQuery = useExistingProduct(existingProductsQueryParams);
+
+  // Dropship products query
+  const dropshipProductsQuery = useDropshipProducts(
+    {
+      page: dropshipPage,
+      limit: 12,
+      status: dropshipStatus || undefined,
+    },
+    activeTab === 'dropship-products'
+  );
+
+  // Dropship delete mutation
+  const deleteDropshipProductMutation = useDeleteDropshipProduct();
+
+  // Handle dropship product deletion
+  const handleDropshipProductDelete = async (productId: number) => {
+    try {
+      await deleteDropshipProductMutation.mutateAsync({ id: productId });
+      toast({
+        title: t("success"),
+        description: t("dropship_product_deleted_successfully"),
+        variant: "success",
+      });
+    } catch (error: any) {
+      console.error('Error deleting dropship product:', error);
+      toast({
+        title: t("error"),
+        description: error.message || t("failed_to_delete_dropship_product"),
+        variant: "destructive",
+      });
+    }
+  };
 
 
 
@@ -1007,6 +1050,16 @@ const ManageProductsPage = () => {
                   {t("my_products")}
                 </button>
                 <button
+                  onClick={() => setActiveTab('dropship-products')}
+                  className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                    activeTab === 'dropship-products'
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  {t("my_dropship_products")}
+                </button>
+                <button
                   onClick={() => setActiveTab('existing-products')}
                   className={`py-2 px-1 border-b-2 font-medium text-sm ${
                     activeTab === 'existing-products'
@@ -1485,7 +1538,7 @@ const ManageProductsPage = () => {
               </div>
             </form>
           </FormProvider>
-          ) : (
+          ) : activeTab === 'existing-products' ? (
             /* Existing Products Tab */
             <div className="flex flex-col lg:flex-row gap-6">
               {/* Filters - Left Side */}
@@ -1725,7 +1778,149 @@ const ManageProductsPage = () => {
                 </div>
               </div>
             </div>
-          )}
+          ) : activeTab === 'dropship-products' ? (
+            /* Dropship Products Tab */
+            <div className="flex flex-col lg:flex-row gap-6">
+              {/* Filters - Left Side */}
+              <div className="lg:w-1/4">
+                <div className="bg-white rounded-lg shadow-xs p-6">
+                  <h3 className="text-lg font-semibold mb-4">{t("filters")}</h3>
+                  
+                  {/* Status Filter */}
+                  <div className="mb-4">
+                    <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                      {t("status")}
+                    </Label>
+                    <select
+                      value={dropshipStatus}
+                      onChange={(e) => setDropshipStatus(e.target.value)}
+                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                      <option value="">{t("all_statuses")}</option>
+                      <option value="ACTIVE">{t("active")}</option>
+                      <option value="INACTIVE">{t("inactive")}</option>
+                    </select>
+                  </div>
+
+                  {/* Stats */}
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h4 className="font-medium text-gray-700 mb-2">{t("dropship_stats")}</h4>
+                    <div className="space-y-1 text-sm text-gray-600">
+                      <div className="flex justify-between">
+                        <span>{t("total_products")}:</span>
+                        <span className="font-medium">{dropshipProductsQuery.data?.totalCount || 0}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>{t("active_products")}:</span>
+                        <span className="font-medium text-green-600">
+                          {dropshipProductsQuery.data?.data?.filter((p: any) => p.status === 'ACTIVE').length || 0}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Products Grid - Right Side */}
+              <div className="lg:w-3/4">
+                <div className="bg-white rounded-lg shadow-xs p-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-lg font-semibold">{t("dropship_products")}</h3>
+                    <Button
+                      onClick={() => router.push('/product?tab=dropship')}
+                      className="flex items-center gap-2"
+                    >
+                      <IoMdAdd className="h-4 w-4" />
+                      {t("create_dropship_product")}
+                    </Button>
+                  </div>
+
+                  {/* Products List */}
+                  {dropshipProductsQuery.isLoading ? (
+                    <div className="space-y-4">
+                      {Array.from({ length: 6 }).map((_, index) => (
+                        <SkeletonProductCardLoader key={index} />
+                      ))}
+                    </div>
+                  ) : dropshipProductsQuery.data?.data?.length > 0 ? (
+                    <div className="space-y-4">
+                      {dropshipProductsQuery.data.data.map((product: any) => (
+                        <DropshipProductCard
+                          key={product.id}
+                          id={product.id}
+                          productId={product.id}
+                          status={product.status}
+                          productImage={
+                            product.productImages?.find(img => 
+                              img.variant?.type === 'marketing'
+                            )?.image || product.productImages?.[0]?.image
+                          }
+                          productImages={product.productImages}
+                          productName={product.productName}
+                          productPrice={product.productPrice}
+                          offerPrice={product.offerPrice}
+                          deliveryAfter={product.originalProduct?.product_productPrice?.[0]?.deliveryAfter || product.productPrices?.[0]?.deliveryAfter || 1}
+                          stock={product.originalProduct?.product_productPrice?.[0]?.stock || product.productPrices?.[0]?.stock || 0}
+                          consumerType={product.productPrices?.[0]?.consumerType || 'EVERYONE'}
+                          sellType={product.productPrices?.[0]?.sellType || 'NORMALSELL'}
+                          timeOpen={product.productPrices?.[0]?.timeOpen}
+                          timeClose={product.productPrices?.[0]?.timeClose}
+                          vendorDiscount={product.productPrices?.[0]?.vendorDiscount}
+                          vendorDiscountType={product.productPrices?.[0]?.vendorDiscountType}
+                          consumerDiscount={product.productPrices?.[0]?.consumerDiscount}
+                          consumerDiscountType={product.productPrices?.[0]?.consumerDiscountType}
+                          minQuantity={product.productPrices?.[0]?.minQuantity}
+                          maxQuantity={product.productPrices?.[0]?.maxQuantity}
+                          minCustomer={product.productPrices?.[0]?.minCustomer}
+                          maxCustomer={product.productPrices?.[0]?.maxCustomer}
+                          minQuantityPerCustomer={product.productPrices?.[0]?.minQuantityPerCustomer}
+                          maxQuantityPerCustomer={product.productPrices?.[0]?.maxQuantityPerCustomer}
+                          productCondition={product.productCondition}
+                          onRemove={handleDropshipProductDelete}
+                          originalProduct={product.originalProduct}
+                          dropshipMarkup={product.dropshipMarkup}
+                          customMarketingContent={product.customMarketingContent}
+                          additionalMarketingImages={product.additionalMarketingImages}
+                          isDropshipped={product.isDropshipped}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12">
+                      <div className="text-gray-400 mb-4">
+                        <Store className="h-16 w-16 mx-auto" />
+                      </div>
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">
+                        {t("no_dropship_products")}
+                      </h3>
+                      <p className="text-gray-500 mb-6">
+                        {t("no_dropship_products_description")}
+                      </p>
+                      <Button
+                        onClick={() => router.push('/product?tab=dropship')}
+                        className="flex items-center gap-2"
+                      >
+                        <IoMdAdd className="h-4 w-4" />
+                        {t("create_first_dropship_product")}
+                      </Button>
+                    </div>
+                  )}
+
+                  {/* Pagination */}
+                  {dropshipProductsQuery.data?.totalCount > 12 && (
+                    <div className="mt-8">
+                      <Pagination
+                        page={dropshipPage}
+                        setPage={handleDropshipPageChange}
+                        totalCount={dropshipProductsQuery.data?.totalCount}
+                        limit={12}
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          ) : null}
         </div>
       </div>
 

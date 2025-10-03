@@ -522,3 +522,18 @@ export const USER_STATUS_CONFIG = {
 
 // Default status for new sub-accounts
 export const DEFAULT_SUB_ACCOUNT_STATUS = "WAITING";
+
+// Product Types
+export const PRODUCT_TYPES = {
+  NORMAL: "P",
+  RFQ: "R", 
+  FACTORY: "F",
+  DROPSHIP: "D"
+} as const;
+
+export const PRODUCT_TYPE_LABELS = {
+  P: "Normal Product",
+  R: "RFQ Product", 
+  F: "Factory Product",
+  D: "Dropship Product"
+} as const;

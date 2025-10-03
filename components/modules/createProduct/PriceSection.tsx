@@ -273,15 +273,19 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
           setValue("productLatLng", latLng); // ✅ Update form state
         },
         (error) => {
-          console.error("Error fetching location:", error);
-          let ipInfo = JSON.parse(
-            window.localStorage.getItem("ipInfo") || "{}",
-          );
-          if (ipInfo.latitude && ipInfo.longitude) {
-            setValue(
-              "productLatLng",
-              `${ipInfo.latitude}, ${ipInfo.longitude}`,
+          // Silently handle geolocation errors
+          try {
+            let ipInfo = JSON.parse(
+              window.localStorage.getItem("ipInfo") || "{}",
             );
+            if (ipInfo.latitude && ipInfo.longitude) {
+              setValue(
+                "productLatLng",
+                `${ipInfo.latitude}, ${ipInfo.longitude}`,
+              );
+            }
+          } catch (parseError) {
+            // Silently handle JSON parse errors
           }
         },
       );

@@ -556,3 +556,96 @@ export const getProductsByService = (
     },
   });
 };
+
+// Dropshipping API requests
+export const createDropshipProduct = (payload: {
+  originalProductId: number;
+  customProductName: string;
+  customDescription: string;
+  marketingText?: string;
+  additionalImages?: string[];
+  markup: number;
+}) => {
+  return axios({
+    method: "POST",
+    url: `${getApiUrl()}/product/dropship`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+export const getAvailableProductsForDropship = (payload: {
+  page: number;
+  limit: number;
+  term?: string;
+  categoryId?: number;
+  priceMin?: number;
+  priceMax?: number;
+}) => {
+  return axios({
+    method: "GET",
+    url: urlcat(`${getApiUrl()}/product/available-for-dropship`, payload),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+export const getDropshipProducts = (payload: {
+  page: number;
+  limit: number;
+  status?: string;
+}) => {
+  return axios({
+    method: "GET",
+    url: urlcat(`${getApiUrl()}/product/dropship-products`, payload),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+export const getDropshipEarnings = () => {
+  return axios({
+    method: "GET",
+    url: `${getApiUrl()}/product/dropship-earnings`,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+export const updateDropshipProductStatus = (id: number, status: string) => {
+  return axios({
+    method: "PATCH",
+    url: `${getApiUrl()}/product/dropship/${id}/status`,
+    data: { status },
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+export const deleteDropshipProduct = (id: number) => {
+  return axios({
+    method: "DELETE",
+    url: `${getApiUrl()}/product/dropship/${id}`,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
