@@ -16,6 +16,7 @@ import { useCreatePaymentIntent } from "@/apis/queries/orders.queries";
 import { useToast } from "@/components/ui/use-toast";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import { useWalletBalance } from "@/apis/queries/wallet.queries";
 
 type PaymentFormProps = {
   onCreateOrder: (paymentType: string, paymentIntent: string) => void;
@@ -36,11 +37,12 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
   clearCardElement
 }) => {
   const t = useTranslations();
-  const { langDir, currency } = useAuth();
+  const { langDir, currency, user } = useAuth();
   const { toast } = useToast();
   const stripe = useStripe();
   const elements = useElements();
   const createIntent = useCreatePaymentIntent();
+  const { data: walletData } = useWalletBalance(!!user);
   const [name, setName] = useState("");
   const [clientSecret, setClientSecret] = useState(""); // State to store response data 
   // const [paymentIntentId, setPaymentIntentId] = useState(null); // State to store response data 
@@ -132,6 +134,23 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
     alert('hi');
   }
 
+  // Handle wallet payment
+  const handleWalletPayment = () => {
+    const totalAmount = calculateTotalAmount();
+    const walletBalance = walletData?.data?.balance || 0;
+    
+    if (walletBalance < totalAmount) {
+      toast({
+        title: t("insufficient_balance"),
+        description: t("amount_exceeds_wallet_balance"),
+        variant: "danger",
+      });
+      return;
+    }
+    
+    onCreateOrder('WALLET', '');
+  }
+
 
   return (
     <div className="cart-page-left">
@@ -169,6 +188,58 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
               </div>
             </AccordionItemPanel>
           </AccordionItem>
+
+          {user && walletData?.data && (
+            <AccordionItem>
+              <AccordionItemHeading>
+                <AccordionItemButton dir={langDir} translate="no">
+                  {t("pay_with_wallet")} ({currency.symbol}{walletData.data.balance ? Number(walletData.data.balance).toFixed(2) : "0.00"})
+                </AccordionItemButton>
+              </AccordionItemHeading>
+              <AccordionItemPanel>
+                <div className="w-full bg-white">
+                  <div className="bodyPart">
+                    <div className="card-item card-payment-form px-5 pb-5 pt-3">
+                      <div className="flex flex-wrap">
+                        <div className="mb-4 w-full space-y-2">
+                          <p>
+                            {t("pay_with_wallet_description")}
+                          </p>
+                          <div className="wallet_balance_info">
+                            <div className="balance_item">
+                              <span className="balance_label">{t("wallet_balance")}:</span>
+                              <span className="balance_value">{currency.symbol}{walletData.data.balance ? Number(walletData.data.balance).toFixed(2) : "0.00"}</span>
+                            </div>
+                            <div className="balance_item">
+                              <span className="balance_label">{t("order_total")}:</span>
+                              <span className="balance_value">{currency.symbol}{Number(calculateTotalAmount()).toFixed(2)}</span>
+                            </div>
+                            <div className="balance_item">
+                              <span className="balance_label">{t("remaining_after_payment")}:</span>
+                              <span className={`balance_value ${(Number(walletData.data.balance || 0) - Number(calculateTotalAmount())) < 0 ? 'insufficient' : 'sufficient'}`}>
+                                {currency.symbol}{(Number(walletData.data.balance || 0) - Number(calculateTotalAmount())).toFixed(2)}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="order-action-btn half_button">
+                        <Button
+                          onClick={handleWalletPayment}
+                          disabled={isLoading || (walletData.data.balance || 0) < calculateTotalAmount()}
+                          className="theme-primary-btn order-btn"
+                          dir={langDir}
+                          translate="no"
+                        >
+                          {isLoading ? t("processing") : t("pay_with_wallet")}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </AccordionItemPanel>
+            </AccordionItem>
+          )}
 
           <AccordionItem>
             <AccordionItemHeading onClick={() => handleCardPayment('direct')}>

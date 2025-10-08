@@ -25,7 +25,8 @@ import {
   ShoppingBagIcon,
   FileSearchIcon,
   BarChart3Icon,
-  UserCheckIcon
+  UserCheckIcon,
+  WalletIcon
 } from "lucide-react";
 import { getCookie } from "cookies-next";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
@@ -213,6 +214,14 @@ const Sidebar: React.FC<SidebarProps> = ({ notificationCount }) => {
           } else {
             router.push("/profile");
           }
+        }
+      },
+      {
+        icon: <WalletIcon className="h-4 w-4 text-gray-600" />,
+        label: "My Wallet",
+        onClick: () => {
+          closeSidebar();
+          router.push("/wallet");
         }
       },
       {

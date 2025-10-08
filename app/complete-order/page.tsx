@@ -26,6 +26,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
+import { useWalletBalance } from "@/apis/queries/wallet.queries";
 
 // Load Stripe with your public key
 const stripePromise = loadStripe(
@@ -34,12 +35,13 @@ const stripePromise = loadStripe(
 
 const CompleteOrderPage = () => {
   const t = useTranslations();
-  const { langDir, currency } = useAuth();
+  const { langDir, currency, user } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const hasAccessToken = !!getCookie(PUREMOON_TOKEN_KEY);
   const deviceId = getOrCreateDeviceId() || "";
   const orderStore = useOrderStore();
+  const { data: walletData } = useWalletBalance(!!user);
 
   const createOrder = useCreateOrder();
   const createOrderUnAuth = useCreateOrderUnAuth();
@@ -119,6 +121,18 @@ const CompleteOrderPage = () => {
           }
         }
 
+        if (paymentType == "WALLET") {
+          const walletBalance = walletData?.data?.balance || 0;
+          if (walletBalance < orderStore.total) {
+            toast({
+              title: t("insufficient_balance"),
+              description: t("amount_exceeds_wallet_balance"),
+              variant: "danger",
+            });
+            return;
+          }
+        }
+
         let data: {[key: string]: any} = orderStore.orders;
         data.paymentType = paymentType;
         if (paymentType == "ADVANCE") {
@@ -128,6 +142,8 @@ const CompleteOrderPage = () => {
           // data.emiInstallmentCount = emiPeriod;
           // data.emiInstallmentAmount = emiAmount;
           // data.emiInstallmentAmountCents = emiAmount * 1000;
+        } else if (paymentType == "WALLET") {
+          data.paymentMethod = "WALLET";
         }
 
         const response = await createOrder.mutateAsync(orderStore.orders);
@@ -136,6 +152,16 @@ const CompleteOrderPage = () => {
             await handleCreatePaymentLink(response?.data?.id);
           } else if (paymentType == "EMI") {
             // await handleCreateEmiPayment(response?.data?.id);
+          } else if (paymentType == "WALLET") {
+            // Wallet payment is handled by the backend
+            toast({
+              title: t("order_placed_successfully"),
+              description: t("payment_processed_from_wallet"),
+              variant: "success",
+            });
+            orderStore.resetOrders();
+            orderStore.setTotal(0);
+            router.push("/orders");
           } else {
             await handleCreatePaymentIntent(response?.data?.id);
           }
@@ -298,6 +324,42 @@ const CompleteOrderPage = () => {
                 />
               </div>
             ) : null}
+            {user && walletData?.data && (
+              <div className="mt-3 flex items-center justify-start gap-2 sm:grid">
+                <Label translate="no">{t("pay_with_wallet")} ({currency.symbol}{walletData.data.balance ? Number(walletData.data.balance).toFixed(2) : "0.00"})</Label>
+                <Switch
+                  checked={paymentType == "WALLET"}
+                  onCheckedChange={(checked) => {
+                    if (checked) {
+                      setPaymentType("WALLET");
+                      setAdvanceAmount(0);
+                    }
+                  }}
+                  className="m-0 data-[state=checked]:bg-dark-orange!"
+                />
+                {paymentType == "WALLET" && (
+                  <div className="mt-2 w-full">
+                    <div className="wallet_payment_info p-3 bg-gray-50 rounded-lg">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-sm text-gray-600">{t("wallet_balance")}:</span>
+                        <span className="font-semibold">{currency.symbol}{walletData.data.balance ? Number(walletData.data.balance).toFixed(2) : "0.00"}</span>
+                      </div>
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-sm text-gray-600">{t("order_total")}:</span>
+                        <span className="font-semibold">{currency.symbol}{orderStore.total || 0}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-600">{t("remaining_after_payment")}:</span>
+                        <span className={`font-semibold ${(Number(walletData.data.balance || 0) - Number(orderStore.total || 0)) < 0 ? 'text-red-600' : 'text-green-600'}`}>
+                          {currency.symbol}{(Number(walletData.data.balance || 0) - Number(orderStore.total || 0)).toFixed(2)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             <div className="mt-3 flex items-center justify-start gap-2 sm:grid">
               <Label translate="no">{t("pay_it_for_me")}</Label>
               <Switch
@@ -387,6 +449,15 @@ const CompleteOrderPage = () => {
                       </li>
                     </>
                   ) : null}
+                  {paymentType == "WALLET" && walletData?.data && (
+                    <li>
+                      <p dir={langDir} translate="no">{t("wallet_balance")}</p>
+                      <h5>
+                        {currency.symbol}
+                        {walletData.data.balance ? Number(walletData.data.balance).toFixed(2) : "0.00"}
+                      </h5>
+                    </li>
+                  )}
                 </ul>
               </div>
               <div className="priceDetails-footer">
@@ -407,6 +478,15 @@ const CompleteOrderPage = () => {
                     </h4>
                   </>
                 ) : null}
+                {paymentType == "WALLET" && walletData?.data && (
+                  <>
+                    <h4 translate="no">{t("remaining_after_payment")}</h4>
+                    <h4 className={`amount-value ${(Number(walletData.data.balance || 0) - Number(orderStore.total || 0)) < 0 ? 'text-red-600' : 'text-green-600'}`}>
+                      {currency.symbol}
+                      {(Number(walletData.data.balance || 0) - Number(orderStore.total || 0)).toFixed(2)}
+                    </h4>
+                  </>
+                )}
                 {paymentType == "EMI" ? (
                   <>
                     <h4 translate="no">{t("emi_amount")}</h4>
@@ -436,6 +516,8 @@ const CompleteOrderPage = () => {
                   createEMIPayment?.isPending || 
                   isRedirectingToPaymob ? (
                   <LoaderWithMessage message={t("initiating_payment")} />
+                ) : paymentType == "WALLET" ? (
+                  t("pay_with_wallet")
                 ) : (
                   t("place_order")
                 )}
