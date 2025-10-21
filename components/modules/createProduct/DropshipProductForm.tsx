@@ -20,8 +20,8 @@ import ImageUploader from "./ImageUploader";
 const dropshipFormSchema = (t: any) => {
   return z.object({
     originalProductId: z.number().min(1, t("please_select_a_product")),
-    customProductName: z.string().min(2, t("product_name_is_required")),
-    customDescription: z.string().min(10, t("description_is_required")),
+    customProductName: z.string().min(1, t("product_name_is_required")),
+    customDescription: z.string().min(1, t("description_is_required")),
     markup: z.coerce.number().min(0, t("markup_must_be_positive")),
     additionalImages: z.array(z.string()).optional(),
     marketingText: z.string().optional(),
@@ -121,7 +121,11 @@ const DropshipProductForm: React.FC<DropshipProductFormProps> = () => {
 
   const onSubmit = async (data: any) => {
     try {
+      console.log('=== DROPSHIP FORM SUBMIT TRIGGERED ===');
       console.log('Dropship form data:', data);
+      console.log('Form validation errors:', form.formState.errors);
+      console.log('selectedOriginalProduct:', selectedOriginalProduct);
+      console.log('markup:', markup);
       
       // Validate payload size
       const payload = {
@@ -187,16 +191,26 @@ const DropshipProductForm: React.FC<DropshipProductFormProps> = () => {
   };
 
   const handleProductSelect = (product: any) => {
+    console.log('=== PRODUCT SELECTED ===');
+    console.log('Selected product:', product);
+    
     setSelectedOriginalProduct(product);
     const plainDescription = extractPlainText(product.description);
+    
+    console.log('Plain description:', plainDescription);
+    
     setCustomContent(prev => ({
       ...prev,
       productName: product.productName,
       description: plainDescription
     }));
+    
+    // Set form values
     form.setValue('originalProductId', product.id);
     form.setValue('customProductName', product.productName);
     form.setValue('customDescription', plainDescription);
+    
+    console.log('Form values after setting:', form.getValues());
   };
 
   const handleMarkupChange = (newMarkup: number) => {
@@ -267,8 +281,7 @@ const DropshipProductForm: React.FC<DropshipProductFormProps> = () => {
                 <Input
                   id="customProductName"
                   placeholder={t("add_your_marketing_text_to_product_name")}
-                  value={customContent.productName}
-                  onChange={(e) => handleCustomContentChange('productName', e.target.value)}
+                  {...form.register("customProductName")}
                   className="mt-1"
                 />
                 <p className="mt-1 text-xs text-gray-500">
@@ -284,8 +297,7 @@ const DropshipProductForm: React.FC<DropshipProductFormProps> = () => {
                 <Textarea
                   id="customDescription"
                   placeholder={t("write_your_own_compelling_description")}
-                  value={customContent.description}
-                  onChange={(e) => handleCustomContentChange('description', e.target.value)}
+                  {...form.register("customDescription")}
                   rows={6}
                   className="mt-1"
                 />
@@ -299,8 +311,7 @@ const DropshipProductForm: React.FC<DropshipProductFormProps> = () => {
                 <Textarea
                   id="marketingText"
                   placeholder={t("add_special_offers_guarantees_or_marketing_messages")}
-                  value={customContent.marketingText}
-                  onChange={(e) => handleCustomContentChange('marketingText', e.target.value)}
+                  {...form.register("marketingText")}
                   rows={3}
                   className="mt-1"
                 />
@@ -353,9 +364,33 @@ const DropshipProductForm: React.FC<DropshipProductFormProps> = () => {
             <Button 
               type="submit" 
               className="px-8 py-3"
-              disabled={!selectedOriginalProduct}
+              disabled={!selectedOriginalProduct || createDropshipProduct.isPending}
+              onClick={(e) => {
+                e.preventDefault();
+                console.log('=== DROPSHIP FORM SUBMIT CLICKED ===');
+                console.log('selectedOriginalProduct:', selectedOriginalProduct);
+                console.log('form values:', form.getValues());
+                console.log('form errors:', form.formState.errors);
+                console.log('form isValid:', form.formState.isValid);
+                
+                // Manually trigger form submission
+                form.handleSubmit(
+                  (data) => {
+                    console.log('Form validation passed, submitting:', data);
+                    onSubmit(data);
+                  },
+                  (errors) => {
+                    console.log('Form validation failed:', errors);
+                    toast({
+                      title: t("validation_error"),
+                      description: t("please_fill_all_required_fields"),
+                      variant: "destructive",
+                    });
+                  }
+                )();
+              }}
             >
-              {t("create_dropship_product")}
+              {createDropshipProduct.isPending ? t("creating") : t("create_dropship_product")}
             </Button>
           </div>
         </form>

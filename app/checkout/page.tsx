@@ -891,328 +891,462 @@ const CheckoutPage = () => {
   }, [accessToken]);
 
   return (
-    <div className="cart-page">
-      <div className="container m-auto px-3">
-        <div className="cart-page-wrapper">
-          <div className="cart-page-left">
-            <div className="bodyPart">
-              <div className="card-item cart-items">
-                <div className="card-inner-headerPart" dir={langDir}>
-                  <div className="lediv">
-                    <h3 translate="no">{t("cart_items")}</h3>
-                  </div>
-                </div>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 lg:px-8 py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2" dir={langDir} translate="no">
+            {t("checkout")}
+          </h1>
+          <p className="text-gray-600" dir={langDir} translate="no">
+            Review your order and complete your purchase
+          </p>
+        </div>
 
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left Column - Order Details */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Cart Items Section */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+              <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                <h2 className="text-xl font-semibold text-gray-900" dir={langDir} translate="no">
+                  {t("order_summary")}
+                </h2>
+              </div>
+
+              <div className="p-6">
                 {memoizedCartList.filter((item: any) => item.productId).length > 0 ? (
-                  <div className="card-inner-headerPart mt-5" dir={langDir}>
-                    <div className="lediv">
-                      <h3 translate="no">{t("products")}</h3>
-                    </div>
-                  </div>
-                ) : null}
-
-                {sellerIds.map((sellerId: number, index: number) => {
-                  return (
-                    <div className="cart-item-lists" key={sellerId}>
-                      {memoizedCartList
-                        ?.filter(
-                          (item: CartItem) =>
-                            item.productPriceDetails && item.productPriceDetails.adminId == sellerId,
-                        )
-                        ?.map((item: CartItem) => (
-                          <ProductCard
-                            key={item.id}
-                            cartId={item.id}
-                            productId={item.productId}
-                            productPriceId={item.productPriceId}
-                            productName={
-                              item.productPriceDetails?.productPrice_product
-                                ?.productName
-                            }
-                            offerPrice={item.productPriceDetails?.offerPrice}
-                            productQuantity={item.quantity}
-                            productVariant={item.object}
-                            productImages={
-                              item.productPriceDetails?.productPrice_product
-                                ?.productImages
-                            }
-                            consumerDiscount={
-                              item.productPriceDetails?.consumerDiscount || 0
-                            }
-                            consumerDiscountType={
-                              item.productPriceDetails?.consumerDiscountType
-                            }
-                            vendorDiscount={
-                              item.productPriceDetails?.vendorDiscount || 0
-                            }
-                            vendorDiscountType={
-                              item.productPriceDetails?.vendorDiscountType
-                            }
-                            onAdd={handleAddToCart}
-                            onRemove={(cartId: number) => {
-                              setIsConfirmDialogOpen(true);
-                              setSelectedCartId(cartId);
-                            }}
-                            onWishlist={handleAddToWishlist}
-                            haveAccessToken={haveAccessToken}
-                            invalidProduct={invalidProducts.includes(
-                              item.productId,
-                            )}
-                            cannotBuy={notAvailableProducts.includes(
-                              item.productId,
-                            )}
-                          />
-                        )) || []}
-                      <div className="cart-item-list-col" dir={langDir}>
-                        <div className="w-full gap-2 sm:grid sm:grid-cols-3">
-                          <Select
-                            // @ts-ignore
-                            className="mb-2"
-                            options={shippingOptions()}
-                            value={shippingOptions().find(
-                              (option) =>
-                                shippingInfo[index].shippingType ==
-                                option.value,
-                            )}
-                            onChange={(newValue: any) => {
-                              let data = shippingInfo;
-                              data[index].shippingType = newValue?.value;
-                              data[index].info.serviceId = null;
-                              data[index].info.serviceName = null;
-                              data[index].info.shippingCharge = 0;
-                              setShippingInfo([...data]);
-                            }}
-                          />
-
-                          {["SELLERDROP", "PLATFORM"].includes(
-                            shippingInfo[index].shippingType,
-                          ) ? (
-                            <Button
-                              onClick={() => {
-                                setSelectedSellerId(sellerId);
-                                setSelectedShippingType(
-                                  shippingInfo[index].shippingType,
-                                );
-                                const item = memoizedCartList?.find(
+                  <div className="mb-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4" dir={langDir} translate="no">
+                      {t("products")}
+                    </h3>
+                    
+                    <div className="space-y-4">
+                      {sellerIds.map((sellerId: number, index: number) => {
+                        return (
+                          <div key={sellerId} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                            <div className="space-y-4">
+                              {memoizedCartList
+                                ?.filter(
                                   (item: CartItem) =>
-                                    item.productPriceDetails.adminId ==
-                                    sellerId,
-                                );
-                                if (item) {
-                                  setFromCityId(
-                                    item.productPriceDetails?.productCityId,
-                                  );
-                                }
-                                const address = memoziedAddressList.find(
-                                  (item: any) =>
-                                    item.id == selectedShippingAddressId,
-                                );
-                                if (address) {
-                                  setToCityId(address.cityId);
-                                }
-                                setIsShippingModalOpen(true);
-                              }}
-                              variant="destructive"
-                              translate="no"
-                            >
-                              {t("select")}
-                            </Button>
-                          ) : null}
+                                    item.productPriceDetails && item.productPriceDetails.adminId == sellerId,
+                                )
+                                ?.map((item: CartItem) => (
+                                  <ProductCard
+                                    key={item.id}
+                                    cartId={item.id}
+                                    productId={item.productId}
+                                    productPriceId={item.productPriceId}
+                                    productName={
+                                      item.productPriceDetails?.productPrice_product
+                                        ?.productName
+                                    }
+                                    offerPrice={item.productPriceDetails?.offerPrice}
+                                    productQuantity={item.quantity}
+                                    productVariant={item.object}
+                                    productImages={
+                                      item.productPriceDetails?.productPrice_product
+                                        ?.productImages
+                                    }
+                                    consumerDiscount={
+                                      item.productPriceDetails?.consumerDiscount || 0
+                                    }
+                                    consumerDiscountType={
+                                      item.productPriceDetails?.consumerDiscountType
+                                    }
+                                    vendorDiscount={
+                                      item.productPriceDetails?.vendorDiscount || 0
+                                    }
+                                    vendorDiscountType={
+                                      item.productPriceDetails?.vendorDiscountType
+                                    }
+                                    onAdd={handleAddToCart}
+                                    onRemove={(cartId: number) => {
+                                      setIsConfirmDialogOpen(true);
+                                      setSelectedCartId(cartId);
+                                    }}
+                                    onWishlist={handleAddToWishlist}
+                                    haveAccessToken={haveAccessToken}
+                                    invalidProduct={invalidProducts.includes(
+                                      item.productId,
+                                    )}
+                                    cannotBuy={notAvailableProducts.includes(
+                                      item.productId,
+                                    )}
+                                  />
+                                )) || []}
+                              
+                              {/* Shipping Options */}
+                              <div className="mt-4 p-4 bg-white rounded-lg border border-gray-200">
+                                <h4 className="text-sm font-semibold text-gray-700 mb-3" dir={langDir} translate="no">
+                                  Shipping Options
+                                </h4>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                  <div>
+                                    <Label className="text-sm font-medium text-gray-600">Shipping Method</Label>
+                                    <Select
+                                      className="mt-1"
+                                      options={shippingOptions()}
+                                      value={shippingOptions().find(
+                                        (option) =>
+                                          shippingInfo[index].shippingType ==
+                                          option.value,
+                                      )}
+                                      onChange={(newValue: any) => {
+                                        let data = shippingInfo;
+                                        data[index].shippingType = newValue?.value;
+                                        data[index].info.serviceId = null;
+                                        data[index].info.serviceName = null;
+                                        data[index].info.shippingCharge = 0;
+                                        setShippingInfo([...data]);
+                                      }}
+                                    />
+                                  </div>
 
-                          {["SELLERDROP", "PLATFORM"].includes(
-                            shippingInfo[index].shippingType,
-                          ) ? (
-                            <>
-                              {shippingInfo[index]?.info?.serviceId ? (
-                                <div className="mt-2">
-                                  {shippingInfo[index].info.serviceName}
+                                  {["SELLERDROP", "PLATFORM"].includes(
+                                    shippingInfo[index].shippingType,
+                                  ) && (
+                                    <>
+                                      <div className="flex items-end">
+                                        <Button
+                                          onClick={() => {
+                                            setSelectedSellerId(sellerId);
+                                            setSelectedShippingType(
+                                              shippingInfo[index].shippingType,
+                                            );
+                                            const item = memoizedCartList?.find(
+                                              (item: CartItem) =>
+                                                item.productPriceDetails.adminId ==
+                                                sellerId,
+                                            );
+                                            if (item) {
+                                              setFromCityId(
+                                                item.productPriceDetails?.productCityId,
+                                              );
+                                            }
+                                            const address = memoziedAddressList.find(
+                                              (item: any) =>
+                                                item.id == selectedShippingAddressId,
+                                            );
+                                            if (address) {
+                                              setToCityId(address.cityId);
+                                            }
+                                            setIsShippingModalOpen(true);
+                                          }}
+                                          variant="outline"
+                                          size="sm"
+                                          translate="no"
+                                        >
+                                          {t("select_service")}
+                                        </Button>
+                                      </div>
+
+                                      <div>
+                                        {shippingInfo[index]?.info?.serviceId ? (
+                                          <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                                            <p className="text-sm font-medium text-green-800">
+                                              {shippingInfo[index].info.serviceName}
+                                            </p>
+                                          </div>
+                                        ) : (
+                                          <span className="text-sm text-red-500">
+                                            {shippingErrors?.[index]?.errors?.serviceId ||
+                                              "Please select a shipping service"}
+                                          </span>
+                                        )}
+                                      </div>
+                                    </>
+                                  )}
                                 </div>
-                              ) : (
-                                <span className="block w-full text-red-500">
-                                  {shippingErrors?.[index]?.errors?.serviceId ||
-                                    ""}
-                                </span>
-                              )}
-                            </>
-                          ) : null}
-                        </div>
-                      </div>
-                      <div></div>
-                      {shippingInfo[index].shippingType == "PICKUP" ? (
-                        <>
-                          <div className="cart-item-list-col" dir={langDir}>
-                            <div className="w-full gap-2 sm:grid sm:grid-cols-3">
-                              <div>
-                                <Label>Shipping Date</Label>
-                                <Input
-                                  type="date"
-                                  value={
-                                    shippingInfo[index].info?.shippingDate || ""
-                                  }
-                                  onChange={(e) => {
-                                    let data = shippingInfo;
-                                    data[index].info.shippingDate =
-                                      e.target.value;
-                                    setShippingInfo([...data]);
-                                  }}
-                                />
-                                <span className="text-xs text-red-500">
-                                  {shippingErrors?.[index]?.errors
-                                    ?.shippingDate || ""}
-                                </span>
-                              </div>
-                              <div>
-                                <Label>From Time</Label>
-                                <Input
-                                  type="time"
-                                  value={
-                                    shippingInfo[index].info?.fromTime || ""
-                                  }
-                                  onChange={(e) => {
-                                    let data = shippingInfo;
-                                    data[index].info.fromTime = e.target.value;
-                                    setShippingInfo([...data]);
-                                  }}
-                                />
-                                <span className="text-xs text-red-500">
-                                  {shippingErrors?.[index]?.errors?.fromTime ||
-                                    ""}
-                                </span>
-                              </div>
-                              <div>
-                                <Label>To Time</Label>
-                                <Input
-                                  type="time"
-                                  value={shippingInfo[index].info?.toTime || ""}
-                                  onChange={(e) => {
-                                    let data = shippingInfo;
-                                    data[index].info.toTime = e.target.value;
-                                    setShippingInfo([...data]);
-                                  }}
-                                />
-                                <span className="text-xs text-red-500">
-                                  {shippingErrors?.[index]?.errors?.toTime ||
-                                    ""}
-                                </span>
+
+                                {/* Pickup Details */}
+                                {shippingInfo[index].shippingType == "PICKUP" && (
+                                  <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div>
+                                      <Label className="text-sm font-medium text-gray-600">Pickup Date</Label>
+                                      <Input
+                                        type="date"
+                                        className="mt-1"
+                                        value={
+                                          shippingInfo[index].info?.shippingDate || ""
+                                        }
+                                        onChange={(e) => {
+                                          let data = shippingInfo;
+                                          data[index].info.shippingDate =
+                                            e.target.value;
+                                          setShippingInfo([...data]);
+                                        }}
+                                      />
+                                      <span className="text-xs text-red-500">
+                                        {shippingErrors?.[index]?.errors
+                                          ?.shippingDate || ""}
+                                      </span>
+                                    </div>
+                                    <div>
+                                      <Label className="text-sm font-medium text-gray-600">From Time</Label>
+                                      <Input
+                                        type="time"
+                                        className="mt-1"
+                                        value={
+                                          shippingInfo[index].info?.fromTime || ""
+                                        }
+                                        onChange={(e) => {
+                                          let data = shippingInfo;
+                                          data[index].info.fromTime = e.target.value;
+                                          setShippingInfo([...data]);
+                                        }}
+                                      />
+                                      <span className="text-xs text-red-500">
+                                        {shippingErrors?.[index]?.errors?.fromTime ||
+                                          ""}
+                                      </span>
+                                    </div>
+                                    <div>
+                                      <Label className="text-sm font-medium text-gray-600">To Time</Label>
+                                      <Input
+                                        type="time"
+                                        className="mt-1"
+                                        value={shippingInfo[index].info?.toTime || ""}
+                                        onChange={(e) => {
+                                          let data = shippingInfo;
+                                          data[index].info.toTime = e.target.value;
+                                          setShippingInfo([...data]);
+                                        }}
+                                      />
+                                      <span className="text-xs text-red-500">
+                                        {shippingErrors?.[index]?.errors?.toTime ||
+                                          ""}
+                                      </span>
+                                    </div>
+                                  </div>
+                                )}
                               </div>
                             </div>
                           </div>
-                          <div></div>
-                        </>
-                      ) : null}
-                    </div>
-                  );
-                })}
-
-                {memoizedCartList.filter((item: any) => item.serviceId).length > 0 ? (
-                  <div className="card-inner-headerPart mt-5" dir={langDir}>
-                    <div className="lediv">
-                      <h3 translate="no">{t("services")}</h3>
+                        );
+                      })}
                     </div>
                   </div>
                 ) : null}
 
-                <div className="cart-item-lists">
-                  {memoizedCartList.filter((item: any) => item.serviceId).map((item: any) => {
-                    if (!item.cartServiceFeatures?.length) return null;
+                {memoizedCartList.filter((item: any) => item.serviceId).length > 0 && (
+                  <div className="mb-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4" dir={langDir} translate="no">
+                      {t("services")}
+                    </h3>
+                    
+                    <div className="space-y-4">
+                      {memoizedCartList.filter((item: any) => item.serviceId).map((item: any) => {
+                        if (!item.cartServiceFeatures?.length) return null;
 
-                    const features = item.cartServiceFeatures.map((feature: any) => ({
-                      id: feature.id,
-                      serviceFeatureId: feature.serviceFeatureId,
-                      quantity: feature.quantity
-                    }));
+                        const features = item.cartServiceFeatures.map((feature: any) => ({
+                          id: feature.id,
+                          serviceFeatureId: feature.serviceFeatureId,
+                          quantity: feature.quantity
+                        }));
 
-                    let relatedCart: any = memoizedCartList
-                      ?.filter((c: any) => c.productId && c.cartProductServices?.length)
-                      .find((c: any) => {
-                          return !!c.cartProductServices
-                              .find((r: any) => r.relatedCartType == 'SERVICE' && r.serviceId == item.serviceId);
-                      });
+                        let relatedCart: any = memoizedCartList
+                          ?.filter((c: any) => c.productId && c.cartProductServices?.length)
+                          .find((c: any) => {
+                              return !!c.cartProductServices
+                                  .find((r: any) => r.relatedCartType == 'SERVICE' && r.serviceId == item.serviceId);
+                          });
 
-                    return item.cartServiceFeatures.map((feature: any) => {
-                      return (
-                        <ServiceCard 
-                          key={feature.id}
-                          cartId={item.id}
-                          serviceId={item.serviceId}
-                          serviceFeatureId={feature.serviceFeatureId}
-                          serviceFeatureName={feature.serviceFeature.name}
-                          serviceCost={Number(feature.serviceFeature.serviceCost)}
-                          cartQuantity={feature.quantity}
-                          serviceFeatures={features}
-                          relatedCart={relatedCart}
-                          onRemove={() => {
-                            handleRemoveServiceFromCart(item.id, feature.id);
-                          }}
-                        />
-                      );
-                    });
-                  })}
+                        return item.cartServiceFeatures.map((feature: any) => {
+                          return (
+                            <ServiceCard 
+                              key={feature.id}
+                              cartId={item.id}
+                              serviceId={item.serviceId}
+                              serviceFeatureId={feature.serviceFeatureId}
+                              serviceFeatureName={feature.serviceFeature.name}
+                              serviceCost={Number(feature.serviceFeature.serviceCost)}
+                              cartQuantity={feature.quantity}
+                              serviceFeatures={features}
+                              relatedCart={relatedCart}
+                              onRemove={() => {
+                                handleRemoveServiceFromCart(item.id, feature.id);
+                              }}
+                            />
+                          );
+                        });
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Guest Information */}
+            {!me.data && (
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                  <h2 className="text-xl font-semibold text-gray-900" dir={langDir} translate="no">
+                    {t("your_informations")}
+                  </h2>
+                </div>
+                <div className="p-6">
+                  <div className="max-w-md">
+                    <Label className="text-sm font-medium text-gray-600 mb-2 block" dir={langDir} translate="no">
+                      {t("email")}
+                    </Label>
+                    <Input
+                      className="w-full"
+                      placeholder={t("enter_email")}
+                      onChange={(e) => setGuestEmail(e.target.value)}
+                      value={guestEmail}
+                      dir={langDir}
+                      translate="no"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Shipping Address */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+              <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                <h2 className="text-xl font-semibold text-gray-900" dir={langDir} translate="no">
+                  {me?.data
+                    ? t("select_shipping_address")
+                    : t("shipping_address")}
+                </h2>
+              </div>
+
+              <div className="p-6">
+                <RadioGroup
+                  value={selectedShippingAddressId?.toString()}
+                  onValueChange={(value) =>
+                    setSelectedShippingAddressId(value)
+                  }
+                  className="space-y-4"
+                >
+                  {memoziedAddressList?.map((item: AddressItem) => (
+                    <AddressCard
+                      key={item.id}
+                      id={item.id}
+                      firstName={item.firstName}
+                      lastName={item.lastName}
+                      cc={item.cc}
+                      phoneNumber={item.phoneNumber}
+                      address={item.address}
+                      town={item.town}
+                      city={item.cityDetail}
+                      country={item.countryDetail}
+                      state={item.stateDetail}
+                      postCode={item.postCode}
+                      onEdit={() => {
+                        setSelectedAddressId(item.id);
+                        handleToggleAddModal();
+                      }}
+                      onDelete={() => handleDeleteAddress(item.id)}
+                      onSelectAddress={() =>
+                        handleOrderDetails(item, "shipping")
+                      }
+                    />
+                  ))}
+                </RadioGroup>
+
+                {guestShippingAddress && (
+                  <div className="mt-4">
+                    <GuestAddressCard
+                      firstName={guestShippingAddress?.firstName}
+                      lastName={guestShippingAddress?.lastName}
+                      cc={guestShippingAddress?.cc}
+                      phoneNumber={guestShippingAddress?.phoneNumber}
+                      address={guestShippingAddress?.address}
+                      city={guestShippingAddress?.city}
+                      town={guestShippingAddress?.town}
+                      state={guestShippingAddress?.state}
+                      country={guestShippingAddress?.country}
+                      postCode={guestShippingAddress?.postCode}
+                      onEdit={() => {
+                        setAddressType("shipping");
+                        handleToggleAddModal();
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+
+              {!me.data && !guestShippingAddress && (
+                <div className="px-6 pb-6">
+                  <Button
+                    variant="outline"
+                    type="button"
+                    className="w-full border-dashed border-2 border-gray-300 hover:border-gray-400 bg-transparent hover:bg-gray-50"
+                    onClick={() => {
+                      setAddressType("shipping");
+                      handleToggleAddModal();
+                    }}
+                    translate="no"
+                  >
+                    <Image
+                      src={AddIcon}
+                      alt="add-icon"
+                      height={16}
+                      width={16}
+                      className="mr-2"
+                    />
+                    {t("add_new_shipping_address")}
+                  </Button>
+                </div>
+              )}
+            </div>
+
+            {/* Billing Address */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+              <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl font-semibold text-gray-900" dir={langDir} translate="no">
+                    {me?.data
+                      ? t("select_billing_address")
+                      : t("billing_address")}
+                  </h2>
+                  
+                  {selectedOrderDetails?.shippingAddress && (
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="same_as_shipping"
+                        className="border border-solid border-gray-300 bg-white data-[state=checked]:bg-blue-600"
+                        onCheckedChange={() => {
+                          setSameAsShipping(!sameAsShipping);
+
+                          // since state is not updated immediately, making inverted checking
+                          if (sameAsShipping) {
+                            setSelectedOrderDetails({
+                              ...selectedOrderDetails,
+                              billingAddress: "",
+                              billingCity: "",
+                              billingProvince: "",
+                              billingCountry: "",
+                              billingPostCode: "",
+                            });
+                          }
+                        }}
+                        checked={sameAsShipping}
+                      />
+                      <Label
+                        htmlFor="same_as_shipping"
+                        className="text-sm font-medium text-gray-600"
+                        dir={langDir}
+                        translate="no"
+                      >
+                        {t("same_as_shipping_address")}
+                      </Label>
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {!me.data ? (
-                <div className="card-item selected-address">
-                  <div className="card-inner-headerPart" dir={langDir}>
-                    <div className="lediv">
-                      <h3 translate="no">{t("your_informations")}</h3>
-                    </div>
-                  </div>
-
-                  <div className="selected-address-lists">
-                    <div className="space-y-2 p-3">
-                      <Label dir={langDir} translate="no">
-                        {t("email")}
-                      </Label>
-                      <Input
-                        className="theme-form-control-s1"
-                        placeholder={t("enter_email")}
-                        onChange={(e) => setGuestEmail(e.target.value)}
-                        value={guestEmail}
-                        dir={langDir}
-                        translate="no"
-                      />
-                    </div>
-                  </div>
-                </div>
-              ) : null}
-
-              <div className="card-item selected-address">
-                <div className="card-inner-headerPart" dir={langDir}>
-                  <div className="lediv">
-                    <h3 translate="no">
-                      {me?.data
-                        ? t("select_shipping_address")
-                        : t("shipping_address")}
-                    </h3>
-                  </div>
-                </div>
-
-                <div className="selected-address-lists">
-                  {/* {!memoziedAddressList.length &&
-                  !allUserAddressQuery.isLoading ? (
-                    <div className="px-3 py-6">
-                      <p className="my-3 text-center">No address added</p>
-                    </div>
-                  ) : null} */}
-
-                  {/* <div className="px-3">
-                    {allUserAddressQuery.isLoading ? (
-                      <div className="my-3 space-y-3">
-                        {Array.from({ length: 2 }).map((_, i) => (
-                          <Skeleton key={i} className="h-28 w-full" />
-                        ))}
-                      </div>
-                    ) : null}
-                  </div> */}
-
+              <div className="p-6">
+                {!sameAsShipping ? (
                   <RadioGroup
-                    // defaultValue={selectedAddressId?.toString()}
-                    value={selectedShippingAddressId?.toString()}
+                    value={selectedBillingAddressId?.toString()}
                     onValueChange={(value) =>
-                      setSelectedShippingAddressId(value)
+                      setSelectedBillingAddressId(value)
                     }
-                    className=""
+                    className="space-y-4"
                   >
                     {memoziedAddressList?.map((item: AddressItem) => (
                       <AddressCard
@@ -1234,168 +1368,24 @@ const CheckoutPage = () => {
                         }}
                         onDelete={() => handleDeleteAddress(item.id)}
                         onSelectAddress={() =>
-                          handleOrderDetails(item, "shipping")
+                          handleOrderDetails(item, "billing")
                         }
                       />
                     ))}
                   </RadioGroup>
-
-                  {guestShippingAddress ? (
-                    <GuestAddressCard
-                      firstName={guestShippingAddress?.firstName}
-                      lastName={guestShippingAddress?.lastName}
-                      cc={guestShippingAddress?.cc}
-                      phoneNumber={guestShippingAddress?.phoneNumber}
-                      address={guestShippingAddress?.address}
-                      city={guestShippingAddress?.city}
-                      town={guestShippingAddress?.town}
-                      state={guestShippingAddress?.state}
-                      country={guestShippingAddress?.country}
-                      postCode={guestShippingAddress?.postCode}
-                      onEdit={() => {
-                        setAddressType("shipping");
-                        handleToggleAddModal();
-                      }}
-                    />
-                  ) : null}
-                </div>
-
-                {!me.data && !guestShippingAddress ? (
-                  <div className="card-item cart-items for-add">
-                    <div className="top-heading" dir={langDir}>
-                      <Button
-                        variant="outline"
-                        type="button"
-                        className="add-new-address-btn border-none p-0 normal-case! shadow-none"
-                        onClick={() => {
-                          setAddressType("shipping");
-                          handleToggleAddModal();
-                        }}
-                        translate="no"
-                      >
-                        <Image
-                          src={AddIcon}
-                          alt="add-icon"
-                          height={14}
-                          width={14}
-                        />{" "}
-                        {t("add_new_shipping_address")}
-                      </Button>
-                    </div>
-                  </div>
-                ) : null}
-              </div>
-
-              <div className="card-item selected-address">
-                <div className="card-inner-headerPart" dir={langDir}>
-                  <div className="lediv">
-                    <h3 translate="no">
-                      {me?.data
-                        ? t("select_billing_address")
-                        : t("billing_address")}
-                    </h3>
-                  </div>
-
-                  <div className="rgdiv">
-                    {selectedOrderDetails?.shippingAddress ? (
-                      <div className="textwithcheckbox">
-                        <Checkbox
-                          id="same_as_shipping"
-                          className="border border-solid border-gray-300 bg-white data-[state=checked]:bg-dark-orange!"
-                          onCheckedChange={() => {
-                            setSameAsShipping(!sameAsShipping);
-
-                            // since state is not updated immediately, making inverted checking
-                            if (sameAsShipping) {
-                              setSelectedOrderDetails({
-                                ...selectedOrderDetails,
-                                billingAddress: "",
-                                billingCity: "",
-                                billingProvince: "",
-                                billingCountry: "",
-                                billingPostCode: "",
-                              });
-                            }
-                          }}
-                          checked={sameAsShipping}
-                        />
-                        <Label
-                          htmlFor="same_as_shipping"
-                          dir={langDir}
-                          translate="no"
-                        >
-                          {t("same_as_shipping_address")}
-                        </Label>
-                      </div>
-                    ) : null}
-                  </div>
-                </div>
-
-                <div className="selected-address-lists">
-                  {/* {!memoziedAddressList.length &&
-                  !allUserAddressQuery.isLoading ? (
-                    <div className="px-3 py-6">
-                      <p className="my-3 text-center">No address added</p>
-                    </div>
-                  ) : null} */}
-
-                  {/* <div className="px-3">
-                    {allUserAddressQuery.isLoading ? (
-                      <div className="my-3 space-y-3">
-                        {Array.from({ length: 2 }).map((_, i) => (
-                          <Skeleton key={i} className="h-28 w-full" />
-                        ))}
-                      </div>
-                    ) : null}
-                  </div> */}
-
-                  {!sameAsShipping ? (
-                    <RadioGroup
-                      value={selectedBillingAddressId?.toString()}
-                      onValueChange={(value) =>
-                        setSelectedBillingAddressId(value)
-                      }
-                      // defaultValue="comfortable"
-                      className=""
-                    >
-                      {memoziedAddressList?.map((item: AddressItem) => (
-                        <AddressCard
-                          key={item.id}
-                          id={item.id}
-                          firstName={item.firstName}
-                          lastName={item.lastName}
-                          cc={item.cc}
-                          phoneNumber={item.phoneNumber}
-                          address={item.address}
-                          town={item.town}
-                          city={item.cityDetail}
-                          country={item.countryDetail}
-                          state={item.stateDetail}
-                          postCode={item.postCode}
-                          onEdit={() => {
-                            setSelectedAddressId(item.id);
-                            handleToggleAddModal();
-                          }}
-                          onDelete={() => handleDeleteAddress(item.id)}
-                          onSelectAddress={() =>
-                            handleOrderDetails(item, "billing")
-                          }
-                        />
-                      ))}
-                    </RadioGroup>
-                  ) : (
-                    <div className="px-3 py-6">
-                      <p
-                        className="my-3 text-center"
-                        dir={langDir}
-                        translate="no"
-                      >
+                ) : (
+                  <div className="text-center py-8">
+                    <div className="inline-flex items-center px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg">
+                      <div className="w-2 h-2 bg-blue-600 rounded-full mr-3"></div>
+                      <p className="text-blue-800 font-medium" dir={langDir} translate="no">
                         {t("same_as_shipping_address")}
                       </p>
                     </div>
-                  )}
+                  </div>
+                )}
 
-                  {guestBillingAddress ? (
+                {guestBillingAddress && (
+                  <div className="mt-4">
                     <GuestAddressCard
                       firstName={guestBillingAddress?.firstName}
                       lastName={guestBillingAddress?.lastName}
@@ -1412,124 +1402,138 @@ const CheckoutPage = () => {
                         handleToggleAddModal();
                       }}
                     />
-                  ) : null}
-                </div>
+                  </div>
+                )}
+              </div>
 
-                {!me.data && !guestBillingAddress ? (
-                  <div className="card-item cart-items for-add">
-                    <div className="top-heading" dir={langDir}>
-                      <Button
-                        variant="outline"
-                        type="button"
-                        className="add-new-address-btn border-none p-0 normal-case! shadow-none"
-                        onClick={() => {
-                          setAddressType("billing");
-                          handleToggleAddModal();
-                        }}
-                        translate="no"
-                      >
-                        <Image
-                          src={AddIcon}
-                          alt="add-icon"
-                          height={14}
-                          width={14}
-                        />{" "}
-                        {t("add_new_billing_address")}
-                      </Button>
+              {!me.data && !guestBillingAddress && (
+                <div className="px-6 pb-6">
+                  <Button
+                    variant="outline"
+                    type="button"
+                    className="w-full border-dashed border-2 border-gray-300 hover:border-gray-400 bg-transparent hover:bg-gray-50"
+                    onClick={() => {
+                      setAddressType("billing");
+                      handleToggleAddModal();
+                    }}
+                    translate="no"
+                  >
+                    <Image
+                      src={AddIcon}
+                      alt="add-icon"
+                      height={16}
+                      width={16}
+                      className="mr-2"
+                    />
+                    {t("add_new_billing_address")}
+                  </Button>
+                </div>
+              )}
+            </div>
+
+            {/* Add New Address Button for logged-in users */}
+            {me.data && (
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div className="p-6">
+                  <Button
+                    variant="outline"
+                    type="button"
+                    className="w-full border-dashed border-2 border-gray-300 hover:border-gray-400 bg-transparent hover:bg-gray-50"
+                    onClick={handleToggleAddModal}
+                    dir={langDir}
+                    translate="no"
+                  >
+                    <Image
+                      src={AddIcon}
+                      alt="add-icon"
+                      height={16}
+                      width={16}
+                      className="mr-2"
+                    />
+                    {t("add_new_address")}
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Right Column - Order Summary */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-8">
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                  <h2 className="text-xl font-semibold text-gray-900" dir={langDir} translate="no">
+                    {t("order_summary")}
+                  </h2>
+                </div>
+                
+                <div className="p-6 space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600" dir={langDir} translate="no">
+                      {t("subtotal")}
+                    </span>
+                    <span className="font-semibold text-gray-900">
+                      {currency.symbol}{itemsTotal}
+                    </span>
+                  </div>
+                  
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600" dir={langDir} translate="no">
+                      {t("shipping")}
+                    </span>
+                    <span className="font-semibold text-gray-900">
+                      {shippingCharge > 0 ? (
+                        `${currency.symbol}${shippingCharge}`
+                      ) : (
+                        <span className="text-green-600 font-medium">{t("free")}</span>
+                      )}
+                    </span>
+                  </div>
+                  
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600" dir={langDir} translate="no">
+                      {t("fee")}
+                    </span>
+                    <span className="font-semibold text-gray-900">
+                      {currency.symbol}{fee}
+                    </span>
+                  </div>
+                  
+                  <div className="border-t border-gray-200 pt-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-lg font-semibold text-gray-900" dir={langDir} translate="no">
+                        {t("total_amount")}
+                      </span>
+                      <span className="text-xl font-bold text-gray-900">
+                        {currency.symbol}{totalAmount}
+                      </span>
                     </div>
                   </div>
-                ) : null}
-              </div>
-
-              {me.data ? (
-                <div className="card-item cart-items for-add">
-                  <div className="top-heading" dir={langDir}>
-                    <Button
-                      variant="outline"
-                      type="button"
-                      className="add-new-address-btn border-none p-0 normal-case! shadow-none"
-                      onClick={handleToggleAddModal}
-                      dir={langDir}
-                      translate="no"
-                    >
-                      <Image
-                        src={AddIcon}
-                        alt="add-icon"
-                        height={14}
-                        width={14}
-                      />{" "}
-                      {t("add_new_address")}
-                    </Button>
-                  </div>
                 </div>
-              ) : null}
-            </div>
-          </div>
-          <div className="cart-page-right">
-            <div className="card-item priceDetails">
-              <div className="card-inner-headerPart" dir={langDir}>
-                <div className="lediv">
-                  <h3 translate="no">{t("price_details")}</h3>
-                </div>
-              </div>
-              <div className="priceDetails-body">
-                <ul>
-                  <li dir={langDir}>
-                    <p translate="no">{t("subtotal")}</p>
-                    <h5>
-                      {currency.symbol}
-                      {itemsTotal}
-                    </h5>
-                  </li>
-                  <li dir={langDir}>
-                    <p translate="no">{t("shipping")}</p>
-                    {shippingCharge > 0 ? (
-                      <h5>
-                        {currency.symbol}
-                        {shippingCharge}
-                      </h5>
+                
+                <div className="px-6 pb-6">
+                  <Button
+                    onClick={onSaveOrder}
+                    disabled={
+                      !memoizedCartList?.length ||
+                      updateCartByDevice?.isPending ||
+                      updateCartWithLogin?.isPending ||
+                      cartListByDeviceQuery?.isFetching ||
+                      cartListByUser?.isFetching ||
+                      allUserAddressQuery?.isLoading ||
+                      preOrderCalculation?.isPending
+                    }
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg transition-colors duration-200"
+                    translate="no"
+                  >
+                    {preOrderCalculation?.isPending ? (
+                      <LoaderWithMessage message={t("please_wait")} />
                     ) : (
-                      <h5 translate="no">{t("free")}</h5>
+                      t("place_order")
                     )}
-                  </li>
-                  <li dir={langDir}>
-                    <p translate="no">{t("fee")}</p>
-                    <h5>
-                      {currency.symbol}
-                      {fee}
-                    </h5>
-                  </li>
-                </ul>
+                  </Button>
+                </div>
               </div>
-              <div className="priceDetails-footer" dir={langDir}>
-                <h4 translate="no">{t("total_amount")}</h4>
-                <h4 className="amount-value">
-                  {currency.symbol}
-                  {totalAmount}
-                </h4>
-              </div>
-            </div>
-            <div className="order-action-btn">
-              <Button
-                onClick={onSaveOrder}
-                disabled={
-                  !memoizedCartList?.length ||
-                  updateCartByDevice?.isPending ||
-                  updateCartWithLogin?.isPending ||
-                  cartListByDeviceQuery?.isFetching ||
-                  cartListByUser?.isFetching ||
-                  allUserAddressQuery?.isLoading ||
-                  preOrderCalculation?.isPending
-                }
-                className="theme-primary-btn order-btn"
-                translate="no"
-              >
-                {preOrderCalculation?.isPending ? (
-                  <LoaderWithMessage message={t("please_wait")} />
-                ) : (
-                  t("continue")
-                )}
-              </Button>
             </div>
           </div>
         </div>

@@ -9,6 +9,13 @@ import {
 } from "@/components/ui/carousel";
 import { stripHTML } from "@/utils/helper";
 import { Skeleton } from "@/components/ui/skeleton";
+import Image from "next/image";
+import Link from "next/link";
+import validator from "validator";
+import PlaceholderImage from "@/public/images/product-placeholder.png";
+import { FaStar, FaRegStar, FaHeart, FaRegHeart } from "react-icons/fa";
+import { FiEye } from "react-icons/fi";
+import ShoppingIcon from "@/components/icons/ShoppingIcon";
 import { useSameBrandProducts } from "@/apis/queries/product.queries";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
@@ -209,73 +216,224 @@ const SameBrandSection: React.FC<SameBrandSectionProps> = ({
     }
   }, [accessToken]);
 
+  const calculateAvgRating = (productReview: any[]) => {
+    if (!productReview?.length) return 0;
+    const totalRating = productReview.reduce((acc: number, item: { rating: number }) => {
+      return acc + item.rating;
+    }, 0);
+    const result = totalRating / productReview.length;
+    return !isNaN(result) ? Math.floor(result) : 0;
+  };
+
+  const calculateDiscountedPrice = (item: any) => {
+    const price = item?.productProductPrice ? Number(item.productProductPrice) : 0;
+    let discount = item?.consumerDiscount || 0;
+    let discountType = item?.consumerDiscountType;
+    
+    if (discountType === 'PERCENTAGE') {
+      return Number((price - (price * discount) / 100).toFixed(2));
+    } else if (discountType === 'FLAT') {
+      return Number((price - discount).toFixed(2));
+    }
+    return price;
+  };
+
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const nextProduct = () => {
+    if (memoizedSameBrandProductList?.length) {
+      setCurrentIndex((prev) => (prev + 1) % memoizedSameBrandProductList.length);
+    }
+  };
+
+  const prevProduct = () => {
+    if (memoizedSameBrandProductList?.length) {
+      setCurrentIndex((prev) => 
+        prev === 0 ? memoizedSameBrandProductList.length - 1 : prev - 1
+      );
+    }
+  };
+
+  const currentProduct = memoizedSameBrandProductList?.[currentIndex];
+
   return (
-    <div className="suggestion-list-s1-col">
-      <div className="suggestion-same-branch-lists-s1">
-        <div className="title-headerpart">
-          <h3 dir={langDir} translate="no">{t("same_brand")}</h3>
+    <div className="space-y-4">
+      {/* Clean Section Header */}
+      <div className="border-b border-gray-100 pb-3">
+        <h3 className="text-lg font-semibold text-gray-900" dir={langDir} translate="no">
+          {t("same_brand")}
+        </h3>
         </div>
-        <div className="contnet-bodypart min-h-[460px]">
+
+      {/* Single Product Display */}
+      <div className="relative">
           {!sameBrandProductsQuery?.isFetched ? (
-            <Skeleton className="h-[420px] w-full" />
-          ) : null}
-
-          <div className="product-list-s1 outline-style">
-            {sameBrandProductsQuery?.isFetched &&
-            memoizedSameBrandProductList?.length ? (
-              <Carousel
-                opts={{ align: "start", loop: true }}
-                orientation="vertical"
-                className="w-full max-w-xs"
-              >
-                <CarouselContent className="-mt-1 h-[420px]">
-                  {memoizedSameBrandProductList?.map((item: any) => (
-                    <CarouselItem key={item?.id} className="pt-1 md:basis-1/2">
-                      <div className="p-1">
-                        <SameBrandProductCard
-                          id={item?.id}
-                          productName={item?.productName}
-                          productImages={item?.productImages}
-                          shortDescription={
-                            item?.shortDescription
-                              ? stripHTML(item?.shortDescription)
-                              : "-"
-                          }
-                          offerPrice={item?.offerPrice}
-                          productProductPrice={item?.productProductPrice}
-                          productPrice={item?.productPrice}
-                          productReview={item?.productReview}
-                          onAdd={() =>
-                            handleAddToCart(-1, item.productProductPriceId)
-                          }
-                          onWishlist={() =>
-                            handleAddToWishlist(item.id, item?.productWishlist)
-                          }
-                          inWishlist={item?.inWishlist}
-                          haveAccessToken={haveAccessToken}
-                          consumerDiscount={item?.consumerDiscount}
-                          consumerDiscountType={item?.consumerDiscountType}
-                          vendorDiscount={item?.vendorDiscount}
-                          vendorDiscountType={item?.vendorDiscountType}
-                          askForPrice={item?.askForPrice}
-                        />
-                      </div>
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-                <CarouselPrevious className="top-0" />
-                <CarouselNext className="bottom-0" />
-              </Carousel>
-            ) : null}
-
-            {sameBrandProductsQuery?.isFetched &&
-            !memoizedSameBrandProductList?.length ? (
-              <div className="w-full text-center">
-                <h3 dir={langDir} translate="no">{t("no_product_found")}</h3>
-              </div>
-            ) : null}
+          <div className="space-y-4">
+            <Skeleton className="h-48 w-full rounded-lg" />
+            <div className="flex justify-center gap-4">
+              <Skeleton className="h-8 w-8 rounded-full" />
+              <Skeleton className="h-8 w-8 rounded-full" />
+            </div>
           </div>
+        ) : memoizedSameBrandProductList?.length ? (
+          <div className="space-y-4">
+            {/* Single Product Card */}
+            <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+              <div className="flex">
+                {/* Product Image */}
+                <div className="relative h-40 w-40 flex-shrink-0 overflow-hidden">
+                  <Image
+                    src={
+                      currentProduct?.productImages?.[0]?.image &&
+                      validator.isURL(currentProduct.productImages[0].image)
+                        ? currentProduct.productImages[0].image
+                        : PlaceholderImage
+                    }
+                    alt={currentProduct?.productName}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+
+                {/* Product Info */}
+                <div className="flex-1 p-4">
+                  {/* Product Name & Brand */}
+                  <div className="mb-3">
+                    <h4 className="text-lg font-bold text-gray-900 truncate">
+                      {currentProduct?.productName}
+                    </h4>
+                    <p className="text-sm text-gray-500 truncate">
+                      {currentProduct?.brandName || "Brand"}
+                    </p>
+                  </div>
+                  
+                  {/* Rating */}
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="flex items-center">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <FaStar
+                          key={i}
+                          size={14}
+                          color={i < calculateAvgRating(currentProduct?.productReview) ? "#FFC107" : "#E5E7EB"}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-sm text-gray-500">
+                      ({currentProduct?.productReview?.length || 0})
+                    </span>
+                  </div>
+
+                  {/* Price */}
+                  <div className="mb-4">
+                    {currentProduct?.askForPrice === "true" ? (
+                      <span className="text-sm text-blue-600 font-semibold">
+                        {t("ask_for_price")}
+                      </span>
+                    ) : (
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-xl font-bold text-gray-900">
+                          ₹{calculateDiscountedPrice(currentProduct)}
+                        </span>
+                        {currentProduct?.productProductPrice && currentProduct?.productProductPrice !== calculateDiscountedPrice(currentProduct).toString() && (
+                          <span className="text-sm text-gray-500 line-through">
+                            ₹{currentProduct?.productProductPrice}
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex items-center gap-2">
+                    <Link
+                      href={`/trending/${currentProduct?.id}`}
+                      className="flex items-center gap-1.5 rounded-lg bg-gray-100 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200"
+                    >
+                      <FiEye size={14} />
+                      {t("view")}
+                    </Link>
+                    {currentProduct?.askForPrice !== "true" && (
+                      <button
+                        onClick={() => handleAddToCart(1, currentProduct.productProductPriceId)}
+                        className="flex items-center gap-1.5 rounded-lg bg-orange-500 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-orange-600"
+                      >
+                        <ShoppingIcon />
+                        {t("add_to_cart")}
+                      </button>
+                    )}
+                    {haveAccessToken && (
+                      <button
+                        onClick={() => handleAddToWishlist(currentProduct.id, currentProduct?.productWishlist)}
+                        className="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 bg-white transition-colors hover:bg-gray-50"
+                      >
+                        {currentProduct?.inWishlist ? (
+                          <FaHeart color="red" size={14} />
+                        ) : (
+                          <FaRegHeart size={14} />
+                        )}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Navigation Arrows */}
+            {memoizedSameBrandProductList.length > 1 && (
+              <div className="flex items-center justify-between px-2">
+                <button
+                  onClick={prevProduct}
+                  className="flex h-11 w-11 items-center justify-center rounded-full bg-white border-2 border-gray-200 shadow-sm transition-all hover:shadow-md hover:border-orange-300 hover:bg-orange-50"
+                  aria-label="Previous product"
+                >
+                  <svg className="h-5 w-5 text-gray-600 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
+                    {memoizedSameBrandProductList.map((_, index) => (
+                      <div
+                        key={index}
+                        className={`h-2 w-2 rounded-full transition-colors ${
+                          index === currentIndex ? 'bg-orange-500' : 'bg-gray-300'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <span className="text-sm font-medium text-gray-600">
+                    {currentIndex + 1} of {memoizedSameBrandProductList.length}
+                  </span>
+                </div>
+
+                <button
+                  onClick={nextProduct}
+                  className="flex h-11 w-11 items-center justify-center rounded-full bg-white border-2 border-gray-200 shadow-sm transition-all hover:shadow-md hover:border-orange-300 hover:bg-orange-50"
+                  aria-label="Next product"
+                >
+                  <svg className="h-5 w-5 text-gray-600 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
+              <svg className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2" dir={langDir} translate="no">
+              {t("no_product_found")}
+            </h3>
+            <p className="text-sm text-gray-500" dir={langDir} translate="no">
+              {t("no_products_from_same_brand")}
+            </p>
         </div>
+        )}
       </div>
     </div>
   );

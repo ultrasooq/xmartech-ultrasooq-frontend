@@ -347,8 +347,8 @@ function HomePage() {
   startDebugger();
   return (
     <>
-      <section className="w-full py-8">
-        <div className="container m-auto px-3">
+      <section className="w-full py-8 px-6 lg:px-8">
+        <div className="w-full">
           <div className="flex flex-wrap">
             <div className="mb-4 w-full sm:mb-0 sm:w-1/2 sm:pr-3.5">
               <div className="relative h-auto w-full sm:h-96">
@@ -431,8 +431,8 @@ function HomePage() {
         </div>
       </section>
 
-      <section className="w-full pb-4 pt-8">
-        <div className="container m-auto px-3">
+      <section className="w-full pb-4 pt-8 px-6 lg:px-8">
+        <div className="w-full">
           <div className="flex flex-wrap">
             <div className="mb-5 w-full" dir={langDir}>
               <div className="flex items-center justify-between">
@@ -466,8 +466,8 @@ function HomePage() {
       </section>
 
       {memoizedBuyGroupProducts?.length > 0 ? (
-        <section className="w-full pb-8 pt-5">
-          <div className="container m-auto px-3">
+        <section className="w-full pb-8 pt-5 px-6 lg:px-8">
+          <div className="w-full">
             <div className="flex flex-wrap">
               <div className="flex w-full flex-wrap items-center justify-between pb-3.5">
                 <div className="flex flex-wrap items-center justify-start">
@@ -575,8 +575,8 @@ function HomePage() {
         </div>
       </section> */}
 
-      <section className="w-full py-8">
-        <div className="container m-auto">
+      <section className="w-full py-8 px-6 lg:px-8">
+        <div className="w-full">
           <div className="flex">
             <div className="relative flex w-full flex-wrap bg-neutral-100 px-5 py-6 md:py-12 lg:px-10 lg:py-24">
               <div className="sm:w-12/12 w-12/12 flex flex-wrap content-center items-center pr-3.5 md:w-6/12">
@@ -619,8 +619,8 @@ function HomePage() {
       </section>
 
       {memoizedHomeDecorProducts?.length > 0 ? (
-        <section className="w-full py-8">
-          <div className="container m-auto">
+        <section className="w-full py-8 px-6 lg:px-8">
+          <div className="w-full">
             <div className="flex flex-wrap">
               <div className="flex w-full flex-wrap items-center justify-between border-b border-solid border-gray-300 bg-neutral-100 px-3.5 py-3.5">
                 <div className="flex flex-wrap items-center justify-start">
@@ -736,8 +736,8 @@ function HomePage() {
       ) : null}
 
       {memoizedFashionBeautyProducts?.length > 0 ? (
-        <section className="w-full py-8">
-          <div className="container m-auto">
+        <section className="w-full py-8 px-6 lg:px-8">
+          <div className="w-full">
             <div className="flex flex-wrap">
               <div className="flex w-full flex-wrap items-center justify-between border-b border-solid border-gray-300 bg-neutral-100 px-3.5 py-3.5">
                 <div className="flex flex-wrap items-center justify-start">
@@ -847,8 +847,8 @@ function HomePage() {
       ) : null}
 
       {memoizedConsumerElectronicsProducts.length > 0 ? (
-        <section className="w-full py-8">
-          <div className="container m-auto">
+        <section className="w-full py-8 px-6 lg:px-8">
+          <div className="w-full">
             <div className="flex flex-wrap">
               <div className="flex w-full flex-wrap items-center justify-between border-b border-solid border-gray-300 bg-neutral-100 px-3.5 py-3.5">
                 <div className="flex flex-wrap items-center justify-start">

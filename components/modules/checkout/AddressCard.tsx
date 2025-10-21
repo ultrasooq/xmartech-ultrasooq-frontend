@@ -47,56 +47,86 @@ const AddressCard: React.FC<AddressCardProps> = ({
   onSelectAddress,
 }) => {
   return (
-    <div className="selected-address-item flex gap-x-3">
+    <div className="relative">
       <RadioGroupItem
         value={id?.toString()}
-        id="r3"
-        className="mt-1"
+        id={id?.toString()}
+        className="absolute top-4 left-4 z-10"
         onClick={onSelectAddress}
       />
-      <Label htmlFor={id?.toString()} className="infocardbox">
-        <div className="left-address-with-right-btn">
-          <div>
-            <h4 className="mt-0!">
-              {firstName} {lastName}
-            </h4>
-            <ul>
-              <li>
-                <p>
-                  <span className="icon-container">
-                    <Image src={PhoneIcon} alt="phone-icon" />
-                  </span>
-                  <span className="text-container">{phoneNumber}</span>
-                </p>
-              </li>
-              <li>
-                <p>
-                  <span className="icon-container">
-                    <Image src={LocationIcon} alt="location-icon" />
-                  </span>
-                  <span className="text-container">
-                    {[address, town, city?.name, state?.name, postCode, country?.name].filter(el => el).join(', ')}
-                  </span>
-                </p>
-              </li>
-            </ul>
+      <Label 
+        htmlFor={id?.toString()} 
+        className="block p-6 pl-12 border border-gray-200 rounded-lg hover:border-gray-300 hover:shadow-sm transition-all duration-200 cursor-pointer bg-white"
+      >
+        <div className="flex justify-between items-start">
+          <div className="flex-1 min-w-0">
+            {/* Name */}
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold text-gray-900 truncate">
+                {firstName} {lastName}
+              </h3>
+            </div>
+
+            {/* Contact Info */}
+            <div className="space-y-3">
+              {/* Phone */}
+              <div className="flex items-center space-x-3">
+                <div className="flex-shrink-0 w-5 h-5 flex items-center justify-center">
+                  <Image 
+                    src={PhoneIcon} 
+                    alt="phone-icon" 
+                    width={16} 
+                    height={16}
+                    className="text-gray-500"
+                  />
+                </div>
+                <span className="text-gray-700 font-medium">{phoneNumber}</span>
+              </div>
+
+              {/* Address */}
+              <div className="flex items-start space-x-3">
+                <div className="flex-shrink-0 w-5 h-5 flex items-center justify-center mt-0.5">
+                  <Image 
+                    src={LocationIcon} 
+                    alt="location-icon" 
+                    width={16} 
+                    height={16}
+                    className="text-gray-500"
+                  />
+                </div>
+                <span className="text-gray-600 leading-relaxed">
+                  {[address, town, city?.name, state?.name, postCode, country?.name].filter(el => el).join(', ')}
+                </span>
+              </div>
+            </div>
           </div>
 
-          <div>
+          {/* Options Menu */}
+          <div className="flex-shrink-0 ml-4">
             <DropdownMenu>
-              <DropdownMenuTrigger>
+              <DropdownMenuTrigger className="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200">
                 <Image
-                  alt="image-icon"
+                  alt="options-icon"
                   src={DropdownIcon}
-                  height={25}
-                  width={25}
-                  className="rounded-full"
+                  height={20}
+                  width={20}
+                  className="text-gray-500"
                 />
               </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={onEdit}>Edit</DropdownMenuItem>
+              <DropdownMenuContent align="end" className="w-40">
+                <DropdownMenuItem 
+                  onClick={onEdit}
+                  className="cursor-pointer hover:bg-gray-50"
+                >
+                  Edit Address
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={onDelete}>Delete</DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={onDelete}
+                  className="cursor-pointer hover:bg-gray-50 text-red-600 focus:text-red-600"
+                >
+                  Delete Address
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

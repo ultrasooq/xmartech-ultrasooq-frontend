@@ -22,6 +22,8 @@ type ExistingProductCardProps = {
   shortDescription: string;
   skuNo?: string;
   productType?: string;
+  isDropshipPage?: boolean;
+  onAddToDropship?: (productId: number) => void;
 };
 
 const ExistingProductCard: React.FC<ExistingProductCardProps> = ({
@@ -37,6 +39,8 @@ const ExistingProductCard: React.FC<ExistingProductCardProps> = ({
   shortDescription,
   skuNo,
   productType = "P",
+  isDropshipPage = false,
+  onAddToDropship,
 }) => {
   const t = useTranslations();
   const { langDir } = useAuth();
@@ -50,14 +54,20 @@ const ExistingProductCard: React.FC<ExistingProductCardProps> = ({
     router.push(`/product?copy=${id}&productType=R`);
   };
 
+  const handleAddToDropship = () => {
+    if (onAddToDropship) {
+      onAddToDropship(id);
+    }
+  };
+
   return (
     <div className="mb-4 w-full rounded-lg border border-gray-200 bg-white shadow-xs">
       {/* Compact View - Always Visible */}
       <div className="flex items-center justify-between p-4">
         {/* Left Section - Product Info */}
         <div className="flex items-center space-x-4">
-          {/* Checkbox - Only show for product type P */}
-          {productType !== "R" && (
+          {/* Checkbox - Only show for product type P and not on dropship page */}
+          {productType !== "R" && !isDropshipPage && onSelectedId && (
             <div className="flex flex-col items-center space-y-2">
               <Checkbox
                 className="border border-solid border-gray-300 data-[state=checked]:bg-blue-600!"
@@ -140,7 +150,16 @@ const ExistingProductCard: React.FC<ExistingProductCardProps> = ({
 
         {/* Right Section - Action Button */}
         <div className="flex items-center space-x-2">
-          {productType === "R" ? (
+          {isDropshipPage ? (
+            <Button
+              onClick={handleAddToDropship}
+              className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 text-sm flex items-center gap-2"
+              dir={langDir}
+            >
+              <IoMdAdd size={16} />
+              {t("add_to_dropshipable_product")}
+            </Button>
+          ) : productType === "R" ? (
             <Button
               onClick={handleAddToRfqProducts}
               className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 text-sm flex items-center gap-2"

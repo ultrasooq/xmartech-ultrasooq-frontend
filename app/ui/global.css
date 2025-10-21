@@ -16768,6 +16768,7 @@
     color: #ffffff !important;
 }
 
+
 .me.menu .text-gray-600 {
     color: #ffffff !important;
 }
@@ -17453,4 +17454,85 @@
   body {
     top: 0px !important;
   }
+}
+
+/* FINAL OVERRIDE - Active navigation state (highest priority) */
+.me.menu button.text-blue-600,
+.me.menu button.\!text-blue-600 {
+    color: #2563eb !important;
+}
+
+.me.menu button.font-bold,
+.me.menu button.\!font-bold {
+    font-weight: 700 !important;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Custom carousel dots styling */
+.custom-dots {
+  position: relative;
+  bottom: -20px;
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.custom-dots li {
+  position: relative;
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.custom-dots li button {
+  font-size: 0;
+  line-height: 0;
+  display: block;
+  width: 12px;
+  height: 12px;
+  padding: 0;
+  cursor: pointer;
+  color: transparent;
+  border: 0;
+  outline: none;
+  background: transparent;
+  border-radius: 50%;
+  background-color: #d1d5db;
+  transition: all 0.3s ease;
+}
+
+.custom-dots li button:hover {
+  background-color: #f97316;
+  transform: scale(1.2);
+}
+
+.custom-dots li.slick-active button {
+  background-color: #f97316;
+  transform: scale(1.3);
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
+}
+
+/* Line clamp utility */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }

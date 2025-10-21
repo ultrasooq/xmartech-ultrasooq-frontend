@@ -34,6 +34,15 @@ import {
   updateProductPriceByProductCondition,
   updateProductStatus,
   updateSingleProducts,
+  markProductAsDropshipable,
+  getMyDropshipableProducts,
+  getDropshipAnalytics,
+  bulkUpdateDropshipable,
+  getWholesaleProducts,
+  getWholesaleDashboard,
+  getWholesaleProductSales,
+  getUserOwnDropshipableProducts,
+  getDropshipProductsFromOriginal,
 } from "../requests/product.request";
 import {
   ICreateProduct,
@@ -752,4 +761,172 @@ export const useProductsByService = (
     //   console.log(err);
     // },
     enabled,
+  });
+
+// Mark product as dropshipable
+export const useMarkProductAsDropshipable = () => {
+  const queryClient = useQueryClient();
+  return useMutation<
+    any,
+    APIResponseError,
+    {
+      productId: number;
+      isDropshipable: boolean;
+      dropshipCommission?: number;
+      dropshipMinMarkup?: number;
+      dropshipMaxMarkup?: number;
+      dropshipSettings?: any;
+    }
+  >({
+    mutationFn: async ({
+      productId,
+      isDropshipable,
+      dropshipCommission,
+      dropshipMinMarkup,
+      dropshipMaxMarkup,
+      dropshipSettings,
+    }) => {
+      const res = await markProductAsDropshipable(productId, {
+        isDropshipable,
+        dropshipCommission,
+        dropshipMinMarkup,
+        dropshipMaxMarkup,
+        dropshipSettings,
+      });
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["products"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["my-dropshipable-products"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["dropship-analytics"],
+      });
+    },
+  });
+};
+
+// Get vendor's dropshipable products
+export const useMyDropshipableProducts = (payload: {
+  page: number;
+  limit: number;
+}) =>
+  useQuery({
+    queryKey: ["my-dropshipable-products", payload],
+    queryFn: async () => {
+      const res = await getMyDropshipableProducts(payload);
+      return res.data;
+    },
+  });
+
+// Get dropship analytics
+export const useDropshipAnalytics = () =>
+  useQuery({
+    queryKey: ["dropship-analytics"],
+    queryFn: async () => {
+      const res = await getDropshipAnalytics();
+      return res.data;
+    },
+  });
+
+// Bulk enable/disable dropshipping
+export const useBulkUpdateDropshipable = () => {
+  const queryClient = useQueryClient();
+  return useMutation<
+    any,
+    APIResponseError,
+    {
+      productIds: number[];
+      isDropshipable: boolean;
+      dropshipCommission?: number;
+      dropshipMinMarkup?: number;
+      dropshipMaxMarkup?: number;
+    }
+  >({
+    mutationFn: async (payload) => {
+      const res = await bulkUpdateDropshipable(payload);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["products"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["my-dropshipable-products"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["dropship-analytics"],
+      });
+    },
+  });
+};
+
+// Get wholesale products
+export const useWholesaleProducts = (payload: {
+  page: number;
+  limit: number;
+}) =>
+  useQuery({
+    queryKey: ["wholesale-products", payload],
+    queryFn: async () => {
+      const res = await getWholesaleProducts(payload);
+      return res.data;
+    },
+  });
+
+// Get wholesale dashboard
+export const useWholesaleDashboard = () =>
+  useQuery({
+    queryKey: ["wholesale-dashboard"],
+    queryFn: async () => {
+      const res = await getWholesaleDashboard();
+      return res.data;
+    },
+  });
+
+// Get wholesale product sales
+export const useWholesaleProductSales = (productId: number, enabled: boolean = true) =>
+  useQuery({
+    queryKey: ["wholesale-product-sales", productId],
+    queryFn: async () => {
+      const res = await getWholesaleProductSales(productId);
+      return res.data;
+    },
+    enabled,
+  });
+
+// Get user's own dropshipable products (productType = D, isDropshipable = true)
+export const useUserOwnDropshipableProducts = (
+  payload: {
+    page: number;
+    limit: number;
+    term?: string;
+    brandIds?: string;
+    categoryIds?: string;
+    status?: string;
+    sort?: string;
+  },
+  enabled = true,
+) =>
+  useQuery({
+    queryKey: ["user-own-dropshipable-products", payload],
+    queryFn: async () => {
+      const res = await getUserOwnDropshipableProducts(payload);
+      return res.data;
+    },
+    enabled,
+  });
+
+// Get dropship products created from a specific original product
+export const useDropshipProductsFromOriginal = (originalProductId: number, enabled = true) =>
+  useQuery({
+    queryKey: ["dropship-products-from-original", originalProductId],
+    queryFn: async () => {
+      const res = await getDropshipProductsFromOriginal(originalProductId);
+      return res.data;
+    },
+    enabled: enabled && !!originalProductId,
   });

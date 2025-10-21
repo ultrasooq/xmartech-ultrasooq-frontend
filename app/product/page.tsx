@@ -573,6 +573,7 @@ const defaultValues: { [key: string]: any } = {
   sellCityIds: [],
   productTown: "",
   productLatLng: "",
+  isDropshipable: false,
   productShortDescriptionList: [
     {
       shortDescription: "",
@@ -585,7 +586,7 @@ const defaultValues: { [key: string]: any } = {
     },
   ],
   description: "",
-  descriptionJson: undefined,
+  descriptionJson: [],
   productImages: [],
   productPriceList: [
     {
@@ -633,7 +634,7 @@ const CreateProductPage = () => {
   const { langDir } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const productId = searchParams?.get('copy') || searchParams?.get('productId');
+  const productId = searchParams?.get('copy') || searchParams?.get('productId') || searchParams?.get('existingProductId');
   const isEditMode = searchParams?.get('edit') === 'true';
   const editProductPriceId = searchParams?.get('productPriceId');
   const { toast } = useToast();
@@ -652,36 +653,25 @@ const CreateProductPage = () => {
     setIsClient(true);
   }, []);
 
-  // Handle tab parameter from URL
+  // Handle tab parameter from URL and set isDropshipable for wholesale products
   useEffect(() => {
     if (isClient && searchParams) {
       const tab = searchParams.get('tab');
-      if (tab === 'dropship') {
+      const productType = searchParams.get('productType');
+      
+      if (tab === 'dropship' || productType === 'D') {
         setActiveTab('dropship');
       } else {
         setActiveTab('create');
       }
+      
+      // Set isDropshipable to true if productType=D
+      if (productType === 'D') {
+        form.setValue('isDropshipable', true);
+      }
     }
-  }, [isClient, searchParams]);
+  }, [isClient, searchParams, form]);
 
-  // Debug form state
-  useEffect(() => {
-    console.log('=== FORM STATE DEBUG ===');
-    console.log('activeProductType:', activeProductType);
-    console.log('Form errors (detailed):', JSON.stringify(form.formState.errors, null, 2));
-    console.log('Form isValid:', form.formState.isValid);
-    console.log('Form isDirty:', form.formState.isDirty);
-    console.log('Form isSubmitting:', form.formState.isSubmitting);
-    
-    // Show which fields have errors
-    const errorFields = Object.keys(form.formState.errors);
-    if (errorFields.length > 0) {
-      console.log('Fields with errors:', errorFields);
-      errorFields.forEach(field => {
-        console.log(`Error in ${field}:`, form.formState.errors[field]?.message);
-      });
-    }
-  }, [form.formState.errors, form.formState.isValid, activeProductType]);
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
 
   // Query for product data when editing
@@ -1106,12 +1096,12 @@ const CreateProductPage = () => {
     !!productId && !searchParams?.get('copy'),
   );
 
-  // Query for existing product when copying
+  // Query for existing product when copying or creating from existing
   const existingProductQueryById = useExistingProductById(
     {
       existingProductId: productId || ''
     },
-    !!productId && searchParams?.get('copy') !== null,
+    !!productId && (searchParams?.get('copy') !== null || searchParams?.get('fromExisting') === 'true'),
   );
 
   const getProductVariant = useProductVariant();
@@ -1177,14 +1167,16 @@ const CreateProductPage = () => {
   }, [productQueryById?.data?.data]);
 
   useEffect(() => {
-    // Handle existing product data when copying
+    // Handle existing product data when copying or creating from existing
     console.log('=== EXISTING PRODUCT USE EFFECT TRIGGERED ===');
     console.log('existingProductQueryById:', existingProductQueryById);
     console.log('existingProductQueryById?.data:', existingProductQueryById?.data);
     console.log('existingProductQueryById?.data?.data:', existingProductQueryById?.data?.data);
     console.log('productId:', productId);
     console.log('searchParams?.get("copy"):', searchParams?.get('copy'));
+    console.log('searchParams?.get("fromExisting"):', searchParams?.get('fromExisting'));
     console.log('searchParams?.get("copy") !== null:', searchParams?.get('copy') !== null);
+    console.log('searchParams?.get("fromExisting") === "true":', searchParams?.get('fromExisting') === 'true');
     
     if (existingProductQueryById?.data?.data) {
       const existingProduct = existingProductQueryById?.data?.data;
@@ -1192,7 +1184,7 @@ const CreateProductPage = () => {
       populateFormWithExistingProductData(existingProduct);
     } else {
       console.log('No existing product data found');
-      console.log('Query enabled:', !!productId && searchParams?.get('copy') !== null);
+      console.log('Query enabled:', !!productId && (searchParams?.get('copy') !== null || searchParams?.get('fromExisting') === 'true'));
     }
   }, [existingProductQueryById?.data?.data]);
 
@@ -1260,9 +1252,12 @@ const CreateProductPage = () => {
   const populateFormWithExistingProductData = (existingProduct: any) => {
     console.log('=== POPULATING FORM WITH EXISTING PRODUCT DATA ===');
     console.log('existingProduct:', existingProduct);
-    console.log('existingProduct.specification:', existingProduct.specification);
-    console.log('existingProduct.shortDescription:', existingProduct.shortDescription);
-    console.log('existingProduct.description:', existingProduct.description);
+    console.log('existingProduct.productName:', existingProduct.productName);
+    console.log('existingProduct.categoryId:', existingProduct.categoryId);
+    console.log('existingProduct.brandId:', existingProduct.brandId);
+    console.log('existingProduct.typeOfProduct:', existingProduct.typeOfProduct);
+    console.log('existingProduct.existingProductImages:', existingProduct.existingProductImages);
+    console.log('existingProduct.existingProductTags:', existingProduct.existingProductTags);
     
     setActiveProductType(existingProduct.productType);
     
@@ -1441,18 +1436,20 @@ const CreateProductPage = () => {
       return;
     }
 
-    console.log('Creating product with current user ID:', currentUserId);
-    console.log('Current account data:', currentAccount?.data?.account);
     
-    // Debug JWT token
-    const token = getCookie(PUREMOON_TOKEN_KEY);
-    console.log('JWT Token exists:', !!token);
-    console.log('JWT Token length:', token ? token.length : 0);
 
+    // Check if this is a wholesale/dropship product from URL
+    const isWholesaleProduct = searchParams?.get('productType') === 'D';
+    
     const updatedFormData = {
       ...formData,
       productType:
-        activeProductType === "R" ? "R" : activeProductType === "F" ? "F" : "P",
+        activeProductType === "R" ? "R" : 
+        activeProductType === "F" ? "F" : 
+        isWholesaleProduct ? "D" :  // Wholesale/Dropship product from URL
+        formData.isDropshipable === true ? "D" :  // Wholesale/Dropship product from form
+        "P",  // Regular product
+      isDropshipable: isWholesaleProduct || formData.isDropshipable === true, // Set based on URL or form
       status:
         activeProductType === "R" || activeProductType === "F"
           ? "ACTIVE"
@@ -1859,6 +1856,8 @@ const CreateProductPage = () => {
           router.push("/rfq");
         } else if (activeProductType === "F") {
           router.push("/factories");
+        } else if (activeProductType === "D") {
+          router.push("/dropship-products");
         } else {
           router.push("/manage-products");
         }
@@ -1932,6 +1931,9 @@ const CreateProductPage = () => {
 
     if (activeProductType) {
       setActiveProductType(activeProductType);
+    } else {
+      // Default to 'P' (Product) if no productType is specified
+      setActiveProductType('P');
     }
   }, []);
 
@@ -1964,7 +1966,17 @@ const CreateProductPage = () => {
           <p className="text-gray-600 mb-4">
             {t("failed_to_load_product_data")}
           </p>
-          <Button onClick={() => router.push('/manage-products')}>
+          <Button onClick={() => {
+            if (activeProductType === "D") {
+              router.push('/dropship-products');
+            } else if (activeProductType === "R") {
+              router.push('/rfq');
+            } else if (activeProductType === "F") {
+              router.push('/factories');
+            } else {
+              router.push('/manage-products');
+            }
+          }}>
             {t("back_to_products")}
           </Button>
         </div>
@@ -1974,74 +1986,111 @@ const CreateProductPage = () => {
 
   return (
     <>
-      <section className="relative w-full py-7">
-        <div className="absolute left-0 top-0 -z-10 h-full w-full">
-          <Image
-            src={BackgroundImage}
-            className="h-full w-full object-cover object-center"
-            alt="background"
-            fill
-            priority
-          />
-        </div>
-        <div className="container relative z-10 m-auto mx-auto max-w-[950px] px-3">
-          {/* Tab Navigation for Product Creation */}
-          <div className="mb-6 flex justify-center">
-            <div className="flex rounded-lg border border-gray-300 bg-white p-1">
-              <button
-                type="button"
-                className={`px-6 py-3 rounded-md text-sm font-medium transition-colors ${
-                  activeTab === 'create'
-                    ? 'bg-blue-600 text-white shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                }`}
-                onClick={() => setActiveTab('create')}
-              >
-                Create New Product
-              </button>
-              <button
-                type="button"
-                className={`px-6 py-3 rounded-md text-sm font-medium transition-colors ${
-                  activeTab === 'dropship'
-                    ? 'bg-blue-600 text-white shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                }`}
-                onClick={() => setActiveTab('dropship')}
-              >
-                Dropship Product
-              </button>
-            </div>
+          <section className="min-h-screen bg-gray-50 py-8">
+        <div className="container mx-auto max-w-6xl px-4">
+          {/* Header Section */}
+          <div className="mb-8 text-center">
+            {!searchParams?.get('productType') || searchParams?.get('productType') !== 'D' ? (
+              <>
+                {/* Tab Navigation */}
+                <div className="inline-flex rounded-xl bg-white p-1 shadow-sm border border-gray-200">
+                  <button
+                    type="button"
+                    className={`px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
+                      activeTab === 'create'
+                        ? 'bg-orange-500 text-white shadow-md'
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                    }`}
+                    onClick={() => setActiveTab('create')}
+                  >
+                    {t("create_new_product")}
+                  </button>
+                  <button
+                    type="button"
+                    className={`px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
+                      activeTab === 'dropship'
+                        ? 'bg-orange-500 text-white shadow-md'
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                    }`}
+                    onClick={() => setActiveTab('dropship')}
+                  >
+                    {t("dropship_product")}
+                  </button>
+                </div>
+              </>
+            ) : null}
           </div>
 
-          <div className="flex flex-wrap">
-            {activeTab === 'create' ? (
+          {/* Form Content */}
+          <div className="max-w-5xl mx-auto">
+            {activeTab === 'dropship' && searchParams?.get('productType') !== 'D' ? (
+              <DropshipProductForm />
+            ) : (
               <Form {...form}>
                 <form 
-                  onSubmit={(e) => {
-                    console.log('=== FORM onSubmit EVENT TRIGGERED ===');
-                    console.log('Form event:', e);
-                    console.log('Form errors before submit:', form.formState.errors);
-                    console.log('Form isValid before submit:', form.formState.isValid);
-                    return form.handleSubmit(onSubmit)(e);
-                  }} 
-                  className="w-full"
+                  onSubmit={form.handleSubmit(onSubmit)} 
+                  className="space-y-8"
                 >
-                <BasicInformationSection
-                  tagsList={memoizedTags}
-                  activeProductType={activeProductType}
-                  selectedCategoryIds={selectedCategoryIds}
-                  copy={searchParams?.get('copy') && productQueryById?.data?.data ? true : false}
-                />
+                  {/* Basic Information Card */}
+                  <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div className="bg-blue-50 px-6 py-4 border-b border-gray-200">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center">
+                          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                          </svg>
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-semibold text-gray-900">
+                            {t("basic_information")}
+                          </h3>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="p-6">
+                      <BasicInformationSection
+                        tagsList={memoizedTags}
+                        activeProductType={activeProductType}
+                        selectedCategoryIds={selectedCategoryIds}
+                        copy={searchParams?.get('copy') && productQueryById?.data?.data ? true : false}
+                      />
+                    </div>
+                  </div>
 
-                {/* <ProductDetailsSection /> */}
-
-                <div className="grid w-full grid-cols-4 gap-x-5">
-                  <div className="col-span-4 mb-3 w-full rounded-lg border border-solid border-gray-300 bg-white p-2 shadow-xs sm:p-3 lg:p-4">
-                    <div className="form-groups-common-sec-s1">
+                  {/* Description and Specifications Card */}
+                  <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div className="bg-green-50 px-6 py-4 border-b border-gray-200">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center">
+                          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-semibold text-gray-900">
+                            {t("description_and_specifications")}
+                          </h3>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="p-6">
                       <DescriptionAndSpecificationSection />
-                      <div className="mb-4 mt-4 inline-flex w-full items-center justify-end gap-2">
+                    </div>
+                  </div>
+
+                  {/* Action Buttons Card */}
+                  <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-sm text-gray-500">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        {t("save_as_draft_info")}
+                      </div>
+                      <div className="flex items-center gap-4">
                         <button
-                          className="rounded-sm bg-transparent px-2 py-2 text-sm font-bold leading-6 text-[#7F818D] md:px-4 md:py-4 md:text-lg"
+                          type="button"
+                          className="px-6 py-3 text-sm font-medium text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors duration-200"
                           dir={langDir}
                           translate="no"
                         >
@@ -2053,7 +2102,7 @@ const CreateProductPage = () => {
                             createProduct.isPending || uploadMultiple.isPending || updateProduct.isPending
                           }
                           type="submit"
-                          className="h-10 rounded bg-dark-orange px-6 text-center text-sm font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90 md:h-12 md:px-10 md:text-lg"
+                          className="px-8 py-3 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                           dir={langDir}
                           translate="no"
                           onClick={() => {
@@ -2081,11 +2130,8 @@ const CreateProductPage = () => {
                       </div>
                     </div>
                   </div>
-                </div>
-              </form>
-            </Form>
-            ) : (
-              <DropshipProductForm />
+                </form>
+              </Form>
             )}
           </div>
         </div>

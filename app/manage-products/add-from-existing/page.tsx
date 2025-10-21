@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
-import { useExistingProductForCopy } from "@/apis/queries/product.queries";
+import { useExistingProduct } from "@/apis/queries/product.queries";
 import { useMe } from "@/apis/queries/user.queries";
 import { useToast } from "@/components/ui/use-toast";
 import { Input } from "@/components/ui/input";
@@ -24,21 +24,23 @@ const AddFromExistingProductPage = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [showProductPopup, setShowProductPopup] = useState(false);
+  const [shouldSearch, setShouldSearch] = useState(false);
 
-  const { data: searchData, refetch: searchProducts } = useExistingProductForCopy(
+  const { data: searchData, refetch: searchProducts, isError, error } = useExistingProduct(
     {
       page: 1,
       limit: 10,
       term: searchTerm,
+      brandAddedBy: me.data?.data?.id,
     },
-    false
+    shouldSearch && searchTerm.trim().length >= 3
   );
 
   const handleAddNewProduct = () => {
     router.push("/product");
   };
 
-  const handleSearch = useCallback(async () => {
+  const handleSearch = useCallback(() => {
     if (!searchTerm.trim()) {
       toast({
         title: t("please_enter_product_name"),
@@ -57,27 +59,10 @@ const AddFromExistingProductPage = () => {
       return;
     }
 
+    // Enable search and trigger the query
+    setShouldSearch(true);
     setIsSearching(true);
-    try {
-      const result = await searchProducts();
-      console.log('Search result:', result);
-      if (result.data?.data) {
-        console.log('Search results data:', result.data.data);
-        setSearchResults(result.data.data);
-      } else {
-        setSearchResults([]);
-      }
-    } catch (error) {
-      toast({
-        title: t("search_failed"),
-        description: t("search_failed"),
-        variant: "destructive",
-      });
-      setSearchResults([]);
-    } finally {
-      setIsSearching(false);
-    }
-  }, [searchTerm, searchProducts, toast, t]);
+  }, [searchTerm, toast, t]);
 
   const handleSelectProduct = (product: any) => {
     console.log('Selected product for copy:', product);
@@ -97,17 +82,27 @@ const AddFromExistingProductPage = () => {
     setSelectedProduct(null);
   };
 
+  // Handle search results from the query
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      if (searchTerm.trim().length >= 3) {
-        handleSearch();
-      } else {
-        setSearchResults([]);
-      }
-    }, 500);
+    if (isError) {
+      console.error('Search error:', error);
+      toast({
+        title: t("search_failed"),
+        description: t("search_failed"),
+        variant: "destructive",
+      });
+      setIsSearching(false);
+      setSearchResults([]);
+    } else if (searchData?.data) {
+      console.log('Search results from query:', searchData.data);
+      setSearchResults(searchData.data);
+      setIsSearching(false);
+    } else if (searchTerm.trim().length >= 3) {
+      setIsSearching(false);
+      setSearchResults([]);
+    }
+  }, [searchData, searchTerm, isError, error, toast, t]);
 
-    return () => clearTimeout(timeoutId);
-  }, [searchTerm, handleSearch]);
 
   return (
     <div className="min-h-screen bg-gray-50">

@@ -111,21 +111,23 @@ const ProductCard: React.FC<ProductCardProps> = ({
   );
 
   return (
-    <div className="relative border border-solid border-transparent px-2 py-1 pt-7 hover:border-gray-300">
+    <div className="group relative h-[500px] w-full bg-white p-6 transition-all duration-300 hover:shadow-xl">
       <Link href={`/trending/${id}`}>
         {askForPrice !== "true" ? (
           consumerDiscount ? (
-            <div className="absolute right-2.5 top-2.5 z-10 inline-block rounded bg-dark-orange px-2 py-1.5 text-xs font-medium capitalize leading-5 text-white">
+            <div className="absolute right-3 top-3 z-10 inline-flex items-center rounded-full bg-red-500 px-3 py-1.5 text-xs font-bold text-white shadow-lg">
               <span>
                 {consumerDiscountType === "PERCENTAGE" 
-                  ? `${consumerDiscount}%` 
-                  : `${currency.symbol}${consumerDiscount}`
+                  ? `${consumerDiscount}% OFF` 
+                  : `${currency.symbol}${consumerDiscount} OFF`
                 }
               </span>
             </div>
           ) : null
         ) : null}
-        <div className="relative mx-auto mb-4 h-36 w-36">
+        
+        {/* Product Image */}
+        <div className="relative mx-auto mb-4 h-48 w-full overflow-hidden rounded-xl bg-gray-50">
           <Image
             src={
               productImages?.[0]?.image &&
@@ -133,96 +135,108 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 ? productImages[0].image
                 : PlaceholderImage
             }
-            alt="preview"
-            className="object-cover"
+            alt={productName}
+            className="object-cover transition-transform duration-300 group-hover:scale-110"
             fill
           />
         </div>
       </Link>
 
-      <div className="mb-3 flex flex-row items-center justify-center gap-x-3">
-        {askForPrice !== "true" ? (
-          <Button
-            variant="ghost"
-            className="relative h-8 w-8 rounded-full p-0 shadow-md"
-            onClick={onAdd}
-          >
-            <ShoppingIcon />
-          </Button>
-        ) : null}
-
-        <Link
-          href={`/trending/${id}`}
-          className="relative flex h-8 w-8 items-center justify-center rounded-full shadow-md!"
-        >
-          <FiEye size={18} />
-        </Link>
-        {haveAccessToken ? (
-          <Button
-            variant="ghost"
-            className="relative h-8 w-8 rounded-full p-0 shadow-md"
-            onClick={onWishlist}
-          >
-            {inWishlist ? (
-              <FaHeart color="red" size={16} />
-            ) : (
-              <FaRegHeart size={16} />
-            )}
-          </Button>
-        ) : null}
-        {/* <Button
-          variant="ghost"
-          className="relative h-8 w-8 rounded-full p-0 shadow-md"
-          onClick={copyToClipboard}
-        >
-          <ShareIcon />
-        </Button> */}
-      </div>
-
-      <Link href={`/trending/${id}`}>
-        <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base">
-          <h4 className="mb-2.5 border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark">
-            {productName}
-          </h4>
-          <div className="mt-2.5 w-full">
-            <h4 className="font-lg font-normal uppercase text-olive-green">
-              {!productProductPrice || productProductPrice === "0"
-                ? "-"
-                : `${calculateDiscountedPrice()}`}
-            </h4>
-          </div>
-          <p className="truncate" title={shortDescription}>
-            {shortDescription}
-          </p>
-          <div className="flex">
-            {calculateRatings(calculateAvgRating)}
-            <span className="ml-2">{productReview?.length}</span>
-          </div>
-        </div>
-      </Link>
-
-      <div className="mt-2">
-        {askForPrice === "true" ? (
-          <Link href={`/seller-rfq-request?product_id=${id}`}>
-            <button
-              type="button"
-              className="inline-block w-full rounded-sm bg-color-yellow px-3 py-1 text-sm font-bold text-white"
-              dir={langDir}
-              translate="no"
-            >
-              {t("ask_vendor_for_price")}
-            </button>
+      {/* Product Info */}
+      <div className="flex h-[calc(100%-192px)] flex-col justify-between">
+        <div className="flex-1">
+          <Link href={`/trending/${id}`}>
+            <div className="text-center">
+              <h4 className="mb-2 h-12 overflow-hidden text-lg font-bold text-gray-900 transition-colors group-hover:text-orange-600" title={productName}>
+                {productName}
+              </h4>
+              
+              {/* Rating */}
+              <div className="mb-3 flex items-center justify-center gap-1">
+                <div className="flex items-center">
+                  {calculateRatings(calculateAvgRating)}
+                </div>
+                <span className="ml-1 text-sm text-gray-500">({productReview?.length})</span>
+              </div>
+              
+              {/* Price */}
+              <div className="mb-3 h-12 flex items-center justify-center">
+                {askForPrice === "true" ? (
+                  <span className="inline-block rounded-full bg-blue-100 px-4 py-2 text-sm font-semibold text-blue-600">
+                    {t("ask_for_price")}
+                  </span>
+                ) : (
+                  <div className="flex items-center justify-center gap-2">
+                    <span className="text-2xl font-bold text-gray-900">
+                      {currency.symbol}{calculateDiscountedPrice()}
+                    </span>
+                    {productProductPrice && calculateDiscountedPrice() < Number(productProductPrice) && (
+                      <span className="text-lg text-gray-500 line-through">
+                        {currency.symbol}{productProductPrice}
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
+              
+              {/* Short Description */}
+              <p className="h-10 overflow-hidden text-sm text-gray-600" title={shortDescription}>
+                {shortDescription}
+              </p>
+            </div>
           </Link>
-        ) : (
-          <h5 className="py-1 text-[#1D77D1]">
-            {currency.symbol}
-            {calculateDiscountedPrice()}{" "}
-            <span className="text-gray-500 line-through!">
-              {currency.symbol}
-              {productProductPrice}
-            </span>
-          </h5>
-        )}
+        </div>
+
+        {/* Action Buttons - Fixed at bottom */}
+        <div className="mt-4 flex items-center justify-center gap-3">
+          {askForPrice !== "true" ? (
+            <Button
+              onClick={onAdd}
+              className="flex-1 rounded-full bg-orange-500 px-6 py-2.5 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:bg-orange-600 hover:shadow-xl"
+            >
+              <ShoppingIcon className="mr-2 h-4 w-4" />
+              {t("add_to_cart")}
+            </Button>
+          ) : (
+            <Link href={`/seller-rfq-request?product_id=${id}`} className="flex-1">
+              <button
+                type="button"
+                className="w-full rounded-full bg-blue-500 px-6 py-2.5 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:bg-blue-600 hover:shadow-xl"
+                dir={langDir}
+                translate="no"
+              >
+                {t("ask_vendor_for_price")}
+              </button>
+            </Link>
+          )}
+
+          <Link href={`/trending/${id}`}>
+            <Button
+              variant="outline"
+              className="h-11 w-11 rounded-full border-2 border-gray-200 bg-white shadow-md transition-all duration-200 hover:border-orange-300 hover:bg-orange-50 hover:shadow-lg"
+            >
+              <FiEye className="h-5 w-5 text-gray-600" />
+            </Button>
+          </Link>
+          
+          {haveAccessToken ? (
+            <Button
+              variant="outline"
+              onClick={onWishlist}
+              className={`h-11 w-11 rounded-full border-2 shadow-md transition-all duration-200 hover:shadow-lg ${
+                inWishlist 
+                  ? "border-red-200 bg-red-50 hover:border-red-300 hover:bg-red-100" 
+                  : "border-gray-200 bg-white hover:border-red-300 hover:bg-red-50"
+              }`}
+            >
+              {inWishlist ? (
+                <FaHeart className="h-5 w-5 text-red-500" />
+              ) : (
+                <FaRegHeart className="h-5 w-5 text-gray-600" />
+              )}
+            </Button>
+          ) : null}
+        </div>
       </div>
     </div>
   );

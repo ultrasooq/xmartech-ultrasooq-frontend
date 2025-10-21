@@ -26,6 +26,7 @@ const ProductSearchSelector: React.FC<ProductSearchSelectorProps> = ({
   const [hasSearched, setHasSearched] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
+  const [showAllProducts, setShowAllProducts] = useState(true); // Show all products by default
 
   // Function to extract plain text from rich text (HTML/JSON) format
   const extractPlainText = (richText: any): string => {
@@ -102,10 +103,11 @@ const ProductSearchSelector: React.FC<ProductSearchSelectorProps> = ({
       limit: 20,
       term: debouncedSearchTerm,
     },
-    hasSearched && debouncedSearchTerm.length > 2 // Only search when user has actually searched and term is long enough
+    showAllProducts || (hasSearched && debouncedSearchTerm.length > 2) // Show all products by default OR when user searches
   );
 
   const products = productsData?.data || [];
+
 
   const handleProductSelect = (product: any) => {
     onProductSelect(product);
@@ -141,8 +143,10 @@ const ProductSearchSelector: React.FC<ProductSearchSelectorProps> = ({
             setSearchTerm(e.target.value);
             if (e.target.value.length > 2) {
               setHasSearched(true);
+              setShowAllProducts(false); // Hide all products when searching
             } else {
               setHasSearched(false);
+              setShowAllProducts(true); // Show all products when search is cleared
             }
           }}
           className="pl-10"
@@ -216,7 +220,10 @@ const ProductSearchSelector: React.FC<ProductSearchSelectorProps> = ({
 
                   {/* Category Badge */}
                   <Badge variant="secondary" className="text-xs">
-                    {product.category?.categoryName || 'Uncategorized'}
+                    {product.category?.name || 
+                     product.category?.categoryName || 
+                     product.categoryName || 
+                     'Uncategorized'}
                   </Badge>
 
                   {/* Stock Info */}
@@ -256,11 +263,12 @@ const ProductSearchSelector: React.FC<ProductSearchSelectorProps> = ({
         </div>
       )}
 
-      {/* Empty State */}
-      {!hasSearched && (
+      {/* Empty State - Only show when no products are loaded and no search has been performed */}
+      {!hasSearched && !products.length && !isLoading && (
         <div className="text-center py-8">
-          <Search className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-          <p className="text-gray-500">{t("start_typing_to_search_products")}</p>
+          <Package className="h-12 w-12 text-gray-400 mx-auto mb-2" />
+          <p className="text-gray-500">{t("no_dropshipable_products_available")}</p>
+          <p className="text-sm text-gray-400">{t("try_searching_for_specific_products")}</p>
         </div>
       )}
     </div>

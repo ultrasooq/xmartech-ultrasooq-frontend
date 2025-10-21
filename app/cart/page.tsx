@@ -21,6 +21,7 @@ import { getCookie } from "cookies-next";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useMemo, useState } from "react";
+import { ShoppingBag } from "lucide-react";
 
 const CartListPage = () => {
   const t = useTranslations();
@@ -105,23 +106,11 @@ const CartListPage = () => {
             const discount = curr?.productPriceDetails?.consumerDiscount || 0;
             const discountType = curr?.productPriceDetails?.consumerDiscountType || '';
             
-            console.log('Cart Total - Simple Discount Logic:', {
-              productName: curr?.productPriceDetails?.productPrice_product?.productName,
-              offerPrice: curr.productPriceDetails?.offerPrice,
-              consumerDiscount: curr?.productPriceDetails?.consumerDiscount,
-              consumerDiscountType: curr?.productPriceDetails?.consumerDiscountType,
-              discount,
-              discountType,
-              quantity: curr.quantity
-            });
-            
             const calculatedDiscount = calculateDiscountedPrice(
               curr.productPriceDetails?.offerPrice ?? 0,
               discount,
               discountType
             );
-            
-            console.log('✅ Cart Total - Calculated discounted price:', calculatedDiscount);
             
             return (
               Number((acc + calculatedDiscount * curr.quantity).toFixed(2))
@@ -269,59 +258,102 @@ const CartListPage = () => {
   }, [memoizedCartList]);
 
   return (
-    <div className="cart-page">
-      <div className="container m-auto px-3">
-        <div className="headerPart" dir={langDir}>
-          <div className="lediv">
-            <h3 translate="no">{t("my_cart")}</h3>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header Section */}
+        <div className="mb-8">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900" dir={langDir} translate="no">
+              {t("my_cart")}
+            </h1>
+            <p className="mt-2 text-gray-600" dir={langDir} translate="no">
+              {memoizedCartList.length} {memoizedCartList.length === 1 ? t("item") : t("items")} in your cart
+            </p>
           </div>
         </div>
-        <div className="cart-page-wrapper">
-          <div className="cart-page-left">
-            <div className="bodyPart">
-              <div className="card-item cart-items">
-                <div className="card-inner-headerPart" dir={langDir}>
-                  <div className="lediv">
-                    <h3 translate="no">{t("cart_items")}</h3>
-                  </div>
-                </div>
-                <div className="cart-item-lists">
-                  {haveAccessToken &&
-                  !cartListByUser.data?.data?.length &&
-                  !cartListByUser.isLoading ? (
-                    <div className="px-3 py-6">
-                      <p className="my-3 text-center" translate="no">{t("no_cart_items")}</p>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left Column - Cart Items */}
+          <div className="lg:col-span-2">
+            <div className="mb-6">
+              <h2 className="text-xl font-semibold text-gray-900" dir={langDir} translate="no">
+                {t("cart_items")}
+              </h2>
+            </div>
+            
+            <div className="space-y-4">
+                {/* Empty Cart State */}
+                {haveAccessToken &&
+                !cartListByUser.data?.data?.length &&
+                !cartListByUser.isLoading ? (
+                  <div className="text-center py-12">
+                    <div className="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                      <ShoppingBag className="w-12 h-12 text-gray-400" />
                     </div>
-                  ) : null}
-
-                  {!haveAccessToken &&
-                  !cartListByDeviceQuery.data?.data?.length &&
-                  !cartListByDeviceQuery.isLoading ? (
-                    <div className="px-3 py-6">
-                      <p className="my-3 text-center" translate="no">{t("no_cart_items")}</p>
-                    </div>
-                  ) : null}
-
-                  <div className="px-3">
-                    {cartListByUser.isLoading || loading ? (
-                      <div className="my-3 space-y-3">
-                        {Array.from({ length: 2 }).map((_, i) => (
-                          <Skeleton key={i} className="h-28 w-full" />
-                        ))}
-                      </div>
-                    ) : null}
-
-                    {!haveAccessToken && (cartListByDeviceQuery.isLoading || loading) ? (
-                      <div className="my-3 space-y-3">
-                        {Array.from({ length: 2 }).map((_, i) => (
-                          <Skeleton key={i} className="h-28 w-full" />
-                        ))}
-                      </div>
-                    ) : null}
+                    <h3 className="text-lg font-medium text-gray-900 mb-2" translate="no">{t("no_cart_items")}</h3>
+                    <p className="text-gray-500 mb-6" translate="no">Add some products to get started</p>
+                    <Button 
+                      onClick={() => router.push('/trending')}
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2"
+                    >
+                      Continue Shopping
+                    </Button>
                   </div>
+                ) : null}
 
-                  {!loading ? (
-                    memoizedCartList?.map((item: CartItem) => {
+                {!haveAccessToken &&
+                !cartListByDeviceQuery.data?.data?.length &&
+                !cartListByDeviceQuery.isLoading ? (
+                  <div className="text-center py-12">
+                    <div className="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                      <ShoppingBag className="w-12 h-12 text-gray-400" />
+                    </div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-2" translate="no">{t("no_cart_items")}</h3>
+                    <p className="text-gray-500 mb-6" translate="no">Add some products to get started</p>
+                    <Button 
+                      onClick={() => router.push('/trending')}
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2"
+                    >
+                      Continue Shopping
+                    </Button>
+                  </div>
+                ) : null}
+
+                {/* Loading States */}
+                {cartListByUser.isLoading || loading ? (
+                  <div className="space-y-4">
+                    {Array.from({ length: 2 }).map((_, i) => (
+                      <div key={i} className="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg">
+                        <Skeleton className="h-20 w-20 rounded-lg" />
+                        <div className="flex-1 space-y-2">
+                          <Skeleton className="h-4 w-3/4" />
+                          <Skeleton className="h-4 w-1/2" />
+                          <Skeleton className="h-4 w-1/4" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
+
+                {!haveAccessToken && (cartListByDeviceQuery.isLoading || loading) ? (
+                  <div className="space-y-4">
+                    {Array.from({ length: 2 }).map((_, i) => (
+                      <div key={i} className="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg">
+                        <Skeleton className="h-20 w-20 rounded-lg" />
+                        <div className="flex-1 space-y-2">
+                          <Skeleton className="h-4 w-3/4" />
+                          <Skeleton className="h-4 w-1/2" />
+                          <Skeleton className="h-4 w-1/4" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
+
+                {/* Cart Items */}
+                {!loading ? (
+                  <div className="space-y-4">
+                    {memoizedCartList?.map((item: CartItem) => {
                       if (item.cartType == "DEFAULT") {
                         let relatedCart = memoizedCartList
                           ?.filter((c: any) => c.serviceId && c.cartProductServices?.length)
@@ -332,25 +364,25 @@ const CartListPage = () => {
                         return (
                           <ProductCard
                             key={item.id}
-                            cartId={item.id}
-                            productId={item.productId}
-                            productPriceId={item.productPriceId}
-                            productName={item.productPriceDetails?.productPrice_product?.productName}
-                            offerPrice={item.productPriceDetails?.offerPrice}
-                            productQuantity={item.quantity}
-                            productVariant={item.object}
-                            productImages={item.productPriceDetails?.productPrice_product?.productImages}
-                            consumerDiscount={item.productPriceDetails?.consumerDiscount || 0}
-                            consumerDiscountType={item.productPriceDetails?.consumerDiscountType}
-                            vendorDiscount={item.productPriceDetails?.vendorDiscount || 0}
-                            vendorDiscountType={item.productPriceDetails?.vendorDiscountType}
-                            onRemove={handleRemoveProductFromCart}
-                            onWishlist={handleAddToWishlist}
-                            haveAccessToken={haveAccessToken}
-                            minQuantity={item?.productPriceDetails?.minQuantityPerCustomer}
-                            maxQuantity={item?.productPriceDetails?.maxQuantityPerCustomer}
-                            relatedCart={relatedCart}
-                          />
+                              cartId={item.id}
+                              productId={item.productId}
+                              productPriceId={item.productPriceId}
+                              productName={item.productPriceDetails?.productPrice_product?.productName}
+                              offerPrice={item.productPriceDetails?.offerPrice}
+                              productQuantity={item.quantity}
+                              productVariant={item.object}
+                              productImages={item.productPriceDetails?.productPrice_product?.productImages}
+                              consumerDiscount={item.productPriceDetails?.consumerDiscount || 0}
+                              consumerDiscountType={item.productPriceDetails?.consumerDiscountType}
+                              vendorDiscount={item.productPriceDetails?.vendorDiscount || 0}
+                              vendorDiscountType={item.productPriceDetails?.vendorDiscountType}
+                              onRemove={handleRemoveProductFromCart}
+                              onWishlist={handleAddToWishlist}
+                              haveAccessToken={haveAccessToken}
+                              minQuantity={item?.productPriceDetails?.minQuantityPerCustomer}
+                              maxQuantity={item?.productPriceDetails?.maxQuantityPerCustomer}
+                              relatedCart={relatedCart}
+                            />
                         )
                       }
 
@@ -371,68 +403,82 @@ const CartListPage = () => {
 
                       return item.cartServiceFeatures.map((feature: any) => {
                         return (
-                          <ServiceCard 
-                            key={feature.id}
-                            cartId={item.id}
-                            serviceId={item.serviceId}
-                            serviceFeatureId={feature.serviceFeatureId}
-                            serviceFeatureName={feature.serviceFeature.name}
-                            serviceCost={Number(feature.serviceFeature.serviceCost)}
-                            cartQuantity={feature.quantity}
-                            serviceFeatures={features}
-                            relatedCart={relatedCart}
-                            onRemove={() => {
-                              handleRemoveServiceFromCart(item.id, feature.id);
-                            }}
-                          />
+                          <div key={feature.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                            <ServiceCard 
+                              cartId={item.id}
+                              serviceId={item.serviceId}
+                              serviceFeatureId={feature.serviceFeatureId}
+                              serviceFeatureName={feature.serviceFeature.name}
+                              serviceCost={Number(feature.serviceFeature.serviceCost)}
+                              cartQuantity={feature.quantity}
+                              serviceFeatures={features}
+                              relatedCart={relatedCart}
+                              onRemove={() => {
+                                handleRemoveServiceFromCart(item.id, feature.id);
+                              }}
+                            />
+                          </div>
                         );
                       });
-                    })
-                  ) : null}
-                </div>
-              </div>
+                    })}
+                  </div>
+                ) : null}
             </div>
           </div>
-          <div className="cart-page-right">
-            <div className="card-item priceDetails">
-              <div className="card-inner-headerPart" dir={langDir}>
-                <div className="lediv">
-                  <h3 translate="no">{t("price_details")}</h3>
+
+          {/* Right Column - Order Summary */}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden sticky top-8">
+              <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                <h2 className="text-xl font-semibold text-gray-900" dir={langDir} translate="no">
+                  {t("price_details")}
+                </h2>
+              </div>
+              
+              <div className="p-6">
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600" dir={langDir} translate="no">{t("subtotal")}</span>
+                    <span className="font-semibold text-gray-900">{currency.symbol}{totalAmount}</span>
+                  </div>
+                  
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600" dir={langDir} translate="no">{t("shipping")}</span>
+                    <span className="text-green-600 font-semibold" translate="no">{t("free")}</span>
+                  </div>
+                  
+                  <div className="border-t border-gray-200 pt-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-lg font-semibold text-gray-900" dir={langDir} translate="no">{t("total_amount")}</span>
+                      <span className="text-xl font-bold text-gray-900">{currency.symbol}{totalAmount}</span>
+                    </div>
+                  </div>
+                </div>
+
+
+                {/* Place Order Button */}
+                <div className="mt-8">
+                  <Button
+                    onClick={() => router.push("/checkout")}
+                    disabled={!memoizedCartList?.length}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                    dir={langDir}
+                    translate="no"
+                  >
+                    {t("place_order")}
+                  </Button>
+                  
+                  {memoizedCartList?.length > 0 && (
+                    <Button
+                      onClick={() => router.push("/trending")}
+                      variant="outline"
+                      className="w-full mt-3 border-gray-300 text-gray-700 hover:bg-gray-50"
+                    >
+                      Continue Shopping
+                    </Button>
+                  )}
                 </div>
               </div>
-              <div className="priceDetails-body">
-                <ul>
-                  <li dir={langDir}>
-                    <p translate="no">{t("subtotal")}</p>
-                    <h5>{currency.symbol}{totalAmount}</h5>
-                  </li>
-                  <li dir={langDir}>
-                    <p translate="no">{t("shipping")}</p>
-                    <h5 translate="no">{t("free")}</h5>
-                  </li>
-                </ul>
-              </div>
-              <div className="priceDetails-footer" dir={langDir}>
-                <h4 translate="no">{t("total_amount")}</h4>
-                <h4 className="amount-value">{currency.symbol}{totalAmount}</h4>
-              </div>
-            </div>
-            <div className="order-action-btn">
-              <Button
-                onClick={() => router.push("/checkout")}
-                disabled={!memoizedCartList?.length}
-                className="theme-primary-btn order-btn"
-                dir={langDir}
-                translate="no"
-              >
-                {t("place_order")}
-              </Button>
-              {/* <Link
-                href="/checkout"
-                className="theme-primary-btn order-btn"
-              >
-                Place Order
-              </Link> */}
             </div>
           </div>
         </div>

@@ -516,7 +516,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         ) : null}
 
-        <div className="relative w-full h-48 bg-gray-50 overflow-hidden">
+        <div className="relative w-full h-56 bg-gray-50 overflow-hidden">
           <Image
             src={
               item?.productImage && (validator.isURL(item.productImage) || item.productImage.startsWith('data:image/'))
@@ -526,7 +526,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             alt="product-image"
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
+            className="object-contain group-hover:scale-105 transition-transform duration-300"
             blurDataURL="/images/product-placeholder.png"
             placeholder="blur"
           />
@@ -689,7 +689,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 alt="minus-icon"
                 width={16}
                 height={16}
-                className="opacity-70"
               />
             </Button>
             <input
@@ -716,9 +715,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
               <Image
                 src="/images/upDownBtn-plus.svg"
                 alt="plus-icon"
-                width={16}
-                height={16}
-                className="opacity-70"
+                width={18}
+                height={18}
               />
             </Button>
           </div>

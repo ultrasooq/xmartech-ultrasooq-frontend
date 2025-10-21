@@ -6,6 +6,7 @@ import PlusIcon from "@/public/images/upDownBtn-plus.svg";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import { Trash2, Heart } from "lucide-react";
 
 type ProductCardProps = {
   cartId: number;
@@ -78,26 +79,50 @@ const ProductCard: React.FC<ProductCardProps> = ({
   }, [productQuantity]);
 
   return (
-    <>
-      <div className="cart-item-list-col">
-        <figure>
-          <div className="image-container">
-            <Image
-              src={productImages?.[0]?.image || PlaceholderImage}
-              alt="product-image"
-              height={108}
-              width={108}
-            />
+    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-200">
+      {/* Error Messages */}
+      {(invalidProduct || cannotBuy) && (
+        <div className="bg-red-50 border-b border-red-200 px-4 py-3">
+          <p className="text-sm text-red-600 font-medium" translate="no">
+            {invalidProduct ? t("you_cant_buy_this_product") : t("product_not_available_for_your_location")}
+          </p>
+        </div>
+      )}
+      
+      <div className="p-4">
+        <div className="flex items-start space-x-4">
+          {/* Product Image */}
+          <div className="flex-shrink-0">
+            <div className="relative w-24 h-24 rounded-lg overflow-hidden bg-gray-100">
+              <Image
+                src={productImages?.[0]?.image || PlaceholderImage}
+                alt="product-image"
+                fill
+                className="object-cover"
+              />
+            </div>
           </div>
-          <figcaption>
-            <h4 className="text-lg! font-bold!">{productName}</h4>
-            <div className="custom-form-group">
-              <label dir={langDir} translate="no">{t("quantity")}</label>
-              <div className="qty-up-down-s1-with-rgMenuAction">
-                <div className="flex items-center gap-x-4">
+
+          {/* Product Details */}
+          <div className="flex-1 min-w-0">
+            {/* Product Name */}
+            <div className="mb-3">
+              <h3 className="text-lg font-semibold text-gray-900 line-clamp-2" dir={langDir}>
+                {productName}
+              </h3>
+            </div>
+
+            {/* Quantity Controls */}
+            <div className="mb-4">
+              <div className="flex items-center space-x-3">
+                <label className="text-sm font-medium text-gray-700" dir={langDir} translate="no">
+                  {t("quantity")}:
+                </label>
+                <div className="flex items-center border border-gray-300 rounded-lg">
                   <Button
-                    variant="outline"
-                    className="relative hover:shadow-xs"
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 hover:bg-gray-100"
                     onClick={() => {
                       setQuantity(quantity - 1);
                       onAdd(quantity - 1, "remove", productPriceId, productVariant);
@@ -107,72 +132,88 @@ const ProductCard: React.FC<ProductCardProps> = ({
                     <Image
                       src={MinusIcon}
                       alt="minus-icon"
-                      fill
-                      className="p-3"
+                      width={16}
+                      height={16}
                     />
                   </Button>
-                  <p>{quantity}</p>
+                  <input
+                    type="text"
+                    value={quantity}
+                    className="w-12 h-8 text-center border-0 bg-transparent focus:outline-none focus:ring-0 text-sm font-medium"
+                    readOnly
+                  />
                   <Button
-                    variant="outline"
-                    className="relative hover:shadow-xs"
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 hover:bg-gray-100"
                     onClick={() => {
                       setQuantity(quantity + 1);
                       onAdd(quantity + 1, "add", productPriceId, productQuantity);
                     }}
                   >
-                    <Image src={PlusIcon} alt="plus-icon" fill className="p-3" />
+                    <Image 
+                      src={PlusIcon} 
+                      alt="plus-icon" 
+                      width={16}
+                      height={16}
+                    />
                   </Button>
                 </div>
-                <ul className="rgMenuAction-lists">
-                  <li>
-                    <Button
-                      variant="ghost"
-                      className="px-2 underline"
-                      onClick={() => onRemove(cartId)}
-                      dir={langDir}
-                      translate="no"
-                    >
-                      {t("remove")}
-                    </Button>
-                  </li>
-                  {haveAccessToken ? (
-                    <li>
-                      <Button
-                        variant="ghost"
-                        className="px-2 underline"
-                        onClick={() => onWishlist(productId)}
-                        dir={langDir}
-                        translate="no"
-                      >
-                        {t("move_to_wishlist")}
-                      </Button>
-                    </li>
-                  ) : null}
-                </ul>
               </div>
             </div>
-          </figcaption>
-        </figure>
-        <div className="right-info">
-          <h6 dir={langDir} translate="no">{t("price")}</h6>
-          {invalidProduct || cannotBuy ? (
-            <s>
-              <h5 dir={langDir}>{currency.symbol}{quantity * calculateDiscountedPrice()}</h5>
-            </s>
-          ) : (
-            <h5 dir={langDir}>{currency.symbol}{quantity * calculateDiscountedPrice()}</h5>
-          )}
+
+            {/* Action Buttons */}
+            <div className="flex items-center space-x-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-red-600 hover:text-red-700 hover:bg-red-50 px-2 flex items-center space-x-1"
+                onClick={() => onRemove(cartId)}
+                dir={langDir}
+                translate="no"
+              >
+                <Trash2 className="w-4 h-4" />
+                <span>{t("remove")}</span>
+              </Button>
+              {haveAccessToken && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 px-2 flex items-center space-x-1"
+                  onClick={() => onWishlist(productId)}
+                  dir={langDir}
+                  translate="no"
+                >
+                  <Heart className="w-4 h-4" />
+                  <span>{t("move_to_wishlist")}</span>
+                </Button>
+              )}
+            </div>
+          </div>
+
+          {/* Price Section */}
+          <div className="flex-shrink-0 text-right">
+            <div className="text-sm text-gray-500 mb-1" dir={langDir} translate="no">
+              {t("price")}
+            </div>
+            <div className="text-xl font-bold text-gray-900" dir={langDir}>
+              {invalidProduct || cannotBuy ? (
+                <span className="line-through text-gray-500">
+                  {currency.symbol}{quantity * calculateDiscountedPrice()}
+                </span>
+              ) : (
+                `${currency.symbol}${quantity * calculateDiscountedPrice()}`
+              )}
+            </div>
+            {invalidProduct || cannotBuy ? (
+              <div className="text-sm text-red-600 font-medium mt-1" dir={langDir} translate="no">
+                Not Available
+              </div>
+            ) : null}
+          </div>
         </div>
       </div>
-      <div>
-        {invalidProduct ? <p className="text-[13px] text-red-500 p-2" translate="no">
-          {t("you_cant_buy_this_product")}
-        </p> : null}
-        {cannotBuy ? <p className="text-[13px] text-red-500 p-2" translate="no">
-          {t("product_not_available_for_your_location")}
-        </p> : null}
-      </div>
-    </>
+    </div>
   );
 };
 

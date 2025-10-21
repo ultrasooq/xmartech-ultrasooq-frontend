@@ -76,20 +76,23 @@ type ButtonLinkProps = {
   onClick?: () => void;
   children: React.ReactNode;
   className?: string;
+  style?: React.CSSProperties;
 };
 
 const ButtonLink: React.FC<ButtonLinkProps> = ({
   href,
   onClick,
   children,
-  className,
+  className = "",
+  style,
   ...props
 }) => {
   return (
     <Link href={href} onClick={onClick} {...props}>
         <button
           type="button"
-          className="flex cursor-pointer text-sm font-semibold text-white uppercase md:px-8 md:py-10 md:text-sm lg:text-base xl:text-lg"
+          className={`flex cursor-pointer text-sm uppercase md:px-8 md:py-10 md:text-sm lg:text-base xl:text-lg ${className}`}
+          style={style}
           onClick={onClick}
         >
           {children}
@@ -107,6 +110,10 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
   const permissions: string[] = getPermissions();
   const { toast } = useToast();
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
+  
+  const homeButtonClasses = pathname === "/home" 
+    ? "active-nav-item" 
+    : "inactive-nav-item";
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { openSidebar } = useSidebar();
   const [menuId, setMenuId] = useState<string | number>();
@@ -414,26 +421,40 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
 
   // Dynamic header options based on current account role
   const getRoleBasedHeaderOptions = () => {
+    const getActiveClass = (href: string) => {
+      return pathname === href || pathname?.startsWith(href + "/")
+        ? "text-blue-600 font-semibold"
+        : "text-light-gray hover:text-blue-400";
+    };
+
     switch (currentTradeRole) {
       case "BUYER":
         return (
           <>
-            <li className="text-light-gray py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
+            <li className="py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
               <Link
                 href="/my-orders"
-                className="text-light-gray"
+                className={getActiveClass("/my-orders")}
                 translate="no"
               >
                 {t("my_orders")}
               </Link>
             </li>
-            <li className="text-light-gray py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
-              <Link href="/wishlist" className="text-light-gray" translate="no">
+            <li className="py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
+              <Link 
+                href="/wishlist" 
+                className={getActiveClass("/wishlist")} 
+                translate="no"
+              >
                 {t("wishlist")}
               </Link>
             </li>
-            <li className="text-light-gray py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
-              <Link href="/rfq-cart" className="text-light-gray" translate="no">
+            <li className="py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
+              <Link 
+                href="/rfq-cart" 
+                className={getActiveClass("/rfq-cart")} 
+                translate="no"
+              >
                 {t("rfq_cart")}
               </Link>
             </li>
@@ -442,28 +463,28 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
       case "FREELANCER":
         return (
           <>
-            <li className="text-light-gray py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
+            <li className="py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
               <Link
                 href="/manage-services"
-                className="text-light-gray"
+                className={getActiveClass("/manage-services")}
                 translate="no"
               >
                 {t("my_services")}
               </Link>
             </li>
-            <li className="text-light-gray py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
+            <li className="py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
               <Link
                 href="/rfq-quotes"
-                className="text-light-gray"
+                className={getActiveClass("/rfq-quotes")}
                 translate="no"
               >
                 {t("rfq_quotes")}
               </Link>
             </li>
-            <li className="text-light-gray py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
+            <li className="py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
               <Link
                 href="/seller-rewards"
-                className="text-light-gray"
+                className={getActiveClass("/seller-rewards")}
                 translate="no"
               >
                 {t("rewards")}
@@ -474,37 +495,46 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
       case "COMPANY":
         return (
           <>
-            <li className="text-light-gray py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
+            <li className="py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
               <Link
                 href="/manage-products"
-                className="text-light-gray"
+                className={getActiveClass("/manage-products")}
                 translate="no"
               >
                 {t("my_products")}
               </Link>
             </li>
-            <li className="text-light-gray py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
+            <li className="py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
               <Link
                 href="/seller-orders"
-                className="text-light-gray"
+                className={getActiveClass("/seller-orders")}
                 translate="no"
               >
                 {t("orders")}
               </Link>
             </li>
-            <li className="text-light-gray py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
+            <li className="py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
+              <Link
+                href="/dropship-products"
+                className={getActiveClass("/dropship-products")}
+                translate="no"
+              >
+                {t("dropshipping")}
+              </Link>
+            </li>
+            <li className="py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
               <Link
                 href="/rfq-seller-requests"
-                className="text-light-gray"
+                className={getActiveClass("/rfq-seller-requests")}
                 translate="no"
               >
                 {t("rfq_requests")}
               </Link>
             </li>
-            <li className="text-light-gray py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
+            <li className="py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
               <Link
                 href="/seller-rewards"
-                className="text-light-gray"
+                className={getActiveClass("/seller-rewards")}
                 translate="no"
               >
                 {t("rewards")}
@@ -515,8 +545,8 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
       default:
         return (
           <>
-            <li className="text-light-gray py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
-              <a href="#" className="text-light-gray" translate="no">
+            <li className="py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
+              <a href="#" className="text-light-gray hover:text-blue-400" translate="no">
                 {t("buyer_central")}
               </a>
             </li>
@@ -527,12 +557,27 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
 
   return (
     <>
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          .me.menu button.active-nav-item {
+            color: #2563eb !important;
+            font-weight: 700 !important;
+          }
+          .me.menu button.inactive-nav-item {
+            color: #ffffff !important;
+            font-weight: 400 !important;
+          }
+          .me.menu button.inactive-nav-item:hover {
+            color: #93c5fd !important;
+          }
+        `
+      }} />
       <header
         className="relative w-full"
         key={`header-${currentTradeRole}-${currentAccount?.data?.data?.account?.id}`}
       >
         <div className="bg-dark-cyan w-full">
-          <div className="container m-auto px-3 pt-5">
+          <div className="w-full px-8 lg:px-12 pt-5">
             <div className="hidden sm:hidden md:flex md:gap-x-2.5">
               <div className="py-4 text-sm font-normal text-white md:w-4/12 lg:w-4/12">
                 <p dir={langDir} translate="no">
@@ -776,7 +821,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                               />
                             )}
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent>
+                          <DropdownMenuContent align="end" sideOffset={5}>
                             {/* Status indicator - only show for non-active users */}
                             {userStatus && userStatus !== "ACTIVE" && (
                               <div className="border-b border-gray-200 px-2 py-1.5 text-xs text-gray-500">
@@ -892,6 +937,17 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                                           translate="no"
                                         >
                                           {t("rfq_quotes")}
+                                        </DropdownMenuItem>
+                                      </Link>
+                                    ) : null}
+
+                                    {hideMenu(PERMISSION_PRODUCTS) ? (
+                                      <Link href="/dropship-products">
+                                        <DropdownMenuItem
+                                          dir={langDir}
+                                          translate="no"
+                                        >
+                                          {t("dropshipping")}
                                         </DropdownMenuItem>
                                       </Link>
                                     ) : null}
@@ -1045,6 +1101,11 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                     router.push("/home");
                   }}
                   href="/home"
+                  className={`transition-colors ${homeButtonClasses}`}
+                  style={{
+                    color: pathname === "/home" ? "#2563eb" : "#ffffff",
+                    fontWeight: pathname === "/home" ? "700" : "400"
+                  }}
                 >
                   <div
                     className="flex gap-x-3"
@@ -1056,12 +1117,34 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                       alt={t("home")}
                       height={0}
                       width={0}
-                      className="h-7 w-7"
+                      className={`h-7 w-7 ${pathname === "/home" ? "brightness-0 saturate-100" : ""}`}
+                      style={{
+                        filter: pathname === "/home" ? "brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)" : "none"
+                      }}
                     />{" "}
                     {t("home")}
                   </div>
                 </ButtonLink>
                 {memoizedMenu.map((item: any) => {
+                  // Determine the href for this menu item
+                  const getHref = () => {
+                    if (item.name.toLowerCase().includes("home")) return "/home";
+                    if (item.name.toLowerCase().includes("store")) return "/trending";
+                    if (item.name.toLowerCase().includes("buy group")) return "/buygroup";
+                    if (item.name.toLowerCase().includes("rfq")) return "/rfq";
+                    if (item.name.toLowerCase().includes("factories")) return "/factories";
+                    if (item.name.toLowerCase().includes("service")) return "/services";
+                    return "/trending";
+                  };
+
+                  const href = getHref();
+                  const isActive = pathname === href || 
+                    (pathname?.startsWith("/trending") && href === "/trending") ||
+                    (pathname?.startsWith("/buygroup") && href === "/buygroup") ||
+                    (pathname?.startsWith("/rfq") && href === "/rfq") ||
+                    (pathname?.startsWith("/factories") && href === "/factories") ||
+                    (pathname?.startsWith("/services") && href === "/services");
+
                   return (
                     <ButtonLink
                       key={item.id}
@@ -1089,31 +1172,22 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                           router.push("/services");
                         }
                       }}
-                      href={
-                        item.name.toLowerCase().includes("home")
-                          ? "/home"
-                          : item.name.toLowerCase().includes("store")
-                            ? "/trending"
-                            : item.name.toLowerCase().includes("rfq")
-                              ? "/rfq"
-                              : item.name.toLowerCase().includes("factories")
-                                ? "/factories"
-                                : item.name.toLowerCase().includes("service")
-                                  ? "/services"
-                                  : item.name
-                                        .toLowerCase()
-                                        .includes("buy group")
-                                    ? "/buygroup"
-                                    : "/trending"
-                      }
+                      href={href}
+                      className={`transition-colors ${isActive ? "active-nav-item" : "inactive-nav-item"}`}
                     >
-                      <div className="flex gap-x-3" onClick={handleClick}>
+                      <div 
+                        className="flex gap-x-3" 
+                        onClick={handleClick}
+                      >
                         <Image
                           src={item.icon}
                           alt={item?.name}
                           height={0}
                           width={0}
-                          className="h-7 w-7"
+                          className={`h-7 w-7 ${isActive ? "brightness-0 saturate-100" : ""}`}
+                          style={{
+                            filter: isActive ? "brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)" : "none"
+                          }}
                         />{" "}
                         <p>{item?.name}</p>
                       </div>
@@ -1133,7 +1207,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
         </div>
 
         <div className="w-full border-b border-solid border-gray-300 bg-white">
-          <div className="container m-auto px-3">
+          <div className="w-full px-8 lg:px-12">
             <div className="relative flex flex-row flex-wrap md:flex-nowrap">
               <div className="flex w-full flex-1 flex-wrap gap-x-3 md:w-auto md:gap-x-5">
                 <div className="dropdown">
@@ -1405,10 +1479,10 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
               <div className="flex w-full items-center justify-end md:w-auto">
                 <ul className="flex items-center justify-end gap-x-4">
                   {getRoleBasedHeaderOptions()}
-                  <li className="text-light-gray py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
+                  <li className="py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
                     <a
                       href="#"
-                      className="text-light-gray"
+                      className="text-light-gray hover:text-blue-400 transition-colors"
                       onClick={handleToggleQueryModal}
                       translate="no"
                     >

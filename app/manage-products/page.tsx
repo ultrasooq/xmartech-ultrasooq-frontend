@@ -279,8 +279,6 @@ const ManageProductsPage = () => {
     }
   };
 
-
-
   const existingProductsBrandsQuery = useBrands({ 
     term: activeSearchTermBrand, 
     addedBy: me.data?.data?.id, 
@@ -927,7 +925,7 @@ const ManageProductsPage = () => {
   return (
     <>
       <div className="min-h-screen bg-gray-50">
-        <div className="container mx-auto px-4 py-6">
+        <div className="w-full px-8 lg:px-12 py-6">
           {/* Header */}
           <div className="mb-6">
             <div className="flex items-center justify-between">
@@ -999,8 +997,8 @@ const ManageProductsPage = () => {
 
                 <button
                   className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors flex items-center gap-2"
-                  // onClick={() => router.push('/manage-products/add-from-existing')}
-                  onClick={() => router.push('/product')}
+                  onClick={() => router.push('/manage-products/add-from-existing')}
+                  //onClick={() => router.push('/product')}
                   dir={langDir}
                 >
                   <IoMdAdd size={20} />
@@ -1513,6 +1511,8 @@ const ManageProductsPage = () => {
                              maxQuantityPerCustomer={product?.maxQuantityPerCustomer || 0}
                              productCondition={product?.productCondition || ""}
                              onRemove={handleRemoveFromList}
+                             productType={product?.productPrice_product?.productType}
+                             isDropshipped={product?.productPrice_product?.isDropshipped || false}
                            />
                          );
                        })}

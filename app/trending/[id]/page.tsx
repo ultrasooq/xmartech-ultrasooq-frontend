@@ -587,12 +587,19 @@ const ProductDetailsPage = () => {
       <title dir={langDir} translate="no">
         {t("store")} | Ultrasooq
       </title>
-      <div className="body-content-s1 relative">
-        <div className="product-view-s1-left-right type2">
-          <div className="container m-auto px-3">
+
+      {/* Modern Product Details Page */}
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+        {/* Main Product Section */}
+        <div className="bg-white">
+          <div className="container mx-auto max-w-7xl px-4 py-8 lg:px-8">
+            <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-12">
+              {/* Product Images - Left Side */}
+              <div className="lg:col-span-6">
+                <div className="sticky top-4">
             <ProductImagesCard
               productDetails={productDetails}
-              onProductUpdateSuccess={handleProductUpdateSuccess} // Pass to child
+                    onProductUpdateSuccess={handleProductUpdateSuccess}
               onAdd={() => handleAddToCart(globalQuantity, "add")}
               onToCart={async () => {
                 const minQuantity =
@@ -621,7 +628,13 @@ const ProductDetailsPage = () => {
               }
               isAddedToCart={hasItemByUser || hasItemByDevice}
               cartQuantity={globalQuantity}
+                    additionalMarketingImages={productDetails?.additionalMarketingImages}
             />
+                </div>
+              </div>
+
+              {/* Product Info - Right Side */}
+              <div className="lg:col-span-6">
             <ProductDescriptionCard
               productId={searchParams?.id ? (searchParams?.id as string) : ""}
               productName={productDetails?.productName}
@@ -643,13 +656,18 @@ const ProductDetailsPage = () => {
               onQuantityChange={handleQuantity}
               productReview={productDetails?.productReview}
               onAdd={handleAddToCart}
+                  onBuyNow={handleCheckoutPage}
               isLoading={
                 !otherSellerId && !otherProductId
                   ? !productQueryById.isFetched
                   : !productQueryByOtherSeller.isFetched
               }
-              soldBy={`${productDetails?.product_productPrice?.[0]?.adminDetail?.firstName}
-                ${productDetails?.product_productPrice?.[0]?.adminDetail?.lastName}`}
+                  soldBy={
+                    productDetails?.product_productPrice?.[0]?.adminDetail?.accountName ||
+                    productDetails?.product_productPrice?.[0]?.adminDetail?.userProfile?.companyName ||
+                    `${productDetails?.product_productPrice?.[0]?.adminDetail?.firstName || ''} ${productDetails?.product_productPrice?.[0]?.adminDetail?.lastName || ''}`.trim() ||
+                    "Unknown Seller"
+                  }
               soldByTradeRole={
                 productDetails?.product_productPrice?.[0]?.adminDetail
                   ?.tradeRole
@@ -691,129 +709,287 @@ const ProductDetailsPage = () => {
               productVariants={productVariants}
               selectedProductVariant={selectedProductVariant}
               selectProductVariant={selectProductVariant}
+                  // Dropship marketing content
+                  isDropshipped={productDetails?.isDropshipped}
+                  customMarketingContent={productDetails?.customMarketingContent}
+                  additionalMarketingImages={productDetails?.additionalMarketingImages}
             />
           </div>
         </div>
-        <div className="product-view-s1-left-details-with-right-suggestion">
-          <div className="container m-auto px-3">
-            <div className="product-view-s1-left-details">
+          </div>
+        </div>
+
+        {/* Product Details & Related Sections */}
+        <div className="container mx-auto max-w-7xl px-4 py-8 lg:px-8">
+          <div className="grid grid-cols-1 gap-8">
+            {/* Main Content - Tabs */}
               <div className="w-full">
                 <Tabs onValueChange={(e) => setActiveTab(e)} value={activeTab}>
-                  <TabsList className="flex h-auto w-full flex-wrap rounded-none bg-transparent px-0 sm:grid sm:min-h-[80px] sm:grid-cols-6">
+                {/* Clean Modern Tabs */}
+                <div className="bg-white">
+                  <TabsList className="flex w-full items-center justify-start gap-1 bg-transparent p-0">
                     <TabsTrigger
                       value="description"
-                      className="w-[50%] rounded-none border-b-2 border-b-transparent bg-[#F8F8F8]! font-semibold text-[#71717A]! data-[state=active]:border-b-2! data-[state=active]:border-b-dark-orange! data-[state=active]:text-dark-orange! data-[state=active]:shadow-none! sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
+                        className="relative rounded-none border-0 border-b-4 border-b-transparent bg-transparent px-6 py-3 text-sm font-bold text-gray-600 transition-all duration-300 hover:bg-gray-50 hover:text-gray-800 hover:border-b-gray-300 data-[state=active]:border-b-orange-500 data-[state=active]:text-orange-500 data-[state=active]:bg-orange-50/30 data-[state=active]:font-bold data-[state=active]:border-0 whitespace-nowrap sm:px-8 sm:py-4 sm:text-base lg:px-10 lg:py-5 lg:text-lg"
                       dir={langDir}
                       translate="no"
                     >
-                      {t("description")}
+                        <span className="flex items-center gap-3">
+                          <svg className="h-5 w-5 flex-shrink-0 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                          <span className="hidden sm:inline">{t("description")}</span>
+                          <span className="sm:hidden">Desc</span>
+                        </span>
                     </TabsTrigger>
                     <TabsTrigger
                       value="specification"
-                      className="w-[50%] rounded-none border-b-2 border-b-transparent bg-[#F8F8F8]! font-semibold text-[#71717A]! data-[state=active]:border-b-2! data-[state=active]:border-b-dark-orange! data-[state=active]:text-dark-orange! data-[state=active]:shadow-none! sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
+                        className="relative rounded-none border-0 border-b-4 border-b-transparent bg-transparent px-6 py-3 text-sm font-bold text-gray-600 transition-all duration-300 hover:bg-gray-50 hover:text-gray-800 hover:border-b-gray-300 data-[state=active]:border-b-orange-500 data-[state=active]:text-orange-500 data-[state=active]:bg-orange-50/30 data-[state=active]:font-bold data-[state=active]:border-0 whitespace-nowrap sm:px-8 sm:py-4 sm:text-base lg:px-10 lg:py-5 lg:text-lg"
                       dir={langDir}
                       translate="no"
                     >
-                      {t("specification")}
-                    </TabsTrigger>
-                    <TabsTrigger
-                      value="vendor"
-                      className="w-[50%] rounded-none border-b-2 border-b-transparent bg-[#F8F8F8]! font-semibold text-[#71717A]! data-[state=active]:border-b-2! data-[state=active]:border-b-dark-orange! data-[state=active]:text-dark-orange! data-[state=active]:shadow-none! sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
-                      dir={langDir}
-                      translate="no"
-                    >
-                      {t("vendor")}
+                        <span className="flex items-center gap-3">
+                          <svg className="h-5 w-5 flex-shrink-0 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                          </svg>
+                          <span className="hidden sm:inline">{t("specification")}</span>
+                          <span className="sm:hidden">Spec</span>
+                        </span>
                     </TabsTrigger>
                     <TabsTrigger
                       value="reviews"
-                      className="w-[50%] rounded-none border-b-2 border-b-transparent bg-[#F8F8F8]! font-semibold text-[#71717A]! data-[state=active]:border-b-2! data-[state=active]:border-b-dark-orange! data-[state=active]:text-dark-orange! data-[state=active]:shadow-none! sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
+                        className="relative rounded-none border-0 border-b-4 border-b-transparent bg-transparent px-6 py-3 text-sm font-bold text-gray-600 transition-all duration-300 hover:bg-gray-50 hover:text-gray-800 hover:border-b-gray-300 data-[state=active]:border-b-orange-500 data-[state=active]:text-orange-500 data-[state=active]:bg-orange-50/30 data-[state=active]:font-bold data-[state=active]:border-0 whitespace-nowrap sm:px-8 sm:py-4 sm:text-base lg:px-10 lg:py-5 lg:text-lg"
                       dir={langDir}
                       translate="no"
                     >
-                      {t("reviews")}
+                        <span className="flex items-center gap-3">
+                          <svg className="h-5 w-5 flex-shrink-0 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                          </svg>
+                          <span className="hidden sm:inline">{t("reviews")}</span>
+                          <span className="sm:hidden">Reviews</span>
+                        </span>
                     </TabsTrigger>
                     <TabsTrigger
                       value="qanda"
-                      className="w-[50%] rounded-none border-b-2 border-b-transparent bg-[#F8F8F8]! font-semibold text-[#71717A]! data-[state=active]:border-b-2! data-[state=active]:border-b-dark-orange! data-[state=active]:text-dark-orange! data-[state=active]:shadow-none! sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
+                        className="relative rounded-none border-0 border-b-4 border-b-transparent bg-transparent px-6 py-3 text-sm font-bold text-gray-600 transition-all duration-300 hover:bg-gray-50 hover:text-gray-800 hover:border-b-gray-300 data-[state=active]:border-b-orange-500 data-[state=active]:text-orange-500 data-[state=active]:bg-orange-50/30 data-[state=active]:font-bold data-[state=active]:border-0 whitespace-nowrap sm:px-8 sm:py-4 sm:text-base lg:px-10 lg:py-5 lg:text-lg"
                       dir={langDir}
                       translate="no"
                     >
-                      {t("questions")}
+                        <span className="flex items-center gap-3">
+                          <svg className="h-5 w-5 flex-shrink-0 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          <span className="hidden sm:inline">{t("questions")}</span>
+                          <span className="sm:hidden">Q&A</span>
+                        </span>
                     </TabsTrigger>
                     <TabsTrigger
-                      value="offers"
-                      className="w-[50%] rounded-none border-b-2 border-b-transparent bg-[#F8F8F8]! font-semibold text-[#71717A]! data-[state=active]:border-b-2! data-[state=active]:border-b-dark-orange! data-[state=active]:text-dark-orange! data-[state=active]:shadow-none! sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
+                        value="vendor"
+                        className="relative rounded-none border-0 border-b-4 border-b-transparent bg-transparent px-6 py-3 text-sm font-bold text-gray-600 transition-all duration-300 hover:bg-gray-50 hover:text-gray-800 hover:border-b-gray-300 data-[state=active]:border-b-orange-500 data-[state=active]:text-orange-500 data-[state=active]:bg-orange-50/30 data-[state=active]:font-bold data-[state=active]:border-0 whitespace-nowrap sm:px-8 sm:py-4 sm:text-base lg:px-10 lg:py-5 lg:text-lg"
                       dir={langDir}
                       translate="no"
                     >
-                      {t("more_offers")}
+                        <span className="flex items-center gap-3">
+                          <svg className="h-5 w-5 flex-shrink-0 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                          </svg>
+                          <span className="hidden sm:inline">{t("vendor")}</span>
+                          <span className="sm:hidden">Vendor</span>
+                        </span>
                     </TabsTrigger>
                     <TabsTrigger
                       value="services"
-                      className="w-[50%] rounded-none border-b-2 border-b-transparent bg-[#F8F8F8]! font-semibold text-[#71717A]! data-[state=active]:border-b-2! data-[state=active]:border-b-dark-orange! data-[state=active]:text-dark-orange! data-[state=active]:shadow-none! sm:w-auto md:w-auto md:py-2 md:text-xs lg:w-full lg:py-4 lg:text-base"
+                        className="relative rounded-none border-0 border-b-4 border-b-transparent bg-transparent px-6 py-3 text-sm font-bold text-gray-600 transition-all duration-300 hover:bg-gray-50 hover:text-gray-800 hover:border-b-gray-300 data-[state=active]:border-b-orange-500 data-[state=active]:text-orange-500 data-[state=active]:bg-orange-50/30 data-[state=active]:font-bold data-[state=active]:border-0 whitespace-nowrap sm:px-8 sm:py-4 sm:text-base lg:px-10 lg:py-5 lg:text-lg"
                       dir={langDir}
                       translate="no"
                     >
-                      {t("services")}
+                        <span className="flex items-center gap-3">
+                          <svg className="h-5 w-5 flex-shrink-0 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H8a2 2 0 01-2-2V8a2 2 0 012-2V6" />
+                          </svg>
+                          <span className="hidden sm:inline">{t("services")}</span>
+                          <span className="sm:hidden">Serv</span>
+                        </span>
                     </TabsTrigger>
                   </TabsList>
+                  </div>
+                {/* Tab Content - Description */}
                   <TabsContent value="description" className="mt-0">
-                    <div className="w-full bg-white">
+                  <div className="min-h-[400px] p-8 sm:p-10 lg:p-12">
+                      {/* For dropship products, show marketing text if available, otherwise show regular description */}
+                      {(productDetails?.isDropshipped && productDetails?.customMarketingContent?.marketingText) || productDetails?.description ? (
+                        <div className="space-y-4">
+                          <div className="prose prose-gray max-w-none">
+                            {(() => {
+                              // For dropship products, prioritize marketing text
+                              const desc = (productDetails?.isDropshipped && productDetails?.customMarketingContent?.marketingText) 
+                                ? productDetails?.customMarketingContent?.marketingText 
+                                : productDetails?.description;
+                              
+                              // If it's already an object, use it directly
+                              if (typeof desc === 'object' && desc !== null) {
+                                return (
                       <PlateEditor
-                        description={
-                          handleDescriptionParse(productDetails?.description) ||
-                          undefined
-                        }
+                                    description={desc}
+                                    readOnly={true}
+                                    fixedToolbar={false}
+                                  />
+                                );
+                              }
+                              
+                              // If it's a string, handle dropship marketing text or try to parse as JSON
+                              if (typeof desc === 'string') {
+                                // For dropship marketing text, display as simple text
+                                if (productDetails?.isDropshipped && productDetails?.customMarketingContent?.marketingText) {
+                                  return (
+                                    <div className="text-gray-700 leading-relaxed" dir={langDir} translate="no">
+                                      {desc}
+                                    </div>
+                                  );
+                                }
+                                try {
+                                  // First try to parse as JSON
+                                  const parsed = JSON.parse(desc);
+                                  
+                                  // Extract text content from the parsed structure
+                                  const extractText = (node: any): string => {
+                                    if (typeof node === 'string') return node;
+                                    if (node?.text) return node.text;
+                                    if (node?.children && Array.isArray(node.children)) {
+                                      return node.children.map(extractText).join('');
+                                    }
+                                    return '';
+                                  };
+                                  
+                                  const textContent = parsed.map(extractText).join('\n\n');
+                                  
+                                  // If we have text content, display it as HTML
+                                  if (textContent.trim()) {
+                                    return (
+                                      <div 
+                                        className="text-gray-700 leading-relaxed" 
+                                        dir={langDir} 
+                                        translate="no"
+                                        dangerouslySetInnerHTML={{ 
+                                          __html: textContent.replace(/\n/g, '<br/>') 
+                                        }}
+                                      />
+                                    );
+                                  }
+                                  
+                                  // Fallback to PlateEditor with parsed content
+                                  return (
+                                    <PlateEditor
+                                      description={parsed}
                         readOnly={true}
                         fixedToolbar={false}
                       />
+                                  );
+                                } catch (jsonError) {
+                                  // If JSON parsing fails, use handleDescriptionParse
+                                  try {
+                                    const parsed = handleDescriptionParse(desc);
+                                    return (
+                                      <PlateEditor
+                                        description={parsed}
+                                        readOnly={true}
+                                        fixedToolbar={false}
+                                      />
+                                    );
+                                  } catch (error) {
+                                    return (
+                                      <div className="text-gray-600" dir={langDir} translate="no">
+                                        {desc}
+                                      </div>
+                                    );
+                                  }
+                                }
+                              }
+                              
+                              // Fallback
+                              return (
+                                <div className="text-gray-600" dir={langDir} translate="no">
+                                  {String(desc)}
+                                </div>
+                              );
+                            })()}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex min-h-[200px] flex-col items-center justify-center text-center">
+                          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
+                            <svg className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                          </div>
+                          <h3 className="text-lg font-medium text-gray-900 mb-2" dir={langDir} translate="no">
+                            {productDetails?.isDropshipped ? "Dropship Product" : t("no_description_available")}
+                          </h3>
+                          <p className="text-gray-500 max-w-md" dir={langDir} translate="no">
+                            {productDetails?.isDropshipped ? "This is a dropship product. Description is managed by the dropship vendor." : t("product_description_will_be_added_soon")}
+                          </p>
+                        </div>
+                      )}
                     </div>
                   </TabsContent>
+
+                {/* Tab Content - Specification */}
                   <TabsContent value="specification" className="mt-0">
-                    <div className="w-full bg-white">
-                      {!productDetails?.product_productSpecification?.length ? (
-                        <div className="specification-sec">
-                          <h2>No specification found</h2>
+                  <div className="min-h-[400px] p-8 sm:p-10 lg:p-12">
+                      {!productDetails?.product_productSpecification?.length || productDetails?.isDropshipped ? (
+                        <div className="flex min-h-[200px] flex-col items-center justify-center text-center">
+                          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
+                            <svg className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                            </svg>
                         </div>
-                      ) : null}
-                      {productDetails?.product_productSpecification?.length ? (
-                        <div className="specification-sec">
-                          <h2 dir={langDir} translate="no">
-                            {t("specification")}
+                          <h3 className="text-lg font-medium text-gray-900 mb-2" dir={langDir} translate="no">
+                            {productDetails?.isDropshipped ? "Dropship Product" : t("no_specification_available")}
+                          </h3>
+                          <p className="text-gray-500 max-w-md" dir={langDir} translate="no">
+                            {productDetails?.isDropshipped ? "This is a dropship product. Specifications are managed by the dropship vendor." : t("specifications_will_be_added_soon")}
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="space-y-6">
+                          <h2 className="text-xl font-semibold text-gray-900" dir={langDir} translate="no">
+                            {t("technical_specifications")}
                           </h2>
-                          <table className="specification-table">
-                            <tbody>
-                              <tr className="grid grid-cols-1 md:grid-cols-2">
+                          <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+                            <div className="divide-y divide-gray-100">
                                 {productDetails?.product_productSpecification?.map(
                                   (item: {
                                     id: number;
                                     label: string;
                                     specification: string;
-                                  }) => (
-                                    <div key={item?.id}>
-                                      <th>{item?.label}</th>
-                                      <td>{item?.specification}</td>
+                                }, index: number) => (
+                                  <div key={item?.id} className={`p-6 ${index % 2 === 0 ? "bg-white" : "bg-gray-50/50"}`}>
+                                    <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+                                      <dt className="text-sm font-semibold text-gray-900">
+                                        {item?.label}
+                                      </dt>
+                                      <dd className="text-sm text-gray-600">
+                                        {item?.specification}
+                                      </dd>
+                                    </div>
                                     </div>
                                   ),
                                 )}
-                              </tr>
-                            </tbody>
-                          </table>
                         </div>
-                      ) : null}
+                    </div>
+                        </div>
+                      )}
                     </div>
                   </TabsContent>
-                  <TabsContent value="vendor" className="mt-0">
-                    <div className="w-full bg-white">
-                      <VendorSection
-                        adminId={
-                          productDetails?.product_productPrice?.[0]?.adminId
-                        }
-                      />
-                    </div>
-                  </TabsContent>
+
+                {/* Tab Content - Reviews */}
                   <TabsContent value="reviews" className="mt-0">
-                    <div className="w-full border border-solid border-gray-300 bg-white p-5">
+                  <div className="min-h-[400px] p-8 sm:p-10 lg:p-12">
+                      <div className="space-y-4">
+                        <h2 className="text-xl font-semibold text-gray-900" dir={langDir} translate="no">
+                          {t("customer_reviews")}
+                        </h2>
                       <ReviewSection
                         productId={searchParams?.id as string}
                         hasAccessToken={haveAccessToken}
@@ -822,23 +998,43 @@ const ProductDetailsPage = () => {
                           me?.data?.data?.id === productDetails?.adminId
                         }
                       />
+                      </div>
                     </div>
                   </TabsContent>
+
+                {/* Tab Content - Q&A */}
                   <TabsContent value="qanda" className="mt-0">
-                    <div className="w-full border border-solid border-gray-300 bg-white p-5">
+                  <div className="min-h-[400px] p-8 sm:p-10 lg:p-12">
                       <QuestionsAnswersSection
                         hasAccessToken={haveAccessToken}
                         productId={searchParams?.id as string}
                       />
                     </div>
                   </TabsContent>
-                  <TabsContent value="offers" className="mt-0">
-                    <div className="w-full bg-white">
-                      <p>More Offers</p>
+
+                {/* Tab Content - Vendor */}
+                <TabsContent value="vendor" className="mt-0">
+                  <div className="min-h-[400px] p-8 sm:p-10 lg:p-12">
+                      <div className="space-y-4">
+                        <h2 className="text-xl font-semibold text-gray-900" dir={langDir} translate="no">
+                          {t("vendor_information")}
+                        </h2>
+                        <VendorSection
+                          adminId={
+                            productDetails?.product_productPrice?.[0]?.adminId
+                          }
+                        />
+                      </div>
                     </div>
                   </TabsContent>
+
+                {/* Tab Content - Services */}
                   <TabsContent value="services" className="mt-0">
-                    <div className="w-full bg-white">
+                  <div className="min-h-[400px] p-8 sm:p-10 lg:p-12">
+                      <div className="space-y-4">
+                        <h2 className="text-xl font-semibold text-gray-900" dir={langDir} translate="no">
+                          {t("related_services")}
+                        </h2>
                       <RelatedServices
                         productId={Number(searchParams?.id) || 0}
                         productPriceId={
@@ -869,13 +1065,29 @@ const ProductDetailsPage = () => {
                             })
                         }
                       />
+                      </div>
                     </div>
                   </TabsContent>
                 </Tabs>
               </div>
+
+            {/* Sidebar - Related Products - COMMENTED OUT */}
+            {/* <div className="lg:col-span-4">
+              <div className="sticky top-4">
+                <div className="rounded-xl bg-white border border-gray-200 shadow-sm">
+                  <div className="border-b border-gray-100 px-6 py-4">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-100">
+                        <svg className="h-4 w-4 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                        </svg>
             </div>
-            <div className="product-view-s1-details-right-suggestion">
-              <div className="suggestion-lists-s1 mt-3">
+                      <h3 className="text-lg font-semibold text-gray-900" dir={langDir} translate="no">
+                        {t("related_products")}
+                      </h3>
+                    </div>
+                  </div>
+                  <div className="p-4">
                 <SameBrandSection
                   productDetails={productDetails}
                   productId={searchParams?.id as string}
@@ -883,213 +1095,65 @@ const ProductDetailsPage = () => {
               </div>
             </div>
           </div>
+            </div> */}
         </div>
-
-        {isVisible ? (
-          <div className="product_cart_modal absolute right-0 top-[150px] w-full px-4 lg:w-[300px] xl:right-[20px]">
-            <div className="card-item cart-items">
-              <div className="inline-flex w-full items-center justify-center pt-5 text-center">
-                <a
-                  href="javascript:void(0)"
-                  className="rounded-none bg-dark-orange px-5 py-3 text-base text-white"
-                  onClick={handleCartPage}
-                  dir={langDir}
-                  translate="no"
-                >
-                  {t("go_to_cart_page")}
-                </a>
               </div>
-              <div className="cart-item-lists">
-                {haveAccessToken &&
-                !cartListByUser.data?.data?.length &&
-                !cartListByUser.isLoading ? (
-                  <div className="w-full px-3 py-6">
-                    <p
-                      className="my-3 text-center"
-                      dir={langDir}
-                      translate="no"
-                    >
-                      {t("no_cart_items")}
-                    </p>
-                  </div>
-                ) : null}
 
-                {!haveAccessToken &&
-                !cartListByDeviceQuery.data?.data?.length &&
-                !cartListByDeviceQuery.isLoading ? (
-                  <div className="w-full px-3 py-6">
-                    <p
-                      className="my-3 text-center"
-                      dir={langDir}
-                      translate="no"
-                    >
-                      {t("no_cart_items")}
-                    </p>
-                  </div>
-                ) : null}
-
-                <div className="w-full px-3">
-                  {cartListByUser.isLoading ? (
-                    <div className="my-3 space-y-3">
-                      {Array.from({ length: 2 }).map((_, i) => (
-                        <Skeleton key={i} className="h-28 w-full" />
-                      ))}
-                    </div>
-                  ) : null}
-
-                  {!haveAccessToken && cartListByDeviceQuery.isLoading ? (
-                    <div className="my-3 space-y-3">
-                      {Array.from({ length: 2 }).map((_, i) => (
-                        <Skeleton key={i} className="h-28 w-full" />
-                      ))}
-                    </div>
-                  ) : null}
-                </div>
-
-                {memoizedCartList?.map((item: CartItem) => {
-                  if (item.cartType == "DEFAULT") {
-                    let relatedCart = memoizedCartList
-                      ?.filter(
-                        (c: any) =>
-                          c.serviceId && c.cartProductServices?.length,
-                      )
-                      .find((c: any) => {
-                        return !!c.cartProductServices.find(
-                          (r: any) =>
-                            r.relatedCartType == "PRODUCT" &&
-                            r.productId == item.productId,
-                        );
-                      });
-                    return (
-                      <ProductCard
-                        key={item.id}
-                        cartId={item.id}
-                        productId={item.productId}
-                        productPriceId={item.productPriceId}
-                        productName={
-                          item.productPriceDetails?.productPrice_product
-                            ?.productName
-                        }
-                        offerPrice={item.productPriceDetails?.offerPrice}
-                        productQuantity={item.quantity}
-                        productVariant={item.object}
-                        productImages={
-                          item.productPriceDetails?.productPrice_product
-                            ?.productImages
-                        }
-                        consumerDiscount={
-                          item.productPriceDetails?.consumerDiscount
-                        }
-                        consumerDiscountType={
-                          item.productPriceDetails?.consumerDiscountType
-                        }
-                        vendorDiscount={
-                          item.productPriceDetails?.vendorDiscount
-                        }
-                        vendorDiscountType={
-                          item.productPriceDetails?.vendorDiscountType
-                        }
-                        onRemove={handleRemoveItemFromCart}
-                        onWishlist={handleAddToWishlist}
-                        haveAccessToken={haveAccessToken}
-                        minQuantity={
-                          item?.productPriceDetails?.minQuantityPerCustomer
-                        }
-                        maxQuantity={
-                          item?.productPriceDetails?.maxQuantityPerCustomer
-                        }
-                        relatedCart={relatedCart}
-                      />
-                    );
-                  }
-
-                  if (!item.cartServiceFeatures?.length) return null;
-
-                  const features = item.cartServiceFeatures.map(
-                    (feature: any) => ({
-                      id: feature.id,
-                      serviceFeatureId: feature.serviceFeatureId,
-                      quantity: feature.quantity,
-                    }),
-                  );
-
-                  let relatedCart: any = memoizedCartList
-                    ?.filter(
-                      (c: any) => c.productId && c.cartProductServices?.length,
-                    )
-                    .find((c: any) => {
-                      return !!c.cartProductServices.find(
-                        (r: any) =>
-                          r.relatedCartType == "SERVICE" &&
-                          r.serviceId == item.serviceId,
-                      );
-                    });
-
-                  return item.cartServiceFeatures.map((feature: any) => {
-                    return (
-                      <ServiceCard
-                        key={feature.id}
-                        cartId={item.id}
-                        serviceId={item.serviceId}
-                        serviceFeatureId={feature.serviceFeatureId}
-                        serviceFeatureName={feature.serviceFeature.name}
-                        serviceCost={Number(feature.serviceFeature.serviceCost)}
-                        cartQuantity={feature.quantity}
-                        serviceFeatures={features}
-                        relatedCart={relatedCart}
-                        onRemove={() => {
-                          handleRemoveServiceFromCart(item.id, feature.id);
-                        }}
-                      />
-                    );
-                  });
-                })}
-              </div>
-            </div>
-          </div>
-        ) : null}
-
-        <div className="product-view-s1-details-more-suggestion-sliders">
+        {/* Related Products Section */}
           <RelatedProductsSection
             calculateTagIds={calculateTagIds}
             productId={searchParams?.id as string}
           />
         </div>
-      </div>
+
       <Footer />
+      
+      {/* Modern Confirmation Dialog */}
       <Dialog open={isConfirmDialogOpen} onOpenChange={handleConfirmDialog}>
         <DialogContent
-          className="add-new-address-modal add_member_modal gap-0 p-0 md:max-w-2xl!"
+          className="gap-0 overflow-hidden rounded-2xl p-0 sm:max-w-md"
           ref={confirmDialogRef}
         >
-          <div className="modal-header justify-between!" dir={langDir}>
-            <DialogTitle className="text-center text-xl font-bold text-dark-orange"></DialogTitle>
+          {/* Dialog Header */}
+          <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4" dir={langDir}>
+            <DialogTitle className="flex items-center gap-2 text-lg font-semibold text-gray-900">
+              <svg className="h-5 w-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <span translate="no">{t("confirm_removal")}</span>
+            </DialogTitle>
             <Button
               onClick={onCancelRemove}
-              className={`${langDir == "ltr" ? "absolute" : ""} right-2 top-2 z-10 bg-white! text-black! shadow-none`}
+              className="h-8 w-8 rounded-full bg-gray-100 p-0 text-gray-600 shadow-none hover:bg-gray-200"
             >
-              <IoCloseSharp size={20} />
+              <IoCloseSharp size={18} />
             </Button>
           </div>
 
-          <div className="mb-4 mt-4 text-center">
-            <p className="text-dark-orange">
-              Do you want to remove this item from cart?
+          {/* Dialog Content */}
+          <div className="px-6 py-6">
+            <p className="mb-6 text-center text-gray-700" dir={langDir} translate="no">
+              {t("confirm_remove_item_message")}
             </p>
-            <div>
+            
+            <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
               <Button
                 type="button"
-                className="mr-2 bg-white text-red-500"
                 onClick={onCancelRemove}
+                className="min-w-[120px] rounded-lg border-2 border-gray-300 bg-white px-6 py-2.5 font-medium text-gray-700 shadow-sm transition-all hover:bg-gray-50 hover:border-gray-400"
+                dir={langDir}
+                translate="no"
               >
-                Cancel
+                {t("cancel")}
               </Button>
               <Button
                 type="button"
-                className="bg-red-500"
                 onClick={onConfirmRemove}
+                className="min-w-[120px] rounded-lg bg-gradient-to-r from-red-500 to-red-600 px-6 py-2.5 font-medium text-white shadow-md transition-all hover:shadow-lg hover:from-red-600 hover:to-red-700 active:scale-95"
+                dir={langDir}
+                translate="no"
               >
-                Remove
+                {t("remove")}
               </Button>
             </div>
           </div>

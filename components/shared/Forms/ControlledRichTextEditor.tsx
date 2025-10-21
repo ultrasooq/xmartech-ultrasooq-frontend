@@ -2,21 +2,47 @@ import { useAuth } from "@/context/AuthContext";
 import React from "react";
 import { Controller, useFormContext } from "react-hook-form";
 
-// Simple fallback component for PlateEditor
-const PlateEditor = ({
-  description,
+// Simple rich text editor component
+const SimpleRichTextEditor = ({
+  value,
+  onChange,
   readOnly = false,
-  fixedToolbar = false,
+  maxLength,
   ...props
 }: any) => {
+  const currentLength = (value || "").length;
+  const isOverLimit = maxLength && currentLength > maxLength;
+  
   return (
-    <div
-      className="prose max-w-none"
-      dangerouslySetInnerHTML={{
-        __html: description || "",
-      }}
-      {...props}
-    />
+    <div className="relative">
+      <textarea
+        value={value || ""}
+        onChange={(e) => {
+          onChange?.(e.target.value);
+        }}
+        readOnly={readOnly}
+        maxLength={maxLength}
+        className={`w-full min-h-[120px] p-3 border rounded-md resize-vertical focus:ring-2 focus:border-transparent ${
+          isOverLimit 
+            ? 'border-red-300 focus:ring-red-500' 
+            : 'border-gray-300 focus:ring-blue-500'
+        }`}
+        placeholder="Enter description..."
+        {...props}
+      />
+      <div className="mt-2 flex justify-between items-center">
+        {!readOnly && (
+          <div className="text-xs text-gray-500">
+            You can use basic formatting. For advanced formatting, please use HTML tags.
+          </div>
+        )}
+        {maxLength && (
+          <div className={`text-xs ${isOverLimit ? 'text-red-500' : 'text-gray-400'}`}>
+            {currentLength}/{maxLength} characters
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 
@@ -25,7 +51,8 @@ interface ControlledRichTextEditorProps {
   name: string;
   value?: any[];
   onChange?: (e: any) => void;
-  readOnly?: boolean; // Add readOnly prop
+  readOnly?: boolean;
+  maxLength?: number;
 }
 
 const ControlledRichTextEditor: React.FC<ControlledRichTextEditorProps> = ({
@@ -33,7 +60,8 @@ const ControlledRichTextEditor: React.FC<ControlledRichTextEditorProps> = ({
   name,
   value,
   onChange,
-  readOnly = false, // Default to false
+  readOnly = false,
+  maxLength,
 }) => {
   const formContext = useFormContext();
   const { langDir } = useAuth();
@@ -49,21 +77,40 @@ const ControlledRichTextEditor: React.FC<ControlledRichTextEditorProps> = ({
       <Controller
         control={formContext.control}
         name={name}
-        defaultValue=""
-        render={({ field }) => (
-          <PlateEditor
-            onChange={(e) => {
-              if (onChange) {
-                onChange(e);
-              } else {
-                field.onChange(e);
-              }
-            }}
-            description={value || field.value}
-            readOnly={readOnly} // Pass readOnly prop to PlateEditor
-            fixedToolbar={readOnly ? false : true}
-          />
-        )}
+        defaultValue={name === "descriptionJson" ? [] : ""}
+        render={({ field }) => {
+          // Convert between string and array formats based on field name
+          const isDescriptionJson = name === "descriptionJson";
+          
+          // Get the current value - convert from array format if needed
+          const currentValue = isDescriptionJson 
+            ? (Array.isArray(field.value) ? field.value[0]?.children?.[0]?.text || "" : field.value || "")
+            : (field.value || "");
+          
+          return (
+            <SimpleRichTextEditor
+              onChange={(newValue) => {
+                if (onChange) {
+                  onChange(newValue);
+                } else {
+                  // Convert string to array format for descriptionJson
+                  if (isDescriptionJson) {
+                    const arrayValue = newValue ? [{
+                      type: "p",
+                      children: [{ text: newValue }]
+                    }] : [];
+                    field.onChange(arrayValue);
+                  } else {
+                    field.onChange(newValue);
+                  }
+                }
+              }}
+              value={currentValue}
+              readOnly={readOnly}
+              maxLength={maxLength}
+            />
+          );
+        }}
       />
     </div>
   );

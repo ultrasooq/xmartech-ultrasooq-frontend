@@ -21,7 +21,7 @@ import { useRouter } from "next/navigation";
 import { loadStripe } from "@stripe/stripe-js";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
-import { Switch } from "@/components/ui/switch";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -161,7 +161,8 @@ const CompleteOrderPage = () => {
             });
             orderStore.resetOrders();
             orderStore.setTotal(0);
-            router.push("/orders");
+            // Redirect to checkout-complete with success parameters
+            router.push(`/checkout-complete?success=true&id=wallet-${Date.now()}&order=${response?.data?.id}`);
           } else {
             await handleCreatePaymentIntent(response?.data?.id);
           }
@@ -285,243 +286,348 @@ const CompleteOrderPage = () => {
   };
 
   return (
-    <div className="cart-page">
-      <div className="container m-auto px-3">
-        <div className="headerPart" dir={langDir}>
-          <div className="lediv">
-            <h3 translate="no">{t("make_payment")}</h3>
-          </div>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 lg:px-8 py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2" dir={langDir} translate="no">
+            {t("make_payment")}
+          </h1>
+          <p className="text-gray-600" dir={langDir} translate="no">
+            Choose your preferred payment method to complete your order
+          </p>
         </div>
-        <div className="cart-page-wrapper">
-          <div className="cart-page-left">
-            <div className="flex items-center justify-start gap-2 sm:grid">
-              <Label translate="no">{t("direct_payment")}</Label>
-              <Switch
-                checked={paymentType == "DIRECT"}
-                onCheckedChange={(checked) => {
-                  if (checked) {
-                    setPaymentType("DIRECT");
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left Column - Payment Options */}
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+              <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                <h2 className="text-xl font-semibold text-gray-900" dir={langDir} translate="no">
+                  Payment Methods
+                </h2>
+              </div>
+              
+              <div className="p-6">
+                <RadioGroup value={paymentType} onValueChange={(value) => {
+                  setPaymentType(value);
+                  if (value !== "ADVANCE") {
                     setAdvanceAmount(0);
                   }
-                }}
-                className="m-0 data-[state=checked]:bg-dark-orange!"
-              />
-            </div>
-            <div className="mt-3 flex items-center justify-start gap-2 sm:grid">
-              <Label translate="no">{t("advance_payment")}</Label>
-              <Switch
-                checked={paymentType == "ADVANCE"}
-                onCheckedChange={(checked) => {
-                  if (checked) setPaymentType("ADVANCE");
-                }}
-                className="m-0 data-[state=checked]:bg-dark-orange!"
-              />
-            </div>
-            {paymentType == "ADVANCE" ? (
-              <div className="mt-3 sm:grid sm:grid-cols-3">
-                <Input
-                  onChange={(e) => setAdvanceAmount(Number(e.target.value))}
-                />
-              </div>
-            ) : null}
-            {user && walletData?.data && (
-              <div className="mt-3 flex items-center justify-start gap-2 sm:grid">
-                <Label translate="no">{t("pay_with_wallet")} ({currency.symbol}{walletData.data.balance ? Number(walletData.data.balance).toFixed(2) : "0.00"})</Label>
-                <Switch
-                  checked={paymentType == "WALLET"}
-                  onCheckedChange={(checked) => {
-                    if (checked) {
-                      setPaymentType("WALLET");
-                      setAdvanceAmount(0);
-                    }
-                  }}
-                  className="m-0 data-[state=checked]:bg-dark-orange!"
-                />
-                {paymentType == "WALLET" && (
-                  <div className="mt-2 w-full">
-                    <div className="wallet_payment_info p-3 bg-gray-50 rounded-lg">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm text-gray-600">{t("wallet_balance")}:</span>
-                        <span className="font-semibold">{currency.symbol}{walletData.data.balance ? Number(walletData.data.balance).toFixed(2) : "0.00"}</span>
+                }} className="space-y-4">
+                {/* Direct Payment Option */}
+                <div className={`border-2 rounded-lg p-6 transition-all duration-200 cursor-pointer ${
+                  paymentType === "DIRECT" 
+                    ? "border-blue-500 bg-blue-50 shadow-md" 
+                    : "border-gray-200 hover:border-gray-300 hover:shadow-sm"
+                }`}>
+                  <div className="flex items-center space-x-4">
+                    <RadioGroupItem 
+                      value="DIRECT" 
+                      id="direct-payment"
+                      className="text-blue-600 border-blue-600"
+                    />
+                    <div className="flex-1">
+                      <Label 
+                        htmlFor="direct-payment" 
+                        className="cursor-pointer"
+                      >
+                        <div>
+                          <h3 className="text-lg font-semibold text-gray-900" dir={langDir} translate="no">
+                            {t("direct_payment")}
+                          </h3>
+                          <p className="text-sm text-gray-600" dir={langDir} translate="no">
+                            Pay the full amount now with your preferred payment method
+                          </p>
+                        </div>
+                      </Label>
+                    </div>
+                  </div>
+                </div>
+                {/* Advance Payment Option */}
+                <div className={`border-2 rounded-lg p-6 transition-all duration-200 cursor-pointer ${
+                  paymentType === "ADVANCE" 
+                    ? "border-blue-500 bg-blue-50 shadow-md" 
+                    : "border-gray-200 hover:border-gray-300 hover:shadow-sm"
+                }`}>
+                  <div className="flex items-center space-x-4">
+                    <RadioGroupItem 
+                      value="ADVANCE" 
+                      id="advance-payment"
+                      className="text-blue-600 border-blue-600"
+                    />
+                    <div className="flex-1">
+                      <Label 
+                        htmlFor="advance-payment" 
+                        className="cursor-pointer"
+                      >
+                        <div>
+                          <h3 className="text-lg font-semibold text-gray-900" dir={langDir} translate="no">
+                            {t("advance_payment")}
+                          </h3>
+                          <p className="text-sm text-gray-600" dir={langDir} translate="no">
+                            Pay a partial amount now and the rest later
+                          </p>
+                        </div>
+                      </Label>
+                    </div>
+                  </div>
+                  
+                  {paymentType == "ADVANCE" && (
+                    <div className="mt-6 pl-8">
+                      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                        <label className="block text-sm font-medium text-gray-700 mb-2" dir={langDir} translate="no">
+                          Advance Amount
+                        </label>
+                        <Input
+                          type="number"
+                          placeholder="Enter advance amount"
+                          value={advanceAmount || ''}
+                          onChange={(e) => setAdvanceAmount(Number(e.target.value))}
+                          className="max-w-xs"
+                        />
+                        <p className="text-sm text-gray-600 mt-2" dir={langDir} translate="no">
+                          Remaining: {currency.symbol}{(orderStore.total - advanceAmount).toFixed(2)}
+                        </p>
                       </div>
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm text-gray-600">{t("order_total")}:</span>
-                        <span className="font-semibold">{currency.symbol}{orderStore.total || 0}</span>
+                    </div>
+                  )}
+                </div>
+                {/* Wallet Payment Option */}
+                {user && walletData?.data && (
+                  <div className={`border-2 rounded-lg p-6 transition-all duration-200 cursor-pointer ${
+                    paymentType === "WALLET" 
+                      ? "border-blue-500 bg-blue-50 shadow-md" 
+                      : "border-gray-200 hover:border-gray-300 hover:shadow-sm"
+                  }`}>
+                    <div className="flex items-center space-x-4">
+                      <RadioGroupItem 
+                        value="WALLET" 
+                        id="wallet-payment"
+                        className="text-blue-600 border-blue-600"
+                      />
+                      <div className="flex-1">
+                        <Label 
+                          htmlFor="wallet-payment" 
+                          className="cursor-pointer"
+                        >
+                          <div>
+                            <h3 className="text-lg font-semibold text-gray-900" dir={langDir} translate="no">
+                              {t("pay_with_wallet")}
+                            </h3>
+                            <p className="text-sm text-gray-600" dir={langDir} translate="no">
+                              Use your wallet balance ({currency.symbol}{walletData.data.balance ? Number(walletData.data.balance).toFixed(2) : "0.00"})
+                            </p>
+                          </div>
+                        </Label>
+                      </div>
+                    </div>
+                    
+                    {paymentType == "WALLET" && (
+                      <div className="mt-6 pl-8">
+                        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 space-y-3">
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-gray-600">{t("wallet_balance")}:</span>
+                            <span className="font-semibold text-gray-900">{currency.symbol}{walletData.data.balance ? Number(walletData.data.balance).toFixed(2) : "0.00"}</span>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-gray-600">{t("order_total")}:</span>
+                            <span className="font-semibold text-gray-900">{currency.symbol}{orderStore.total || 0}</span>
+                          </div>
+                          <div className="border-t border-gray-300 pt-3">
+                            <div className="flex justify-between items-center">
+                              <span className="text-sm font-medium text-gray-700">{t("remaining_after_payment")}:</span>
+                              <span className={`font-semibold ${(Number(walletData.data.balance || 0) - Number(orderStore.total || 0)) < 0 ? 'text-red-600' : 'text-green-600'}`}>
+                                {currency.symbol}{(Number(walletData.data.balance || 0) - Number(orderStore.total || 0)).toFixed(2)}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Payment Link Option */}
+                <div className={`border-2 rounded-lg p-6 transition-all duration-200 cursor-pointer ${
+                  paymentType === "PAYMENTLINK" 
+                    ? "border-blue-500 bg-blue-50 shadow-md" 
+                    : "border-gray-200 hover:border-gray-300 hover:shadow-sm"
+                }`}>
+                  <div className="flex items-center space-x-4">
+                    <RadioGroupItem 
+                      value="PAYMENTLINK" 
+                      id="payment-link"
+                      className="text-blue-600 border-blue-600"
+                    />
+                    <div className="flex-1">
+                      <Label 
+                        htmlFor="payment-link" 
+                        className="cursor-pointer"
+                      >
+                        <div>
+                          <h3 className="text-lg font-semibold text-gray-900" dir={langDir} translate="no">
+                            {t("pay_it_for_me")}
+                          </h3>
+                          <p className="text-sm text-gray-600" dir={langDir} translate="no">
+                            Generate a payment link to share with someone else
+                          </p>
+                        </div>
+                      </Label>
+                    </div>
+                  </div>
+                  
+                  {paymentLink && (
+                    <div className="mt-6 pl-8">
+                      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                        <div className="space-y-3">
+                          <Button 
+                            type="button" 
+                            onClick={copyPaymentLink} 
+                            className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                            translate="no"
+                          >
+                            {t("copy_payment_link")}
+                          </Button>
+                          <p className="text-sm text-gray-600" dir={langDir} translate="no">
+                            {t("copy_payment_link_instruction")}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                </RadioGroup>
+              </div>
+            </div>
+          </div>
+          {/* Right Column - Order Summary */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-8">
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                  <h2 className="text-xl font-semibold text-gray-900" dir={langDir} translate="no">
+                    {t("order_summary")}
+                  </h2>
+                </div>
+                
+                <div className="p-6 space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600" dir={langDir} translate="no">
+                      {t("subtotal")}
+                    </span>
+                    <span className="font-semibold text-gray-900">
+                      {currency.symbol}{orderStore.total || 0}
+                    </span>
+                  </div>
+                  
+                  {advanceAmount > 0 && (
+                    <>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-600" dir={langDir} translate="no">
+                          {t("advance_payment")}
+                        </span>
+                        <span className="font-semibold text-gray-900">
+                          {currency.symbol}{advanceAmount || 0}
+                        </span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-gray-600">{t("remaining_after_payment")}:</span>
+                        <span className="text-gray-600" dir={langDir} translate="no">
+                          {t("shipping")}
+                        </span>
+                        <span className="text-green-600 font-medium">{t("free")}</span>
+                      </div>
+                    </>
+                  )}
+                  
+                  {paymentType == "WALLET" && walletData?.data && (
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600" dir={langDir} translate="no">
+                        {t("wallet_balance")}
+                      </span>
+                      <span className="font-semibold text-gray-900">
+                        {currency.symbol}{walletData.data.balance ? Number(walletData.data.balance).toFixed(2) : "0.00"}
+                      </span>
+                    </div>
+                  )}
+                  
+                  <div className="border-t border-gray-200 pt-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-lg font-semibold text-gray-900" dir={langDir} translate="no">
+                        {t("total_amount")}
+                      </span>
+                      <span className="text-xl font-bold text-gray-900">
+                        {currency.symbol}{advanceAmount > 0 ? advanceAmount || 0 : orderStore.total || 0}
+                      </span>
+                    </div>
+                  </div>
+                  
+                  {advanceAmount > 0 && (
+                    <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium text-orange-800" dir={langDir} translate="no">
+                          {t("due_balance")}
+                        </span>
+                        <span className="font-semibold text-orange-800">
+                          {currency.symbol}{(orderStore.total - advanceAmount).toFixed(2)}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {paymentType == "WALLET" && walletData?.data && (
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium text-green-800" dir={langDir} translate="no">
+                          {t("remaining_after_payment")}
+                        </span>
                         <span className={`font-semibold ${(Number(walletData.data.balance || 0) - Number(orderStore.total || 0)) < 0 ? 'text-red-600' : 'text-green-600'}`}>
                           {currency.symbol}{(Number(walletData.data.balance || 0) - Number(orderStore.total || 0)).toFixed(2)}
                         </span>
                       </div>
                     </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            <div className="mt-3 flex items-center justify-start gap-2 sm:grid">
-              <Label translate="no">{t("pay_it_for_me")}</Label>
-              <Switch
-                checked={paymentType == "PAYMENTLINK"}
-                onCheckedChange={(checked) => {
-                  if (checked) {
-                    setPaymentType("PAYMENTLINK");
-                    setAdvanceAmount(0);
-                  }
-                }}
-                className="m-0 data-[state=checked]:bg-dark-orange!"
-              />
-              {paymentLink ? (
-                <>
-                  <div className="sm:grid sm:grid-cols-3">
-                    <Button type="button" onClick={copyPaymentLink} translate="no">
-                      {t("copy_payment_link")}
-                    </Button>
-                  </div>
-                  <div className="sm:grid sm:grid-cols-1">
-                    <span translate="no">{t("copy_payment_link_instruction")}</span>
-                  </div>
-                </>
-              ) : null}
-            </div>
-            {/* <div className="mt-3 flex items-center justify-start gap-2 sm:grid">
-              <Label translate="no">{t("installments")}</Label>
-              <Switch
-                checked={paymentType == "EMI"}
-                onCheckedChange={(checked) => {
-                  if (checked) {
-                    setPaymentType("EMI");
-                    setAdvanceAmount(0);
-                  }
-                }}
-                className="m-0 data-[state=checked]:bg-dark-orange!"
-              />
-              {paymentType == "EMI" ? (
-                <>
-                  <div className="sm:grid sm:grid-cols-3">
-                    <Label dir={langDir} translate="no">{t("emi_period")}{" "}({t("months")})</Label>
-                  </div>
-                  <div className="sm:grid sm:grid-cols-3">
-                    <select
-                      value={emiPeriod}
-                      onChange={(e) => setEmiPeriod(Number(e.target.value))}
-                      style={{ border: "1px solid" }}
-                    >
-                      <option value="6">6</option>
-                      <option value="12">12</option>
-                      <option value="18">18</option>
-                      <option value="24">24</option>
-                    </select>
-                  </div>
-                </>
-              ) : null}
-            </div> */}
-          </div>
-          <div className="cart-page-right">
-            <div className="card-item priceDetails">
-              <div className="card-inner-headerPart" dir={langDir}>
-                <div className="lediv">
-                  <h3 dir={langDir} translate="no">{t("price_details")}</h3>
+                  )}
+                  
+                  {paymentType == "EMI" && (
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium text-blue-800" dir={langDir} translate="no">
+                          {t("emi_amount")}
+                        </span>
+                        <span className="font-semibold text-blue-800">
+                          {currency.symbol}{emiAmount}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                
+                <div className="px-6 pb-6">
+                  <Button
+                    onClick={handleCreateOrder}
+                    disabled={createOrder?.isPending || 
+                      createPaymentIntent?.isPending || 
+                      createEMIPayment?.isPending || 
+                      isRedirectingToPaymob
+                    }
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg transition-colors duration-200"
+                    translate="no"
+                  >
+                    {createOrder?.isPending ? (
+                      <LoaderWithMessage message={t("placing_order")} />
+                    ) : createPaymentIntent?.isPending || 
+                      createPaymentLink?.isPending || 
+                      createEMIPayment?.isPending || 
+                      isRedirectingToPaymob ? (
+                      <LoaderWithMessage message={t("initiating_payment")} />
+                    ) : paymentType == "WALLET" ? (
+                      t("pay_with_wallet")
+                    ) : (
+                      t("place_order")
+                    )}
+                  </Button>
                 </div>
               </div>
-              <div className="priceDetails-body">
-                <ul>
-                  <li>
-                    <p dir={langDir} translate="no">{t("subtotal")}</p>
-                    <h5>
-                      {currency.symbol}
-                      {orderStore.total || 0}
-                    </h5>
-                  </li>
-                  {advanceAmount > 0 ? (
-                    <>
-                      <li>
-                        <p dir={langDir} translate="no">{t("advance_payment")}</p>
-                        <h5>
-                          {currency.symbol}
-                          {advanceAmount || 0}
-                        </h5>
-                      </li>
-                      <li>
-                        <p dir={langDir} translate="no">{t("shipping")}</p>
-                        <h5 dir={langDir} translate="no">{t("free")}</h5>
-                      </li>
-                    </>
-                  ) : null}
-                  {paymentType == "WALLET" && walletData?.data && (
-                    <li>
-                      <p dir={langDir} translate="no">{t("wallet_balance")}</p>
-                      <h5>
-                        {currency.symbol}
-                        {walletData.data.balance ? Number(walletData.data.balance).toFixed(2) : "0.00"}
-                      </h5>
-                    </li>
-                  )}
-                </ul>
-              </div>
-              <div className="priceDetails-footer">
-                <h4 dir={langDir} translate="no">{t("total_amount")}</h4>
-                <h4 className="amount-value">
-                  {currency.symbol}
-                  {advanceAmount > 0
-                    ? advanceAmount || 0
-                    : orderStore.total || 0}
-                </h4>
-                <br />
-                {advanceAmount > 0 ? (
-                  <>
-                    <h4 translate="no">{t("due_balance")}</h4>
-                    <h4 className="amount-value">
-                      {currency.symbol}
-                      {(orderStore.total - advanceAmount).toFixed(2)}
-                    </h4>
-                  </>
-                ) : null}
-                {paymentType == "WALLET" && walletData?.data && (
-                  <>
-                    <h4 translate="no">{t("remaining_after_payment")}</h4>
-                    <h4 className={`amount-value ${(Number(walletData.data.balance || 0) - Number(orderStore.total || 0)) < 0 ? 'text-red-600' : 'text-green-600'}`}>
-                      {currency.symbol}
-                      {(Number(walletData.data.balance || 0) - Number(orderStore.total || 0)).toFixed(2)}
-                    </h4>
-                  </>
-                )}
-                {paymentType == "EMI" ? (
-                  <>
-                    <h4 translate="no">{t("emi_amount")}</h4>
-                    <h4 className="amount-value">
-                      {currency.symbol}
-                      {emiAmount}
-                    </h4>
-                  </>
-                ) : null}
-              </div>
-            </div>
-            <div className="order-action-btn">
-              <Button
-                onClick={handleCreateOrder}
-                disabled={createOrder?.isPending || 
-                  createPaymentIntent?.isPending || 
-                  createEMIPayment?.isPending || 
-                  isRedirectingToPaymob
-                }
-                className="theme-primary-btn order-btn"
-                translate="no"
-              >
-                {createOrder?.isPending ? (
-                  <LoaderWithMessage message={t("placing_order")} />
-                ) : createPaymentIntent?.isPending || 
-                  createPaymentLink?.isPending || 
-                  createEMIPayment?.isPending || 
-                  isRedirectingToPaymob ? (
-                  <LoaderWithMessage message={t("initiating_payment")} />
-                ) : paymentType == "WALLET" ? (
-                  t("pay_with_wallet")
-                ) : (
-                  t("place_order")
-                )}
-              </Button>
             </div>
           </div>
         </div>

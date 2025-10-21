@@ -4,8 +4,6 @@ import {
   CarouselApi,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
@@ -43,6 +41,8 @@ type ProductImagesCardProps = {
   onProductUpdateSuccess: () => void;
   isAddedToCart?: boolean;
   cartQuantity?: number;
+  // Marketing images for dropshipped products
+  additionalMarketingImages?: any[];
 };
 
 const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
@@ -60,6 +60,7 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
   onProductUpdateSuccess,
   isAddedToCart,
   cartQuantity = 0,
+  additionalMarketingImages = [],
 }) => {
   const t = useTranslations();
   const { langDir } = useAuth();
@@ -68,39 +69,118 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
   const [api, setApi] = useState<CarouselApi>();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
+  // Debug: Log carousel state changes
+  useEffect(() => {
+    console.log('Carousel state changed:', {
+      currentImageIndex,
+      previewImagesLength: previewImages?.length,
+      hasApi: !!api
+    });
+  }, [currentImageIndex, previewImages?.length, api]);
+
   const productSellerImage =
     productDetails?.product_productPrice?.[0]?.productPrice_productSellerImage;
 
   useEffect(() => {
-    const tempImages = productSellerImage?.length
+    let tempImages = productSellerImage?.length
       ? productSellerImage
       : productDetails?.productImages;
 
+    // For dropshipped products, prioritize marketing images
+    if (productDetails?.isDropshipped && additionalMarketingImages?.length > 0) {
+      // Add marketing images to the beginning of the gallery
+      const marketingImageObjects = additionalMarketingImages.map((image) => ({
+        image: image,
+        type: 'marketing'
+      }));
+      tempImages = [...marketingImageObjects, ...(tempImages || [])];
+    }
+
     if (!tempImages) return;
 
-    setPreviewImages(
-      tempImages?.map((item: any) =>
-        item?.image && validator.isURL(item.image)
-          ? item.image
-          : item?.video && validator.isURL(item.video)
-            ? item.video
-            : PlaceholderImage,
-      ),
-    );
+    const finalImages = tempImages?.map((item: any) => {
+      // Handle marketing images (base64 data)
+      if (item?.type === 'marketing' && item?.image) {
+        return item.image;
+      }
+      // Handle regular product images
+      if (item?.image && validator.isURL(item.image)) {
+        return item.image;
+      }
+      // Handle videos
+      if (item?.video && validator.isURL(item.video)) {
+        return item.video;
+      }
+      // Fallback to placeholder
+      return PlaceholderImage;
+    });
+    
+    setPreviewImages(finalImages);
+    
+    // Reset carousel to first image when marketing images are added
+    if (productDetails?.isDropshipped && additionalMarketingImages?.length > 0) {
+      setCurrentImageIndex(0);
+    }
+    
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [productSellerImage, productDetails?.productImages]);
+  }, [productSellerImage, productDetails?.productImages, productDetails?.isDropshipped, additionalMarketingImages]);
 
   useEffect(() => {
     if (!api) {
       return;
     }
 
+    // Only force first image if carousel is not properly initialized
+    const initializeCarousel = () => {
+      const currentSlide = api.selectedScrollSnap();
+      
+      if (isNaN(currentSlide) || currentSlide < 0) {
+        api.scrollTo(0, true);
+        setCurrentImageIndex(0);
+      } else {
+        setCurrentImageIndex(currentSlide);
+      }
+    };
+
+    // Try initialization with delays
+    initializeCarousel();
+    setTimeout(initializeCarousel, 100);
+    setTimeout(initializeCarousel, 300);
+
     api.on("select", (emblaApi) => {
-      // Do something on select.
       const index = emblaApi.selectedScrollSnap();
-      setCurrentImageIndex(index);
+      if (!isNaN(index) && index >= 0) {
+        setCurrentImageIndex(index);
+      }
     });
   }, [api]);
+
+  // Ensure carousel starts at marketing image for dropshipped products
+  useEffect(() => {
+    if (api && productDetails?.isDropshipped && additionalMarketingImages?.length > 0) {
+      setTimeout(() => {
+        api.scrollTo(0);
+        setCurrentImageIndex(0);
+      }, 100);
+    }
+  }, [api, productDetails?.isDropshipped, additionalMarketingImages]);
+
+  // Force carousel to start at first image when preview images change (only on initial load)
+  useEffect(() => {
+    if (api && previewImages?.length > 0) {
+      // Only force to first image if carousel is not initialized properly
+      const forceToFirstImage = () => {
+        const currentSlide = api.selectedScrollSnap();
+        if (isNaN(currentSlide) || currentSlide < 0) {
+          api.scrollTo(0);
+          setCurrentImageIndex(0);
+        }
+      };
+      
+      // Only try once on initial load
+      setTimeout(forceToFirstImage, 200);
+    }
+  }, [api, previewImages]);
 
   // For Edit Modal
   const wrapperRef = useRef(null);
@@ -143,63 +223,65 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
   }, [sellerRewardsQuery?.data?.data, productDetails]);
 
   return (
-    <div className="product-view-s1-left">
-      <div className="mb-3 flex flex-col-reverse md:mb-3 lg:mb-0 lg:grid lg:grid-cols-4 lg:gap-4">
-        <div className="relative order-2 col-span-3 flex items-center space-y-4 bg-gray-100 pl-3 md:max-h-[500px] lg:pl-0">
+    <div className="w-full">
+      <div className="flex flex-col-reverse lg:grid lg:grid-cols-5 lg:gap-4">
+        {/* Main Image Display - Clean, No Background */}
+        <div className="relative order-2 col-span-4 flex items-center justify-center">
           {!isLoading && haveAccessToken ? (
             <button
               type="button"
-              className="absolute top-2.5 right-2.5 z-10 rounded-full bg-white p-2"
+              className="absolute top-4 right-4 z-10 rounded-full bg-white p-2.5 shadow-lg transition-all hover:scale-110 hover:shadow-xl"
               onClick={onWishlist}
             >
-              {inWishlist ? <FaHeart color="red" /> : <FaRegHeart />}
+              {inWishlist ? <FaHeart color="red" size={20} /> : <FaRegHeart size={20} />}
             </button>
           ) : null}
+          
           {!isLoading && previewImages?.length ? (
-            <Carousel
-              className="w-full"
-              opts={{ align: "start", loop: true }}
-              setApi={setApi}
-            >
-              <CarouselContent className="-ml-1">
+        <Carousel
+          className="w-full"
+          opts={{ 
+            align: "start", 
+            loop: true,
+            startIndex: 0,
+            containScroll: "trimSnaps"
+          }}
+          setApi={setApi}
+        >
+              <CarouselContent>
                 {previewImages?.map((item, index: number) => (
-                  <CarouselItem key={index} className="basis pl-1">
-                    <div className="p-1">
-                      <div className="relative max-h-[250px] min-h-[250px] w-full">
-                        {isImage(item) ? (
-                          <Image
-                            src={item}
-                            alt="primary-image"
-                            fill
-                            className="object-contain"
+                  <CarouselItem key={index}>
+                    <div className="relative aspect-square w-full overflow-hidden rounded-lg">
+                      {(isImage(item) || (typeof item === 'string' && (item.startsWith('data:image/') || item.includes('.jpg') || item.includes('.jpeg') || item.includes('.png') || item.includes('.gif') || item.includes('.webp')))) ? (
+                        <Image
+                          src={item}
+                          alt="primary-image"
+                          fill
+                          className="object-contain"
+                          priority={index === 0}
+                          onError={(e) => {
+                            e.currentTarget.src = PlaceholderImage.src;
+                          }}
+                        />
+                      ) : isVideo(item) ? (
+                        <div className="flex h-full w-full items-center justify-center">
+                          <ReactPlayer
+                            url={item}
+                            width="100%"
+                            height="100%"
+                            controls
                           />
-                        ) : isVideo(item) ? (
-                          <div className="player-wrapper py-[30%]!">
-                            <ReactPlayer
-                              url={item}
-                              width="100%"
-                              height="100%"
-                              // playing
-                              controls
-                            />
-                          </div>
-                        ) : null}
-                      </div>
+                        </div>
+                      ) : null}
                     </div>
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              {previewImages?.length > 1 ? (
-                <CarouselPrevious className="left-0" />
-              ) : null}
-              {previewImages?.length > 1 ? (
-                <CarouselNext className="right-0" />
-              ) : null}
             </Carousel>
           ) : null}
 
           {!isLoading && !previewImages?.length ? (
-            <div className="relative min-h-[500px] w-full">
+            <div className="relative aspect-square w-full overflow-hidden rounded-lg">
               <Image
                 src={PlaceholderImage}
                 alt="primary-image"
@@ -209,129 +291,45 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
             </div>
           ) : null}
 
-          {isLoading ? <Skeleton className="min-h-[250px] w-full" /> : null}
+          {isLoading ? <Skeleton className="aspect-square w-full rounded-lg" /> : null}
         </div>
 
-        <div className="col-span-1 m-auto flex h-full! w-full flex-wrap gap-4 self-start lg:w-auto lg:flex-col">
+        {/* Thumbnail Column */}
+        <div className="col-span-1 order-1 flex gap-3 overflow-x-auto lg:flex-col lg:overflow-visible">
           {isLoading
-            ? Array.from({ length: 3 }).map((_, index) => (
-                <Skeleton className="h-28 w-28" key={index} />
+            ? Array.from({ length: 4 }).map((_, index) => (
+                <Skeleton className="h-20 w-20 flex-shrink-0 rounded-lg lg:h-24 lg:w-24" key={index} />
               ))
             : null}
 
-          {productDetails?.productImages?.map((item: any, index: number) => (
-            <Button
-              variant="ghost"
+          {!isLoading && previewImages?.map((item: any, index: number) => (
+            <button
+              key={index}
               className={cn(
-                previewImages[currentImageIndex] === item?.image ||
-                  previewImages[currentImageIndex] === item?.video
-                  ? "border-2 border-red-500"
-                  : "",
-                "relative h-28 w-28 rounded-none bg-gray-100",
+                "relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg border-2 transition-all lg:h-24 lg:w-24",
+                previewImages[currentImageIndex] === item
+                  ? "border-dark-orange shadow-md"
+                  : "border-gray-200 hover:border-gray-300"
               )}
-              key={item?.id}
-              onClick={() => api?.scrollTo(index)}
+              onClick={() => {
+                if (api) {
+                  // Force scroll to the clicked thumbnail
+                  api.scrollTo(index, false); // false = with animation
+                  // Update state immediately
+                  setCurrentImageIndex(index);
+                }
+              }}
             >
               <Image
-                src={
-                  item?.image && validator.isURL(item.image)
-                    ? item.image
-                    : PlaceholderImage
-                }
-                alt="primary-image"
+                src={item}
+                alt={`thumbnail-${index + 1}`}
                 fill
-                className="rounded-none object-cover"
+                className="object-cover"
               />
-            </Button>
+            </button>
           ))}
         </div>
       </div>
-
-      {/* For factories type */}
-      {!isLoading &&
-      productDetails?.product_productPrice?.[0]?.isCustomProduct === "true" ? (
-        <div className="my-2 flex w-full flex-wrap justify-end gap-3 self-end pb-2">
-          {productDetails?.adminId !== loginUserId ? (
-            <>
-              <Button
-                type="button"
-                onClick={handleToCustomizeModal}
-                className="bg-color-blue h-14 max-w-[205px] flex-1 rounded-none text-base"
-                dir={langDir}
-                translate="no"
-              >
-                {t("send_to_customize")}
-              </Button>
-              <Button
-                type="button"
-                // onClick={onToCheckout}
-                onClick={onToCart}
-                className="bg-color-blue h-14 max-w-[205px] flex-1 rounded-none text-base"
-                dir={langDir}
-                translate="no"
-              >
-                {t("message_vendor")}
-              </Button>
-            </>
-          ) : null}
-          {/* {productDetails?.adminId == loginUserId ? (
-                <Button
-                  type="button"
-                  // onClick={onToCheckout}
-                  onClick={handleToggleEditModal}
-                  className="h-14 flex-1 rounded-none bg-color-yellow text-base"
-                >
-                  Edit Product
-                </Button>
-              ) : null} */}
-        </div>
-      ) : null}
-
-      {!isLoading && askForPrice === "true" ? (
-        <Link href={`/seller-rfq-request?product_id=${productDetails?.id}`}>
-          <Button
-            type="button"
-            className="bg-color-yellow h-14 w-full flex-1 rounded-none text-base"
-            dir={langDir}
-            translate="no"
-          >
-            {t("ask_vendor_for_price")}
-          </Button>
-        </Link>
-      ) : null}
-      {!isLoading && askForPrice !== "true" ? (
-        <div className="flex w-full flex-wrap justify-end gap-3 self-end">
-          <Button
-            type="button"
-            onClick={onAdd}
-            className="bg-color-yellow h-14 max-w-[205px] flex-1 rounded-none text-base"
-            disabled={isAddedToCart || cartQuantity == 0}
-            translate="no"
-          >
-            {isAddedToCart ? t("added_to_cart") : t("add_to_cart")}
-          </Button>
-          <Button
-            type="button"
-            onClick={onToCart}
-            className="bg-dark-orange h-14 max-w-[205px] flex-1 rounded-none text-base"
-            dir={langDir}
-            translate="no"
-          >
-            {t("buy_now")}
-          </Button>
-          {reward && (
-            <Button
-              type="button"
-              onClick={() => setIsSellerRewardDetailModalOpen(true)}
-              className="bg-dark-orange h-14 flex-1 rounded-none text-base"
-              dir={langDir}
-              translate="no"
-            >
-              {t("generate_share_link")}
-            </Button>
-          )}
-        </div>
-      ) : null}
 
       {/* For Edit Dialog */}
 

@@ -179,6 +179,14 @@ const Sidebar: React.FC<SidebarProps> = ({ notificationCount }) => {
           }
         },
         {
+          icon: <PackageIcon className="h-4 w-4 text-gray-600" />,
+          label: "Dropshipping",
+          onClick: () => {
+            closeSidebar();
+            router.push("/dropship-products");
+          }
+        },
+        {
           icon: <UsersIcon className="h-4 w-4 text-gray-600" />,
           label: "Team Members",
           onClick: () => {

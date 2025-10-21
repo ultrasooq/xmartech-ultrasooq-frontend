@@ -79,7 +79,7 @@ interface TrendingPageProps {
 }
 
 const TrendingPage = (props0: TrendingPageProps) => {
-  const searchParams = use(props0.searchParams);
+  const searchParams = props0.searchParams ? use(props0.searchParams) : {};
   const t = useTranslations();
   const { langDir, currency } = useAuth();
   const queryClient = useQueryClient();
@@ -370,6 +370,7 @@ const TrendingPage = (props0: TrendingPageProps) => {
          vendorProfilePicture: usersMap.get(item?.userId)?.profilePicture || item?.user?.profilePicture,
          vendorTradeRole: usersMap.get(item?.userId)?.tradeRole || item?.user?.tradeRole,
          vendorUserProfile: usersMap.get(item?.userId)?.userProfile || item?.user?.userProfile,
+         status: item?.status || 'ACTIVE',
       })) || []
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -614,12 +615,13 @@ const TrendingPage = (props0: TrendingPageProps) => {
 
         <BannerSection />
 
-        <div className="trending-search-sec">
-          <div className="container m-auto px-3">
-             <div
-               className={`${productFilter ? "left-filter show" : "left-filter"} bg-white rounded-lg shadow-xs p-6`}
-               dir={langDir}
-             >
+        {/* Full Width Three Column Layout */}
+        <div className="w-full min-h-screen bg-white px-4 lg:px-8">
+          <div className="flex h-full">
+            
+            {/* Left Column - Filters */}
+            <div className="w-64 flex-shrink-0 overflow-y-auto p-4 bg-white">
+              <div className="bg-white rounded-lg shadow-lg p-6">
                <div className="mb-4">
                  <div className="flex gap-2 mb-4">
                    <button 
@@ -787,13 +789,13 @@ const TrendingPage = (props0: TrendingPageProps) => {
                    </AccordionContent>
                  </AccordionItem>
                </Accordion>
-             </div>
-            <div
-              className="left-filter-overlay"
-              onClick={() => setProductFilter(false)}
-            ></div>
-            <div className="right-products">
-              <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "products" | "vendors")} className="w-full">
+              </div>
+            </div>
+            
+            {/* Middle Column - Products (MAIN CONTENT - PRIORITIZED) */}
+            <div className="flex-1 bg-white overflow-y-auto">
+              <div className="p-4 lg:p-6">
+                <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "products" | "vendors")} className="w-full">
                 <TabsList className="grid w-full grid-cols-2 mb-6">
                   <TabsTrigger value="products" className="flex items-center space-x-2">
                     <Package className="h-4 w-4" />
@@ -897,7 +899,7 @@ const TrendingPage = (props0: TrendingPageProps) => {
               </div>
 
               {isLoading && viewType === "grid" ? (
-                <div className="grid grid-cols-4 gap-5">
+                <div className="grid grid-cols-3 gap-5">
                   {Array.from({ length: 8 }).map((_, index: number) => (
                     <SkeletonProductCardLoader key={index} />
                   ))}
@@ -915,7 +917,7 @@ const TrendingPage = (props0: TrendingPageProps) => {
               ) : null}
 
               {viewType === "grid" ? (
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 items-stretch">
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 items-stretch">
                   {memoizedProductList.map((item: TrendingProduct) => {
                     const cartItem = cartList?.find(
                       (el: any) => el.productId == item.id,
@@ -985,14 +987,99 @@ const TrendingPage = (props0: TrendingPageProps) => {
                   />
                 </TabsContent>
               </Tabs>
+              </div>
             </div>
-            {/* <div className="product_cart_modal absolute right-[20px] top-[150px] w-full px-4 lg:w-[300px]">
-              <Cart 
-                haveAccessToken={haveAccessToken}
-                isLoadingCart={cartListByDeviceQuery?.isLoading || cartListByUser?.isLoading}
-                cartItems={cartList}
-              />
-            </div> */}
+            
+            {/* Right Column - Cart */}
+            <div className="w-64 flex-shrink-0 bg-white">
+              <div className="sticky top-0 h-screen overflow-y-auto">
+                <div className="bg-white rounded-lg shadow-lg m-2 lg:m-4 p-4 lg:p-6">
+                  <div className="cart_sidebar">
+                    <div className="border-b border-gray-200 pb-4 mb-4">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-lg font-semibold text-gray-900">{t("my_cart")}</h3>
+                        <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                          {cartList.length} {cartList.length === 1 ? t("item") : t("items")}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className="max-h-64 overflow-y-auto">
+                      {cartList.length === 0 ? (
+                        <div className="text-center py-6">
+                          <Package className="h-12 w-12 text-gray-400 mx-auto mb-3" />
+                          <p className="text-gray-500 text-sm">{t("your_cart_is_empty")}</p>
+                          <p className="text-gray-400 text-xs mt-1">{t("add_some_products_to_get_started")}</p>
+                        </div>
+                      ) : (
+                        <div className="space-y-3">
+                    {cartList.slice(0, 3).map((cartItem: any) => {
+                      // Find the product data from our memoized product list
+                      const productData = memoizedProductList.find((product: any) => product.id === cartItem.productId);
+                      
+                      return (
+                        <div key={cartItem.id} className="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded-lg transition-colors">
+                          {/* Product Image */}
+                          <div className="w-12 h-12 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
+                            {productData?.productImage ? (
+                              <img
+                                src={productData.productImage}
+                                alt={productData.productName || 'Product'}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center">
+                                <Package className="h-6 w-6 text-gray-400" />
+                              </div>
+                            )}
+                          </div>
+                          
+                          {/* Product Info */}
+                          <div className="flex-1 min-w-0">
+                            <h4 className="text-sm font-medium text-gray-900 truncate">
+                              {productData?.productName || t("product")}
+                            </h4>
+                            <div className="flex items-center justify-between mt-1">
+                              <p className="text-xs text-gray-500">
+                                Qty: {cartItem.quantity || 1}
+                              </p>
+                              <p className="text-sm font-semibold text-green-600">
+                                ${Number(productData?.productPrice || 0).toFixed(2)}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                    
+                    {/* Show "and X more" if there are more than 3 items */}
+                    {cartList.length > 3 && (
+                      <div className="text-center py-2">
+                        <p className="text-xs text-gray-500">
+                          {t("and_n_more_items", { n: cartList.length - 3 })}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+              
+              {/* Go to Cart Button */}
+              {cartList.length > 0 && (
+                <div className="p-4 border-t border-gray-200 bg-gray-50">
+                  <button
+                    onClick={() => window.location.href = '/cart'}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2"
+                  >
+                    <Package className="h-4 w-4" />
+                            <span>{t("go_to_cart")}</span>
+                  </button>
+                </div>
+              )}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

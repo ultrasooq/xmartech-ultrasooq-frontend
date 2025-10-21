@@ -56,12 +56,7 @@ const DescriptionSection = () => {
                   key={field.id}
                   label=""
                   name={`productShortDescriptionList.${index}.shortDescription`}
-                  onChange={(e) => {
-                    formContext.setValue(`productShortDescriptionList.${index}.shortDescription`, e?.[0]?.children?.[0]?.text || '');
-                  }}
-                  value={
-                    formContext.getValues()?.productShortDescriptionList?.[index]?.shortDescriptionJson
-                  }
+                  maxLength={20}
                 />
                 <p className="text-[13px] font-medium text-red-500" dir={langDir}>
                   {/* @ts-ignore */}

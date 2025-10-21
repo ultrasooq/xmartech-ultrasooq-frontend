@@ -649,3 +649,151 @@ export const deleteDropshipProduct = (id: number) => {
     },
   });
 };
+
+// Mark product as dropshipable
+export const markProductAsDropshipable = (
+  productId: number,
+  payload: {
+    isDropshipable: boolean;
+    dropshipCommission?: number;
+    dropshipMinMarkup?: number;
+    dropshipMaxMarkup?: number;
+    dropshipSettings?: any;
+  }
+) => {
+  return axios({
+    method: "PATCH",
+    url: `${getApiUrl()}/product/dropship/enable/${productId}`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+// Get vendor's dropshipable products
+export const getMyDropshipableProducts = (payload: {
+  page: number;
+  limit: number;
+}) => {
+  return axios({
+    method: "GET",
+    url: urlcat(`${getApiUrl()}/product/dropship/my-dropshipable-products`, payload),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+// Get dropship analytics
+export const getDropshipAnalytics = () => {
+  return axios({
+    method: "GET",
+    url: `${getApiUrl()}/product/dropship/analytics`,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+// Bulk enable/disable dropshipping
+export const bulkUpdateDropshipable = (payload: {
+  productIds: number[];
+  isDropshipable: boolean;
+  dropshipCommission?: number;
+  dropshipMinMarkup?: number;
+  dropshipMaxMarkup?: number;
+}) => {
+  return axios({
+    method: "PATCH",
+    url: `${getApiUrl()}/product/dropship/bulk-enable`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+// Get wholesale products
+export const getWholesaleProducts = (payload: {
+  page: number;
+  limit: number;
+}) => {
+  return axios({
+    method: "GET",
+    url: urlcat(`${getApiUrl()}/product/wholesale/products`, payload),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+// Get wholesale dashboard
+export const getWholesaleDashboard = () => {
+  return axios({
+    method: "GET",
+    url: `${getApiUrl()}/product/wholesale/dashboard`,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+// Get wholesale product sales details
+export const getWholesaleProductSales = (productId: number) => {
+  return axios({
+    method: "GET",
+    url: `${getApiUrl()}/product/wholesale/product/${productId}/sales`,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+// Get user's own dropshipable products (productType = D, isDropshipable = true)
+export const getUserOwnDropshipableProducts = (payload: {
+  page: number;
+  limit: number;
+  term?: string;
+  brandIds?: string;
+  categoryIds?: string;
+  status?: string;
+  sort?: string;
+}) => {
+  return axios({
+    method: "GET",
+    url: urlcat(`${getApiUrl()}/product/getUserOwnDropshipableProducts`, payload),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+// Get dropship products created from a specific original product
+export const getDropshipProductsFromOriginal = (originalProductId: number) => {
+  return axios({
+    method: "GET",
+    url: `${getApiUrl()}/product/getDropshipProductsFromOriginal/${originalProductId}`,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};

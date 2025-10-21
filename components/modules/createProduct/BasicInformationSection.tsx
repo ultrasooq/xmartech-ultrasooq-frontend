@@ -6,11 +6,9 @@ import { FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import { useToast } from "@/components/ui/use-toast";
-// import { useUploadFile } from "@/apis/queries/upload.queries";
 import { v4 as uuidv4 } from "uuid";
 import { ISelectOptions } from "@/utils/types/common.types";
 import {
-  // useCategories,
   useCategory,
   useSubCategoryById,
 } from "@/apis/queries/category.queries";
@@ -26,16 +24,37 @@ import { isImage, isVideo } from "@/utils/helper";
 import { useCreateTag } from "@/apis/queries/tags.queries";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import { IoMdAdd } from "react-icons/io";
 
 const customStyles = {
   control: (base: any) => ({
     ...base,
     height: 48,
     minHeight: 48,
+    borderRadius: '0.75rem',
+    borderColor: '#d1d5db',
+    boxShadow: 'none',
+    '&:hover': {
+      borderColor: '#9ca3af',
+    },
+    '&:focus-within': {
+      borderColor: '#f97316',
+      boxShadow: '0 0 0 2px rgba(249, 115, 22, 0.2)',
+    },
   }),
   menu: (base: any) => ({
     ...base,
     zIndex: 20,
+    borderRadius: '0.75rem',
+    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+  }),
+  option: (base: any, state: any) => ({
+    ...base,
+    backgroundColor: state.isSelected ? '#f97316' : state.isFocused ? '#fed7aa' : 'white',
+    color: state.isSelected ? 'white' : '#374151',
+    '&:hover': {
+      backgroundColor: state.isSelected ? '#ea580c' : '#fed7aa',
+    },
   }),
 };
 
@@ -50,159 +69,84 @@ type BasicInformationProps = {
   selectedCategoryIds?: string[];
   copy: boolean;
 };
-const VideoPreviewCompo = ({
-  item,
-  handleEditPreviewImage
-}: any) => {
-  const t = useTranslations();
-  const { langDir } = useAuth();
-  const { toast } = useToast();
-  const [videoUrl, setVideoUrl] = React.useState<string | null>(
-    null,
-  );
-  React.useEffect(() => {
-    if (typeof item.path === "object") {
-      const url = URL.createObjectURL(
-        item.path,
-      );
-      setVideoUrl(url);
-      return () => {
-        URL.revokeObjectURL(url);
-      };
-    } else if (typeof item.path === "string") {
-      setVideoUrl(item.path);
-    } else {
-      setVideoUrl("/images/no-image.jpg");
-    }
-  }, [item.path]);
 
-  return (
-    <div className="relative h-44">
-      <div className="player-wrapper px-2">
-        <video
-          src={videoUrl || ''}
-          width="100%"
-          height="100%"
-          controls
-          style={{
-            objectFit: "contain",
-            width: "100%",
-            height: "100%",
-          }}
-        />
-      </div>
-      <div className="absolute h-20 w-full p-5">
-        <p
-          className="rounded-lg border border-gray-300 bg-gray-100 py-2 text-sm font-semibold"
-          dir={langDir}
-          translate="no"
-        >
-          {t("upload_video")}
-        </p>
-      </div>
-      <Input
-        type="file"
-        accept="video/*"
-        multiple={false}
-        className="bottom-0! h-20 w-full! cursor-pointer opacity-0"
-        onChange={(event) => {
-          if (event.target.files) {
-            if (
-              event.target.files[0]
-                .size > 524288000
-            ) {
-              toast({
-                title: t(
-                  "one_of_file_should_be_less_than_size",
-                  { size: "500MB" },
-                ),
-                variant: "danger",
-              });
-              return;
-            }
-            handleEditPreviewImage(
-              item?.id,
-              event.target.files,
-            );
-          }
-        }}
-        id="images"
-      />
-    </div>
-  );
-}
+const VideoPlayer = ({ item }: { item: any }) => (
+  <video
+    controls
+    style={{
+      objectFit: "contain",
+      width: "100%",
+      height: "100%",
+    }}
+  >
+    <source
+      src={
+        typeof item.path === "object"
+          ? URL.createObjectURL(item.path)
+          : item.path
+      }
+      type="video/mp4"
+    />
+    Your browser does not support the video tag.
+  </video>
+);
+
 const BasicInformationSection: React.FC<BasicInformationProps> = ({
   tagsList,
   activeProductType,
   selectedCategoryIds,
-  copy
+  copy,
 }) => {
-  const t = useTranslations();
-  const { langDir } = useAuth();
   const formContext = useFormContext();
   const { toast } = useToast();
   const photosRef = useRef<HTMLInputElement>(null);
-  const createTag = useCreateTag();
-  const [listIds, setListIds] = useState<string[]>([]);
-  const [catList, setCatList] = useState<any[]>([]);
-  const [currentId, setCurrentId] = useState<string>(
-    PRODUCT_CATEGORY_ID.toString(),
-  );
+  const [currentId, setCurrentId] = useState<string>("");
   const [currentIndex, setCurrentIndex] = useState<number>(0);
-
-  // const upload = useUploadFile();
-  const categoryQuery = useCategory("1");
-  const subCategoryById = useSubCategoryById(currentId, !!currentId);
+  const [catList, setCatList] = useState<any[]>([]);
+  const [listIds, setListIds] = useState<string[]>([]);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const createTag = useCreateTag();
+  const t = useTranslations();
+  const { langDir } = useAuth();
 
   const watchProductImages = formContext.watch("productImages");
 
+  const categoryQuery = useCategory(PRODUCT_CATEGORY_ID);
+  const subCategoryById = useSubCategoryById(currentId.toString());
+
   const memoizedCategories = useMemo(() => {
     return (
-      categoryQuery?.data?.data?.children[0]?.children.map((item: any) => {
+      categoryQuery?.data?.data?.children?.map((item: any) => {
         return { label: item.name, value: item.id };
       }) || []
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categoryQuery?.data?.data?.children?.length]);
 
-  const handleEditPreviewImage = (id: string, item: FileList) => {
-    const tempArr = watchProductImages || [];
-    const filteredFormItem = tempArr.filter(
-      (item: ProductImageProps) => item.id === id,
-    );
-    if (filteredFormItem.length) {
-      filteredFormItem[0].path = item[0];
-      formContext.setValue("productImages", [...tempArr]);
-    }
+  const productConditions = () => {
+    return PRODUCT_CONDITION_LIST.map((item) => {
+      return {
+        label: t(item.label),
+        value: item.value,
+      };
+    });
   };
 
-  const handleRemovePreviewImage = (id: string) => {
-    formContext.setValue("productImages", [
-      ...(watchProductImages || []).filter(
-        (item: ProductImageProps) => item.id !== id,
-      ),
-    ]);
-  };
-
-  const handleCreateTag = async (tag: string) => {
-    const response = await createTag.mutateAsync({ tagName: tag });
-
-    if (response.status && response.data) {
+  const handleCreateTag = async (newTag: string) => {
+    const response = await createTag.mutateAsync({ tagName: newTag });
+    if (response.status) {
       toast({
-        title: t("tag_create_successful"),
+        title: t("tag_created_successfully"),
         description: response.message,
         variant: "success",
       });
-      catList.push({ value: response.data.id, label: response.data.tagName });
-      let selected = formContext.getValues("productTagList") || [];
-      selected.push({ value: response.data.id, label: response.data.tagName });
-      formContext.setValue("productTagList", selected);
+      return { label: response.data.tagName, value: response.data.id };
     } else {
       toast({
         title: t("tag_create_failed"),
         description: response.message,
         variant: "danger",
       });
+      return null;
     }
   };
 
@@ -220,7 +164,6 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
     if (subCategoryById.data?.data?.children) {
       setCatList([...catList, subCategoryById.data?.data]);
     }
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentId, subCategoryById.data?.data?.children, currentIndex]);
 
@@ -238,7 +181,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
         setListIds(selectedCategoryIds);
       }
     }
-  }, [selectedCategoryIds, catList?.length]);
+  }, [selectedCategoryIds, catList?.length, currentIndex, listIds.length]);
 
   useEffect(
     () => formContext.setValue("categoryLocation", listIds.join(",")),
@@ -246,415 +189,415 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
     [listIds?.length],
   );
 
-  const productConditions = () => {
-    return Object.keys(PRODUCT_CONDITION_LIST).map(
-      (value: string, index: number) => {
-        return {
-          label: t(PRODUCT_CONDITION_LIST[index].label),
-          value: PRODUCT_CONDITION_LIST[index].value,
-        };
-      },
+  const handleEditPreviewImage = (id: string, item: FileList) => {
+    const tempArr = formContext.getValues("productImages") || [];
+    const filteredFormItem = tempArr.filter(
+      (item: ProductImageProps) => item.id !== id,
     );
+    formContext.setValue("productImages", [
+      ...filteredFormItem,
+      { path: item[0], id: uuidv4() },
+    ]);
+  };
+
+  const handleRemovePreviewImage = (id: string) => {
+    const tempArr = formContext.getValues("productImages") || [];
+    const filteredFormItem = tempArr.filter(
+      (item: ProductImageProps) => item.id !== id,
+    );
+    formContext.setValue("productImages", filteredFormItem);
   };
 
   return (
-    <>
-      <div className="grid w-full grid-cols-4 gap-x-5">
-        <div className="col-span-4 mx-auto mb-3 w-full max-w-[950px] rounded-lg border border-solid border-gray-300 bg-white p-2 shadow-xs sm:p-3 lg:p-4">
-          <div className="flex w-full flex-wrap">
-            <div className=" w-full">
-              <div className="flex flex-wrap">
-                <div className="form-groups-common-sec-s1 product-form-groups-common-sec-s1">
-                  <h3 dir={langDir} translate="no">
-                    {t("basic_information")}
-                  </h3>
-                  <div className="mb-3 grid w-full grid-cols-1 gap-x-5 gap-y-3 md:grid-cols-2">
-                    <div className="flex w-full flex-col justify-between gap-y-2">
-                      <Label dir={langDir} translate="no">
-                        {t("product_category")}
-                      </Label>
-                      <Controller
-                        name="categoryId"
-                        control={formContext.control}
-                        render={({ field }) => (
-                          <select
-                            {...field}
-                            className="h-[48px]! w-full rounded border border-gray-300! px-3 text-sm focus-visible:ring-0!"
-                            onChange={(e) => {
-                              if (e.target.value === "") {
-                                return;
-                              }
-                              setCurrentId(e.target.value);
-                              setCurrentIndex(0);
+    <div className="space-y-8">
+      {/* Category Selection Section */}
+      <div className="space-y-6">
+        <div className="flex items-center gap-3 pb-4 border-b border-gray-100">
+          <div className="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center">
+            <span className="text-white text-sm font-semibold">1</span>
+          </div>
+          <div>
+            <h4 className="text-lg font-semibold text-gray-900">
+              {t("product_category")}
+            </h4>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-3">
+            <Label className="text-sm font-medium text-gray-700 flex items-center gap-2" dir={langDir} translate="no">
+              <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+              </svg>
+              {t("product_category")}
+            </Label>
+            <Controller
+              name="categoryId"
+              control={formContext.control}
+              render={({ field }) => (
+                <div className="relative">
+                  <select
+                    {...field}
+                    className="w-full h-12 px-4 py-3 bg-white border border-gray-300 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 appearance-none cursor-pointer disabled:bg-gray-50 disabled:text-gray-500"
+                    onChange={(e) => {
+                      if (e.target.value === "") {
+                        return;
+                      }
+                      setCurrentId(e.target.value);
+                      setCurrentIndex(0);
 
-                              if (listIds[0]) {
-                                let tempIds = listIds;
-                                tempIds[0] = e.target.value;
-                                tempIds = tempIds.slice(0, 1);
+                      if (listIds[0]) {
+                        let tempIds = listIds;
+                        tempIds[0] = e.target.value;
+                        tempIds = tempIds.slice(0, 1);
 
-                                setListIds([...tempIds]);
-                                return;
-                              }
-                              setListIds([...listIds, e.target.value]);
-                            }}
-                            value={catList[0]?.id || ""}
-                            disabled={true} // This makes the select field disabled
-                          >
-                            <option value="" dir={langDir} translate="no">
-                              {t("select_category")}
-                            </option>
-                            {memoizedCategories.map((item: ISelectOptions) => (
-                              <option
-                                value={item.value?.toString()}
-                                key={item.value}
-                                dir={langDir}
-                              >
-                                {item.label}
-                              </option>
-                            ))}
-                          </select>
-                        )}
-                      />
-                      <p
-                        className="text-[13px] font-medium text-red-500"
+                        setListIds([...tempIds]);
+                        return;
+                      }
+                      setListIds([...listIds, e.target.value]);
+                    }}
+                    value={catList[0]?.id || ""}
+                  >
+                    <option value="" dir={langDir} translate="no">
+                      {t("select_category")}
+                    </option>
+                    {memoizedCategories.map((item: ISelectOptions) => (
+                      <option
+                        value={item.value?.toString()}
+                        key={item.value}
                         dir={langDir}
                       >
-                        {
-                          formContext.formState.errors["categoryId"]
-                            ?.message as string
-                        }
-                      </p>
-                    </div>
-
-                    {catList.length > 0
-                      ? catList
-                        .filter((item) => item.children?.length)
-                        .map((item, index) => (
-                          <div
-                            key={item?.id}
-                            className="mb-3 grid w-full grid-cols-1 gap-x-5 gap-y-3"
-                          >
-                            <div className="flex w-full flex-col justify-between gap-y-2">
-                              <Label dir={langDir} translate="no">
-                                {t("sub_category")}
-                              </Label>
-                              <select
-                                className="h-[48px]! w-full rounded border border-gray-300! px-3 text-sm focus-visible:ring-0!"
-                                onChange={(e) => {
-                                  if (e.target.value === "") {
-                                    return;
-                                  }
-
-                                  setCurrentId(e.target.value);
-                                  setCurrentIndex(index + 1);
-
-                                  if (listIds[index]) {
-                                    let tempIds = listIds;
-                                    tempIds[index] = e.target.value;
-                                    tempIds = tempIds.slice(0, index + 1);
-                                    setListIds([...tempIds]);
-                                    return;
-                                  }
-                                  setListIds([...listIds, e.target.value]);
-                                }}
-                                value={item?.children
-                                  ?.find((item: any) =>
-                                    listIds.includes(item.id?.toString())
-                                      ? item
-                                      : "",
-                                  )
-                                  ?.id?.toString()}
-                              >
-                                <option value="" dir={langDir} translate="no">
-                                  {t("select_sub_category")}
-                                </option>
-                                {item?.children?.map((item: any) => (
-                                  <option
-                                    value={item.id?.toString()}
-                                    key={item.id}
-                                    dir={langDir}
-                                  >
-                                    {item.name}
-                                  </option>
-                                ))}
-                              </select>
-                            </div>
-                          </div>
-                        ))
-                      : null}
-                  </div>
-
-                  <ControlledTextInput
-                    label={t("product_name")}
-                    name="productName"
-                    placeholder={t("product_name")}
-                    disabled={copy}
-                    dir={langDir}
-                    translate="no"
-                  />
-
-                  <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
-                    <BrandSelect
-                      selectedBrandType={formContext.getValues("typeOfProduct")}
-                      productType={activeProductType}
-                    />
-
-                    <div className="mt-2 flex flex-col gap-y-3">
-                      <Label dir={langDir} translate="no">
-                        {t("product_condition")}
-                      </Label>
-                      <Controller
-                        name="productCondition"
-                        control={formContext.control}
-                        render={({ field }) => (
-                          <ReactSelect
-                            {...field}
-                            onChange={(newValue) => {
-                              field.onChange(newValue?.value);
-                            }}
-                            options={productConditions()}
-                            value={productConditions().find(
-                              (item: any) => item.value === field.value,
-                            )}
-                            styles={customStyles}
-                            instanceId="productCondition"
-                            placeholder={t("select")}
-                          />
-                        )}
-                      />
-
-                      <p className="text-[13px] text-red-500" dir={langDir}>
-                        {
-                          formContext.formState.errors["productCondition"]
-                            ?.message as string
-                        }
-                      </p>
-                    </div>
-                  </div>
-
-                  <AccordionMultiSelectV2
-                    label={t("tags")}
-                    name="productTagList"
-                    options={tagsList || []}
-                    placeholder={t("tags")}
-                    canCreate={true}
-                    createOption={handleCreateTag}
-                    error={
-                      formContext.formState.errors["productTagList"]
-                        ?.message as string
-                    }
-                  />
-
-                  <div className="relative mb-4 w-full">
-                    <div className="space-y-2">
-                      <label
-                        className="text-sm font-medium leading-none text-color-dark"
-                        dir={langDir}
-                        translate="no"
-                      >
-                        {t("product_image")}
-                      </label>
-                      <div className="flex w-full flex-wrap">
-                        <div className="grid grid-cols-2 md:grid-cols-4">
-                          {watchProductImages?.map(
-                            (item: any, index: number) => (
-                              <FormField
-                                control={formContext.control}
-                                name="productImages"
-                                key={index}
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormControl>
-                                      <div className="relative mb-3 w-full px-2">
-                                        <div className="relative m-auto flex h-48 w-full flex-wrap items-center justify-center rounded-xl border-2 border-dashed border-gray-300 text-center">
-                                          {watchProductImages?.length ? (
-                                            <button
-                                              type="button"
-                                              className="common-close-btn-uploader-s1"
-                                              onClick={() => {
-                                                handleRemovePreviewImage(
-                                                  item?.id,
-                                                );
-                                                if (photosRef.current)
-                                                  photosRef.current.value = "";
-                                              }}
-                                            >
-                                              <Image
-                                                src={CloseWhiteIcon}
-                                                alt="close-icon"
-                                                height={22}
-                                                width={22}
-                                              />
-                                            </button>
-                                          ) : null}
-
-                                          {item?.path && isImage(item.path) ? (
-                                            <div className="relative h-44">
-                                              <img
-                                                src={
-                                                  typeof item.path === "object"
-                                                    ? URL.createObjectURL(
-                                                      item.path,
-                                                    )
-                                                    : typeof item.path ===
-                                                      "string"
-                                                      ? item.path
-                                                      : "/images/no-image.jpg"
-                                                }
-                                                style={{
-                                                  objectFit: "contain",
-                                                  width: "100%",
-                                                  height: "100%",
-                                                }}
-                                                alt="profile"
-                                              />
-                                              {/* <Image
-                                                src={
-                                                  typeof item.path === "object"
-                                                    ? URL.createObjectURL(
-                                                      item.path,
-                                                    )
-                                                    : typeof item.path ===
-                                                      "string"
-                                                      ? item.path
-                                                      : "/images/no-image.jpg"
-                                                }
-                                                alt="profile"
-                                                fill
-                                                priority
-                                              /> */}
-                                              <Input
-                                                type="file"
-                                                accept="image/*"
-                                                multiple={false}
-                                                className="bottom-0! h-44 w-full! cursor-pointer opacity-0"
-                                                onChange={(event) => {
-                                                  if (event.target.files) {
-                                                    if (
-                                                      event.target.files[0]
-                                                        .size > 524288000
-                                                    ) {
-                                                      toast({
-                                                        title: t(
-                                                          "one_of_file_should_be_less_than_size",
-                                                          { size: "500MB" },
-                                                        ),
-                                                        variant: "danger",
-                                                      });
-                                                      return;
-                                                    }
-                                                    handleEditPreviewImage(
-                                                      item?.id,
-                                                      event.target.files,
-                                                    );
-                                                  }
-                                                }}
-                                                id="productImages"
-                                              />
-                                            </div>
-                                          ) : item?.path &&
-                                            isVideo(item.path) ? (
-                                            <VideoPreviewCompo
-                                              item={item}
-                                              handleEditPreviewImage={handleEditPreviewImage}
-                                            />
-                                          ) : (
-                                            <AddImageContent
-                                              description={t("drop_your_file")}
-                                            />
-                                          )}
-                                        </div>
-                                      </div>
-                                    </FormControl>
-                                  </FormItem>
-                                )}
-                              />
-                            ),
-                          )}
-                          <div className="relative mb-3 w-full pl-2">
-                            <div className="absolute m-auto flex h-48 w-full cursor-pointer flex-wrap items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-white text-center">
-                              <div className="text-sm font-medium leading-4 text-color-dark">
-                                <Image
-                                  src="/images/plus.png"
-                                  className="m-auto mb-3"
-                                  alt="camera-icon"
-                                  width={29}
-                                  height={28}
-                                />
-                                <span dir={langDir} translate="no">
-                                  {t("add_more")}
-                                </span>
-                              </div>
-                            </div>
-
-                            <Input
-                              type="file"
-                              accept="image/*, video/*"
-                              multiple
-                              className="bottom-0! h-48 w-full! cursor-pointer opacity-0"
-                              onChange={(event) => {
-                                if (event.target.files) {
-                                  const filesArray = Array.from(
-                                    event.target.files,
-                                  );
-
-                                  if (
-                                    filesArray.some(
-                                      (file) => file.size > 524288000,
-                                    )
-                                  ) {
-                                    toast({
-                                      title: t(
-                                        "one_of_file_should_be_less_than_size",
-                                        { size: "500MB" },
-                                      ),
-                                      variant: "danger",
-                                    });
-                                    return;
-                                  }
-
-                                  const newImages = filesArray.map((file) => ({
-                                    path: file,
-                                    id: uuidv4(),
-                                  }));
-                                  const updatedProductImages = [
-                                    ...(watchProductImages || []),
-                                    ...newImages,
-                                  ];
-                                  formContext.setValue(
-                                    "productImages",
-                                    updatedProductImages,
-                                  );
-                                }
-                              }}
-                              id="productImages"
-                              ref={photosRef}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                        {item.label}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
                   </div>
                 </div>
+              )}
+            />
+            {formContext.formState.errors["categoryId"] && (
+              <p className="text-sm text-red-500 flex items-center gap-1 mt-1" dir={langDir}>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                {formContext.formState.errors["categoryId"]?.message as string}
+              </p>
+            )}
+          </div>
 
-                <PriceSection activeProductType={activeProductType} />
+          {catList.length > 0
+            ? catList
+              .filter((item) => item.children?.length)
+              .map((item, index) => (
+                <div key={item?.id} className="space-y-3">
+                  <Label className="text-sm font-medium text-gray-700 flex items-center gap-2" dir={langDir} translate="no">
+                    <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                    {t("sub_category")}
+                  </Label>
+                  <div className="relative">
+                    <select
+                      className="w-full h-12 px-4 py-3 bg-white border border-gray-300 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 appearance-none cursor-pointer"
+                      onChange={(e) => {
+                        if (e.target.value === "") {
+                          return;
+                        }
 
-                <DescriptionSection />
-              </div>
-            </div>
+                        setCurrentId(e.target.value);
+                        setCurrentIndex(index + 1);
+
+                        if (listIds[index]) {
+                          let tempIds = listIds;
+                          tempIds[index] = e.target.value;
+                          tempIds = tempIds.slice(0, index + 1);
+                          setListIds([...tempIds]);
+                          return;
+                        }
+                        setListIds([...listIds, e.target.value]);
+                      }}
+                      value={item?.children
+                        ?.find((item: any) =>
+                          listIds.includes(item.id?.toString())
+                            ? item
+                            : "",
+                        )
+                        ?.id?.toString()}
+                    >
+                      <option value="" dir={langDir} translate="no">
+                        {t("select_sub_category")}
+                      </option>
+                      {item?.children?.map((item: any) => (
+                        <option
+                          value={item.id?.toString()}
+                          key={item.id}
+                          dir={langDir}
+                        >
+                          {item.name}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                      <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
+                  {formContext.formState.errors["categoryLocation"] && (
+                    <p className="text-sm text-red-500 flex items-center gap-1 mt-1" dir={langDir}>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      {formContext.formState.errors["categoryLocation"]?.message as string}
+                    </p>
+                  )}
+                </div>
+              ))
+            : null}
+        </div>
+      </div>
+
+      {/* Product Name Section */}
+      <div className="space-y-6">
+        <div className="flex items-center gap-3 pb-4 border-b border-gray-100">
+          <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+            <span className="text-white text-sm font-semibold">2</span>
+          </div>
+          <div>
+            <h4 className="text-lg font-semibold text-gray-900">
+              {t("product_name")}
+            </h4>
+          </div>
+        </div>
+        
+        <ControlledTextInput
+          label={t("product_name")}
+          name="productName"
+          placeholder={t("product_name")}
+          disabled={copy}
+          dir={langDir}
+          translate="no"
+        />
+      </div>
+
+      {/* Product Details Section */}
+      <div className="space-y-6">
+        <div className="flex items-center gap-3 pb-4 border-b border-gray-100">
+          <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
+            <span className="text-white text-sm font-semibold">3</span>
+          </div>
+          <div>
+            <h4 className="text-lg font-semibold text-gray-900">
+              {t("product_details")}
+            </h4>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <BrandSelect
+            selectedBrandType={formContext.getValues("typeOfProduct")}
+            productType={activeProductType}
+          />
+
+          <div className="space-y-3">
+            <Label className="text-sm font-medium text-gray-700 flex items-center gap-2" dir={langDir} translate="no">
+              <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              {t("product_condition")}
+            </Label>
+            <Controller
+              name="productCondition"
+              control={formContext.control}
+              render={({ field }) => (
+                <ReactSelect
+                  {...field}
+                  onChange={(newValue) => {
+                    field.onChange(newValue?.value);
+                  }}
+                  options={productConditions()}
+                  value={productConditions().find(
+                    (item: any) => item.value === field.value,
+                  )}
+                  styles={customStyles}
+                  instanceId="productCondition"
+                  placeholder={t("select")}
+                />
+              )}
+            />
+            {formContext.formState.errors["productCondition"] && (
+              <p className="text-sm text-red-500 flex items-center gap-1 mt-1" dir={langDir}>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                {formContext.formState.errors["productCondition"]?.message as string}
+              </p>
+            )}
           </div>
         </div>
       </div>
 
-      {/* {subCategoryById.data?.data?.category_dynamicFormCategory?.length ? (
-        <DynamicFormViewSection
-          dynamicFormList={
-            subCategoryById.data?.data?.category_dynamicFormCategory
+      {/* Tags Section */}
+      <div className="space-y-6">
+        <div className="flex items-center gap-3 pb-4 border-b border-gray-100">
+          <div className="w-8 h-8 bg-yellow-500 rounded-lg flex items-center justify-center">
+            <span className="text-white text-sm font-semibold">4</span>
+          </div>
+          <div>
+            <h4 className="text-lg font-semibold text-gray-900">
+              {t("tags")}
+            </h4>
+          </div>
+        </div>
+        
+        <AccordionMultiSelectV2
+          label={t("tags")}
+          name="productTagList"
+          options={tagsList || []}
+          placeholder={t("tags")}
+          canCreate={true}
+          createOption={handleCreateTag}
+          error={
+            formContext.formState.errors["productTagList"]
+              ?.message as string
           }
         />
-      ) : null} */}
-    </>
+      </div>
+
+      {/* Product Images Section */}
+      <div className="space-y-6">
+        <div className="flex items-center gap-3 pb-4 border-b border-gray-100">
+          <div className="w-8 h-8 bg-pink-500 rounded-lg flex items-center justify-center">
+            <span className="text-white text-sm font-semibold">5</span>
+          </div>
+          <div>
+            <h4 className="text-lg font-semibold text-gray-900">
+              {t("product_images")}
+            </h4>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <Label className="text-sm font-medium text-gray-700 flex items-center gap-2" dir={langDir} translate="no">
+            <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            {t("product_images")}
+          </Label>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {watchProductImages?.map((item: any) => (
+              <div
+                key={item.id}
+                className="relative group aspect-square rounded-xl border-2 border-gray-200 overflow-hidden bg-gray-50 hover:border-orange-300 transition-colors duration-200"
+              >
+                {isImage(item.path) ? (
+                  <Image
+                    src={typeof item.path === "object" ? URL.createObjectURL(item.path) : item.path}
+                    alt="product-image"
+                    fill
+                    className="object-cover"
+                  />
+                ) : isVideo(item.path) ? (
+                  <VideoPlayer item={item} />
+                ) : (
+                  <div className="flex items-center justify-center h-full">
+                    <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                )}
+                
+                {/* Overlay with actions */}
+                <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-2">
+                  <label
+                    htmlFor="editImage"
+                    className="p-2 bg-white rounded-full cursor-pointer hover:bg-gray-100 transition-colors"
+                    title={t("edit_image")}
+                  >
+                    <input
+                      type="file"
+                      id="editImage"
+                      className="hidden"
+                      onChange={(e) => {
+                        if (e.target.files) {
+                          handleEditPreviewImage(item.id, e.target.files);
+                        }
+                      }}
+                    />
+                    <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => handleRemovePreviewImage(item.id)}
+                    className="p-2 bg-red-500 rounded-full hover:bg-red-600 transition-colors"
+                    title={t("remove_image")}
+                  >
+                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            ))}
+            
+            {/* Add Image Button */}
+            <div className="aspect-square rounded-xl border-2 border-dashed border-gray-300 flex items-center justify-center cursor-pointer hover:border-orange-400 hover:bg-orange-50 transition-colors duration-200 group">
+              <label
+                htmlFor="productImages"
+                className="flex flex-col items-center justify-center text-gray-500 group-hover:text-orange-600 cursor-pointer"
+              >
+                <div className="w-12 h-12 rounded-full bg-gray-100 group-hover:bg-orange-100 flex items-center justify-center mb-2 transition-colors duration-200">
+                  <IoMdAdd className="w-6 h-6" />
+                </div>
+                <span className="text-sm font-medium">{t("add_image")}</span>
+                <span className="text-xs text-gray-400 mt-1">{t("click_to_upload")}</span>
+              </label>
+              <input
+                type="file"
+                multiple
+                className="hidden"
+                onChange={(e) => {
+                  if (e.target.files) {
+                    const filesArray = Array.from(e.target.files).map((file) => ({
+                      path: file,
+                      id: uuidv4(),
+                    }));
+                    formContext.setValue(
+                      "productImages",
+                      [...(formContext.getValues("productImages") || []), ...filesArray],
+                    );
+                  }
+                }}
+                id="productImages"
+                ref={photosRef}
+                accept="image/*,video/*"
+              />
+            </div>
+          </div>
+          
+          {formContext.formState.errors["productImages"] && (
+            <p className="text-sm text-red-500 flex items-center gap-1 mt-2" dir={langDir}>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              {formContext.formState.errors["productImages"]?.message as string}
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* Include Price and Description sections */}
+      <PriceSection activeProductType={activeProductType} />
+      <DescriptionSection />
+    </div>
   );
 };
 
-export default BasicInformationSection;
+export default memo(BasicInformationSection);

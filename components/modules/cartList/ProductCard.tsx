@@ -17,6 +17,7 @@ import { useAuth } from "@/context/AuthContext";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { IoCloseSharp } from "react-icons/io5";
 import { useClickOutside } from "use-events";
+import { Trash2 } from "lucide-react";
 
 type ProductCardProps = {
   cartId: number;
@@ -219,103 +220,121 @@ const ProductCard: React.FC<ProductCardProps> = ({
   };
 
   return (
-    <div className="cart-item-list-col">
-      <figure>
-        <div className="image-container">
+    <div className="flex items-center space-x-4 p-4 bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+      {/* Product Image */}
+      <div className="flex-shrink-0">
+        <div className="relative w-28 h-28 rounded-lg overflow-hidden bg-gray-100">
           <Image
             src={productImages?.[0]?.image || PlaceholderImage}
             alt="product-image"
-            height={108}
-            width={108}
+            fill
+            className="object-cover"
           />
         </div>
-        <figcaption dir={langDir}>
-          <h4 className="text-lg! font-bold!">{productName}</h4>
-          <div className="custom-form-group">
-            <label dir={langDir} translate="no">{t("quantity")}</label>
-            <div className="qty-up-down-s1-with-rgMenuAction">
-              <div className="flex items-center gap-x-1">
-                <Button
-                  variant="outline"
-                  className="relative border border-solid border-gray-300 hover:shadow-xs"
-                  onClick={() => {
-                    setQuantity(quantity - 1);
-                    handleAddToCart(quantity - 1, "remove");
-                  }}
-                  disabled={
-                    quantity === 0 ||
-                    updateCartByDevice?.isPending ||
-                    updateCartWithLogin?.isPending
-                  }
-                >
-                  <Image
-                    src={MinusIcon}
-                    alt="minus-icon"
-                    fill
-                    className="p-3"
-                  />
-                </Button>
-                <input
-                  type="text"
-                  value={quantity}
-                  className="h-auto w-[35px] border-none bg-transparent text-center focus:border-none focus:outline-hidden"
-                  onChange={(e) => {
-                    const value = Number(e.target.value);
-                    setQuantity(isNaN(value) ? productQuantity : value);
-                  }}
-                  onBlur={handleQuantityChange}
-                />
-                <Button
-                  variant="outline"
-                  className="relative border border-solid border-gray-300 hover:shadow-xs"
-                  onClick={() => {
-                    setQuantity(quantity + 1);
-                    handleAddToCart(quantity + 1, "add");
-                  }}
-                  disabled={
-                    updateCartByDevice?.isPending ||
-                    updateCartWithLogin?.isPending
-                  }
-                >
-                  <Image src={PlusIcon} alt="plus-icon" fill className="p-3" />
-                </Button>
-              </div>
-              <ul className="rgMenuAction-lists">
-                <li>
-                  <Button
-                    variant="ghost"
-                    className="px-2 underline"
-                    onClick={() => setIsConfirmDialogOpen(true)}
-                    dir={langDir}
-                    translate="no"
-                  >
-                    {t("remove")}
-                  </Button>
-                </li>
-                {haveAccessToken ? (
-                  <li>
-                    <Button
-                      variant="ghost"
-                      className="px-2 underline"
-                      onClick={() => onWishlist(productId)}
-                      dir={langDir}
-                      translate="no"
-                    >
-                      {t("move_to_wishlist")}
-                    </Button>
-                  </li>
-                ) : null}
-              </ul>
-            </div>
+      </div>
+
+      {/* Product Details */}
+      <div className="flex-1 min-w-0">
+        <h4 className="text-lg font-semibold text-gray-900 truncate" dir={langDir}>
+          {productName}
+        </h4>
+        
+        {/* Quantity Controls */}
+        <div className="mt-3 flex items-center space-x-3">
+          <label className="text-sm font-medium text-gray-700" dir={langDir} translate="no">
+            {t("quantity")}:
+          </label>
+          <div className="flex items-center border border-gray-300 rounded-lg">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 p-0 hover:bg-gray-100"
+              onClick={() => {
+                setQuantity(quantity - 1);
+                handleAddToCart(quantity - 1, "remove");
+              }}
+              disabled={
+                quantity === 0 ||
+                updateCartByDevice?.isPending ||
+                updateCartWithLogin?.isPending
+              }
+            >
+              <Image
+                src={MinusIcon}
+                alt="minus-icon"
+                width={16}
+                height={16}
+              />
+            </Button>
+            <input
+              type="text"
+              value={quantity}
+              className="w-12 h-8 text-center border-0 bg-transparent focus:outline-none focus:ring-0"
+              onChange={(e) => {
+                const value = Number(e.target.value);
+                setQuantity(isNaN(value) ? productQuantity : value);
+              }}
+              onBlur={handleQuantityChange}
+            />
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 p-0 hover:bg-gray-100"
+              onClick={() => {
+                setQuantity(quantity + 1);
+                handleAddToCart(quantity + 1, "add");
+              }}
+              disabled={
+                updateCartByDevice?.isPending ||
+                updateCartWithLogin?.isPending
+              }
+            >
+              <Image 
+                src={PlusIcon} 
+                alt="plus-icon" 
+                width={16}
+                height={16}
+              />
+            </Button>
           </div>
-        </figcaption>
-      </figure>
-      <div className="right-info">
-        <h6 dir={langDir} translate="no">{t("price")}</h6>
-        <h5 dir={langDir}>
-          {currency.symbol}
-          {quantity * calculateDiscountedPrice()}
-        </h5>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="mt-3 flex items-center space-x-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-red-600 hover:text-red-700 hover:bg-red-50 px-2 flex items-center space-x-1"
+            onClick={() => setIsConfirmDialogOpen(true)}
+            dir={langDir}
+            translate="no"
+          >
+            <Trash2 className="w-4 h-4" />
+            <span>{t("remove")}</span>
+          </Button>
+          {haveAccessToken && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 px-0"
+              onClick={() => onWishlist(productId)}
+              dir={langDir}
+              translate="no"
+            >
+              {t("move_to_wishlist")}
+            </Button>
+          )}
+        </div>
+      </div>
+
+      {/* Price */}
+      <div className="flex-shrink-0 text-right">
+        <div className="text-sm text-gray-500" dir={langDir} translate="no">
+          {t("price")}
+        </div>
+        <div className="text-xl font-bold text-gray-900" dir={langDir}>
+          {currency.symbol}{quantity * calculateDiscountedPrice()}
+        </div>
       </div>
       <Dialog open={isConfirmDialogOpen} onOpenChange={handleConfirmDialog}>
         <DialogContent

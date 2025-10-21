@@ -63,6 +63,8 @@ type ManageProductCardProps = {
   hideCopyButton?: boolean;
   hideActionButtons?: boolean;
   disableFields?: boolean;
+  productType?: string;
+  isDropshipped?: boolean;
 };
 
 const ManageProductCard: React.FC<ManageProductCardProps> = ({
@@ -101,6 +103,8 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
   hideCopyButton = false,
   hideActionButtons = false,
   disableFields = false,
+  productType,
+  isDropshipped = false,
 }) => {
   const t = useTranslations();
   const { langDir } = useAuth();
@@ -526,7 +530,20 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
 
           {/* Product Details */}
           <div className="flex flex-col space-y-2">
-            <h3 className="text-lg font-semibold text-gray-900">{productName || "-"}</h3>
+            <div className="flex items-center space-x-2">
+              <h3 className="text-lg font-semibold text-gray-900">{productName || "-"}</h3>
+              {/* Product Type Badges */}
+              {/* {productType === 'D' && !isDropshipped && (
+                <span className="px-2 py-1 text-xs font-medium bg-purple-100 text-purple-700 rounded-full">
+                  {t("wholesale_product")}
+                </span>
+              )}
+              {isDropshipped && (
+                <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-700 rounded-full">
+                  {t("dropship_product")}
+                </span>
+              )} */}
+            </div>
             
             {/* Stock and Price Info */}
             <div className="flex space-x-6 text-sm text-gray-600">

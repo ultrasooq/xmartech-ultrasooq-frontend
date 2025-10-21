@@ -1,13 +1,13 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
 import EmailIcon from "@/public/images/email.svg";
-import PhoneCallIcon from "@/public/images/phone-call.svg";
 import { useVendorDetails } from "@/apis/queries/product.queries";
 import { COMPANY_UNIQUE_ID } from "@/utils/constants";
 import NoImagePlaceholder from "@/public/images/no-image.jpg";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import { useQueryClient } from "@tanstack/react-query";
 
 type VendorSectionProps = {
   adminId?: string;
@@ -16,6 +16,16 @@ type VendorSectionProps = {
 const VendorSection: React.FC<VendorSectionProps> = ({ adminId }) => {
   const t = useTranslations();
   const { langDir } = useAuth();
+  const queryClient = useQueryClient();
+
+  // Clear vendor cache when adminId changes to force fresh data
+  useEffect(() => {
+    if (adminId) {
+      queryClient.invalidateQueries({
+        queryKey: ["vendor-details", { adminId }],
+      });
+    }
+  }, [adminId, queryClient]);
   const vendorQuery = useVendorDetails(
     {
       adminId: adminId || "",
@@ -51,9 +61,11 @@ const VendorSection: React.FC<VendorSectionProps> = ({ adminId }) => {
       <div className="vendor-image relative">
         <Image
           src={
-            vendor?.profilePicture ? vendor.profilePicture : NoImagePlaceholder
+            vendor?.profilePicture || 
+            vendor?.masterAccount?.profilePicture || 
+            NoImagePlaceholder
           }
-          alt="image-icon"
+          alt="vendor-image"
           className="rounded-2xl object-cover"
           fill
           sizes="(100vw, 100vh)"
@@ -70,29 +82,42 @@ const VendorSection: React.FC<VendorSectionProps> = ({ adminId }) => {
           }
         >
           <h2>
-            {vendor?.firstName} {vendor?.lastName}
+            {vendor?.accountName || 
+             vendor?.userProfile?.[0]?.companyName || 
+             `${vendor?.firstName || ''} ${vendor?.lastName || ''}`.trim() || 
+             'Unknown Seller'}
           </h2>
         </Link>
         <ul className="vendor-contact-info">
           <li>
-            <a href="mailto:test@gmail.com">
+            <a href={`mailto:${vendor?.masterAccount?.email || vendor?.email || 'test@gmail.com'}`}>
               <span className="icon">
                 <Image src={EmailIcon} alt="email-icon" />
               </span>
-              <span className="text">{vendor?.email || "-"}</span>
-            </a>
-          </li>
-          <li>
-            <a href="tel:1234567890">
-              <span className="icon">
-                <Image src={PhoneCallIcon} alt="phone-icon" />
-              </span>
-              <span className="text">{vendor?.phoneNumber || "-"}</span>
+              <span className="text">{vendor?.masterAccount?.email || vendor?.email || "-"}</span>
             </a>
           </li>
         </ul>
-        <h5 dir={langDir} translate="no">{t("business_type")}</h5>
-        <div className="tagLists">
+        
+        {/* Trust Indicators for Customers */}
+        <div className="vendor-trust-indicators mt-4">
+          <div className="flex items-center gap-4 text-sm text-gray-600">
+            <div className="flex items-center gap-1">
+              <svg className="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>Verified Seller</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <svg className="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>24/7 Support</span>
+            </div>
+          </div>
+        </div>
+        
+        <div className="tagLists mt-8">
           <div className="tagItem">
             {vendor?.userProfile
               ?.map((item: any) => item?.userProfileBusinessType)
@@ -104,14 +129,6 @@ const VendorSection: React.FC<VendorSectionProps> = ({ adminId }) => {
               ))}
           </div>
         </div>
-        <h5 dir={langDir} translate="no">
-          {t("company_id")}:{" "}
-          <strong>
-            {vendor?.uniqueId
-              ? `${COMPANY_UNIQUE_ID}${vendor?.uniqueId}`
-              : "NA"}
-          </strong>
-        </h5>
       </div>
     </div>
   );
