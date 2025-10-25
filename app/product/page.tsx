@@ -1990,7 +1990,7 @@ const CreateProductPage = () => {
         <div className="container mx-auto max-w-6xl px-4">
           {/* Header Section */}
           <div className="mb-8 text-center">
-            {!searchParams?.get('productType') || searchParams?.get('productType') !== 'D' ? (
+            {!searchParams?.get('productType') || (searchParams?.get('productType') !== 'D' && searchParams?.get('productType') !== 'R') ? (
               <>
                 {/* Tab Navigation */}
                 <div className="inline-flex rounded-xl bg-white p-1 shadow-sm border border-gray-200">

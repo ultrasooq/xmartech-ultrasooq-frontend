@@ -676,6 +676,9 @@ const ProductDetailsPage = () => {
               sellerId={
                 productDetails?.product_productPrice?.[0]?.adminDetail?.id
               }
+              adminId={
+                productDetails?.product_productPrice?.[0]?.adminDetail?.id
+              }
               haveOtherSellers={!!otherSellerDetails?.length}
               productProductPrice={
                 productDetails?.product_productPrice?.[0]?.productPrice

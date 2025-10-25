@@ -155,69 +155,97 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ onClose, reviewId }) => {
   }, [reviewId, reviewByIdQuery?.data?.data]);
 
   return (
-    <div>
-      <DialogHeader>
-        <DialogTitle className="text-center text-xl font-semibold">
-          Give your Ratings and Reviews
+    <div className="w-full">
+      <DialogHeader className="pb-6">
+        <DialogTitle className="text-center text-2xl font-bold text-gray-900">
+          {reviewId ? "Edit Your Review" : "Give Your Rating & Review"}
         </DialogTitle>
+        <p className="mt-2 text-center text-sm text-gray-600">
+          Share your experience with this product
+        </p>
       </DialogHeader>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="card-item card-payment-form pt-3"
+          className="space-y-6"
         >
-          <div className="mb-5 space-y-2">
-            <p>Rate this product</p>
-
+          {/* Rating Section */}
+          <div className="space-y-3">
+            <label className="text-sm font-semibold text-gray-900">
+              Rate this product
+            </label>
             <Controller
               name="rating"
               control={form.control}
               render={({ field }) => (
-                <Ratings
-                  rating={field.value}
-                  onRatingChange={(rating) => {
-                    field.onChange(rating);
-                  }}
-                />
+                <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 p-4">
+                  <Ratings
+                    rating={field.value}
+                    onRatingChange={(rating) => {
+                      field.onChange(rating);
+                    }}
+                  />
+                  {field.value > 0 && (
+                    <span className="text-sm font-medium text-gray-600">
+                      {field.value}/5
+                    </span>
+                  )}
+                </div>
               )}
             />
           </div>
 
-          <p className="mb-3">Review this product</p>
+          {/* Review Section */}
+          <div className="space-y-4">
+            <label className="text-sm font-semibold text-gray-900">
+              Review this product
+            </label>
+            
+            <ControlledTextareaInput
+              label="Description"
+              name="description"
+              placeholder="Share your thoughts about this product..."
+              rows={5}
+            />
 
-          <ControlledTextareaInput
-            label="Description"
-            name="description"
-            placeholder="Description"
-            rows={6}
-          />
+            <ControlledTextInput
+              label="Review Title"
+              name="title"
+              placeholder="Give your review a title"
+            />
+          </div>
 
-          <ControlledTextInput
-            label="Title"
-            name="title"
-            placeholder="Review Title"
-          />
-
-          <Button
-            disabled={addReview.isPending}
-            type="submit"
-            className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
-          >
-            {addReview.isPending ? (
-              <>
-                <Image
-                  src="/images/load.png"
-                  alt="loader-icon"
-                  width={20}
-                  height={20}
-                  className="mr-2 animate-spin"
-                />
-                Please wait
-              </>
-            ) : (
-              "Submit"
-            )}
-          </Button>
+          {/* Submit Button */}
+          <div className="flex gap-3 pt-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onClose}
+              className="flex-1"
+            >
+              Cancel
+            </Button>
+            <Button
+              disabled={addReview.isPending || updateReview.isPending}
+              type="submit"
+              className="flex-1 rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 text-base font-semibold text-white shadow-md transition-all hover:from-orange-600 hover:to-orange-700 hover:shadow-lg"
+            >
+              {addReview.isPending || updateReview.isPending ? (
+                <>
+                  <Image
+                    src="/images/load.png"
+                    alt="loader-icon"
+                    width={20}
+                    height={20}
+                    className="mr-2 animate-spin"
+                  />
+                  Submitting...
+                </>
+              ) : (
+                "Submit Review"
+              )}
+            </Button>
+          </div>
         </form>
       </Form>
     </div>

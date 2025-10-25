@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/drawer";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import OtherSellerSection from "../trending/OtherSellerSection";
+import CompactVendorInfo from "./CompactVendorInfo";
 import Link from "next/link";
 import MinusIcon from "@/public/images/upDownBtn-minus.svg";
 import PlusIcon from "@/public/images/upDownBtn-plus.svg";
@@ -69,6 +70,7 @@ type ProductDescriptionCardProps = {
   productVariants?: any[];
   selectedProductVariant?: any;
   selectProductVariant?: (variant: any) => void;
+  adminId?: number;
 };
 
 const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
@@ -111,6 +113,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   productVariants = [],
   selectedProductVariant,
   selectProductVariant,
+  adminId,
 }) => {
   const t = useTranslations();
   const { user, langDir, currency } = useAuth();
@@ -391,7 +394,8 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
         </div>
       ) : (
         <div className="space-y-3">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-8">
+          {/* Brand and Rating Row */}
+          <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               <span className="text-sm font-medium text-gray-600" dir={langDir} translate="no">
                 {t("brand")}:
@@ -401,34 +405,21 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
               </span>
             </div>
             
+            {/* Rating */}
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-gray-600" dir={langDir} translate="no">
-                {t("sold_by")}:
+              <div className="flex items-center gap-1">
+                {calculateRatings(calculateAvgRating)}
+              </div>
+              <span className="text-sm text-gray-600">
+                ({productReview?.length || 0} {t("reviews")})
               </span>
-              <Link
-                href={
-                  soldByTradeRole === "COMPANY"
-                    ? `/company-profile-details?userId=${sellerId}`
-                    : soldByTradeRole === "FREELANCER"
-                      ? `/freelancer-profile-details?userId=${sellerId}`
-                      : "#"
-                }
-                className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
-              >
-                {soldBy}
-              </Link>
             </div>
           </div>
 
-          {/* Rating */}
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1">
-              {calculateRatings(calculateAvgRating)}
-            </div>
-            <span className="text-sm text-gray-600">
-              ({productReview?.length} {t("reviews")})
-            </span>
-          </div>
+          {/* Vendor Information */}
+          {adminId && (
+            <CompactVendorInfo adminId={String(adminId)} />
+          )}
         </div>
       )}
 

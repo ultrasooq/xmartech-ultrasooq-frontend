@@ -220,32 +220,26 @@ const AddFromExistingProductPage = () => {
               <p className="text-gray-500 mb-2" dir={langDir}>
                 {t("no_products_found")}
               </p>
-              <p className="text-sm text-gray-400 mb-4" dir={langDir}>
+              <p className="text-sm text-gray-400" dir={langDir}>
                 {t("try_different_search_term")}
               </p>
-              <Button
-                onClick={handleAddNewProduct}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                {t("add_new_product")}
-              </Button>
             </div>
           )}
 
           {/* Initial State */}
           {!searchTerm && searchResults.length === 0 && (
             <div className="text-center py-8">
-                           <p className="text-gray-500 mb-4" dir={langDir}>
-               {t("search_existing_product_description")}
-             </p>
-              <Button
-                onClick={handleAddNewProduct}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                {t("add_new_product")}
-              </Button>
+              <div className="bg-gray-50 rounded-lg p-8 border-2 border-dashed border-gray-200">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Search className="h-8 w-8 text-gray-400" />
+                </div>
+                <p className="text-gray-500 mb-2" dir={langDir}>
+                  {t("search_existing_product_description")}
+                </p>
+                <p className="text-sm text-gray-400" dir={langDir}>
+                  {t("enter_product_name_to_search")}
+                </p>
+              </div>
             </div>
           )}
         </div>

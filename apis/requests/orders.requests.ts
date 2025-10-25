@@ -203,3 +203,69 @@ export const fetchOrderByIdUnAuth = (payload: { orderId: number }) => {
     },
   });
 };
+
+// Vendor Dashboard specific endpoints
+export const fetchVendorOrderStats = () => {
+  return axios({
+    method: "GET",
+    url: `${getApiUrl()}/order/vendor/order-stats`,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+export const fetchVendorRecentOrders = (payload: {
+  page: number;
+  limit: number;
+  status?: string;
+  startDate?: string;
+  endDate?: string;
+}) => {
+  return axios({
+    method: "GET",
+    url: urlcat(`${getApiUrl()}/order/vendor/recent-orders`, payload),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+export const updateOrderStatus = (payload: {
+  orderProductId: number;
+  status: string;
+  notes?: string;
+}) => {
+  return axios({
+    method: "PATCH",
+    url: `${getApiUrl()}/order/vendor/update-status`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+export const addOrderTracking = (payload: {
+  orderProductId: number;
+  trackingNumber: string;
+  carrier: string;
+  notes?: string;
+}) => {
+  return axios({
+    method: "POST",
+    url: `${getApiUrl()}/order/vendor/add-tracking`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};

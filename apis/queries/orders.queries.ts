@@ -19,6 +19,10 @@ import {
   updateCancelReason,
   updateOrderShippingStatus,
   updateProductStatus,
+  fetchVendorOrderStats,
+  fetchVendorRecentOrders,
+  updateOrderStatus,
+  addOrderTracking,
 } from "../requests/orders.requests";
 import { APIResponseError } from "@/utils/types/common.types";
 
@@ -347,3 +351,86 @@ export const useOrderByIdUnAuth = (
     },
     enabled,
   });
+
+// Vendor Dashboard specific hooks
+export const useVendorOrderStats = (enabled = true) =>
+  useQuery({
+    queryKey: ["vendor-order-stats"],
+    queryFn: async () => {
+      const res: any = await fetchVendorOrderStats();
+      return res.data;
+    },
+    enabled,
+  });
+
+export const useVendorRecentOrders = (
+  payload: {
+    page: number;
+    limit: number;
+    status?: string;
+    startDate?: string;
+    endDate?: string;
+  },
+  enabled = true,
+) =>
+  useQuery({
+    queryKey: ["vendor-recent-orders", payload],
+    queryFn: async () => {
+      const res: any = await fetchVendorRecentOrders(payload);
+      return res.data;
+    },
+    enabled,
+  });
+
+export const useUpdateOrderStatus = () => {
+  const queryClient = useQueryClient();
+  return useMutation<
+    { data: any; message: string; status: boolean },
+    APIResponseError,
+    { orderProductId: number; status: string; notes?: string }
+  >({
+    mutationFn: async (payload) => {
+      const res = await updateOrderStatus(payload);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["vendor-order-stats"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["vendor-recent-orders"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["orders-by-seller-id"],
+      });
+    },
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
+};
+
+export const useAddOrderTracking = () => {
+  const queryClient = useQueryClient();
+  return useMutation<
+    { data: any; message: string; status: boolean },
+    APIResponseError,
+    { orderProductId: number; trackingNumber: string; carrier: string; notes?: string }
+  >({
+    mutationFn: async (payload) => {
+      const res = await addOrderTracking(payload);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["vendor-recent-orders"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["orders-by-seller-id"],
+      });
+    },
+    onError: (err: APIResponseError) => {
+      console.log(err);
+    },
+  });
+};

@@ -76,105 +76,113 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
   }, [me?.data?.data?.id, reviewsQuery?.data?.data]);
 
   return (
-    <div className="w-full">
-      <div className="flex w-full flex-wrap items-center justify-between">
-        <div className="flex w-auto flex-wrap items-start justify-start">
-          <h2
-            className="mb-0 mr-7 text-2xl font-semibold leading-7 text-color-dark"
+    <div className="w-full space-y-6">
+      {/* Header Section */}
+      <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+        {/* Ratings Summary - Row Format */}
+        <div className="flex items-center gap-6">
+          <h3 className="text-5xl font-bold text-gray-900">
+            {calculateAvgRating ? `${calculateAvgRating}.0` : "0"}
+          </h3>
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-1">
+              {calculateRatings(calculateAvgRating)}
+            </div>
+            <p className="text-sm text-gray-600" dir={langDir} translate="no">
+              ({t("based_on_n_reviews", {
+                n: reviewsQuery.data?.data?.length || 0,
+              })})
+            </p>
+          </div>
+        </div>
+
+        {/* Write Review Button */}
+        {hasAccessToken && !isCreator && !reviewExists && (
+          <Button
+            onClick={handleToggleReviewModal}
+            className="rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 px-6 py-3 text-sm font-semibold text-white shadow-md transition-all hover:from-orange-600 hover:to-orange-700 hover:shadow-lg"
             dir={langDir}
             translate="no"
           >
-            {t("ratings_n_reviews")}
-          </h2>
-          <div className="flex w-auto flex-col">
-            <div className="flex w-auto items-center justify-start">
-              <h4 className="mb-0 mr-2.5 text-2xl font-medium leading-7 text-color-dark">
-                {calculateAvgRating ? `${calculateAvgRating}.0` : "0"}
-              </h4>
-              {calculateRatings(calculateAvgRating)}
-            </div>
-            <div
-              className="mt-1.5 w-auto text-sm font-medium leading-5 text-gray-500"
-              dir={langDir}
-              translate="no"
-            >
-              <p>
-                {t("based_on_n_reviews", {
-                  n: reviewsQuery.data?.data?.length,
-                })}
-              </p>
-            </div>
-          </div>
-        </div>
-        <div className="w-auto">
-          {hasAccessToken && !isCreator && !reviewExists ? (
-            <button
-              type="button"
-              onClick={handleToggleReviewModal}
-              className="flex rounded-sm bg-dark-orange p-3 text-sm font-bold leading-5 text-white"
-              translate="no"
-            >
-              <Image
-                src="/images/pen-icon.svg"
-                height={20}
-                width={20}
-                className="mr-2"
-                alt="pen-icon"
-              />
-              <span dir={langDir}>{t("write_a_review")}</span>
-            </button>
-          ) : null}
-        </div>
+            <svg className="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+            {t("write_a_review")}
+          </Button>
+        )}
       </div>
-      <div className="flex w-full items-center justify-end py-5">
-        <ul className="flex items-center justify-end">
-          <li className="ml-2 text-sm font-medium text-color-dark">Sort By:</li>
-          <li className="ml-2">
+
+      {/* Sort By Section */}
+      <div className="flex items-center justify-between border-b border-gray-200 pb-4">
+        <h4 className="text-lg font-semibold text-gray-900" dir={langDir} translate="no">
+          {t("reviews")}
+        </h4>
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-medium text-gray-600" dir={langDir} translate="no">
+            {t("sort_by")}:
+          </span>
+          <div className="flex gap-2">
             <Button
-              variant={sortType === "newest" ? "secondary" : "ghost"}
+              variant={sortType === "newest" ? "default" : "outline"}
+              size="sm"
               onClick={() => setSortType("newest")}
-              className="block rounded-full border border-solid border-gray-300 px-2 text-sm font-medium text-gray-500"
+              className={`rounded-full px-4 text-sm font-medium transition-all ${
+                sortType === "newest"
+                  ? "bg-orange-500 text-white hover:bg-orange-600"
+                  : "border-gray-300 text-gray-700 hover:bg-gray-50"
+              }`}
               dir={langDir}
               translate="no"
             >
               {t("newest")}
             </Button>
-          </li>
-          <li className="ml-2">
             <Button
-              variant={sortType === "highest" ? "secondary" : "ghost"}
+              variant={sortType === "highest" ? "default" : "outline"}
+              size="sm"
               onClick={() => setSortType("highest")}
-              className="block rounded-full border border-solid border-gray-300 px-2 text-sm font-medium text-gray-500"
+              className={`rounded-full px-4 text-sm font-medium transition-all ${
+                sortType === "highest"
+                  ? "bg-orange-500 text-white hover:bg-orange-600"
+                  : "border-gray-300 text-gray-700 hover:bg-gray-50"
+              }`}
               dir={langDir}
               translate="no"
             >
               {t("highest")}
             </Button>
-          </li>
-          <li className="ml-2">
             <Button
-              variant={sortType === "lowest" ? "secondary" : "ghost"}
+              variant={sortType === "lowest" ? "default" : "outline"}
+              size="sm"
               onClick={() => setSortType("lowest")}
-              className="block rounded-full border border-solid border-gray-300 px-2 text-sm font-medium text-gray-500"
+              className={`rounded-full px-4 text-sm font-medium transition-all ${
+                sortType === "lowest"
+                  ? "bg-orange-500 text-white hover:bg-orange-600"
+                  : "border-gray-300 text-gray-700 hover:bg-gray-50"
+              }`}
               dir={langDir}
               translate="no"
             >
               {t("lowest")}
             </Button>
-          </li>
-        </ul>
-      </div>
-      <div className="flex w-full border-t-2 border-dashed border-gray-300 py-5">
-        {!reviewsQuery?.data?.data?.length ? (
-          <div
-            className="w-full text-center text-sm font-bold text-dark-orange"
-            dir={langDir}
-            translate="no"
-          >
-            {t("no_reviews_found")}
           </div>
-        ) : null}
-        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        </div>
+      </div>
+
+      {/* Reviews Grid */}
+      {!reviewsQuery?.data?.data?.length ? (
+        <div className="flex min-h-[300px] flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 py-12">
+          <svg className="h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+          </svg>
+          <p className="mt-4 text-lg font-semibold text-gray-900" dir={langDir} translate="no">
+            {t("no_reviews_found")}
+          </p>
+          <p className="mt-2 text-sm text-gray-600" dir={langDir} translate="no">
+            Be the first to review this product
+          </p>
+        </div>
+      ) : (
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {reviewsQuery.data?.data?.length
             ? reviewsQuery.data?.data.map(
                 (review: {
@@ -186,32 +194,42 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
                   reviewByUserDetail: {
                     firstName: string;
                     lastName: string;
+                    accountName: string;
                     profilePicture: string;
                   };
                   userId: number;
-                }) => (
-                  <UserRatingCard
-                    key={review?.id}
-                    rating={review?.rating}
-                    name={`${review?.reviewByUserDetail?.firstName} ${review?.reviewByUserDetail?.lastName}`}
-                    title={review.title}
-                    review={review.description}
-                    date={review.createdAt}
-                    profilePicture={review?.reviewByUserDetail?.profilePicture}
-                    isBuyer={
-                      me.data?.data?.tradeRole === "BUYER" &&
-                      me.data?.data?.id === review?.userId
-                    }
-                    onEdit={() => {
-                      setReviewId(review?.id);
-                      handleToggleReviewModal();
-                    }}
-                  />
-                ),
+                }) => {
+                  const displayName = review?.reviewByUserDetail?.accountName ||
+                    `${review?.reviewByUserDetail?.firstName || ''} ${review?.reviewByUserDetail?.lastName || ''}`.trim() ||
+                    'Anonymous User';
+                  
+                  // Remove "-BUYER" suffix if present
+                  const cleanName = displayName.replace(/\s*-\s*BUYER$/i, '');
+                  
+                  return (
+                    <UserRatingCard
+                      key={review?.id}
+                      rating={review?.rating}
+                      name={cleanName}
+                      title={review.title}
+                      review={review.description}
+                      date={review.createdAt}
+                      profilePicture={review?.reviewByUserDetail?.profilePicture}
+                      isBuyer={
+                        me.data?.data?.tradeRole === "BUYER" &&
+                        me.data?.data?.id === review?.userId
+                      }
+                      onEdit={() => {
+                        setReviewId(review?.id);
+                        handleToggleReviewModal();
+                      }}
+                    />
+                  );
+                },
               )
             : null}
         </div>
-      </div>
+      )}
       {/* <div className="flex w-full items-center justify-center text-center text-sm font-bold text-dark-orange">
         <span className="flex">
           <Image
