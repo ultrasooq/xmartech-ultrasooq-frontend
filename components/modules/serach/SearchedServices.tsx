@@ -13,13 +13,15 @@ type SearchedServicesType = {
     haveAccessToken: boolean;
     cartList: any[];
     setRecordsCount: (count: number) => void;
+    hideHeader?: boolean;
 };
 
 const SearchedServices: React.FC<SearchedServicesType> = ({
     searchTerm,
     haveAccessToken,
     cartList,
-    setRecordsCount
+    setRecordsCount,
+    hideHeader = false
 }) => {
     const t = useTranslations();
     const { langDir } = useAuth();
@@ -32,7 +34,7 @@ const SearchedServices: React.FC<SearchedServicesType> = ({
 
     const allServicesQuery = useGetAllServices({
         page: 1,
-        limit: 10,
+        limit: 20,
         term: searchTerm,
         sort: "desc",
         ownService: false
@@ -52,6 +54,92 @@ const SearchedServices: React.FC<SearchedServicesType> = ({
 
     if (allServicesQuery?.isFetched && memoizedServices.length == 0) {
         return null;
+    }
+
+    if (hideHeader) {
+        return (
+            <>
+                {allServicesQuery.isLoading ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                        {Array.from({ length: 4 }).map((_, index: number) => (
+                            <SkeletonProductCardLoader key={index} />
+                        ))}
+                    </div>
+                ) : null}
+
+                {!memoizedServices.length && !allServicesQuery.isLoading ? null : null}
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    {memoizedServices.map((item: any) => {
+                        return (
+                            <ServiceCard
+                                key={item.id}
+                                item={item}
+                                handleServiceToCartModal={() => {
+                                    setSelectedServiceId(item.id.toString());
+                                    handleServiceToCartModal();
+                                }}
+                            />
+                        );
+                    })}
+                </div>
+                {(() => {
+                    if (!selectedServiceId) return null;
+
+                    return (
+                        <Dialog open={isServiceAddToCartModalOpen} onOpenChange={handleServiceToCartModal}>
+                            {(() => {
+                                let relatedCart: any = null;
+                                const cartItem = cartList.find((item: any) => item.serviceId == selectedServiceId);
+                                if (cartItem) {
+                                    relatedCart = cartList
+                                        ?.filter((item: any) => item.productId && item.cartProductServices?.length)
+                                        .find((item: any) => {
+                                            return !!item.cartProductServices
+                                                .find((c: any) => c.relatedCartType == 'SERVICE' && c.serviceId == selectedServiceId);
+                                        });
+                                }
+
+                                return (
+                                    <AddServiceToCartModal
+                                        id={selectedServiceId}
+                                        open={isServiceAddToCartModalOpen}
+                                        features={
+                                            cartList.find((item: any) => item.serviceId == selectedServiceId)
+                                                ?.cartServiceFeatures
+                                                ?.map((feature: any) => {
+                                                    const bookingDateTime = feature.bookingDateTime;
+                                                    let date: any = "";
+                                                    let time = "";
+
+                                                    if (bookingDateTime) {
+                                                        const dateObj = new Date(bookingDateTime);
+                                                        date = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
+                                                        time = dateObj.toISOString().split("T")[1]?.substring(0, 5); // 'HH:MM'
+                                                    }
+
+                                                    return {
+                                                        id: feature.serviceFeatureId,
+                                                        quantity: feature.quantity,
+                                                        date,
+                                                        time,
+                                                    };
+                                                }) || []
+                                        }
+                                        cartId={cartList.find((item: any) => item.serviceId == selectedServiceId)?.id}
+                                        relatedCart={relatedCart}
+                                        handleClose={() => {
+                                            setSelectedServiceId(undefined);
+                                            setIsServiceAddToCartModalOpen(false)
+                                        }}
+                                    />
+                                );
+                            })()}
+                        </Dialog>
+                    )
+                })()}
+            </>
+        );
     }
 
     return (

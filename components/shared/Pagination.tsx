@@ -1,16 +1,11 @@
 import React from "react";
 import { Button } from "../ui/button";
-import Image from "next/image";
-import FirstIcon from "@/public/images/pagination-first.svg";
-import PreviousIcon from "@/public/images/pagination-prev.svg";
-import NextIcon from "@/public/images/pagination-next.svg";
-import LastIcon from "@/public/images/pagination-last.svg";
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
 import ReactPaginate from "react-paginate";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 
 type PaginationProps = {
-  // data: [];
   totalCount: number;
   page: number;
   setPage: (page: number) => void;
@@ -18,7 +13,6 @@ type PaginationProps = {
 };
 
 const Pagination: React.FC<PaginationProps> = ({
-  // data,
   totalCount = 0,
   page,
   setPage,
@@ -27,97 +21,93 @@ const Pagination: React.FC<PaginationProps> = ({
   const t = useTranslations();
   const { langDir } = useAuth();
   const itemsPerPage = limit;
-  // const [itemOffset, setItemOffset] = useState(0);
-  // const endOffset = itemOffset + itemsPerPage;
-  // console.log(`Loading items from ${itemOffset} to ${endOffset}`);
-  // const currentItems = (data || []).slice(itemOffset, endOffset);
   const pageCount = totalCount && Math.ceil(totalCount / itemsPerPage);
 
   const handlePageClick = (event: any) => {
-    // const newOffset = (event.selected * itemsPerPage) % totalCount;
-    // console.log(
-    //   `User requested page number ${event.selected}, which is offset ${newOffset}`,
-    // );
     setPage(event.selected + 1);
-    // setItemOffset(newOffset);
+    // Scroll to top smoothly
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  if (pageCount <= 1) return null;
+
   return (
-    <ul className="theme-pagination-s1 pt-7">
-      <li>
+    <div className="flex items-center justify-center py-4 sm:py-8">
+      <nav className="flex items-center gap-1 sm:gap-2" aria-label="Pagination">
+        {/* First Page Button */}
         <Button
           type="button"
-          className="theme-primary-btn first"
+          variant="outline"
+          size="sm"
+          className="h-8 sm:h-10 px-2 sm:px-4 gap-1 sm:gap-2 bg-white border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
           onClick={() => setPage(1)}
+          disabled={page === 1}
           translate="no"
         >
-          <Image
-            src={FirstIcon}
-            alt="next-icon"
-            height={0}
-            width={0}
-            className="h-auto w-[7px]"
-            dir={langDir}
-          />
-          {t("first")}
+          <ChevronsLeft className="h-3 w-3 sm:h-4 sm:w-4" />
+          <span className="hidden sm:inline text-xs sm:text-sm">{t("first")}</span>
         </Button>
-      </li>
-      <li>
+
+        {/* Previous Button */}
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="h-8 w-8 sm:h-10 sm:w-10 p-0 bg-white border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          onClick={() => setPage(page - 1)}
+          disabled={page === 1}
+        >
+          <ChevronLeft className="h-3 w-3 sm:h-4 sm:w-4" />
+        </Button>
+
+        {/* Page Numbers */}
         <ReactPaginate
           breakLabel="..."
-          breakClassName="react-paginate"
-          breakLinkClassName="react-paginate"
+          breakClassName="flex items-center justify-center h-8 w-8 sm:h-10 sm:w-10"
+          breakLinkClassName="text-gray-500 font-medium text-xs sm:text-sm"
           onPageChange={handlePageClick}
-          pageRangeDisplayed={3}
+          pageRangeDisplayed={2}
+          marginPagesDisplayed={1}
           pageCount={pageCount}
           forcePage={page - 1}
           renderOnZeroPageCount={null}
-          containerClassName="flex gap-3"
-          pageClassName="paginate-button"
-          activeClassName="active-paginate-button"
-          previousLabel={
-            <Button type="button" variant="outline" className="nextPrev">
-              <Image
-                src={PreviousIcon}
-                alt="prev-icon"
-                height={0}
-                width={0}
-                className="h-auto w-[7px]"
-              />
-            </Button>
-          }
-          nextLabel={
-            <Button type="button" variant="outline" className="nextPrev">
-              <Image
-                src={NextIcon}
-                alt="prev-icon"
-                height={0}
-                width={0}
-                className="h-auto w-[7px]"
-              />
-            </Button>
-          }
+          containerClassName="flex items-center gap-1 sm:gap-2"
+          pageClassName="flex"
+          pageLinkClassName="flex items-center justify-center h-8 w-8 sm:h-10 sm:w-10 rounded-md sm:rounded-lg border border-gray-300 bg-white text-gray-700 font-medium text-xs sm:text-sm hover:bg-gray-50 hover:border-gray-400 transition-colors"
+          activeClassName="active"
+          activeLinkClassName="!bg-orange-600 !text-white !border-orange-600 hover:!bg-orange-700"
+          previousClassName="hidden"
+          nextClassName="hidden"
         />
-      </li>
-      <li>
+
+        {/* Next Button */}
         <Button
           type="button"
-          className="theme-primary-btn last"
+          variant="outline"
+          size="sm"
+          className="h-8 w-8 sm:h-10 sm:w-10 p-0 bg-white border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          onClick={() => setPage(page + 1)}
+          disabled={page === pageCount}
+        >
+          <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
+        </Button>
+
+        {/* Last Page Button */}
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="h-8 sm:h-10 px-2 sm:px-4 gap-1 sm:gap-2 bg-white border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
           onClick={() => setPage(pageCount)}
+          disabled={page === pageCount}
           dir={langDir}
           translate="no"
         >
-          {t("last")}
-          <Image
-            src={LastIcon}
-            alt="next-icon"
-            height={0}
-            width={0}
-            className="h-auto w-[7px]"
-          />
+          <span className="hidden sm:inline text-xs sm:text-sm">{t("last")}</span>
+          <ChevronsRight className="h-3 w-3 sm:h-4 sm:w-4" />
         </Button>
-      </li>
-    </ul>
+      </nav>
+    </div>
   );
 };
 

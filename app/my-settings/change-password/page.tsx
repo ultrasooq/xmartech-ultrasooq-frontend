@@ -20,7 +20,6 @@ import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import BackgroundImage from "@/public/images/before-login-bg.png";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 
@@ -116,125 +115,154 @@ export default function ChangePasswordPage() {
   };
 
   return (
-    <section className="relative w-full">
-      <div className="absolute left-0 top-0 -z-10 h-full w-full">
-        <Image
-          src={BackgroundImage}
-          className="h-full w-full object-cover object-center"
-          alt="background"
-          fill
-          priority
-        />
+    <div className="space-y-6">
+      {/* Header Section */}
+      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
+        <h2 className="text-2xl font-bold tracking-tight text-gray-900" dir={langDir} translate="no">
+          {t("change_password")}
+        </h2>
+        <p className="mt-1.5 text-sm text-gray-600" translate="no">
+          {t("update_your_password_to_keep_your_account_secure")}
+        </p>
       </div>
-      <div className="container relative z-10 m-auto">
-        <div className="flex">
-          <div className="w-full rounded-lg border border-solid border-gray-300 bg-white p-4 shadow-xs">
-            {showSuccess ? (
-              <div className="px-4 py-6">
-                <PasswordChangeSuccessContent />
-              </div>
-            ) : (
-              <>
-                <h2 className="mb-4 text-[18px] font-semibold md:text-[22px]" dir={langDir} translate="no">
-                  {t("change_password")}
-                </h2>
-                <div className="w-full">
-                  <Form {...form}>
-                    <form
-                      className="flex flex-wrap"
-                      onSubmit={form.handleSubmit(onSubmit)}
-                    >
-                      <FormField
-                        control={form.control}
-                        name="password"
-                        render={({ field }) => (
-                          <FormItem className="mb-4 w-full" dir={langDir}>
-                            <FormLabel translate="no">{t("old_password")}</FormLabel>
-                            <FormControl>
-                              <Input
-                                type="password"
-                                placeholder="**********"
-                                className="h-12! rounded border-gray-300 focus-visible:ring-0!"
-                                {...field}
-                                dir={langDir}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
 
-                      <FormField
-                        control={form.control}
-                        name="newPassword"
-                        render={({ field }) => (
-                          <FormItem className="mb-4 w-full" dir={langDir}>
-                            <FormLabel translate="no">{t("new_password")}</FormLabel>
-                            <FormControl>
-                              <Input
-                                type="password"
-                                placeholder="**********"
-                                className="h-12! rounded border-gray-300 focus-visible:ring-0!"
-                                {...field}
-                                dir={langDir}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="confirmPassword"
-                        render={({ field }) => (
-                          <FormItem className="mb-4 w-full" dir={langDir}>
-                            <FormLabel translate="no">{t("reenter_new_password")}</FormLabel>
-                            <FormControl>
-                              <Input
-                                type="password"
-                                placeholder="**********"
-                                className="h-12! rounded border-gray-300 focus-visible:ring-0!"
-                                {...field}
-                                dir={langDir}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <div className="w-full">
-                        <Button
-                          disabled={changePassword.isPending}
-                          type="submit"
-                          className="h-12 w-full rounded bg-dark-orange text-center text-base font-bold leading-6 text-white hover:bg-dark-orange hover:opacity-90 md:text-lg"
-                          translate="no"
-                        >
-                          {changePassword.isPending ? (
-                            <>
-                              <Image
-                                src="/images/load.png"
-                                alt="loader-icon"
-                                width={20}
-                                height={20}
-                                className="mr-2 animate-spin"
-                              />
-                              {t("please_wait")}
-                            </>
-                          ) : (
-                            t("change_password")
-                          )}
-                        </Button>
-                      </div>
-                    </form>
-                  </Form>
-                </div>
-              </>
-            )}
-          </div>
+      {showSuccess ? (
+        <div className="overflow-hidden rounded-xl border border-green-200 bg-white p-8 shadow-sm">
+          <PasswordChangeSuccessContent />
         </div>
-      </div>
-    </section>
+      ) : (
+        <>
+          {/* Form Section */}
+          <div className="overflow-hidden rounded-xl border border-gray-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
+            <Form {...form}>
+              <form
+                className="space-y-6"
+                onSubmit={form.handleSubmit(onSubmit)}
+              >
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem dir={langDir}>
+                      <FormLabel className="text-sm font-semibold text-gray-700" translate="no">
+                        {t("old_password")}
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          type="password"
+                          placeholder="**********"
+                          className="h-12 rounded-lg border-gray-300 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-0"
+                          {...field}
+                          dir={langDir}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-sm" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="newPassword"
+                  render={({ field }) => (
+                    <FormItem dir={langDir}>
+                      <FormLabel className="text-sm font-semibold text-gray-700" translate="no">
+                        {t("new_password")}
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          type="password"
+                          placeholder="**********"
+                          className="h-12 rounded-lg border-gray-300 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-0"
+                          {...field}
+                          dir={langDir}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-sm" />
+                      <p className="mt-2 text-xs text-gray-500" translate="no">
+                        {t("password_must_be_at_least_8_characters")}
+                      </p>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="confirmPassword"
+                  render={({ field }) => (
+                    <FormItem dir={langDir}>
+                      <FormLabel className="text-sm font-semibold text-gray-700" translate="no">
+                        {t("reenter_new_password")}
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          type="password"
+                          placeholder="**********"
+                          className="h-12 rounded-lg border-gray-300 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-0"
+                          {...field}
+                          dir={langDir}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-sm" />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="flex items-center gap-4 pt-4">
+                  <Button
+                    disabled={changePassword.isPending}
+                    type="submit"
+                    className="h-12 flex-1 rounded-lg bg-blue-600 text-base font-semibold text-white shadow-sm transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 sm:flex-none sm:px-8"
+                    translate="no"
+                  >
+                    {changePassword.isPending ? (
+                      <>
+                        <Image
+                          src="/images/load.png"
+                          alt="loader-icon"
+                          width={20}
+                          height={20}
+                          className="mr-2 animate-spin"
+                        />
+                        {t("please_wait")}
+                      </>
+                    ) : (
+                      t("change_password")
+                    )}
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </div>
+
+          {/* Security Tips Section */}
+          <div className="overflow-hidden rounded-xl border border-amber-200 bg-amber-50 p-4 shadow-sm">
+            <div className="flex gap-3">
+              <svg
+                className="h-5 w-5 flex-shrink-0 text-amber-600"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              <div className="flex-1">
+                <h3 className="text-sm font-medium text-amber-900" translate="no">
+                  {t("security_tips")}
+                </h3>
+                <ul className="mt-2 space-y-1 text-sm text-amber-700">
+                  <li translate="no">• {t("use_a_strong_unique_password")}</li>
+                  <li translate="no">• {t("dont_reuse_passwords_from_other_sites")}</li>
+                  <li translate="no">• {t("consider_using_a_password_manager")}</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
   );
 }

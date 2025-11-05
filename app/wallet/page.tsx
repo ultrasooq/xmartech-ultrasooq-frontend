@@ -23,10 +23,6 @@ const WalletPage = () => {
   // Check if user has permission to access wallet
   const hasPermission = !!user;
 
-  // Debug logging
-  console.log("Wallet page - User:", user);
-  console.log("Wallet page - Has permission:", hasPermission);
-
   const { data: walletData, isLoading: walletLoading, error: walletError } = useWalletBalance(hasPermission);
   const { data: transactionsData, isLoading: transactionsLoading } = useWalletTransactions({
     page,
@@ -51,7 +47,6 @@ const WalletPage = () => {
   // No redirect needed - access control is handled by conditional rendering
 
   if (!user) {
-    console.log("Wallet page - No user found, showing login prompt");
     return (
       <div className="wallet_page">
         <div className="container">
@@ -75,7 +70,6 @@ const WalletPage = () => {
   }
 
   if (!hasPermission) {
-    console.log("Wallet page - No permission, showing access denied");
     return (
       <div className="wallet_page">
         <div className="container">
@@ -113,7 +107,6 @@ const WalletPage = () => {
   }
 
   if (walletError) {
-    console.error("Wallet error:", walletError);
     return (
       <div className="wallet_page">
         <div className="container">
@@ -137,7 +130,6 @@ const WalletPage = () => {
     );
   }
 
-  console.log("Wallet page - Rendering wallet content");
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 lg:px-8 py-8">

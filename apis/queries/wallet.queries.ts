@@ -43,6 +43,8 @@ export const useWalletTransactions = (
       return res.data;
     },
     enabled,
+    refetchInterval: 30000, // Refetch every 30 seconds to see new transactions
+    staleTime: 10000, // Consider data stale after 10 seconds
   });
 
 export const useWalletTransactionById = (transactionId: number, enabled = true) =>

@@ -154,6 +154,12 @@ const CompleteOrderPage = () => {
             // await handleCreateEmiPayment(response?.data?.id);
           } else if (paymentType == "WALLET") {
             // Wallet payment is handled by the backend
+            // Get wallet transaction ID from response
+            const walletTransactionId = response?.data?.walletTransactionId;
+            const transactionId = walletTransactionId 
+              ? `wallet-${walletTransactionId}` 
+              : `wallet-${Date.now()}`; // Fallback if not available
+            
             toast({
               title: t("order_placed_successfully"),
               description: t("payment_processed_from_wallet"),
@@ -161,8 +167,8 @@ const CompleteOrderPage = () => {
             });
             orderStore.resetOrders();
             orderStore.setTotal(0);
-            // Redirect to checkout-complete with success parameters
-            router.push(`/checkout-complete?success=true&id=wallet-${Date.now()}&order=${response?.data?.id}`);
+            // Redirect to checkout-complete with actual wallet transaction ID from backend
+            router.push(`/checkout-complete?success=true&id=${transactionId}&order=${response?.data?.id}`);
           } else {
             await handleCreatePaymentIntent(response?.data?.id);
           }

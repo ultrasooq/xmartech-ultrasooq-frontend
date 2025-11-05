@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 import SameBrandProductCard from "./SameBrandProductCard";
 import {
   Carousel,
@@ -67,29 +67,65 @@ const SameBrandSection: React.FC<SameBrandSectionProps> = ({
     !!productDetails?.brandId && !!productId,
   );
 
+  // Helper function to get local timestamp from date and time strings
+  const getLocalTimestamp = useCallback((dateStr?: string, timeStr?: string) => {
+    if (!dateStr) return 0;
+    try {
+      const date = new Date(dateStr);
+      if (timeStr) {
+        const [hours, minutes] = timeStr.split(":").map(Number);
+        if (!Number.isNaN(hours)) {
+          date.setHours(hours || 0, Number.isNaN(minutes) ? 0 : minutes, 0, 0);
+        }
+      }
+      return date.getTime();
+    } catch {
+      return 0;
+    }
+  }, []);
+
+  // Helper function to check if buygroup sale is expired
+  const isBuygroupSaleExpired = useCallback((product: any) => {
+    const pp = product?.product_productPrice?.[0];
+    if (!pp || pp?.sellType !== "BUYGROUP") return false;
+    
+    try {
+      const endTime = getLocalTimestamp(pp?.dateClose, pp?.endTime);
+      const now = Date.now();
+      return endTime > 0 && now > endTime;
+    } catch {
+      return false;
+    }
+  }, [getLocalTimestamp]);
+
   const memoizedSameBrandProductList = useMemo(() => {
     return (
-      sameBrandProductsQuery?.data?.data?.map((item: any) => ({
-        ...item,
-        productImages: item?.product_productPrice?.[0]
-          ?.productPrice_productSellerImage?.length
-          ? item?.product_productPrice?.[0]?.productPrice_productSellerImage
-          : item?.productImages,
-        shortDescription: item?.product_productShortDescription?.length
-          ? item?.product_productShortDescription?.[0]?.shortDescription
-          : "-",
-        productWishlist: item?.product_wishlist || [],
-        inWishlist: item?.product_wishlist?.find(
-          (ele: any) => ele?.userId === me.data?.data?.id,
-        ),
-        productProductPriceId: item?.product_productPrice?.[0]?.id,
-        productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
-        consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
-        consumerDiscountType: item?.product_productPrice?.[0]?.consumerDiscountType,
-        vendorDiscount: item?.product_productPrice?.[0]?.vendorDiscount,
-        vendorDiscountType: item?.product_productPrice?.[0]?.vendorDiscountType,
-        askForPrice: item?.product_productPrice?.[0]?.askForPrice,
-      })) || []
+      sameBrandProductsQuery?.data?.data
+        ?.filter((item: any) => {
+          // Filter out expired buygroup products
+          return !isBuygroupSaleExpired(item);
+        })
+        ?.map((item: any) => ({
+          ...item,
+          productImages: item?.product_productPrice?.[0]
+            ?.productPrice_productSellerImage?.length
+            ? item?.product_productPrice?.[0]?.productPrice_productSellerImage
+            : item?.productImages,
+          shortDescription: item?.product_productShortDescription?.length
+            ? item?.product_productShortDescription?.[0]?.shortDescription
+            : "-",
+          productWishlist: item?.product_wishlist || [],
+          inWishlist: item?.product_wishlist?.find(
+            (ele: any) => ele?.userId === me.data?.data?.id,
+          ),
+          productProductPriceId: item?.product_productPrice?.[0]?.id,
+          productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
+          consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
+          consumerDiscountType: item?.product_productPrice?.[0]?.consumerDiscountType,
+          vendorDiscount: item?.product_productPrice?.[0]?.vendorDiscount,
+          vendorDiscountType: item?.product_productPrice?.[0]?.vendorDiscountType,
+          askForPrice: item?.product_productPrice?.[0]?.askForPrice,
+        })) || []
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
@@ -97,6 +133,7 @@ const SameBrandSection: React.FC<SameBrandSectionProps> = ({
     me.data?.data?.id,
     sameBrandProductsQuery?.isFetched,
     productDetails?.brandId,
+    isBuygroupSaleExpired,
   ]);
 
   const handleAddToCart = async (quantity: number, productPriceId?: number) => {

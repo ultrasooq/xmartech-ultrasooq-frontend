@@ -280,6 +280,38 @@ const ProductDetailsPage = () => {
 
   const [globalQuantity, setGlobalQuantity] = useState(0); // Global state
 
+  // Helper function to get local timestamp from date and time strings
+  const getLocalTimestamp = (dateStr?: string, timeStr?: string) => {
+    if (!dateStr) return 0;
+    try {
+      const date = new Date(dateStr);
+      if (timeStr) {
+        const [hours, minutes] = timeStr.split(":").map(Number);
+        if (!Number.isNaN(hours)) {
+          date.setHours(hours || 0, Number.isNaN(minutes) ? 0 : minutes, 0, 0);
+        }
+      }
+      return date.getTime();
+    } catch {
+      return 0;
+    }
+  };
+
+  // Check if buygroup sale has started
+  const isBuygroup = productDetails?.product_productPrice?.[0]?.sellType === "BUYGROUP";
+  const buygroupStartTime = getLocalTimestamp(
+    productDetails?.product_productPrice?.[0]?.dateOpen,
+    productDetails?.product_productPrice?.[0]?.startTime
+  );
+  const buygroupEndTime = getLocalTimestamp(
+    productDetails?.product_productPrice?.[0]?.dateClose,
+    productDetails?.product_productPrice?.[0]?.endTime
+  );
+  const now = Date.now();
+  const saleNotStarted = isBuygroup && buygroupStartTime > 0 && now < buygroupStartTime;
+  const saleExpired = isBuygroup && buygroupEndTime > 0 && now > buygroupEndTime;
+  const canPurchase = !saleNotStarted && !saleExpired;
+
   useEffect(() => {
     const fetchProductVariant = async () => {
       const response = await getProductVariant.mutateAsync([
@@ -629,6 +661,9 @@ const ProductDetailsPage = () => {
               isAddedToCart={hasItemByUser || hasItemByDevice}
               cartQuantity={globalQuantity}
                     additionalMarketingImages={productDetails?.additionalMarketingImages}
+                    // Buygroup sale timing
+                    saleNotStarted={saleNotStarted}
+                    saleExpired={saleExpired}
             />
                 </div>
               </div>
@@ -716,6 +751,15 @@ const ProductDetailsPage = () => {
                   isDropshipped={productDetails?.isDropshipped}
                   customMarketingContent={productDetails?.customMarketingContent}
                   additionalMarketingImages={productDetails?.additionalMarketingImages}
+                  // Buygroup sale timing
+                  isBuygroup={isBuygroup}
+                  saleNotStarted={saleNotStarted}
+                  saleExpired={saleExpired}
+                  buygroupStartTime={buygroupStartTime}
+                  buygroupEndTime={buygroupEndTime}
+                  sellType={productDetails?.product_productPrice?.[0]?.sellType}
+                  dateOpen={productDetails?.product_productPrice?.[0]?.dateOpen}
+                  startTime={productDetails?.product_productPrice?.[0]?.startTime}
             />
           </div>
         </div>

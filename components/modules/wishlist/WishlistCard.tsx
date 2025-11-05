@@ -5,10 +5,10 @@ import validator from "validator";
 import { FaStar } from "react-icons/fa";
 import { FaRegStar } from "react-icons/fa";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
-import TrashIcon from "@/public/images/td-trash-icon.svg";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import { Trash2 } from "lucide-react";
 
 type WishlistCardProps = {
   productId: number;
@@ -25,6 +25,61 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
 }) => {
   const t = useTranslations();
   const { user, langDir, currency } = useAuth();
+  
+  // Helper function to get local timestamp from date and time strings
+  const getLocalTimestamp = (dateStr?: string, timeStr?: string) => {
+    if (!dateStr) return 0;
+    try {
+      const date = new Date(dateStr);
+      if (timeStr) {
+        const [hours, minutes] = timeStr.split(":").map(Number);
+        if (!Number.isNaN(hours)) {
+          date.setHours(hours || 0, Number.isNaN(minutes) ? 0 : minutes, 0, 0);
+        }
+      }
+      return date.getTime();
+    } catch {
+      return 0;
+    }
+  };
+
+  // Check if buygroup sale has started
+  const isBuygroup = wishlistData?.product_productPrice?.[0]?.sellType === "BUYGROUP";
+  const buygroupStartTime = getLocalTimestamp(
+    wishlistData?.product_productPrice?.[0]?.dateOpen,
+    wishlistData?.product_productPrice?.[0]?.startTime
+  );
+  const buygroupEndTime = getLocalTimestamp(
+    wishlistData?.product_productPrice?.[0]?.dateClose,
+    wishlistData?.product_productPrice?.[0]?.endTime
+  );
+  const now = Date.now();
+  const saleNotStarted = isBuygroup && buygroupStartTime > 0 && now < buygroupStartTime;
+  const saleExpired = isBuygroup && buygroupEndTime > 0 && now > buygroupEndTime;
+  
+  // Helper function to format sale start date
+  const getSaleStartLabel = () => {
+    try {
+      if (!isBuygroup || !wishlistData?.product_productPrice?.[0]) return "";
+      const p = wishlistData.product_productPrice[0];
+      if (!p?.dateOpen) return "";
+      const date = new Date(p.dateOpen);
+      // Apply startTime if present (HH:mm)
+      if (p?.startTime) {
+        const [h, m] = String(p.startTime).split(":").map(Number);
+        if (!Number.isNaN(h)) date.setHours(h || 0, Number.isNaN(m) ? 0 : m, 0, 0);
+      }
+      return date.toLocaleString(undefined, {
+        year: "numeric",
+        month: "short",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    } catch (e) {
+      return "";
+    }
+  };
   
   const calculateDiscountedPrice = () => {
     const price = wishlistData?.product_productPrice?.[0]?.offerPrice
@@ -68,9 +123,9 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
       const stars: Array<React.ReactNode> = [];
       for (let i = 1; i <= 5; i++) {
         if (i <= rating) {
-          stars.push(<FaStar key={i} color="#FFC107" size={20} />);
+          stars.push(<FaStar key={i} color="#FFC107" size={14} />);
         } else {
-          stars.push(<FaRegStar key={i} color="#FFC107" size={20} />);
+          stars.push(<FaRegStar key={i} color="#FFC107" size={14} />);
         }
       }
       return stars;
@@ -79,91 +134,161 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
     [wishlistData?.productReview?.length],
   );
 
-  return (
-    <div className="product-list-s1-col relative">
-      <div className="product-list-s1-box cursor-pointer hover:bg-slate-100">
-        <Button
-          className="absolute right-2.5 top-2.5 z-10 rounded-full bg-white p-2"
-          onClick={() => onDeleteFromWishlist(productId)}
-        >
-          <Image
-            src={TrashIcon}
-            height={26}
-            width={26}
-            alt="trash-icon"
-            className=""
-          />
-        </Button>
-        <Link href={`/trending/${wishlistData?.id}`}>
-          <div className="relative mx-auto mb-4 h-36 w-36">
-            <Image
-              src={
-                wishlistData?.productImages?.[0]?.image &&
-                  validator.isURL(wishlistData.productImages[0].image)
-                  ? wishlistData.productImages[0].image
-                  : PlaceholderImage
-              }
-              alt="product-image"
-              fill
-              sizes="(max-width: 768px) 100vw,
-              (max-width: 1200px) 50vw,
-              33vw"
-              className="object-contain"
-              blurDataURL="/images/product-placeholder.png"
-              placeholder="blur"
-            />
-          </div>
+  const discountedPrice = calculateDiscountedPrice();
+  const originalPrice = wishlistData?.product_productPrice?.[0]?.offerPrice
+    ? Number(wishlistData.product_productPrice[0].offerPrice)
+    : 0;
+  const hasDiscount = originalPrice > 0 && discountedPrice < originalPrice;
+  const discountPercentage = hasDiscount && originalPrice > 0
+    ? Math.round(((originalPrice - discountedPrice) / originalPrice) * 100)
+    : 0;
 
-          <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base">
-            <h4 className="mb-2.5 border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark">
-              {wishlistData?.productName}
-            </h4>
-            <p
-              title={
-                wishlistData?.product_productShortDescription?.length
-                  ? wishlistData?.product_productShortDescription?.[0]
-                    ?.shortDescription
-                  : "-"
-              }
-              className="truncate"
-            >
-              {wishlistData?.product_productShortDescription?.length
-                ? wishlistData?.product_productShortDescription?.[0]
-                  ?.shortDescription
-                : "-"}
-            </p>
-            <div className="my-1 flex">
-              {calculateRatings(calculateAvgRating)}
-              <span className="ml-2">
-                {wishlistData?.productReview?.length}
-              </span>
+  return (
+    <div className="group relative overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-all hover:border-gray-300 hover:shadow-md">
+      {/* Delete Button */}
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        className="absolute right-2 top-2 z-10 h-8 w-8 rounded-full bg-white/90 text-gray-400 shadow-sm opacity-0 backdrop-blur-sm transition-all hover:bg-red-50 hover:text-red-600 group-hover:opacity-100"
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          onDeleteFromWishlist(productId);
+        }}
+        aria-label="Remove from wishlist"
+      >
+        <Trash2 className="h-4 w-4" />
+      </Button>
+
+      {/* Product Image */}
+      <Link href={`/trending/${wishlistData?.id}`} className="block">
+        <div className="relative aspect-square w-full overflow-hidden bg-gray-50">
+          <Image
+            src={
+              wishlistData?.productImages?.[0]?.image &&
+                validator.isURL(wishlistData.productImages[0].image)
+                ? wishlistData.productImages[0].image
+                : PlaceholderImage
+            }
+            alt={wishlistData?.productName || "Product image"}
+            fill
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+            className="object-contain transition-transform duration-300 group-hover:scale-105"
+            blurDataURL="/images/product-placeholder.png"
+            placeholder="blur"
+          />
+          {/* Not Started Badge for Buygroup */}
+          {saleNotStarted && (
+            <div className="absolute left-2 top-2 rounded-md bg-yellow-500 px-2 py-1 text-xs font-semibold text-white shadow-sm">
+              {t("not_started")}
             </div>
-          </div>
+          )}
+          {/* Discount Badge - Only show if sale has started */}
+          {!saleNotStarted && hasDiscount && discountPercentage > 0 && (
+            <div className="absolute left-2 top-2 rounded-md bg-red-500 px-2 py-1 text-xs font-semibold text-white shadow-sm">
+              -{discountPercentage}%
+            </div>
+          )}
+        </div>
+      </Link>
+
+      {/* Product Info */}
+      <div className="p-4">
+        <Link href={`/trending/${wishlistData?.id}`}>
+          <h3 className="mb-2 line-clamp-2 min-h-[2.5rem] text-sm font-semibold text-gray-900 transition-colors hover:text-blue-600">
+            {wishlistData?.productName}
+          </h3>
         </Link>
-        <div>
+
+        {/* Description */}
+        {wishlistData?.product_productShortDescription?.[0]?.shortDescription && (
+          <p
+            className="mb-3 line-clamp-2 text-xs text-gray-600"
+            title={
+              wishlistData?.product_productShortDescription?.[0]
+                ?.shortDescription
+            }
+          >
+            {wishlistData?.product_productShortDescription?.[0]
+              ?.shortDescription}
+          </p>
+        )}
+
+        {/* Rating */}
+        {wishlistData?.productReview?.length > 0 && (
+          <div className="mb-3 flex items-center gap-1.5">
+            <div className="flex items-center gap-0.5">
+              {calculateRatings(calculateAvgRating).map((star, index) => (
+                <span key={index}>{star}</span>
+              ))}
+            </div>
+            <span className="text-xs text-gray-500">
+              ({wishlistData?.productReview?.length})
+            </span>
+          </div>
+        )}
+
+        {/* Price or Ask for Price or Coming Soon */}
+        <div className="mt-auto">
           {wishlistData?.product_productPrice?.[0]?.askForPrice === "true" ? (
             <Link
               href={`/seller-rfq-request?product_id=${wishlistData?.product_productPrice?.[0]?.id}`}
+              onClick={(e) => e.stopPropagation()}
             >
-              <button
+              <Button
                 type="button"
-                className="inline-block w-full rounded-sm bg-color-yellow px-3 py-1 text-sm font-bold text-white"
+                className="w-full rounded-lg bg-amber-500 text-xs font-semibold text-white shadow-sm transition-colors hover:bg-amber-600"
                 dir={langDir}
                 translate="no"
               >
                 {t("ask_vendor_for_price")}
-              </button>
+              </Button>
             </Link>
+          ) : saleNotStarted ? (
+            <div className="flex flex-col gap-2">
+              <Button
+                type="button"
+                disabled
+                className="w-full rounded-lg bg-yellow-500 text-xs font-semibold text-white shadow-sm cursor-not-allowed"
+                dir={langDir}
+                translate="no"
+              >
+                {t("coming_soon")}
+              </Button>
+              {getSaleStartLabel() && (
+                <p className="text-xs text-center text-gray-600" dir={langDir} translate="no">
+                  {t("sale_starts_on")}: {getSaleStartLabel()}
+                </p>
+              )}
+            </div>
           ) : (
-            <h5 className="py-1 text-[#1D77D1]">
-              {currency.symbol}{calculateDiscountedPrice()}{" "}
-              <span className="text-gray-500 line-through!">
-                {currency.symbol}{wishlistData?.product_productPrice?.[0]?.offerPrice}
-              </span>
-            </h5>
+            <div className="flex flex-col gap-1">
+              <div className="flex items-baseline gap-2">
+                <span className="text-lg font-bold text-blue-600">
+                  {currency.symbol}
+                  {discountedPrice.toFixed(2)}
+                </span>
+                {hasDiscount && originalPrice > 0 && (
+                  <span className="text-xs text-gray-500 line-through">
+                    {currency.symbol}
+                    {originalPrice.toFixed(2)}
+                  </span>
+                )}
+              </div>
+              {hasDiscount && originalPrice > 0 && (
+                <span className="text-xs font-medium text-red-600">
+                  {t("save")} {currency.symbol}
+                  {(originalPrice - discountedPrice).toFixed(2)}
+                </span>
+              )}
+            </div>
           )}
         </div>
       </div>
+
+      {/* Hover Effect Border */}
+      <div className="absolute inset-0 rounded-xl border-2 border-blue-500 opacity-0 transition-opacity group-hover:opacity-5" />
     </div>
   );
 };

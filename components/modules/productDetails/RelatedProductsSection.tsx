@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, useRef } from "react";
+import React, { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import Slider from "react-slick";
 import ProductCard from "./ProductCard";
 import "slick-carousel/slick/slick.css";
@@ -63,29 +63,65 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
     !!calculateTagIds,
   );
 
+  // Helper function to get local timestamp from date and time strings
+  const getLocalTimestamp = useCallback((dateStr?: string, timeStr?: string) => {
+    if (!dateStr) return 0;
+    try {
+      const date = new Date(dateStr);
+      if (timeStr) {
+        const [hours, minutes] = timeStr.split(":").map(Number);
+        if (!Number.isNaN(hours)) {
+          date.setHours(hours || 0, Number.isNaN(minutes) ? 0 : minutes, 0, 0);
+        }
+      }
+      return date.getTime();
+    } catch {
+      return 0;
+    }
+  }, []);
+
+  // Helper function to check if buygroup sale is expired
+  const isBuygroupSaleExpired = useCallback((product: any) => {
+    const pp = product?.product_productPrice?.[0];
+    if (!pp || pp?.sellType !== "BUYGROUP") return false;
+    
+    try {
+      const endTime = getLocalTimestamp(pp?.dateClose, pp?.endTime);
+      const now = Date.now();
+      return endTime > 0 && now > endTime;
+    } catch {
+      return false;
+    }
+  }, [getLocalTimestamp]);
+
   const memoizedRelatedProductList = useMemo(() => {
     return (
-      relatedProductsQuery?.data?.data?.map((item: any) => ({
-        ...item,
-        productImages: item?.product_productPrice?.[0]
-          ?.productPrice_productSellerImage?.length
-          ? item?.product_productPrice?.[0]?.productPrice_productSellerImage
-          : item?.productImages,
-        shortDescription: item?.product_productShortDescription?.length
-          ? item?.product_productShortDescription?.[0]?.shortDescription
-          : "-",
-        productWishlist: item?.product_wishlist || [],
-        inWishlist: item?.product_wishlist?.find(
-          (ele: any) => ele?.userId === me.data?.data?.id,
-        ),
-        productProductPriceId: item?.product_productPrice?.[0]?.id,
-        productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
-        consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
-        consumerDiscountType: item?.product_productPrice?.[0]?.consumerDiscountType,
-        vendorDiscount: item?.product_productPrice?.[0]?.vendorDiscount,
-        vendorDiscountType: item?.product_productPrice?.[0]?.vendorDiscountType,
-        askForPrice: item?.product_productPrice?.[0]?.askForPrice,
-      })) || []
+      relatedProductsQuery?.data?.data
+        ?.filter((item: any) => {
+          // Filter out expired buygroup products
+          return !isBuygroupSaleExpired(item);
+        })
+        ?.map((item: any) => ({
+          ...item,
+          productImages: item?.product_productPrice?.[0]
+            ?.productPrice_productSellerImage?.length
+            ? item?.product_productPrice?.[0]?.productPrice_productSellerImage
+            : item?.productImages,
+          shortDescription: item?.product_productShortDescription?.length
+            ? item?.product_productShortDescription?.[0]?.shortDescription
+            : "-",
+          productWishlist: item?.product_wishlist || [],
+          inWishlist: item?.product_wishlist?.find(
+            (ele: any) => ele?.userId === me.data?.data?.id,
+          ),
+          productProductPriceId: item?.product_productPrice?.[0]?.id,
+          productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
+          consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
+          consumerDiscountType: item?.product_productPrice?.[0]?.consumerDiscountType,
+          vendorDiscount: item?.product_productPrice?.[0]?.vendorDiscount,
+          vendorDiscountType: item?.product_productPrice?.[0]?.vendorDiscountType,
+          askForPrice: item?.product_productPrice?.[0]?.askForPrice,
+        })) || []
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
@@ -93,6 +129,7 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
     me.data?.data?.id,
     relatedProductsQuery?.isFetched,
     calculateTagIds,
+    isBuygroupSaleExpired,
   ]);
 
   const handleAddToCart = async (quantity: number, productPriceId?: number) => {
@@ -259,10 +296,18 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
   };
 
   return (
-    <section className="w-full py-12">
+    <section className="w-full bg-white py-12">
       <div className="container mx-auto max-w-7xl px-4 lg:px-8">
+        {/* Section Header - Amazon Style */}
+        {relatedProductsQuery?.isFetched && memoizedRelatedProductList?.length > 0 && (
+          <div className="mb-8 pb-4">
+            <h2 className="text-2xl font-bold text-gray-900" dir={langDir} translate="no">
+              {t("related_products")}
+            </h2>
+          </div>
+        )}
 
-        {/* Products Carousel */}
+        {/* Products Carousel - Amazon Style */}
         {relatedProductsQuery?.isFetched &&
         memoizedRelatedProductList?.length ? (
           <div className="relative">
@@ -298,27 +343,29 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
               ))}
             </Slider>
             
-            {/* Custom Navigation Arrows */}
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4">
-              <button 
-                onClick={() => sliderRef.current?.slickPrev()}
-                className="flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-110"
-              >
-                <svg className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            {/* Amazon-Style Navigation Arrows */}
+            <button 
+              onClick={() => sliderRef.current?.slickPrev()}
+              className="absolute left-0 top-0 bottom-0 z-20 w-12 bg-gradient-to-r from-white via-white to-transparent flex items-center justify-start pl-2 opacity-0 hover:opacity-100 transition-opacity duration-200 group"
+              aria-label="Previous"
+            >
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-lg border border-gray-300">
+                <svg className="h-6 w-6 text-gray-800" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
-              </button>
-            </div>
-            <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4">
-              <button 
-                onClick={() => sliderRef.current?.slickNext()}
-                className="flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-110"
-              >
-                <svg className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </div>
+            </button>
+            <button 
+              onClick={() => sliderRef.current?.slickNext()}
+              className="absolute right-0 top-0 bottom-0 z-20 w-12 bg-gradient-to-l from-white via-white to-transparent flex items-center justify-end pr-2 opacity-0 hover:opacity-100 transition-opacity duration-200 group"
+              aria-label="Next"
+            >
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-lg border border-gray-300">
+                <svg className="h-6 w-6 text-gray-800" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
                 </svg>
-              </button>
-            </div>
+              </div>
+            </button>
           </div>
         ) : relatedProductsQuery?.isFetched && !memoizedRelatedProductList?.length ? (
           <div className="py-16 text-center">

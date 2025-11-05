@@ -264,10 +264,10 @@ const Sidebar: React.FC<SidebarProps> = ({ notificationCount }) => {
 
   return (
     <>
-      {/* Invisible Backdrop for click-to-close */}
+      {/* Backdrop for click-to-close */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-transparent z-40" 
+          className="fixed inset-0 bg-black/30 backdrop-blur-sm z-[60] transition-opacity duration-300" 
           onClick={closeSidebar} 
         />
       )}
@@ -275,7 +275,7 @@ const Sidebar: React.FC<SidebarProps> = ({ notificationCount }) => {
       {/* Sidebar */}
       {accessToken && (
         <div
-          className={`fixed top-0 ${langDir === "rtl" ? "right-0" : "left-0"} w-80 h-full bg-white shadow-xl transform transition-transform duration-300 ease-in-out z-50 ${
+          className={`fixed top-0 ${langDir === "rtl" ? "right-0" : "left-0"} w-80 h-full bg-white shadow-xl transform transition-transform duration-300 ease-in-out z-[70] ${
             isOpen ? "translate-x-0" : langDir === "rtl" ? "translate-x-full" : "-translate-x-full"
           }`}
           style={{ boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)' }}

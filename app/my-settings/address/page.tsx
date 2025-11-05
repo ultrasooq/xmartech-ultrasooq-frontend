@@ -60,62 +60,115 @@ const AddressPage: React.FC<AddressPageProps> = ({}) => {
   }, [isClickedOutside]);
 
   return (
-    <div className="my-settings-content">
-      <h2 dir={langDir} translate="no">{t("manage_address")}</h2>
-      <div className="my-address-sec">
-        <div className="card-item cart-items for-add">
-          <div className="top-heading" dir={langDir}>
+    <div className="space-y-6">
+      {/* Header Section */}
+      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="text-2xl font-bold tracking-tight text-gray-900" dir={langDir} translate="no">
+              {t("manage_address")}
+            </h2>
+            <p className="mt-1.5 text-sm text-gray-600" translate="no">
+              {t("manage_your_saved_addresses")}
+            </p>
+          </div>
+          <button
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-blue-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:scale-95"
+            type="button"
+            onClick={() => handleToggleAddModal()}
+            translate="no"
+            dir={langDir}
+          >
+            <IoMdAdd size={20} className="shrink-0" /> {t("add_new_address")}
+          </button>
+        </div>
+      </div>
+
+      {/* Loading State */}
+      {allUserAddressQuery.isLoading && (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
+          {Array.from({ length: 2 }, (_, i) => i).map((item) => (
+            <div key={uuidv4()} className="overflow-hidden rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+              <Skeleton className="h-6 w-3/4" />
+              <Skeleton className="mt-3 h-4 w-full" />
+              <Skeleton className="mt-2 h-4 w-full" />
+              <Skeleton className="mt-4 h-8 w-1/3" />
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Empty State */}
+      {!allUserAddressQuery.isLoading && !memoziedAddressList?.length && (
+        <div className="overflow-hidden rounded-xl border-2 border-dashed border-gray-300 bg-white p-12 text-center shadow-sm">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
+            <svg
+              className="h-8 w-8 text-gray-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+              />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+            </svg>
+          </div>
+          <h3 className="mt-6 text-lg font-semibold text-gray-900" dir={langDir} translate="no">
+            {t("no_address_found")}
+          </h3>
+          <p className="mt-2 text-sm text-gray-500" translate="no">
+            {t("get_started_by_adding_a_new_address")}
+          </p>
+          <div className="mt-6">
             <button
-              className="add-new-address-btn inline-flex h-9 items-center justify-center whitespace-nowrap rounded-md border border-none border-input bg-background p-0 text-sm font-medium normal-case! shadow-none transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
-              type="button"
               onClick={() => handleToggleAddModal()}
+              className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-blue-700 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:scale-95"
               translate="no"
             >
-              <IoMdAdd size={24} /> {t("add_new_address")}{" "}
+              <IoMdAdd size={20} className="shrink-0" /> {t("add_new_address")}
             </button>
           </div>
         </div>
+      )}
 
-        {allUserAddressQuery.isLoading
-          ? Array.from({ length: 2 }, (_, i) => i).map((item) => (
-              <div key={uuidv4()} className="space-y-3 px-4">
-                <Skeleton className="h-6 w-full" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-8 w-full" />
-              </div>
-            ))
-          : null}
-
-        <div className="card-item selected-address">
-          <div className="selected-address-lists">
-            {!allUserAddressQuery.isLoading && !memoziedAddressList?.length ? (
-              <p className="py-10 text-center" dir={langDir} translate="no">{t("no_address_found")}</p>
-            ) : null}
-
-            {memoziedAddressList?.map((item: AddressItem) => (
-              <AddressCard
-                key={item.id}
-                id={item.id}
-                firstName={item.firstName}
-                lastName={item.lastName}
-                cc={item.cc}
-                phoneNumber={item.phoneNumber}
-                address={item.address}
-                town={item.town}
-                city={item.cityDetail}
-                country={item.countryDetail}
-                state={item.stateDetail}
-                postCode={item.postCode}
-                onEdit={() => {
-                  setSelectedAddressId(item.id);
-                  handleToggleAddModal();
-                }}
-                onDelete={() => handleDeleteAddress(item.id)}
-              />
-            ))}
-          </div>
+      {/* Address Cards Grid */}
+      {!allUserAddressQuery.isLoading && memoziedAddressList?.length > 0 && (
+        <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
+          {memoziedAddressList?.map((item: AddressItem) => (
+            <AddressCard
+              key={item.id}
+              id={item.id}
+              firstName={item.firstName}
+              lastName={item.lastName}
+              cc={item.cc}
+              phoneNumber={item.phoneNumber}
+              address={item.address}
+              town={item.town}
+              city={item.cityDetail}
+              country={item.countryDetail}
+              state={item.stateDetail}
+              postCode={item.postCode}
+              onEdit={() => {
+                setSelectedAddressId(item.id);
+                setIsAddModalOpen(true);
+              }}
+              onDelete={() => handleDeleteAddress(item.id)}
+            />
+          ))}
         </div>
-      </div>
+      )}
+
+      {/* Add/Edit Address Modal */}
       <Dialog open={isAddModalOpen} onOpenChange={handleToggleAddModal}>
         <DialogContent
           className="add-new-address-modal gap-0 p-0"

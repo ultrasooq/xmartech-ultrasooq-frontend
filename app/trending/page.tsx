@@ -68,11 +68,18 @@ import { useTranslations } from "next-intl";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/context/AuthContext";
-import { Package, Building2 } from "lucide-react";
+import { Package, Building2, X, ShoppingCart } from "lucide-react";
 // @ts-ignore
 import { startDebugger } from "remove-child-node-error-debugger";
 import Cart from "@/components/modules/cartList/Cart";
 import CategoryFilter from "@/components/modules/manageProducts/CategoryFilter";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 interface TrendingPageProps {
   searchParams?: Promise<{ term?: string }>;
@@ -96,10 +103,10 @@ const TrendingPage = (props0: TrendingPageProps) => {
   const [maxPriceInput, setMaxPriceInput] = useState("");
   const [sortBy, setSortBy] = useState("desc");
   const [productFilter, setProductFilter] = useState(false);
+  const [showCartDrawer, setShowCartDrawer] = useState(false);
   const [displayMyProducts, setDisplayMyProducts] = useState("0");
-  const [displayRelatedProducts, setDisplayRelatedProducts] = useState(false);
   const [page, setPage] = useState(1);
-  const [limit] = useState(8);
+  const [limit] = useState(10);
   const [productVariants, setProductVariants] = useState<any[]>([]);
   const [haveAccessToken, setHaveAccessToken] = useState(false);
   const [activeTab, setActiveTab] = useState<"products" | "vendors">("products");
@@ -138,7 +145,6 @@ const TrendingPage = (props0: TrendingPageProps) => {
       ? selectedCategoryIds.join(",") 
       : category.categoryIds ? category.categoryIds : undefined,
     isOwner: displayMyProducts == "1" ? "me" : "",
-    related: displayRelatedProducts,
     userType: me?.data?.data?.tradeRole == "BUYER" ? "BUYER" : ""
   });
 
@@ -266,7 +272,7 @@ const TrendingPage = (props0: TrendingPageProps) => {
           return item?.productName || "-";
         })(),
         productPrice: item?.productPrice || 0,
-        offerPrice: item?.offerPrice || 0,
+        offerPrice: item?.product_productPrice?.[0]?.offerPrice || item?.offerPrice || 0,
         productImage: (() => {
           // For dropship products, prioritize marketing images
           if (item?.isDropshipped) {
@@ -616,11 +622,11 @@ const TrendingPage = (props0: TrendingPageProps) => {
         <BannerSection />
 
         {/* Full Width Three Column Layout */}
-        <div className="w-full min-h-screen bg-white px-4 lg:px-8">
-          <div className="flex h-full">
+        <div className="w-full min-h-screen bg-white px-2 sm:px-4 lg:px-8">
+          <div className="flex flex-col lg:flex-row h-full gap-4">
             
-            {/* Left Column - Filters */}
-            <div className="w-64 flex-shrink-0 overflow-y-auto p-4 bg-white">
+            {/* Left Column - Filters (Desktop) */}
+            <div className="hidden lg:block w-64 flex-shrink-0 overflow-y-auto p-4 bg-white">
               <div className="bg-white rounded-lg shadow-lg p-6">
                <div className="mb-4">
                  <div className="flex gap-2 mb-4">
@@ -793,21 +799,21 @@ const TrendingPage = (props0: TrendingPageProps) => {
             </div>
             
             {/* Middle Column - Products (MAIN CONTENT - PRIORITIZED) */}
-            <div className="flex-1 bg-white overflow-y-auto">
-              <div className="p-4 lg:p-6">
+            <div className="flex-1 bg-white overflow-y-auto w-full lg:w-auto">
+              <div className="p-2 sm:p-4 lg:p-6">
                 <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "products" | "vendors")} className="w-full">
-                <TabsList className="grid w-full grid-cols-2 mb-6">
-                  <TabsTrigger value="products" className="flex items-center space-x-2">
-                    <Package className="h-4 w-4" />
+                <TabsList className="grid w-full grid-cols-2 mb-4 sm:mb-6">
+                  <TabsTrigger value="products" className="flex items-center justify-center space-x-1 sm:space-x-2 text-xs sm:text-sm">
+                    <Package className="h-3 w-3 sm:h-4 sm:w-4" />
                     <span>{t("products")}</span>
-                    <span className="ml-2 text-xs bg-gray-100 px-2 py-1 rounded-full">
+                    <span className="ml-1 sm:ml-2 text-xs bg-gray-100 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">
                       {totalCount}
                     </span>
                   </TabsTrigger>
-                  <TabsTrigger value="vendors" className="flex items-center space-x-2">
-                    <Building2 className="h-4 w-4" />
+                  <TabsTrigger value="vendors" className="flex items-center justify-center space-x-1 sm:space-x-2 text-xs sm:text-sm">
+                    <Building2 className="h-3 w-3 sm:h-4 sm:w-4" />
                     <span>{t("vendors")}</span>
-                    <span className="ml-2 text-xs bg-gray-100 px-2 py-1 rounded-full">
+                    <span className="ml-1 sm:ml-2 text-xs bg-gray-100 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">
                       {memoizedVendors.length}
                     </span>
                   </TabsTrigger>
@@ -815,92 +821,104 @@ const TrendingPage = (props0: TrendingPageProps) => {
 
                 <TabsContent value="products" className="space-y-6">
                   
-              <div className="products-header-filter">
-                <div className="le-info">
-                  {/* TODO: need name here */}
-                  {/* <h3></h3> */}
-                </div>
-                <div className="rg-filter">
-                  <p dir={langDir} translate="no">
-                    {t("n_products_found", {
-                      n: totalCount,
-                    })}
-                  </p>
-                  <ul>
-                    <li>
-                      {haveAccessToken ? (
-                        <>
-                          <Checkbox 
-                            onClick={(e) => setDisplayRelatedProducts(!displayRelatedProducts)}
-                          />
-                          <label className="ml-2" translate="no" dir={langDir}>{t("recommended")}</label>
-                        </>
-                      ) : null}
-                    </li>
-                    <li>
-                      <Select onValueChange={(e) => setSortBy(e)}>
-                        <SelectTrigger className="custom-form-control-s1 bg-white">
-                          <SelectValue
-                            placeholder={t("sort_by")}
-                            dir={langDir}
-                            translate="no"
-                          />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            <SelectItem
-                              value="desc"
-                              dir={langDir}
-                              translate="no"
-                            >
-                              {t("sort_by_latest")}
-                            </SelectItem>
-                            <SelectItem
-                              value="asc"
-                              dir={langDir}
-                              translate="no"
-                            >
-                              {t("sort_by_oldest")}
-                            </SelectItem>
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                    </li>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                {/* Left Section - Mobile Buttons & Product Count */}
+                <div className="flex items-center gap-3 w-full sm:w-auto">
+                  {/* Mobile Filter Button */}
+                  <button
+                    type="button"
+                    className="lg:hidden p-2.5 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors"
+                    onClick={() => setProductFilter(true)}
+                  >
+                    <FilterMenuIcon />
+                  </button>
+                  
+                  {/* Mobile Cart Button */}
+                  <button
+                    type="button"
+                    className="lg:hidden p-2.5 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors relative"
+                    onClick={() => setShowCartDrawer(true)}
+                  >
+                    <ShoppingCart className="h-5 w-5" />
+                    {cartList.length > 0 && (
+                      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                        {cartList.length}
+                      </span>
+                    )}
+                  </button>
 
-                    <li>
-                      <button
-                        type="button"
-                        className="view-type-btn"
-                        onClick={() => setViewType("grid")}
-                      >
-                        <GridIcon active={viewType === "grid"} />
-                      </button>
-                    </li>
-                    <li>
-                      <button
-                        type="button"
-                        className="view-type-btn"
-                        onClick={() => setViewType("list")}
-                      >
-                        <ListIcon active={viewType === "list"} />
-                      </button>
-                    </li>
-                    <li className="block md:hidden">
-                      <button
-                        type="button"
-                        className="view-type-btn"
-                        onClick={() => setProductFilter(true)}
-                      >
-                        <FilterMenuIcon />
-                      </button>
-                    </li>
-                  </ul>
+                  {/* Product Count */}
+                  <div className="flex-1 sm:flex-none">
+                    <p className="text-base sm:text-lg font-semibold text-gray-800" dir={langDir} translate="no">
+                      {t("n_products_found", {
+                        n: totalCount,
+                      })}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Right Section - Sort & View Controls */}
+                <div className="flex items-center gap-3 w-full sm:w-auto">
+                  {/* Sort Dropdown */}
+                  <Select onValueChange={(e) => setSortBy(e)} value={sortBy}>
+                    <SelectTrigger className="w-full sm:w-[180px] h-10 bg-white border-gray-300">
+                      <SelectValue
+                        placeholder={t("sort_by")}
+                        dir={langDir}
+                        translate="no"
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectItem
+                          value="desc"
+                          dir={langDir}
+                          translate="no"
+                        >
+                          {t("sort_by_latest")}
+                        </SelectItem>
+                        <SelectItem
+                          value="asc"
+                          dir={langDir}
+                          translate="no"
+                        >
+                          {t("sort_by_oldest")}
+                        </SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+
+                  {/* View Type Buttons */}
+                  <div className="hidden sm:flex items-center gap-2 bg-white border border-gray-300 rounded-lg p-1">
+                    <button
+                      type="button"
+                      className={`p-2 rounded transition-colors ${
+                        viewType === "grid" 
+                          ? "bg-blue-600 text-white" 
+                          : "text-gray-600 hover:bg-gray-100"
+                      }`}
+                      onClick={() => setViewType("grid")}
+                    >
+                      <GridIcon active={viewType === "grid"} />
+                    </button>
+                    <button
+                      type="button"
+                      className={`p-2 rounded transition-colors ${
+                        viewType === "list" 
+                          ? "bg-blue-600 text-white" 
+                          : "text-gray-600 hover:bg-gray-100"
+                      }`}
+                      onClick={() => setViewType("list")}
+                    >
+                      <ListIcon active={viewType === "list"} />
+                    </button>
+                  </div>
                 </div>
               </div>
 
               {isLoading && viewType === "grid" ? (
-                <div className="grid grid-cols-3 gap-5">
-                  {Array.from({ length: 8 }).map((_, index: number) => (
+                <div className="flex flex-col gap-3 sm:grid sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4 lg:gap-5">
+                  {Array.from({ length: 10 }).map((_, index: number) => (
                     <SkeletonProductCardLoader key={index} />
                   ))}
                 </div>
@@ -917,7 +935,7 @@ const TrendingPage = (props0: TrendingPageProps) => {
               ) : null}
 
               {viewType === "grid" ? (
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 items-stretch">
+                <div className="flex flex-col gap-3 sm:grid sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4 lg:gap-5 sm:items-stretch">
                   {memoizedProductList.map((item: TrendingProduct) => {
                     const cartItem = cartList?.find(
                       (el: any) => el.productId == item.id,
@@ -964,19 +982,17 @@ const TrendingPage = (props0: TrendingPageProps) => {
               ) : null}
 
               {viewType === "list" && memoizedProductList.length ? (
-                <div className="product-list-s1 p-4">
+                <div className="product-list-s1 p-2 sm:p-4 overflow-x-auto">
                   <ProductTable list={memoizedProductList} />
                 </div>
               ) : null}
 
-              {totalCount > page ? (
-                <Pagination
-                  page={page}
-                  setPage={setPage}
-                  totalCount={totalCount}
-                  limit={limit}
-                />
-              ) : null}
+              <Pagination
+                page={page}
+                setPage={setPage}
+                totalCount={totalCount}
+                limit={limit}
+              />
                 </TabsContent>
 
                 <TabsContent value="vendors" className="space-y-6">
@@ -990,8 +1006,8 @@ const TrendingPage = (props0: TrendingPageProps) => {
               </div>
             </div>
             
-            {/* Right Column - Cart */}
-            <div className="w-64 flex-shrink-0 bg-white">
+            {/* Right Column - Cart (Desktop Only) */}
+            <div className="hidden lg:block w-64 flex-shrink-0 bg-white">
               <div className="sticky top-0 h-screen overflow-y-auto">
                 <div className="bg-white rounded-lg shadow-lg m-2 lg:m-4 p-4 lg:p-6">
                   <div className="cart_sidebar">
@@ -1043,9 +1059,40 @@ const TrendingPage = (props0: TrendingPageProps) => {
                               <p className="text-xs text-gray-500">
                                 Qty: {cartItem.quantity || 1}
                               </p>
-                              <p className="text-sm font-semibold text-green-600">
-                                ${Number(productData?.productPrice || 0).toFixed(2)}
-                              </p>
+                              <div className="text-right">
+                                {(() => {
+                                  const originalPrice = parseFloat(productData?.productPrice || "0");
+                                  const basePrice = parseFloat(productData?.productProductPrice || productData?.productPrice || "0");
+                                  const consumerDiscount = parseFloat(productData?.consumerDiscount || "0");
+                                  const consumerDiscountType = productData?.consumerDiscountType;
+                                  
+                                  // Calculate discounted price
+                                  let discountedPrice = basePrice;
+                                  if (consumerDiscount > 0) {
+                                    if (consumerDiscountType === 'PERCENTAGE') {
+                                      discountedPrice = basePrice * (1 - consumerDiscount / 100);
+                                    } else if (consumerDiscountType === 'AMOUNT' || consumerDiscountType === 'FLAT') {
+                                      discountedPrice = basePrice - consumerDiscount;
+                                    }
+                                  }
+                                  
+                                  const quantity = cartItem.quantity || 1;
+                                  const totalPrice = discountedPrice * quantity;
+                                  
+                                  return (
+                                    <>
+                                      <p className="text-sm font-semibold text-green-600">
+                                        {currency.symbol}{totalPrice.toFixed(2)}
+                                      </p>
+                                      {discountedPrice < originalPrice && (
+                                        <p className="text-xs text-gray-500 line-through">
+                                          {currency.symbol}{(originalPrice * quantity).toFixed(2)}
+                                        </p>
+                                      )}
+                                    </>
+                                  );
+                                })()}
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -1082,6 +1129,294 @@ const TrendingPage = (props0: TrendingPageProps) => {
             </div>
           </div>
         </div>
+
+        {/* Mobile Filter Drawer */}
+        <Sheet open={productFilter} onOpenChange={setProductFilter}>
+          <SheetContent side="left" className="w-[300px] sm:w-[400px] overflow-y-auto">
+            <SheetHeader>
+              <SheetTitle>{t("filters")}</SheetTitle>
+            </SheetHeader>
+            <div className="mt-6">
+              <div className="mb-4">
+                <div className="flex gap-2 mb-4">
+                  <button 
+                    type="button" 
+                    onClick={selectAll}
+                    className="px-3 py-2 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors text-sm"
+                  >
+                    {t("select_all")}
+                  </button>
+                  <button 
+                    type="button" 
+                    onClick={clearFilter}
+                    className="px-3 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors text-sm"
+                  >
+                    {t("clean_select")}
+                  </button>
+                </div>
+              </div>
+
+              {/* Category Filter */}
+              <Accordion
+                type="multiple"
+                defaultValue={["category_filter"]}
+                className="mb-4"
+              >
+                <AccordionItem value="category_filter">
+                  <AccordionTrigger className="text-base hover:no-underline!">
+                    {t("by_category")}
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <CategoryFilter
+                      selectedCategoryIds={selectedCategoryIds}
+                      onCategoryChange={handleCategoryChange}
+                      onClear={handleCategoryClear}
+                    />
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+
+              {/* Brand Filter */}
+              <Accordion
+                type="multiple"
+                defaultValue={["brand"]}
+                className="mb-4"
+              >
+                <AccordionItem value="brand">
+                  <AccordionTrigger className="text-base hover:no-underline!">
+                    {t("by_brand")}
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="mb-3">
+                      <div className="flex gap-2">
+                        <Input
+                          type="text"
+                          placeholder={t("search_brand")}
+                          className="flex-1 h-8 text-sm"
+                          onChange={handleBrandSearchChange}
+                          dir={langDir}
+                          translate="no"
+                        />
+                        <Button
+                          type="button"
+                          onClick={handleBrandSearch}
+                          disabled={!searchTermBrand.trim()}
+                          size="sm"
+                          className="h-8 px-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-xs"
+                        >
+                          {t("search")}
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="space-y-2 max-h-40 overflow-y-auto">
+                      {!memoizedBrands.length ? (
+                        <p className="text-center text-sm text-gray-500">
+                          {t("no_data_found")}
+                        </p>
+                      ) : null}
+                      {memoizedBrands.map((item: ISelectOptions) => (
+                        <div key={item.value} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={`mobile-${item.label}`}
+                            className="border border-gray-300 data-[state=checked]:bg-blue-600!"
+                            onCheckedChange={(checked) =>
+                              handleBrandChange(checked, item)
+                            }
+                            checked={selectedBrandIds.includes(item.value)}
+                          />
+                          <label
+                            htmlFor={`mobile-${item.label}`}
+                            className="text-sm font-medium leading-none cursor-pointer"
+                          >
+                            {item.label}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+
+              {/* Price Filter */}
+              <Accordion
+                type="multiple"
+                defaultValue={["price"]}
+              >
+                <AccordionItem value="price">
+                  <AccordionTrigger className="text-base hover:no-underline!">
+                    {t("price")}
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="px-4">
+                      <div className="px-2">
+                        <ReactSlider
+                          className="horizontal-slider"
+                          thumbClassName="example-thumb"
+                          trackClassName="example-track"
+                          defaultValue={[0, 500]}
+                          ariaLabel={["Lower thumb", "Upper thumb"]}
+                          ariaValuetext={(state) =>
+                            `Thumb value ${state.valueNow}`
+                          }
+                          renderThumb={(props, state) => (
+                            <div {...props} key={props.key}>
+                              {state.valueNow}
+                            </div>
+                          )}
+                          pearling
+                          minDistance={10}
+                          onChange={(value) => handlePriceDebounce(value)}
+                          max={500}
+                          min={0}
+                        />
+                      </div>
+                      <div className="flex justify-center">
+                        <Button
+                          variant="outline"
+                          className="mb-4"
+                          onClick={() => setPriceRange([])}
+                          dir={langDir}
+                          translate="no"
+                        >
+                          {t("clear")}
+                        </Button>
+                      </div>
+                      <div className="range-price-left-right-info">
+                        <Input
+                          type="number"
+                          placeholder={`${currency.symbol}0`}
+                          className="custom-form-control-s1 rounded-none"
+                          onChange={handleMinPriceChange}
+                          onWheel={(e) => e.currentTarget.blur()}
+                        />
+                        <div className="center-divider"></div>
+                        <Input
+                          type="number"
+                          placeholder={`${currency.symbol}500`}
+                          className="custom-form-control-s1 rounded-none"
+                          onChange={handleMaxPriceChange}
+                          onWheel={(e) => e.currentTarget.blur()}
+                        />
+                      </div>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </div>
+          </SheetContent>
+        </Sheet>
+
+        {/* Mobile Cart Drawer */}
+        <Sheet open={showCartDrawer} onOpenChange={setShowCartDrawer}>
+          <SheetContent side="right" className="w-[300px] sm:w-[400px] overflow-y-auto">
+            <SheetHeader>
+              <SheetTitle className="flex items-center gap-2">
+                <ShoppingCart className="h-5 w-5" />
+                <span>{t("my_cart")}</span>
+              </SheetTitle>
+            </SheetHeader>
+            <div className="mt-6">
+              <div className="border-b border-gray-200 pb-4 mb-4">
+                <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                  {cartList.length} {cartList.length === 1 ? t("item") : t("items")}
+                </span>
+              </div>
+              
+              <div className="max-h-[calc(100vh-250px)] overflow-y-auto">
+                {cartList.length === 0 ? (
+                  <div className="text-center py-6">
+                    <Package className="h-12 w-12 text-gray-400 mx-auto mb-3" />
+                    <p className="text-gray-500 text-sm">{t("your_cart_is_empty")}</p>
+                    <p className="text-gray-400 text-xs mt-1">{t("add_some_products_to_get_started")}</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {cartList.map((cartItem: any) => {
+                      const productData = memoizedProductList.find((product: any) => product.id === cartItem.productId);
+                      
+                      return (
+                        <div key={cartItem.id} className="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded-lg transition-colors">
+                          <div className="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
+                            {productData?.productImage ? (
+                              <img
+                                src={productData.productImage}
+                                alt={productData.productName || 'Product'}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center">
+                                <Package className="h-8 w-8 text-gray-400" />
+                              </div>
+                            )}
+                          </div>
+                          
+                          <div className="flex-1 min-w-0">
+                            <h4 className="text-sm font-medium text-gray-900 truncate">
+                              {productData?.productName || t("product")}
+                            </h4>
+                            <div className="flex items-center justify-between mt-1">
+                              <p className="text-xs text-gray-500">
+                                Qty: {cartItem.quantity || 1}
+                              </p>
+                              <div className="text-right">
+                                {(() => {
+                                  const originalPrice = parseFloat(productData?.productPrice || "0");
+                                  const basePrice = parseFloat(productData?.productProductPrice || productData?.productPrice || "0");
+                                  const consumerDiscount = parseFloat(productData?.consumerDiscount || "0");
+                                  const consumerDiscountType = productData?.consumerDiscountType;
+                                  
+                                  let discountedPrice = basePrice;
+                                  if (consumerDiscount > 0) {
+                                    if (consumerDiscountType === 'PERCENTAGE') {
+                                      discountedPrice = basePrice * (1 - consumerDiscount / 100);
+                                    } else if (consumerDiscountType === 'AMOUNT' || consumerDiscountType === 'FLAT') {
+                                      discountedPrice = basePrice - consumerDiscount;
+                                    }
+                                  }
+                                  
+                                  const quantity = cartItem.quantity || 1;
+                                  const totalPrice = discountedPrice * quantity;
+                                  
+                                  return (
+                                    <>
+                                      <p className="text-sm font-semibold text-green-600">
+                                        {currency.symbol}{totalPrice.toFixed(2)}
+                                      </p>
+                                      {discountedPrice < originalPrice && (
+                                        <p className="text-xs text-gray-500 line-through">
+                                          {currency.symbol}{(originalPrice * quantity).toFixed(2)}
+                                        </p>
+                                      )}
+                                    </>
+                                  );
+                                })()}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+              
+              {cartList.length > 0 && (
+                <div className="p-4 border-t border-gray-200 bg-gray-50 mt-4 -mx-6 -mb-6">
+                  <button
+                    onClick={() => {
+                      setShowCartDrawer(false);
+                      window.location.href = '/cart';
+                    }}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2"
+                  >
+                    <Package className="h-5 w-5" />
+                    <span>{t("go_to_cart")}</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          </SheetContent>
+        </Sheet>
       </div>
       <Footer />
     </>

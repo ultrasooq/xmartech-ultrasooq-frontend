@@ -71,6 +71,15 @@ type ProductDescriptionCardProps = {
   selectedProductVariant?: any;
   selectProductVariant?: (variant: any) => void;
   adminId?: number;
+  // Buygroup sale timing
+  isBuygroup?: boolean;
+  saleNotStarted?: boolean;
+  saleExpired?: boolean;
+  buygroupStartTime?: number;
+  buygroupEndTime?: number;
+  sellType?: string;
+  dateOpen?: string;
+  startTime?: string;
 };
 
 const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
@@ -114,6 +123,15 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   selectedProductVariant,
   selectProductVariant,
   adminId,
+  // Buygroup sale timing
+  isBuygroup = false,
+  saleNotStarted = false,
+  saleExpired = false,
+  buygroupStartTime = 0,
+  buygroupEndTime = 0,
+  sellType,
+  dateOpen,
+  startTime,
 }) => {
   const t = useTranslations();
   const { user, langDir, currency } = useAuth();
@@ -126,6 +144,27 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   );
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [timeLeft, setTimeLeft] = useState("");
+
+  // Helper function to format sale start date
+  const getSaleStartLabel = (dateStr?: string, timeStr?: string) => {
+    try {
+      if (!dateStr) return "";
+      const d = new Date(dateStr);
+      if (timeStr) {
+        const [h, m] = timeStr.split(":").map(Number);
+        if (!Number.isNaN(h)) d.setHours(h || 0, Number.isNaN(m) ? 0 : m, 0, 0);
+      }
+      return d.toLocaleString(undefined, {
+        year: "numeric",
+        month: "short",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    } catch {
+      return "";
+    }
+  };
 
   const calculateDiscountedPrice = () => {
     const price = productProductPrice ? Number(productProductPrice) : 0;
@@ -423,48 +462,52 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
         </div>
       )}
 
-      {/* Price Section */}
-      {isLoading ? (
-        <Skeleton className="h-12 w-48" />
-      ) : (
-        <div className="space-y-2">
-          {askForPrice === "true" ? (
-            <div className="inline-flex items-center rounded-lg bg-orange-100 px-4 py-2">
-              <span className="text-sm font-semibold text-orange-800" dir={langDir} translate="no">
-                {t("ask_for_price")}
-              </span>
+      {/* Price Section - Hide for RFQ products */}
+      {productType !== "RFQ" && (
+        <>
+          {isLoading ? (
+            <Skeleton className="h-12 w-48" />
+          ) : (
+            <div className="space-y-2">
+              {askForPrice === "true" ? (
+                <div className="inline-flex items-center rounded-lg bg-orange-100 px-4 py-2">
+                  <span className="text-sm font-semibold text-orange-800" dir={langDir} translate="no">
+                    {t("ask_for_price")}
+                  </span>
+                </div>
+              ) : productType != "R" ? (
+                <div className="flex items-baseline gap-3">
+                  <span className="text-3xl font-bold text-gray-900">
+                    {currency.symbol}{calculateDiscountedPrice()}
+                  </span>
+                  {Number(productProductPrice) > calculateDiscountedPrice() && (
+                    <span className="text-lg text-gray-500 line-through">
+                      {currency.symbol}{Number(productProductPrice)}
+                    </span>
+                  )}
+                  {Number(productProductPrice) > calculateDiscountedPrice() && (
+                    <span className="text-sm font-medium text-green-600">
+                      {(() => {
+                        const originalPrice = Number(productProductPrice);
+                        const discountedPrice = calculateDiscountedPrice();
+                        const discountAmount = originalPrice - discountedPrice;
+                        const discountPercentage = Math.round((discountAmount / originalPrice) * 100);
+                        
+                        // Show percentage if it's meaningful (>0), otherwise show flat amount
+                        if (discountPercentage > 0) {
+                          return `${discountPercentage}% OFF`;
+                        } else if (discountAmount > 0) {
+                          return `₹${discountAmount} OFF`;
+                        }
+                        return '';
+                      })()}
+                    </span>
+                  )}
+                </div>
+              ) : null}
             </div>
-          ) : productType != "R" ? (
-            <div className="flex items-baseline gap-3">
-              <span className="text-3xl font-bold text-gray-900">
-                {currency.symbol}{calculateDiscountedPrice()}
-              </span>
-              {Number(productProductPrice) > calculateDiscountedPrice() && (
-                <span className="text-lg text-gray-500 line-through">
-                  {currency.symbol}{Number(productProductPrice)}
-                </span>
-              )}
-              {Number(productProductPrice) > calculateDiscountedPrice() && (
-                <span className="text-sm font-medium text-green-600">
-                  {(() => {
-                    const originalPrice = Number(productProductPrice);
-                    const discountedPrice = calculateDiscountedPrice();
-                    const discountAmount = originalPrice - discountedPrice;
-                    const discountPercentage = Math.round((discountAmount / originalPrice) * 100);
-                    
-                    // Show percentage if it's meaningful (>0), otherwise show flat amount
-                    if (discountPercentage > 0) {
-                      return `${discountPercentage}% OFF`;
-                    } else if (discountAmount > 0) {
-                      return `₹${discountAmount} OFF`;
-                    }
-                    return '';
-                  })()}
-                </span>
-              )}
-            </div>
-          ) : null}
-        </div>
+          )}
+        </>
       )}
 
       {/* Product Description */}
@@ -559,46 +602,68 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
         );
       })}
 
-      {/* Quantity Selector */}
-      <div className="space-y-2">
-        <label className="text-sm font-medium text-gray-700" dir={langDir} translate="no">
-          {t("quantity")}
-        </label>
-        <div className="flex items-center gap-3">
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-10 w-10 rounded-lg border-gray-300 hover:bg-gray-50"
-            onClick={() => updateQuantity(quantity - 1, "remove")}
-            disabled={!isAddedToCart && quantity === 0}
-          >
-            <Image src={MinusIcon} alt="minus-icon" width={16} height={16} />
-          </Button>
-          <input
-            type="number"
-            min="0"
-            value={quantity}
-            className="h-10 w-16 rounded-lg border border-gray-300 bg-white text-center text-sm focus:border-dark-orange focus:outline-none focus:ring-1 focus:ring-dark-orange"
-            onChange={(e) => {
-              const value = Number(e.target.value);
-              setQuantity(isNaN(value) ? 0 : value);
-            }}
-            onBlur={handleQuantityChange}
-          />
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-10 w-10 rounded-lg border-gray-300 hover:bg-gray-50"
-            onClick={() => updateQuantity(quantity + 1, "add")}
-          >
-            <Image src={PlusIcon} alt="plus-icon" width={16} height={16} />
-          </Button>
+      {/* Quantity Selector - Hide for RFQ products */}
+      {productType !== "RFQ" && (
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-gray-700" dir={langDir} translate="no">
+            {t("quantity")}
+          </label>
+          <div className="flex items-center gap-3">
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-10 w-10 rounded-lg border-gray-300 hover:bg-gray-50"
+              onClick={() => updateQuantity(quantity - 1, "remove")}
+              disabled={!isAddedToCart && quantity === 0}
+            >
+              <Image src={MinusIcon} alt="minus-icon" width={16} height={16} />
+            </Button>
+            <input
+              type="number"
+              min="0"
+              value={quantity}
+              className="h-10 w-16 rounded-lg border border-gray-300 bg-white text-center text-sm focus:border-dark-orange focus:outline-none focus:ring-1 focus:ring-dark-orange"
+              onChange={(e) => {
+                const value = Number(e.target.value);
+                setQuantity(isNaN(value) ? 0 : value);
+              }}
+              onBlur={handleQuantityChange}
+            />
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-10 w-10 rounded-lg border-gray-300 hover:bg-gray-50"
+              onClick={() => updateQuantity(quantity + 1, "add")}
+            >
+              <Image src={PlusIcon} alt="plus-icon" width={16} height={16} />
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Action Buttons - Amazon Style */}
-      {askForPrice !== "true" && (
+      {askForPrice !== "true" && productType !== "RFQ" && (
         <div className="space-y-3">
+          {/* Sale Status Banner for Buygroup */}
+          {isBuygroup && saleNotStarted && (
+            <div className="rounded-lg border-2 border-yellow-300 bg-yellow-50 p-4 text-center">
+              <p className="mb-1 text-sm font-semibold text-yellow-800" dir={langDir} translate="no">
+                {t("sale_not_started_yet")}
+              </p>
+              <p className="text-xs text-yellow-700" dir={langDir} translate="no">
+                {t("sale_starts_on")}: {getSaleStartLabel(dateOpen, startTime) || "TBA"}
+              </p>
+            </div>
+          )}
+
+          {isBuygroup && saleExpired && (
+            <div className="rounded-lg border-2 border-gray-300 bg-gray-50 p-4 text-center">
+              <p className="text-sm font-semibold text-gray-600" dir={langDir} translate="no">
+                {t("sale_has_ended")}
+              </p>
+            </div>
+          )}
+
           {/* Add to Cart / Remove from Cart Button */}
           <Button
             onClick={() => {
@@ -608,32 +673,40 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                 onAdd(quantity || 1, "add");
               }
             }}
-            disabled={!isAddedToCart && quantity === 0}
-            className={`w-full rounded-lg py-3 text-base font-medium shadow-lg transition-all hover:shadow-xl active:scale-95 disabled:opacity-50 ${
+            disabled={(!isAddedToCart && quantity === 0) || saleNotStarted || saleExpired}
+            className={`w-full rounded-lg py-3 text-base font-medium shadow-lg transition-all hover:shadow-xl active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed ${
               isAddedToCart && quantity === 0
                 ? "bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700"
+                : saleNotStarted || saleExpired
+                ? "bg-gray-400 text-white"
                 : "bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-900 hover:from-yellow-500 hover:to-yellow-600"
             }`}
             dir={langDir}
             translate="no"
           >
-            {isAddedToCart && quantity === 0
+            {saleNotStarted
+              ? t("coming_soon")
+              : saleExpired
+              ? t("sale_ended")
+              : isAddedToCart && quantity === 0
               ? t("remove_from_cart")
               : isAddedToCart
               ? t("added_to_cart")
               : t("add_to_cart")}
           </Button>
 
-          {/* Buy Now Button */}
-          <Button
-            onClick={onBuyNow || (() => onAdd(quantity || 1, "add"))}
-            disabled={quantity === 0}
-            className="w-full rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 py-3 text-base font-medium text-white shadow-lg transition-all hover:from-orange-600 hover:to-orange-700 hover:shadow-xl active:scale-95 disabled:opacity-50"
-            dir={langDir}
-            translate="no"
-          >
-            {t("buy_now")}
-          </Button>
+          {/* Buy Now Button - Hide when sale not started, expired, or factory product */}
+          {!saleNotStarted && !saleExpired && productType !== "F" && (
+            <Button
+              onClick={onBuyNow || (() => onAdd(quantity || 1, "add"))}
+              disabled={quantity === 0}
+              className="w-full rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 py-3 text-base font-medium text-white shadow-lg transition-all hover:from-orange-600 hover:to-orange-700 hover:shadow-xl active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:from-gray-400 disabled:to-gray-400"
+              dir={langDir}
+              translate="no"
+            >
+              {t("buy_now")}
+            </Button>
+          )}
         </div>
       )}
 
@@ -645,8 +718,8 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
         </div>
       ) : (
         <div className="space-y-4">
-          {/* Group Buy Timer */}
-          {productPriceArr?.[0]?.sellType === "BUYGROUP" && (
+          {/* Group Buy Timer - Only show if sale is active (not started or expired) */}
+          {productPriceArr?.[0]?.sellType === "BUYGROUP" && !saleNotStarted && !saleExpired && (
             <div className="rounded-lg border border-orange-200 bg-orange-50 p-4">
               {timeLeft !== "NotStarted" && timeLeft !== "Expired" ? (
                 <div className="mb-3" dir={langDir}>

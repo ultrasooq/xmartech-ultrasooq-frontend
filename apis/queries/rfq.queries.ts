@@ -248,7 +248,7 @@ export const useUpdateFactoriesCartWithLogin = () =>
           queryKey: ["factories-cart-by-user"],
         });
         queryClient.invalidateQueries({
-          queryKey: ["factories-products"],
+          queryKey: ["factoriesProducts"],
         });
         // queryClient.invalidateQueries({
         //   queryKey: ["rfq-cart-count-with-login"],
@@ -344,7 +344,7 @@ export const useDeleteFactoriesCartItem = () => {
         queryKey: ["factories-cart-by-user"],
       });
       queryClient.invalidateQueries({
-        queryKey: ["factories-products"],
+        queryKey: ["factoriesProducts"],
       });
     },
     onError: (err: APIResponseError) => {

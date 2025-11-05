@@ -11,11 +11,11 @@ import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { FiEye } from "react-icons/fi";
 import { useTranslations } from "next-intl";
 import { useDeleteCartItem, useUpdateCartWithLogin } from "@/apis/queries/cart.queries";
+import { useUpdateFactoriesCartWithLogin, useDeleteFactoriesCartItem } from "@/apis/queries/rfq.queries";
 import { useAuth } from "@/context/AuthContext";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { IoCloseSharp } from "react-icons/io5";
 import { useClickOutside } from "use-events";
-// import Link from "next/link";
 
 type RfqProductCardProps = {
   id: number;
@@ -100,7 +100,9 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
   }, [productVariant]);
 
   const updateCartWithLogin = useUpdateCartWithLogin();
+  const updateFactoriesCartWithLogin = useUpdateFactoriesCartWithLogin();
   const deleteCartItem = useDeleteCartItem();
+  const deleteFactoriesCartItem = useDeleteFactoriesCartItem();
 
   const handleAddToCart = async (
     quantity: number,
@@ -125,12 +127,49 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
       return;
     }
 
+    // Show confirmation dialog if removing (quantity 0) and item is in cart
+    if (action == "remove" && quantity === 0) {
+      setIsConfirmDialogOpen(true);
+      return;
+    }
+
+    // Also check for minimum quantity violation
     if (action == "remove" && minQuantity && minQuantity > quantity) {
       setIsConfirmDialogOpen(true);
       return;
     }
 
     if (haveAccessToken) {
+      // Use factories cart mutation if item is in factories cart
+      if (isAddedToFactoryCart && customizeProductId) {
+        const response = await updateFactoriesCartWithLogin.mutateAsync({
+          productId: id,
+          quantity,
+          customizeProductId
+        });
+
+        if (response.status) {
+          if (action === "add" && quantity === 0) {
+            setQuantity(1);
+          } else {
+            setQuantity(quantity);
+          }
+          toast({
+            title: action == "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
+            description: t("check_your_cart_for_more_details"),
+            variant: "success",
+          });
+        } else {
+          toast({
+            title: t("something_went_wrong"),
+            description: response.message,
+            variant: "danger",
+          });
+        }
+        return;
+      }
+
+      // Fallback to regular cart if no customizeProductId
       if (!productPrices?.length || !productPrices?.[0]?.id) {
         toast({
           title: t("something_went_wrong"),
@@ -156,7 +195,6 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
           description: t("check_your_cart_for_more_details"),
           variant: "success",
         });
-        return response.status;
       } else {
         toast({
           title: t("something_went_wrong"),
@@ -167,9 +205,9 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
     }
   };
 
-  const handleQuantity = async (quantity: number, action: "add" | "remove") => {
-    const minQuantity = productPrices?.[0]?.minQuantityPerCustomer;
-    const maxQuantity = productPrices?.[0]?.maxQuantityPerCustomer;
+  const handleQuantity = (quantity: number, action: "add" | "remove") => {
+    const minQuantity = productPrices?.length ? productPrices[0]?.minQuantityPerCustomer : null;
+    const maxQuantity = productPrices?.length ? productPrices[0]?.maxQuantityPerCustomer : null;
 
     if (maxQuantity && maxQuantity < quantity) {
       toast({
@@ -181,16 +219,9 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
     }
 
     setQuantity(quantity);
-    if (cartId) {
+    // If item is already in cart, update immediately
+    if (cartId || isAddedToFactoryCart) {
       handleAddToCart(quantity, action);
-    } else {
-      if (minQuantity && minQuantity > quantity) {
-        toast({
-          description: t("min_quantity_must_be_n", { n: minQuantity }),
-          variant: "danger",
-        });
-        return;
-      }
     }
   };
 
@@ -229,19 +260,38 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
   };
 
   const handleRemoveItemFromCart = async (cartId: number) => {
-    const response = await deleteCartItem.mutateAsync({ cartId });
-    if (response.status) {
-      toast({
-        title: t("item_removed_from_cart"),
-        description: t("check_your_cart_for_more_details"),
-        variant: "success",
-      });
+    // Use factories cart delete if item is in factories cart
+    if (isAddedToFactoryCart && cartId) {
+      const response = await deleteFactoriesCartItem.mutateAsync({ factoriesCartId: cartId });
+      if (response.status) {
+        toast({
+          title: t("item_removed_from_cart"),
+          description: t("check_your_cart_for_more_details"),
+          variant: "success",
+        });
+      } else {
+        toast({
+          title: t("item_not_removed_from_cart"),
+          description: t("check_your_cart_for_more_details"),
+          variant: "danger",
+        });
+      }
     } else {
-      toast({
-        title: t("item_not_removed_from_cart"),
-        description: t("check_your_cart_for_more_details"),
-        variant: "danger",
-      });
+      // Use regular cart delete
+      const response = await deleteCartItem.mutateAsync({ cartId });
+      if (response.status) {
+        toast({
+          title: t("item_removed_from_cart"),
+          description: t("check_your_cart_for_more_details"),
+          variant: "success",
+        });
+      } else {
+        toast({
+          title: t("item_not_removed_from_cart"),
+          description: t("check_your_cart_for_more_details"),
+          variant: "danger",
+        });
+      }
     }
   };
 
@@ -281,232 +331,251 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
     return Number((price - discount).toFixed(2));
   };
 
+  const discountAmount = productPrices?.[0]?.consumerDiscount || 0;
+  const discountType = productPrices?.[0]?.consumerDiscountType;
+
   return (
-    <div className="product_list_part">
-      {/* FIXME:  link disabled due to TYPE R product. error in find one due to no price */}
-      <Link href={`/factories/${id}`}>
-        <div className="product_list_image relative">
-          <Image
-            alt="pro-5"
-            className="p-3"
-            src={
-              productImages?.[0]?.image &&
-                validator.isURL(productImages?.[0]?.image)
-                ? productImages[0].image
-                : PlaceholderImage
-            }
-            fill
-          />
-        </div>
-      </Link>
-      <div className="mb-3 flex flex-row items-center justify-center gap-x-3">
-        <Button
-          variant="ghost"
-          className="relative h-8 w-8 rounded-full p-0 shadow-md"
-          onClick={() => handleAddToCart(quantity + 1, "add")}
-        >
-          <ShoppingIcon />
-        </Button>
-        <Link
-          href={`/factories/${id}`}
-          className="relative flex h-8 w-8 items-center justify-center rounded-full shadow-md!"
-        >
-          <FiEye size={18} />
-        </Link>
-        <Button
-          variant="ghost"
-          className="relative h-8 w-8 rounded-full p-0 shadow-md"
-          onClick={onWishlist}
-        >
-          {inWishlist ? (
-            <FaHeart color="red" size={16} />
-          ) : (
-            <FaRegHeart size={16} />
+    <>
+      <div className="group relative bg-white rounded-lg sm:rounded-xl shadow-sm sm:shadow-lg border border-gray-100 hover:shadow-xl hover:border-gray-200 transition-all duration-300 overflow-hidden h-full flex flex-col">
+        {/* Product Image Container */}
+        <Link href={`/factories/${id}`} className="block w-full">
+          {/* Discount Badge */}
+          {discountAmount > 0 && (
+            <div className="absolute right-3 top-3 z-20 bg-gradient-to-r from-orange-500 to-red-500 text-white px-2 py-1 rounded-full text-xs font-bold shadow-lg">
+              {discountType === "PERCENTAGE" 
+                ? `${discountAmount}%` 
+                : `${currency.symbol}${discountAmount}`
+              }
+            </div>
           )}
-        </Button>
-      </div>
-      <div className="product_list_content" dir={langDir}>
-        <Link href={`/factories/${id}`}>
-          <p>{productName}</p>
-        </Link>
-      </div>
-      {productPrices?.[0]?.offerPrice ? (
-        <h5 className="py-1 text-[#1D77D1]" dir={langDir}>
-          {currency.symbol}
-          {calculateDiscountedPrice()}{" "}
-          <span className="text-gray-500 line-through!">
-            {currency.symbol}
-            {productPrices?.[0]?.offerPrice}
-          </span>
-        </h5>
-      ) : null}
-      {productVariantTypes.length > 0 ? (
-        productVariantTypes.map((variantType: string, index: number) => {
-          return (
-            <div className="mb-2" dir={langDir} key={index}>
-              <label htmlFor={variantType}>{variantType}</label>
-              <select
-                className="w-full"
-                value={selectedProductVariant?.find((variant: any) => variant.type == variantType)?.value}
-                onChange={(e) => {
-                  let selectedVariants = [];
-                  let value = e.target.value;
-                  const selected = productVariants.find(
-                    (variant: any) => variant.type == variantType && variant.value == value
-                  );
 
-                  if (selectedProductVariant.find((variant: any) => variant.type == selected.type)) {
-                    selectedVariants = selectedProductVariant.map((variant: any) => {
-                      if (variant.type == selected.type) {
-                        return selected;
-                      }
-                      return variant;
-                    });
-
-                  } else {
-                    selectedVariants = [
-                      ...selectedProductVariant,
-                      selected
-                    ];
-                  }
-
-                  setSelectedProductVariant(selectedVariants);
-
-                  if (cartId) handleAddToCart(quantity, "add", selectedVariants);
-                }}
-              >
-                {productVariants.filter((variant: any) => variant.type == variantType)
-                  .map((variant: any, i: number) => {
-                  return <option key={`${index}${i}`} value={variant.value} dir={langDir}>{variant.value}</option>;
-                })}
-              </select>
-            </div>
-          );
-        })
-      ) : null}
-      <div className="quantity_wrap mb-2" dir={langDir}>
-        <label translate="no">{t("quantity")}</label>
-        <div className="qty-up-down-s1-with-rgMenuAction">
-          <div className="flex items-center gap-x-3 md:gap-x-3">
-            <Button
-              type="button"
-              variant="outline"
-              className="relative hover:shadow-xs"
-              onClick={() => handleQuantity(quantity - 1, "remove")}
-              disabled={quantity === 0 || updateCartWithLogin?.isPending}
-            >
-              <Image
-                src="/images/upDownBtn-minus.svg"
-                alt="minus-icon"
-                fill
-                className="p-3"
-              />
-            </Button>
-            <input
-              type="text"
-              value={quantity}
-              className="h-auto w-[35px] border-none bg-transparent text-center focus:border-none focus:outline-hidden"
-              onChange={(e) => {
-                const value = Number(e.target.value);
-                setQuantity(isNaN(value) ? productQuantity : value);
-              }}
-              onBlur={handleQuantityChange}
+          <div className="relative w-full h-48 lg:h-56 bg-gray-50 overflow-hidden">
+            <Image
+              src={
+                productImages?.[0]?.image && validator.isURL(productImages?.[0]?.image)
+                  ? productImages[0].image
+                  : PlaceholderImage
+              }
+              alt={productName}
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              className="object-contain group-hover:scale-105 transition-transform duration-300"
             />
+          </div>
+        </Link>
+
+        {/* Action Buttons - Hover overlay */}
+        <div className="absolute top-3 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex gap-2 z-10">
+          {onAdd && (
             <Button
-              type="button"
-              variant="outline"
-              className="relative hover:shadow-xs"
-              onClick={() => handleQuantity(quantity + 1, "add")}
-              disabled={updateCartWithLogin?.isPending}
+              variant="secondary"
+              size="sm"
+              className="h-8 w-8 rounded-full bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white hover:scale-110 transition-all duration-200"
+              onClick={onAdd}
             >
-              <Image
-                src="/images/upDownBtn-plus.svg"
-                alt="plus-icon"
-                fill
-                className="p-3"
-              />
+              <ShoppingIcon />
             </Button>
-            {/* {!isAddedToFactoryCart && <Button
-              type="button"
-              variant="ghost"
-              onClick={() => {
-                onAdd?.();
-              }}
+          )}
+          <Link href={`/factories/${id}`}>
+            <Button
+              variant="secondary"
+              size="sm"
+              className="h-8 w-8 rounded-full bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white hover:scale-110 transition-all duration-200"
             >
-              <div className="relative h-6 w-6">
-                <Image
-                  src="/images/edit-rfq.png"
-                  alt="edit-rfq-icon"
-                  fill
-                />
+              <FiEye className="h-4 w-4" />
+            </Button>
+          </Link>
+          <Button
+            variant="secondary"
+            size="sm"
+            className="h-8 w-8 rounded-full bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white hover:scale-110 transition-all duration-200"
+            onClick={onWishlist}
+          >
+            {inWishlist ? (
+              <FaHeart className="h-4 w-4 text-red-500" />
+            ) : (
+              <FaRegHeart className="h-4 w-4" />
+            )}
+          </Button>
+        </div>
+
+        {/* Product Info */}
+        <div className="p-3 sm:p-4 flex flex-col flex-1">
+          <Link href={`/factories/${id}`}>
+            <h3 className="text-sm sm:text-base font-medium text-gray-900 line-clamp-2 mb-2 hover:text-blue-600 transition-colors" dir={langDir}>
+              {productName}
+            </h3>
+          </Link>
+
+          {/* Product Type Badge */}
+          <div className="mb-2">
+            <span className="inline-block px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded">
+              {productType === "F" ? t("factory_product") : t("product")}
+            </span>
+          </div>
+
+          {/* Product Description/Note */}
+          {productNote && (
+            <p className="text-xs text-gray-600 line-clamp-2 mb-2" dir={langDir}>
+              {productNote}
+            </p>
+          )}
+
+          {/* Price */}
+          {productPrices?.[0]?.offerPrice ? (
+            <div className="mb-3" dir={langDir}>
+              <div className="flex items-center gap-2">
+                <span className="text-lg sm:text-xl font-bold text-blue-600">
+                  {currency.symbol}{calculateDiscountedPrice()}
+                </span>
+                {discountAmount > 0 && (
+                  <span className="text-sm text-gray-500 line-through">
+                    {currency.symbol}{productPrices?.[0]?.offerPrice}
+                  </span>
+                )}
               </div>
-            </Button>} */}
+            </div>
+          ) : (
+            <div className="mb-3">
+              <span className="text-sm font-medium text-gray-600">{t("customizable")}</span>
+            </div>
+          )}
+
+          {/* Variant Selectors */}
+          {productVariantTypes.length > 0 && (
+            <div className="mb-3 space-y-2">
+              {productVariantTypes.map((variantType: string, index: number) => (
+                <div key={index} dir={langDir}>
+                  <label className="text-xs text-gray-600 mb-1 block">{variantType}</label>
+                  <select
+                    className="w-full text-sm border border-gray-300 rounded-md px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={selectedProductVariant?.find((variant: any) => variant.type == variantType)?.value}
+                    onChange={(e) => {
+                      let selectedVariants = [];
+                      let value = e.target.value;
+                      const selected = productVariants.find(
+                        (variant: any) => variant.type == variantType && variant.value == value
+                      );
+
+                      if (selectedProductVariant.find((variant: any) => variant.type == selected.type)) {
+                        selectedVariants = selectedProductVariant.map((variant: any) => {
+                          if (variant.type == selected.type) {
+                            return selected;
+                          }
+                          return variant;
+                        });
+                      } else {
+                        selectedVariants = [
+                          ...selectedProductVariant,
+                          selected
+                        ];
+                      }
+
+                      setSelectedProductVariant(selectedVariants);
+                      if (cartId) handleAddToCart(quantity, "add", selectedVariants);
+                    }}
+                  >
+                    {productVariants.filter((variant: any) => variant.type == variantType)
+                      .map((variant: any, i: number) => (
+                        <option key={`${index}${i}`} value={variant.value} dir={langDir}>
+                          {variant.value}
+                        </option>
+                      ))}
+                  </select>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Quantity Controls */}
+          <div className="mt-auto">
+            <label className="text-xs text-gray-600 mb-1 block" translate="no">{t("quantity")}</label>
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-8 w-8 rounded-md"
+                onClick={() => handleQuantity(quantity - 1, "remove")}
+                disabled={quantity === 0 || updateCartWithLogin?.isPending || updateFactoriesCartWithLogin?.isPending || deleteFactoriesCartItem?.isPending}
+              >
+                -
+              </Button>
+              <input
+                type="number"
+                min="0"
+                value={quantity}
+                onChange={(e) => setQuantity(parseInt(e.target.value) || 0)}
+                onBlur={handleQuantityChange}
+                className="w-16 text-center text-sm border border-gray-300 rounded-md px-2 py-1"
+                dir={langDir}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-8 w-8 rounded-md"
+                onClick={() => handleQuantity(quantity + 1, "add")}
+                disabled={updateCartWithLogin?.isPending || updateFactoriesCartWithLogin?.isPending}
+              >
+                +
+              </Button>
+            </div>
+
+            {/* Cart Status */}
+            {isAddedToFactoryCart && (
+              <div className="flex items-center gap-1 mt-2 text-xs text-green-600">
+                <FaCircleCheck />
+                <span>{t("added_to_factory_cart")}</span>
+              </div>
+            )}
+
+            {/* Add to Factories Cart Button */}
+            {onAdd && (
+              <Button
+                onClick={onAdd}
+                className="w-full mt-3 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition-colors duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                disabled={isAddedToFactoryCart || quantity === 0}
+              >
+                {isAddedToFactoryCart ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <FaCircleCheck />
+                    <span>{t("added_to_cart")}</span>
+                  </div>
+                ) : quantity === 0 ? (
+                  t("select_quantity")
+                ) : (
+                  t("add_to_factories_cart")
+                )}
+              </Button>
+            )}
           </div>
         </div>
       </div>
 
-      <div className="cart_button">
-        {cartId ? (
-          <button
-            type="button"
-            className="flex items-center justify-evenly gap-x-2 rounded-sm border border-[#E8E8E8] p-[10px] text-[15px] font-bold leading-5 text-[#7F818D]"
-            dir={langDir}
-            translate="no"
-          >
-            <FaCircleCheck color="#00C48C" />
-            {t("added_to_cart")}
-          </button>
-        ) : null}
-        {!cartId ? (
-          <button
-            type="button"
-            className="add_to_cart_button"
-            onClick={() => handleAddToCart(quantity, "add")}
-            disabled={quantity == 0 || updateCartWithLogin?.isPending}
-            dir={langDir}
-            translate="no"
-          >
-            {t("add_to_cart")}
-          </button>
-        ) : null}
-      </div>
-      <Dialog open={isConfirmDialogOpen} onOpenChange={handleConfirmDialog}>
-        <DialogContent
-          className="add-new-address-modal add_member_modal gap-0 p-0 md:max-w-2xl!"
-          ref={confirmDialogRef}
-        >
-          <div className="modal-header justify-between!" dir={langDir}>
-            <DialogTitle className="text-center text-xl text-dark-orange font-bold"></DialogTitle>
-            <Button
-              onClick={onCancelRemove}
-              className={`${langDir == 'ltr' ? 'absolute' : ''} right-2 top-2 z-10 bg-white! text-black! shadow-none`}
-            >
-              <IoCloseSharp size={20} />
-            </Button>
+      {/* Confirm Remove Dialog */}
+      <Dialog open={isConfirmDialogOpen} onOpenChange={setIsConfirmDialogOpen}>
+        <DialogContent ref={confirmDialogRef} className="sm:max-w-md">
+          <DialogTitle className="flex items-center justify-between">
+            <span>{t("confirm_remove")}</span>
+            <button onClick={onCancelRemove} className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100">
+              <IoCloseSharp className="h-5 w-5" />
+            </button>
+          </DialogTitle>
+          <div className="py-4">
+            <p className="text-sm text-gray-600">{t("are_you_sure_you_want_to_remove_this_item")}</p>
           </div>
-
-          <div className="text-center mt-4 mb-4">
-            <p className="text-dark-orange">Do you want to remove this item from cart?</p>
-            <div>
-              <Button
-                type="button"
-                className="bg-white text-red-500 mr-2"
-                onClick={onCancelRemove}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="button"
-                className="bg-red-500"
-                onClick={onConfirmRemove}
-              >
-                Remove
-              </Button>
-            </div>
+          <div className="flex justify-end gap-3">
+            <Button variant="outline" onClick={onCancelRemove}>
+              {t("cancel")}
+            </Button>
+            <Button variant="destructive" onClick={onConfirmRemove}>
+              {t("remove")}
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   );
 };
 

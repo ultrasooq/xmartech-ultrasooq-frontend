@@ -43,6 +43,9 @@ type ProductImagesCardProps = {
   cartQuantity?: number;
   // Marketing images for dropshipped products
   additionalMarketingImages?: any[];
+  // Buygroup sale timing
+  saleNotStarted?: boolean;
+  saleExpired?: boolean;
 };
 
 const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
@@ -61,6 +64,8 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
   isAddedToCart,
   cartQuantity = 0,
   additionalMarketingImages = [],
+  saleNotStarted = false,
+  saleExpired = false,
 }) => {
   const t = useTranslations();
   const { langDir } = useAuth();
@@ -68,15 +73,10 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
   const [previewImages, setPreviewImages] = useState<any[]>([]);
   const [api, setApi] = useState<CarouselApi>();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
-  // Debug: Log carousel state changes
-  useEffect(() => {
-    console.log('Carousel state changed:', {
-      currentImageIndex,
-      previewImagesLength: previewImages?.length,
-      hasApi: !!api
-    });
-  }, [currentImageIndex, previewImages?.length, api]);
+  
+  // Use refs to track previous values and prevent infinite loops
+  const prevImagesRef = useRef<string>('');
+  const prevMarketingImagesRef = useRef<string>('');
 
   const productSellerImage =
     productDetails?.product_productPrice?.[0]?.productPrice_productSellerImage;
@@ -115,11 +115,23 @@ const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
       return PlaceholderImage;
     });
     
-    setPreviewImages(finalImages);
+    // Create a string representation to compare
+    const currentImagesKey = JSON.stringify(finalImages);
+    const currentMarketingKey = JSON.stringify(additionalMarketingImages);
     
-    // Reset carousel to first image when marketing images are added
-    if (productDetails?.isDropshipped && additionalMarketingImages?.length > 0) {
-      setCurrentImageIndex(0);
+    // Only update state if images actually changed
+    if (
+      prevImagesRef.current !== currentImagesKey ||
+      prevMarketingImagesRef.current !== currentMarketingKey
+    ) {
+      prevImagesRef.current = currentImagesKey;
+      prevMarketingImagesRef.current = currentMarketingKey;
+      setPreviewImages(finalImages);
+      
+      // Reset carousel to first image when marketing images are added
+      if (productDetails?.isDropshipped && additionalMarketingImages?.length > 0) {
+        setCurrentImageIndex(0);
+      }
     }
     
     // eslint-disable-next-line react-hooks/exhaustive-deps

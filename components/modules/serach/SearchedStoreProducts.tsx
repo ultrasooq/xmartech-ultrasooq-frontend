@@ -15,13 +15,15 @@ type SearchedStoreProductsType = {
     haveAccessToken: boolean;
     cartList: any[];
     setRecordsCount: (count: number) => void;
+    hideHeader?: boolean;
 };
 
 const SearchedStoreProducts: React.FC<SearchedStoreProductsType> = ({
     searchTerm,
     haveAccessToken,
     cartList,
-    setRecordsCount
+    setRecordsCount,
+    hideHeader = false
 }) => {
     const t = useTranslations();
     const { langDir } = useAuth();
@@ -32,7 +34,7 @@ const SearchedStoreProducts: React.FC<SearchedStoreProductsType> = ({
 
     const allProductsQuery = useAllProducts({
         page: 1,
-        limit: 4,
+        limit: 20,
         sort: "desc",
         term: searchTerm,
         userId: me?.data?.data?.tradeRole == "BUYER"
@@ -139,6 +141,62 @@ const SearchedStoreProducts: React.FC<SearchedStoreProductsType> = ({
 
     if (allProductsQuery?.isFetched && memoizedProducts.length == 0) {
         return null;
+    }
+
+    if (hideHeader) {
+        return (
+            <>
+                {allProductsQuery.isLoading ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                        {Array.from({ length: 4 }).map((_, index: number) => (
+                            <SkeletonProductCardLoader key={index} />
+                        ))}
+                    </div>
+                ) : null}
+
+                {!memoizedProducts.length && !allProductsQuery.isLoading ? null : null}
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    {memoizedProducts.map((item: TrendingProduct) => {
+                        const cartItem = cartList?.find(
+                            (el: any) => el.productId == item.id,
+                        );
+                        let relatedCart: any = null;
+                        if (cartItem) {
+                            relatedCart = cartList
+                                ?.filter(
+                                    (c: any) =>
+                                        c.serviceId && c.cartProductServices?.length,
+                                )
+                                .find((c: any) => {
+                                    return !!c.cartProductServices.find(
+                                        (r: any) =>
+                                            r.relatedCartType == "PRODUCT" &&
+                                            r.productId == item.id,
+                                    );
+                                });
+                        }
+                        return (
+                            <ProductCard
+                                key={item.id}
+                                item={item}
+                                onWishlist={() =>
+                                    handleAddToWishlist(item.id, item?.productWishlist)
+                                }
+                                inWishlist={item?.inWishlist}
+                                haveAccessToken={haveAccessToken}
+                                isInteractive
+                                productQuantity={cartItem?.quantity || 0}
+                                productVariant={cartItem?.object}
+                                cartId={cartItem?.id}
+                                relatedCart={relatedCart}
+                                isAddedToCart={cartItem ? true : false}
+                            />
+                        );
+                    })}
+                </div>
+            </>
+        );
     }
 
     return (

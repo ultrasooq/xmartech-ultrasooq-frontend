@@ -98,10 +98,10 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
   );
 
   return (
-    <div className="group relative bg-white rounded-xl shadow-lg border border-gray-100 hover:shadow-xl hover:border-gray-200 transition-all duration-300 overflow-hidden h-full flex flex-col items-stretch">
+    <div className="group relative bg-white rounded-lg sm:rounded-xl shadow-sm sm:shadow-lg border border-gray-100 hover:shadow-xl hover:border-gray-200 transition-all duration-300 overflow-hidden h-full flex flex-row sm:flex-col items-stretch">
       {/* Product Image Container */}
-      <Link href={`/rfq/${id}`} className="block">
-        <div className="relative w-full h-56 bg-gray-50 overflow-hidden">
+      <Link href={`/rfq/${id}`} className="block w-32 sm:w-full flex-shrink-0">
+        <div className="relative w-full h-40 sm:h-56 bg-gray-50 overflow-hidden">
           <Image
             src={
               productImages?.[0]?.image &&
@@ -111,7 +111,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
             }
             alt="product-image"
             fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            sizes="(max-width: 640px) 128px, (max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             className="object-contain group-hover:scale-105 transition-transform duration-300"
             blurDataURL="/images/product-placeholder.png"
             placeholder="blur"
@@ -120,7 +120,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
       </Link>
 
       {/* Action Buttons */}
-      <div className="absolute top-3 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex gap-2">
+      <div className="absolute top-1 sm:top-3 left-1/2 sm:left-1/2 transform -translate-x-1/2 opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300 flex gap-1 sm:gap-2 scale-75 sm:scale-100">
         <Button
           variant="secondary"
           size="sm"
@@ -152,31 +152,31 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
       </div>
 
       {/* Product Information */}
-      <div className="p-4 space-y-3 flex-1 flex flex-col">
+      <div className="p-2 sm:p-4 space-y-1 sm:space-y-3 flex-1 flex flex-col">
         <Link href={`/rfq/${id}`} className="block group flex-1">
-          <h3 className="font-semibold text-gray-900 text-base leading-tight line-clamp-2 group-hover:text-blue-600 transition-colors duration-200 mb-2" dir={langDir}>
+          <h3 className="font-semibold text-gray-900 text-xs sm:text-base leading-tight line-clamp-2 group-hover:text-blue-600 transition-colors duration-200 mb-1 sm:mb-2" dir={langDir}>
             {productName}
           </h3>
-          <p className="text-gray-600 text-sm line-clamp-1 mb-2" title={shortDescription}>
+          <p className="text-gray-600 text-xs sm:text-sm line-clamp-1 mb-1 sm:mb-2" title={shortDescription}>
             {shortDescription}
           </p>
           
           {/* Rating */}
-          <div className="flex items-center gap-1 mb-2">
-            <div className="flex">
+          <div className="flex items-center gap-1 mb-1 sm:mb-2">
+            <div className="flex scale-75 sm:scale-100 origin-left">
               {calculateRatings(calculateAvgRating)}
             </div>
-            <span className="text-sm text-gray-500 ml-1">
+            <span className="text-xs sm:text-sm text-gray-500 ml-1">
               ({productReview?.length || 0})
             </span>
           </div>
         </Link>
 
         {/* Price Section */}
-        <div className="space-y-2 mb-3">
+        <div className="space-y-1 sm:space-y-2 mb-2 sm:mb-3">
           <div className="space-y-1" suppressHydrationWarning>
             <div className="flex items-center gap-2">
-              <span className="text-lg font-bold text-blue-600" dir={langDir}>
+              <span className="text-sm sm:text-lg font-bold text-blue-600" dir={langDir}>
                 {t("ask_for_price")}
               </span>
             </div>
@@ -184,16 +184,16 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
         </div>
 
         {/* Quantity Section */}
-        <div className="space-y-2 mb-3">
-          <label className="block text-sm font-medium text-gray-700" dir={langDir} translate="no">
+        <div className="space-y-1 sm:space-y-2 mb-2 sm:mb-3">
+          <label className="block text-xs sm:text-sm font-medium text-gray-700" dir={langDir} translate="no">
             {t("quantity")}
           </label>
-          <div className="flex items-center justify-center gap-2">
+          <div className="flex items-center justify-center gap-1 sm:gap-2">
             <Button
               type="button"
               variant="outline"
               size="sm"
-              className="h-8 w-8 rounded-full border-gray-300 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50"
+              className="h-6 w-6 sm:h-8 sm:w-8 rounded-full border-gray-300 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 p-0"
               onClick={() => {
                 setQuantity(quantity - 1);
                 onAdd(quantity - 1, id, "remove", offerPriceFrom, offerPriceTo, productNote || "");
@@ -203,15 +203,15 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
               <Image
                 src="/images/upDownBtn-minus.svg"
                 alt="minus-icon"
-                width={16}
-                height={16}
-                className="opacity-70"
+                width={12}
+                height={12}
+                className="opacity-70 sm:w-4 sm:h-4"
               />
             </Button>
             <input
               type="text"
               value={quantity}
-              className="h-8 w-16 text-center text-sm font-medium border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="h-6 w-12 sm:h-8 sm:w-16 text-center text-xs sm:text-sm font-medium border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               onChange={(e) => {
                 const value = Number(e.target.value);
                 setQuantity(isNaN(value) ? productQuantity : value);
@@ -221,7 +221,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
               type="button"
               variant="outline"
               size="sm"
-              className="h-8 w-8 rounded-full border-gray-300 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50"
+              className="h-6 w-6 sm:h-8 sm:w-8 rounded-full border-gray-300 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 p-0"
               onClick={() => {
                 setQuantity(quantity + 1);
                 onAdd(quantity + 1, id, "add", offerPriceFrom, offerPriceTo, productNote || "");
@@ -230,9 +230,9 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
               <Image
                 src="/images/upDownBtn-plus.svg"
                 alt="plus-icon"
-                width={16}
-                height={16}
-                className="opacity-70"
+                width={12}
+                height={12}
+                className="opacity-70 sm:w-4 sm:h-4"
               />
             </Button>
           </div>
@@ -240,13 +240,13 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
 
         {/* Edit Button */}
         {isCreatedByMe && haveAccessToken ? (
-          <div className="mb-3">
+          <div className="mb-2 sm:mb-3">
             <Button
               type="button"
               variant="outline"
               size="sm"
               onClick={() => onEdit(id)}
-              className="w-full"
+              className="w-full text-xs sm:text-sm h-7 sm:h-9"
               dir={langDir}
               translate="no"
             >
@@ -256,28 +256,30 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
         ) : null}
 
         {/* Cart Button */}
-        <div className="mt-auto pt-3">
+        <div className="mt-auto pt-2 sm:pt-3">
           {isAddedToCart ? (
             <button
               type="button"
-              className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-lg border-2 border-green-200 bg-green-50 text-green-700 font-semibold text-sm transition-all duration-200"
+              className="w-full flex items-center justify-center gap-1 sm:gap-2 py-1.5 sm:py-2 px-2 sm:px-4 rounded-lg border-2 border-green-200 bg-green-50 text-green-700 font-semibold text-xs sm:text-sm transition-all duration-200"
               disabled={false}
               dir={langDir}
               translate="no"
             >
-              <FaCircleCheck color="#10b981" size={16} />
-              {t("added_to_rfq_cart")}
+              <FaCircleCheck color="#10b981" size={14} className="sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline">{t("added_to_rfq_cart")}</span>
+              <span className="sm:hidden">{t("added")}</span>
             </button>
           ) : (
             <button
               type="button"
-              className="w-full bg-linear-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-md disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none text-sm"
+              className="w-full bg-linear-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold py-1.5 sm:py-2 px-2 sm:px-4 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-md disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none text-xs sm:text-sm"
               onClick={() => onAdd(quantity + 1, id, "add", offerPriceFrom, offerPriceTo, productNote || "")}
               disabled={quantity == 0}
               dir={langDir}
               translate="no"
             >
-              {t("add_to_rfq_cart")}
+              <span className="hidden sm:inline">{t("add_to_rfq_cart")}</span>
+              <span className="sm:hidden">{t("add_to_cart")}</span>
             </button>
           )}
         </div>

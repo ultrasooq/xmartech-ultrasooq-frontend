@@ -370,6 +370,7 @@ export const useVendorRecentOrders = (
     status?: string;
     startDate?: string;
     endDate?: string;
+    sellType?: string;
   },
   enabled = true,
 ) =>

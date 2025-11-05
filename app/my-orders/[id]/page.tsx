@@ -17,7 +17,8 @@ import {
   ArrowLeft,
   ShoppingBag,
   FileText,
-  RotateCcw
+  RotateCcw,
+  Copy
 } from "lucide-react";
 import { useOrderById } from "@/apis/queries/orders.queries";
 import { useParams } from "next/navigation";
@@ -40,6 +41,24 @@ const MyOrderDetailsPage = () => {
   const t = useTranslations();
   const { langDir, currency } = useAuth();
   const searchParams = useParams();
+
+  // Safe copy helper for tracking number
+  const copyToClipboard = async (text: string) => {
+    try {
+      if (typeof navigator !== "undefined" && (navigator as any).clipboard && (window as any).isSecureContext) {
+        await (navigator as any).clipboard.writeText(text);
+      } else {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.left = "-9999px";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+      }
+    } catch (_) {}
+  };
 
 
   const orderByIdQuery = useOrderById(
@@ -432,6 +451,43 @@ const MyOrderDetailsPage = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-8">
+                {(() => {
+                  const tracking = (orderDetails as any)?.breakdown?.tracking || (orderDetails as any)?.tracking;
+                  const showTracking = ["SHIPPED", "OFD", "DELIVERED"].includes(orderDetails?.orderProductStatus || "");
+                  if (!showTracking || !tracking) return null;
+                  return (
+                    <div className="mb-8 p-4 rounded-lg border bg-white">
+                      <h4 className="font-semibold text-gray-900 mb-3">Tracking details</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                        <div>
+                          <div className="text-gray-500">Tracking Number</div>
+                          <div className="flex items-center gap-2 font-medium text-gray-900">
+                            <span>{tracking?.trackingNumber || "-"}</span>
+                            {tracking?.trackingNumber ? (
+                              <button type="button" aria-label="Copy tracking" onClick={() => copyToClipboard(String(tracking.trackingNumber))} className="inline-flex items-center px-2 py-1 rounded border text-xs">
+                                <Copy className="h-3 w-3 mr-1" /> Copy
+                              </button>
+                            ) : null}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-gray-500">Carrier</div>
+                          <div className="font-medium text-gray-900">{tracking?.carrier || "-"}</div>
+                        </div>
+                        <div>
+                          <div className="text-gray-500">Added</div>
+                          <div className="font-medium text-gray-900">{tracking?.addedAt ? formattedDate(tracking.addedAt) : "-"}</div>
+                        </div>
+                      </div>
+                      {tracking?.notes ? (
+                        <div className="mt-3 text-sm">
+                          <div className="text-gray-500">Notes</div>
+                          <div className="text-gray-900">{tracking.notes}</div>
+                        </div>
+                      ) : null}
+                    </div>
+                  );
+                })()}
                 <div className="relative">
                   {/* Timeline */}
                   <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gray-200"></div>
@@ -549,6 +605,12 @@ const MyOrderDetailsPage = () => {
                             ? formatDate(orderDetails?.updatedAt)
                             : "Pending"}
                         </p>
+                        {orderDetails?.orderProductStatus === "CANCELLED" && orderDetails?.cancelReason && (
+                          <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+                            <p className="text-xs font-medium text-red-800 mb-1">Cancellation Reason:</p>
+                            <p className="text-sm text-red-700">{orderDetails.cancelReason}</p>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>

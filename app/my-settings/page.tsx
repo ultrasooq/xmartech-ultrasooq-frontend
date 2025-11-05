@@ -1,7 +1,8 @@
+import { redirect } from "next/navigation";
 import React from "react";
 
 const SettingsPage = () => {
-  return <div>My Settings Page</div>;
+  redirect("/my-settings/address");
 };
 
 export default SettingsPage;

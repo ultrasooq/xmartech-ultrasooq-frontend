@@ -317,6 +317,37 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
   const [isQueryModalOpen, setIsQueryModalOpen] = useState(false);
   const handleToggleQueryModal = () => setIsQueryModalOpen(!isQueryModalOpen);
 
+  // Smart header scroll behavior
+  const [showHeader, setShowHeader] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  useEffect(() => {
+    const controlHeader = () => {
+      if (typeof window !== 'undefined') {
+        const currentScrollY = window.scrollY;
+        
+        // Show header when scrolling up or at the top
+        if (currentScrollY < lastScrollY || currentScrollY < 10) {
+          setShowHeader(true);
+        } 
+        // Hide header when scrolling down and past threshold
+        else if (currentScrollY > lastScrollY && currentScrollY > 80) {
+          setShowHeader(false);
+        }
+
+        setLastScrollY(currentScrollY);
+      }
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('scroll', controlHeader);
+
+      return () => {
+        window.removeEventListener('scroll', controlHeader);
+      };
+    }
+  }, [lastScrollY]);
+
   useEffect(() => {
     if (accessToken) {
       setIsLoggedIn(true);
@@ -570,40 +601,403 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
           .me.menu button.inactive-nav-item:hover {
             color: #93c5fd !important;
           }
+          .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+          }
+          .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+          }
         `
       }} />
-      <header
-        className="relative w-full"
-        key={`header-${currentTradeRole}-${currentAccount?.data?.data?.account?.id}`}
-      >
+      
+      {/* Mobile Header - Only visible on mobile screens */}
+      <header className={`block md:hidden bg-dark-cyan w-full shadow-md sticky top-0 z-50 transition-transform duration-300 ${showHeader ? 'translate-y-0' : '-translate-y-full'}`}>
+        <div className="w-full px-3 sm:px-4 py-2 sm:py-2.5">
+          {/* Mobile Top Row */}
+          <div className="flex items-center justify-between mb-2 sm:mb-2.5">
+            {/* Logo and Menu */}
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              {isLoggedIn && (
+                <button
+                  onClick={openSidebar}
+                  className="flex h-8 w-8 items-center justify-center rounded-lg transition-all hover:bg-white/10 active:scale-95"
+                  title="Open Menu"
+                >
+                  <MenuIcon className="h-4 w-4 text-white" />
+                </button>
+              )}
+              <Link href="/home" className="flex items-center">
+                <Image 
+                  src={LogoIcon} 
+                  alt="logo" 
+                  className="h-6 sm:h-7 w-auto"
+                  priority
+                />
+              </Link>
+            </div>
+            
+            {/* User Actions */}
+            <div className="flex items-center gap-2 sm:gap-3">
+              {/* Wishlist */}
+              <Link href="/wishlist" className="relative p-2 rounded-lg hover:bg-white/10 transition-all active:scale-95">
+                <Image
+                  src={WishlistIcon}
+                  height={22}
+                  width={22}
+                  alt="wishlist"
+                  className="h-5 w-5 sm:h-6 sm:w-6"
+                />
+                {wishlistCount.data?.data > 0 && (
+                  <div className="bg-red-500 absolute top-0 right-0 flex h-4 w-4 sm:h-5 sm:w-5 items-center justify-center rounded-full text-[10px] sm:text-xs font-bold text-white shadow-lg">
+                    {wishlistCount.data?.data > 99 ? '99+' : wishlistCount.data?.data}
+                  </div>
+                )}
+              </Link>
+              
+              {/* Cart */}
+              <Link href="/cart" className="relative p-2 rounded-lg hover:bg-white/10 transition-all active:scale-95">
+                <Image
+                  src={CartIcon}
+                  height={22}
+                  width={22}
+                  alt="cart"
+                  className="h-5 w-5 sm:h-6 sm:w-6"
+                />
+                {((hasAccessToken && !isArray(cartCountWithLogin.data?.data) && cartCountWithLogin.data?.data > 0) ||
+                  (!hasAccessToken && !isArray(cartCountWithoutLogin.data?.data) && cartCountWithoutLogin.data?.data > 0)) && (
+                  <div className="bg-red-500 absolute top-0 right-0 flex h-4 w-4 sm:h-5 sm:w-5 items-center justify-center rounded-full text-[10px] sm:text-xs font-bold text-white shadow-lg">
+                    {hasAccessToken
+                      ? !isArray(cartCountWithLogin.data?.data) && cartCountWithLogin.data?.data > 99 
+                        ? '99+' 
+                        : cartCountWithLogin.data?.data
+                      : !isArray(cartCountWithoutLogin.data?.data) && cartCountWithoutLogin.data?.data > 99
+                        ? '99+'
+                        : cartCountWithoutLogin.data?.data}
+                  </div>
+                )}
+              </Link>
+              
+              {/* Profile */}
+              {isLoggedIn ? (
+                <div className="flex items-center">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger className="relative h-9 w-9 sm:h-10 sm:w-10 rounded-full transition-all hover:ring-2 hover:ring-white/30 active:scale-95">
+                      {me?.data?.data?.profilePicture ? (
+                        <Image
+                          src={me?.data?.data?.profilePicture}
+                          alt="image-icon"
+                          height={40}
+                          width={40}
+                          className="h-full w-full rounded-full object-cover border-2 border-white/20"
+                        />
+                      ) : (
+                        <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center border-2 border-white/20 shadow-lg">
+                          <p className="text-xs sm:text-sm font-bold text-white">
+                            {memoizedInitials}
+                          </p>
+                        </div>
+                      )}
+                      {userStatus && userStatus !== "ACTIVE" && (
+                        <div
+                          className={`absolute -top-0.5 -right-0.5 h-3 w-3 sm:h-3.5 sm:w-3.5 rounded-full border-2 border-dark-cyan ${
+                            userStatus === "INACTIVE"
+                              ? "bg-red-500"
+                              : userStatus === "WAITING"
+                                ? "bg-yellow-500"
+                                : userStatus === "REJECT"
+                                  ? "bg-red-600"
+                                  : "bg-gray-500"
+                          }`}
+                        />
+                      )}
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" sideOffset={5} className="w-56">
+                      {userStatus && userStatus !== "ACTIVE" && (
+                        <div className="border-b border-gray-200 px-2 py-1.5 text-xs text-gray-500">
+                          Status:{" "}
+                          <span className="font-medium">{userStatus}</span>
+                        </div>
+                      )}
+                      <Link href={handleProfile()}>
+                        <DropdownMenuItem className="cursor-pointer" translate="no">
+                          {t("profile_information")}
+                        </DropdownMenuItem>
+                      </Link>
+                      
+                      {userStatus === "WAITING" || userStatus === "INACTIVE" ? (
+                        <>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            onClick={handleLogout}
+                            className="cursor-pointer"
+                          >
+                            {t("logout")}
+                          </DropdownMenuItem>
+                        </>
+                      ) : (
+                        <>
+                          {accessControl.canAccessDashboard && (
+                            <Link href="/vendor-dashboard">
+                              <DropdownMenuItem className="cursor-pointer" translate="no">
+                                {t("dashboard")}
+                              </DropdownMenuItem>
+                            </Link>
+                          )}
+                          
+                          {currentTradeRole !== "BUYER" && accessControl.hasFullAccess && (
+                            <>
+                              {hideMenu(PERMISSION_TEAM_MEMBERS) && (
+                                <Link href="/team-members">
+                                  <DropdownMenuItem translate="no">
+                                    {t("team_members")}
+                                  </DropdownMenuItem>
+                                </Link>
+                              )}
+                              {hideMenu(PERMISSION_PRODUCTS) && (
+                                <Link href="/manage-products">
+                                  <DropdownMenuItem translate="no">
+                                    {t("products")}
+                                  </DropdownMenuItem>
+                                </Link>
+                              )}
+                              {hideMenu(PERMISSION_SERVICES) && (
+                                <Link href="/manage-services">
+                                  <DropdownMenuItem translate="no">
+                                    {t("services")}
+                                  </DropdownMenuItem>
+                                </Link>
+                              )}
+                              {hideMenu(PERMISSION_ORDERS) && (
+                                <Link href="/seller-orders">
+                                  <DropdownMenuItem translate="no">
+                                    {t("orders")}
+                                  </DropdownMenuItem>
+                                </Link>
+                              )}
+                              {hideMenu(PERMISSION_RFQ_QUOTES) && (
+                                <Link href="/rfq-quotes">
+                                  <DropdownMenuItem translate="no">
+                                    {t("rfq_quotes")}
+                                  </DropdownMenuItem>
+                                </Link>
+                              )}
+                              {hideMenu(PERMISSION_PRODUCTS) && (
+                                <Link href="/dropship-products">
+                                  <DropdownMenuItem translate="no">
+                                    {t("dropshipping")}
+                                  </DropdownMenuItem>
+                                </Link>
+                              )}
+                              {hideMenu(PERMISSION_RFQ_SELLER_REQUESTS) && (
+                                <Link href="/seller-rfq-request">
+                                  <DropdownMenuItem translate="no">
+                                    {t("rfq_seller_requests")}
+                                  </DropdownMenuItem>
+                                </Link>
+                              )}
+                              {hideMenu(PERMISSION_SELLER_REWARDS) && (
+                                <Link href="/seller-rewards">
+                                  <DropdownMenuItem translate="no">
+                                    {t("seller_rewards")}
+                                  </DropdownMenuItem>
+                                </Link>
+                              )}
+                            </>
+                          )}
+                          
+                          {hideMenu(PERMISSION_SHARE_LINKS) && (
+                            <Link href="/share-links">
+                              <DropdownMenuItem translate="no">
+                                {t("share_links")}
+                              </DropdownMenuItem>
+                            </Link>
+                          )}
+                          
+                          {accessControl.canAccessSettings && (
+                            <Link href="/my-settings/address">
+                              <DropdownMenuItem translate="no">
+                                {t("my_settings")}
+                              </DropdownMenuItem>
+                            </Link>
+                          )}
+                          
+                          {accessControl.canAccessTransactions && (
+                            <Link href="/transactions">
+                              <DropdownMenuItem translate="no">
+                                {t("transactions")}
+                              </DropdownMenuItem>
+                            </Link>
+                          )}
+                          
+                          {accessControl.canAccessQueries && (
+                            <Link href="/queries">
+                              <DropdownMenuItem translate="no">
+                                {t("queries")}
+                              </DropdownMenuItem>
+                            </Link>
+                          )}
+                          
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            onClick={handleLogout}
+                            className="cursor-pointer"
+                          >
+                            {t("logout")}
+                          </DropdownMenuItem>
+                        </>
+                      )}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              ) : (
+                <Link href="/login" className="flex items-center gap-1.5 px-3 py-1.5 bg-white/10 rounded-lg hover:bg-white/20 transition-all active:scale-95">
+                  <Image
+                    src={UnAuthUserIcon}
+                    height={20}
+                    width={20}
+                    alt="login"
+                    className="h-5 w-5"
+                  />
+                  <span className="text-white text-xs sm:text-sm font-medium">Login</span>
+                </Link>
+              )}
+            </div>
+          </div>
+          
+          {/* Mobile Search Bar */}
+          <div className="flex items-center gap-2 mb-2 sm:mb-2.5">
+            <div className="flex-1 relative">
+              <input
+                type="text"
+                className="w-full h-9 sm:h-10 pl-3 pr-10 text-sm sm:text-base rounded-lg border-2 border-white/20 bg-white/95 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-gray-400"
+                placeholder={t("global_search_placeholder")}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyDown={handleKeyDown}
+                translate="no"
+              />
+              <svg className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <button
+              type="button"
+              className="h-9 sm:h-10 px-4 sm:px-5 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white text-sm sm:text-base font-semibold rounded-lg shadow-lg transition-all active:scale-95"
+              onClick={() => updateURL(searchTerm)}
+            >
+              {t("search")}
+            </button>
+          </div>
+          
+          {/* Mobile Navigation Menu - Home, Store, Buygroup, etc. */}
+          <div className="overflow-x-auto scrollbar-hide -mx-3 px-3 sm:-mx-4 sm:px-4 pb-2">
+            <div className="flex items-center gap-1.5 sm:gap-2 min-w-max">
+              <Link
+                href="/home"
+                onClick={() => {
+                  setMenuId(0);
+                  router.push("/home");
+                }}
+                className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg whitespace-nowrap transition-all ${pathname === "/home" ? "bg-white text-blue-600 shadow-md font-semibold" : "text-white bg-white/10 hover:bg-white/20 active:scale-95"}`}
+              >
+                <Image
+                  src={menuBarIconList[0]}
+                  alt={t("home")}
+                  height={18}
+                  width={18}
+                  className="h-4 w-4 sm:h-5 sm:w-5"
+                  style={{
+                    filter: pathname === "/home" ? "brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)" : "none"
+                  }}
+                />
+                <span className="text-xs sm:text-sm font-medium">{t("home")}</span>
+              </Link>
+              {memoizedMenu.map((item: any) => {
+                const getHref = () => {
+                  if (item.name.toLowerCase().includes("store")) return "/trending";
+                  if (item.name.toLowerCase().includes("buy group")) return "/buygroup";
+                  if (item.name.toLowerCase().includes("rfq")) return "/rfq";
+                  if (item.name.toLowerCase().includes("factories")) return "/factories";
+                  if (item.name.toLowerCase().includes("service")) return "/services";
+                  return "/trending";
+                };
+
+                const href = getHref();
+                const isActiveNav = pathname === href || 
+                  (pathname?.startsWith("/trending") && href === "/trending") ||
+                  (pathname?.startsWith("/buygroup") && href === "/buygroup") ||
+                  (pathname?.startsWith("/rfq") && href === "/rfq") ||
+                  (pathname?.startsWith("/factories") && href === "/factories") ||
+                  (pathname?.startsWith("/services") && href === "/services");
+
+                return (
+                  <Link
+                    key={item.id}
+                    href={href}
+                    onClick={() => {
+                      setMenuId(item.id);
+                      if (item.name.toLowerCase().includes("store")) {
+                        router.push("/trending");
+                      } else if (item.name.toLowerCase().includes("buy group")) {
+                        router.push("/buygroup");
+                      } else if (item.name.toLowerCase().includes("rfq")) {
+                        router.push("/rfq");
+                      } else if (item.name.toLowerCase().includes("factories")) {
+                        router.push("/factories");
+                      } else if (item.name.toLowerCase().includes("service")) {
+                        router.push("/services");
+                      }
+                    }}
+                    className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg whitespace-nowrap transition-all ${isActiveNav ? "bg-white text-blue-600 shadow-md font-semibold" : "text-white bg-white/10 hover:bg-white/20 active:scale-95"}`}
+                  >
+                    <Image
+                      src={item.icon}
+                      alt={item?.name}
+                      height={18}
+                      width={18}
+                      className="h-4 w-4 sm:h-5 sm:w-5"
+                      style={{
+                        filter: isActiveNav ? "brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)" : "none"
+                      }}
+                    />
+                    <span className="text-xs sm:text-sm font-medium">{item?.name}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </header>
+      
+      {/* Desktop/Tablet Header - Hidden on mobile */}
+      <header className={`hidden md:block relative w-full shadow-lg sticky top-0 z-50 bg-dark-cyan transition-transform duration-300 ${showHeader ? 'translate-y-0' : '-translate-y-full'}`} key={`header-${currentTradeRole}-${currentAccount?.data?.data?.account?.id}`}>
         <div className="bg-dark-cyan w-full">
-          <div className="w-full px-8 lg:px-12 pt-5">
-            <div className="hidden sm:hidden md:flex md:gap-x-2.5">
-              <div className="py-4 text-sm font-normal text-white md:w-4/12 lg:w-4/12">
-                <p dir={langDir} translate="no">
+          <div className="w-full px-6 md:px-8 lg:px-12 pt-2 md:pt-2.5 lg:pt-3">
+            <div className="hidden md:flex md:gap-x-2.5">
+              <div className="py-1.5 md:py-2 lg:py-2.5 text-xs md:text-sm font-normal text-white/90 md:w-4/12 lg:w-4/12">
+                <p dir={langDir} translate="no" className="hover:text-white transition-colors">
                   {t("welcome")}
                 </p>
               </div>
-              <div className="flex justify-end py-4 text-sm font-normal text-white md:w-8/12 lg:w-8/12">
-                <ul className="flex justify-end">
+              <div className="flex justify-end py-1.5 md:py-2 lg:py-2.5 text-xs md:text-sm font-normal text-white/90 md:w-8/12 lg:w-8/12">
+                <ul className="flex justify-end items-center gap-1">
                   {currentTradeRole != "BUYER" ? (
-                    <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
-                      <a href="#" dir={langDir} translate="no">
+                    <li className="border-r border-solid border-white/30 px-3 text-xs md:text-sm font-normal text-white/90">
+                      <a href="#" dir={langDir} translate="no" className="hover:text-white transition-colors">
                         {t("store_location")}
                       </a>
                     </li>
                   ) : null}
-                  {/* {currentTradeRole === "BUYER" ? ( */}
-                  <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
-                    <Link href="/my-orders" dir={langDir} translate="no">
+                  <li className="border-r border-solid border-white/30 px-3 text-xs md:text-sm font-normal text-white/90">
+                    <Link href="/my-orders" dir={langDir} translate="no" className="hover:text-white transition-colors">
                       {t("track_your_order")}
                     </Link>
                   </li>
-                  {/* ) : null} */}
-                  <li className="border-r border-solid border-white px-2 text-sm font-normal text-white">
+                  <li className="border-r border-solid border-white/30 px-3 text-xs md:text-sm font-normal text-white/90">
                     <select
                       dir={langDir}
-                      className="border-0 bg-transparent text-white focus:outline-none"
+                      className="border-0 bg-transparent text-white/90 hover:text-white focus:outline-none cursor-pointer transition-colors py-1 px-1 rounded"
                       value={selectedCurrency}
                       onChange={(e: any) => {
                         setSelectedCurrency(e.target?.value || "USD");
@@ -617,7 +1011,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                       {currencies.map((item: { code: string }) => {
                         return (
                           <option
-                            className="bg-dark-cyan"
+                            className="bg-dark-cyan text-white"
                             value={item.code}
                             key={item.code}
                           >
@@ -627,11 +1021,11 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                       })}
                     </select>
                   </li>
-                  <li className="google_translate px-2 pr-0 text-sm font-normal text-white">
+                  <li className="google_translate px-3 pr-0 text-xs md:text-sm font-normal text-white/90">
                     <GoogleTranslate />
                     <select
                       dir={langDir}
-                      className="border-0 bg-transparent text-white focus:outline-none"
+                      className="border-0 bg-transparent text-white/90 hover:text-white focus:outline-none cursor-pointer transition-colors py-1 px-1 rounded"
                       value={selectedLocale}
                       onChange={(e) => {
                         setSelectedLocale(e.target.value);
@@ -693,114 +1087,108 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
             </div>
 
             <div className="flex flex-wrap items-center">
-              <div className="order-1 flex w-5/12 flex-1 items-center py-4 md:w-2/12 lg:w-1/6">
-                <div className="flex items-center">
+              <div className="order-1 flex w-5/12 flex-1 items-center py-2 md:py-2.5 md:w-2/12 lg:w-1/6">
+                <div className="flex items-center gap-2">
                   {isLoggedIn && (
                     <button
                       onClick={openSidebar}
-                      className="mr-3 flex h-8 w-8 items-center justify-center rounded transition-colors hover:bg-gray-100"
+                      className="flex h-8 w-8 lg:h-9 lg:w-9 items-center justify-center rounded-lg transition-all hover:bg-white/10 active:scale-95"
                       title="Open Menu"
                     >
-                      <MenuIcon className="h-5 w-5 text-gray-700" />
+                      <MenuIcon className="h-4 w-4 lg:h-5 lg:w-5 text-white" />
                     </button>
                   )}
-                  <Link href="/home" className="flex items-center">
-                    <Image src={LogoIcon} alt="logo" />
+                  <Link href="/home" className="flex items-center hover:opacity-90 transition-opacity">
+                    <Image src={LogoIcon} alt="logo" className="h-7 md:h-8 lg:h-9 w-auto" priority />
                   </Link>
                 </div>
               </div>
-              <div className="order-3 flex w-[80%] items-center py-4 md:order-2 md:w-7/12 md:px-3 lg:w-4/6">
-                {/* <div className="h-11 w-24 md:w-24 lg:w-auto">
-                  <select className="h-full w-full focus:outline-none">
-                    <option>All</option>
-                    <option>Apps & Games</option>
-                    <option>Beauty</option>
-                    <option>Car & Motorbike</option>
-                    <option>Clothing & Accessories</option>
-                    <option>Computers & Accessories</option>
-                    <option>Electronics</option>
-                    <option>Movies & TV Shows</option>
-                  </select>
-                </div> */}
-                <div className="h-11 w-3/4 border-l border-solid border-indigo-200 md:w-5/6">
+              <div className="order-3 flex w-[80%] items-center py-2 md:py-2.5 md:order-2 md:w-7/12 md:px-3 lg:w-4/6 gap-2">
+                <div className="flex-1 relative">
                   <input
                     type="text"
-                    className="form-control h-full w-full p-2.5 text-black focus:outline-none"
+                    className="form-control h-9 md:h-10 w-full pl-4 pr-12 text-sm md:text-base text-black rounded-lg border-2 border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-gray-400"
                     placeholder={t("global_search_placeholder")}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    onKeyDown={handleKeyDown} // Calls search when Enter is pressed
+                    onKeyDown={handleKeyDown}
                     dir={langDir}
                     translate="no"
                   />
+                  <svg className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
                 </div>
-                <div className="h-11 w-1/4 md:w-1/6">
-                  <button
-                    type="button"
-                    className="btn bg-dark-orange h-full w-full text-sm font-semibold text-white"
-                    onClick={() => updateURL(searchTerm)} // Update URL when clicking search
-                    dir={langDir}
-                    translate="no"
-                  >
-                    {t("search")}
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  className="h-9 md:h-10 px-6 md:px-8 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white text-sm md:text-base font-semibold rounded-lg shadow-lg transition-all active:scale-95 whitespace-nowrap"
+                  onClick={() => updateURL(searchTerm)}
+                  dir={langDir}
+                  translate="no"
+                >
+                  {t("search")}
+                </button>
               </div>
-              <div className="order-2 flex w-7/12 justify-end sm:order-2 sm:w-7/12 md:order-3 md:w-3/12 md:py-4 lg:w-1/6">
-                <ul className="flex items-center justify-end gap-x-4">
-                  <li className="relative flex pt-0 pr-1 pb-3 pl-0">
+              <div className="order-2 flex w-7/12 justify-end sm:order-2 sm:w-7/12 md:order-3 md:w-3/12 md:py-2 lg:py-2.5 lg:w-1/6">
+                <ul className="flex items-center justify-end gap-x-3 md:gap-x-4">
+                  <li className="relative">
                     <Link
                       href="/wishlist"
-                      className="flex flex-wrap items-center"
+                      className="flex items-center justify-center p-2 rounded-lg hover:bg-white/10 transition-all active:scale-95 relative"
                     >
                       <Image
                         src={WishlistIcon}
                         height={24}
-                        width={28}
+                        width={24}
                         alt="wishlist"
+                        className="h-6 w-6 md:h-7 md:w-7"
                       />
-                      <div className="bg-dark-orange absolute right-0 bottom-0 flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold text-white">
-                        {wishlistCount.data?.data
-                          ? wishlistCount.data?.data
-                          : 0}
-                      </div>
+                      {wishlistCount.data?.data > 0 && (
+                        <div className="bg-red-500 absolute -top-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold text-white shadow-lg">
+                          {wishlistCount.data?.data > 99 ? '99+' : wishlistCount.data?.data}
+                        </div>
+                      )}
                     </Link>
                   </li>
-                  <li className="relative flex pt-0 pr-1 pb-3 pl-0">
-                    <Link href="/cart" className="flex flex-wrap items-center">
+                  <li className="relative">
+                    <Link href="/cart" className="flex items-center justify-center p-2 rounded-lg hover:bg-white/10 transition-all active:scale-95 relative">
                       <Image
                         src={CartIcon}
-                        height={29}
-                        width={26}
-                        alt="wishlist"
+                        height={24}
+                        width={24}
+                        alt="cart"
+                        className="h-6 w-6 md:h-7 md:w-7"
                       />
-                      <div className="bg-dark-orange absolute right-0 bottom-0 flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold text-white">
-                        {hasAccessToken
-                          ? !isArray(cartCountWithLogin.data?.data)
-                            ? cartCountWithLogin.data?.data
-                            : 0
-                          : !isArray(cartCountWithoutLogin.data?.data)
-                            ? cartCountWithoutLogin.data?.data
-                            : 0}
-                      </div>
+                      {((hasAccessToken && !isArray(cartCountWithLogin.data?.data) && cartCountWithLogin.data?.data > 0) ||
+                        (!hasAccessToken && !isArray(cartCountWithoutLogin.data?.data) && cartCountWithoutLogin.data?.data > 0)) && (
+                        <div className="bg-red-500 absolute -top-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold text-white shadow-lg">
+                          {hasAccessToken
+                            ? !isArray(cartCountWithLogin.data?.data) && cartCountWithLogin.data?.data > 99 
+                              ? '99+' 
+                              : cartCountWithLogin.data?.data
+                            : !isArray(cartCountWithoutLogin.data?.data) && cartCountWithoutLogin.data?.data > 99
+                              ? '99+'
+                              : cartCountWithoutLogin.data?.data}
+                        </div>
+                      )}
                     </Link>
                   </li>
                   <li className="relative flex">
                     {isLoggedIn ? (
                       <div className="flex items-center gap-2">
                         <DropdownMenu>
-                          <DropdownMenuTrigger className="relative h-[44px] w-[44px]">
+                          <DropdownMenuTrigger className="relative h-9 w-9 md:h-10 md:w-10 rounded-full transition-all hover:ring-2 hover:ring-white/30 active:scale-95">
                             {me?.data?.data?.profilePicture ? (
                               <Image
                                 src={me?.data?.data?.profilePicture}
                                 alt="image-icon"
-                                height={44}
-                                width={44}
-                                className="h-full w-full rounded-full object-cover"
+                                height={40}
+                                width={40}
+                                className="h-full w-full rounded-full object-cover border-2 border-white/20 shadow-lg"
                               />
                             ) : (
-                              <div className="h-[44px] w-[44px] rounded-full bg-gray-300">
-                                <p className="p-2 text-lg font-bold">
+                              <div className="h-9 w-9 md:h-10 md:w-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center border-2 border-white/20 shadow-lg">
+                                <p className="text-xs md:text-sm font-bold text-white">
                                   {memoizedInitials}
                                 </p>
                               </div>
@@ -808,7 +1196,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                             {/* Status indicator - only show for non-active users */}
                             {userStatus && userStatus !== "ACTIVE" && (
                               <div
-                                className={`absolute -top-1 -right-1 h-4 w-4 rounded-full border-2 border-white ${
+                                className={`absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full border-2 border-dark-cyan ${
                                   userStatus === "INACTIVE"
                                     ? "bg-red-500"
                                     : userStatus === "WAITING"
@@ -1052,31 +1440,28 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                         </DropdownMenu>
                       </div>
                     ) : (
-                      <div dir={langDir}>
-                        <Image
-                          src={UnAuthUserIcon}
-                          height={28}
-                          width={28}
-                          alt="login-avatar-icon"
-                        />
-                        <div className="flex flex-col">
-                          <Link
-                            href="/login"
-                            className="ml-0 flex cursor-pointer flex-col flex-wrap items-start text-sm font-bold text-white"
-                            dir={langDir}
-                            translate="no"
-                          >
-                            {t("login")}
-                          </Link>
-                          <Link
-                            href="/register"
-                            className="ml-0 flex cursor-pointer flex-col flex-wrap items-start text-sm font-bold text-white"
-                            dir={langDir}
-                            translate="no"
-                          >
-                            {t("register")}
-                          </Link>
-                        </div>
+                      <div dir={langDir} className="flex items-center gap-2">
+                        <Link
+                          href="/login"
+                          className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-all active:scale-95"
+                          translate="no"
+                        >
+                          <Image
+                            src={UnAuthUserIcon}
+                            height={20}
+                            width={20}
+                            alt="login-icon"
+                            className="h-5 w-5"
+                          />
+                          <span className="text-sm font-semibold text-white">{t("login")}</span>
+                        </Link>
+                        <Link
+                          href="/register"
+                          className="flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-lg shadow-lg transition-all active:scale-95"
+                          translate="no"
+                        >
+                          <span className="text-sm font-semibold text-white">{t("register")}</span>
+                        </Link>
                       </div>
                     )}
                   </li>
@@ -1085,7 +1470,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
             </div>
 
             <div
-              className={`me menu h-[44px] w-full px-3 md:flex md:px-0 ${isActive ? "show_menu" : ""}`}
+              className={`me menu h-[36px] w-full px-3 md:flex md:px-0 ${isActive ? "show_menu" : ""}`}
             >
               <div className="close" onClick={handleClick}>
                 <IoCloseOutline />

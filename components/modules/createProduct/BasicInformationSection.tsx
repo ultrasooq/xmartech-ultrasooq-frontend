@@ -71,13 +71,13 @@ type BasicInformationProps = {
 };
 
 const VideoPlayer = ({ item }: { item: any }) => (
-  <video
-    controls
-    style={{
-      objectFit: "contain",
-      width: "100%",
-      height: "100%",
-    }}
+        <video
+          controls
+          style={{
+            objectFit: "contain",
+            width: "100%",
+            height: "100%",
+          }}
   >
     <source
       src={
@@ -229,48 +229,48 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
               <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
               </svg>
-              {t("product_category")}
-            </Label>
-            <Controller
-              name="categoryId"
-              control={formContext.control}
-              render={({ field }) => (
+                        {t("product_category")}
+                      </Label>
+                      <Controller
+                        name="categoryId"
+                        control={formContext.control}
+                        render={({ field }) => (
                 <div className="relative">
-                  <select
-                    {...field}
+                          <select
+                            {...field}
                     className="w-full h-12 px-4 py-3 bg-white border border-gray-300 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 appearance-none cursor-pointer disabled:bg-gray-50 disabled:text-gray-500"
-                    onChange={(e) => {
-                      if (e.target.value === "") {
-                        return;
-                      }
-                      setCurrentId(e.target.value);
-                      setCurrentIndex(0);
+                            onChange={(e) => {
+                              if (e.target.value === "") {
+                                return;
+                              }
+                              setCurrentId(e.target.value);
+                              setCurrentIndex(0);
 
-                      if (listIds[0]) {
-                        let tempIds = listIds;
-                        tempIds[0] = e.target.value;
-                        tempIds = tempIds.slice(0, 1);
+                              if (listIds[0]) {
+                                let tempIds = listIds;
+                                tempIds[0] = e.target.value;
+                                tempIds = tempIds.slice(0, 1);
 
-                        setListIds([...tempIds]);
-                        return;
-                      }
-                      setListIds([...listIds, e.target.value]);
-                    }}
-                    value={catList[0]?.id || ""}
-                  >
-                    <option value="" dir={langDir} translate="no">
-                      {t("select_category")}
-                    </option>
-                    {memoizedCategories.map((item: ISelectOptions) => (
-                      <option
-                        value={item.value?.toString()}
-                        key={item.value}
-                        dir={langDir}
-                      >
-                        {item.label}
-                      </option>
-                    ))}
-                  </select>
+                                setListIds([...tempIds]);
+                                return;
+                              }
+                              setListIds([...listIds, e.target.value]);
+                            }}
+                            value={catList[0]?.id || ""}
+                          >
+                            <option value="" dir={langDir} translate="no">
+                              {t("select_category")}
+                            </option>
+                            {memoizedCategories.map((item: ISelectOptions) => (
+                              <option
+                                value={item.value?.toString()}
+                                key={item.value}
+                                dir={langDir}
+                              >
+                                {item.label}
+                              </option>
+                            ))}
+                          </select>
                   <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                     <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -287,65 +287,65 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                 {formContext.formState.errors["categoryId"]?.message as string}
               </p>
             )}
-          </div>
+                    </div>
 
-          {catList.length > 0
-            ? catList
-              .filter((item) => item.children?.length)
-              .map((item, index) => (
+                    {catList.length > 0
+                      ? catList
+                        .filter((item) => item.children?.length)
+                        .map((item, index) => (
                 <div key={item?.id} className="space-y-3">
                   <Label className="text-sm font-medium text-gray-700 flex items-center gap-2" dir={langDir} translate="no">
                     <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                     </svg>
-                    {t("sub_category")}
-                  </Label>
+                                {t("sub_category")}
+                              </Label>
                   <div className="relative">
-                    <select
+                              <select
                       className="w-full h-12 px-4 py-3 bg-white border border-gray-300 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200 appearance-none cursor-pointer"
-                      onChange={(e) => {
-                        if (e.target.value === "") {
-                          return;
-                        }
+                                onChange={(e) => {
+                                  if (e.target.value === "") {
+                                    return;
+                                  }
 
-                        setCurrentId(e.target.value);
-                        setCurrentIndex(index + 1);
+                                  setCurrentId(e.target.value);
+                                  setCurrentIndex(index + 1);
 
-                        if (listIds[index]) {
-                          let tempIds = listIds;
-                          tempIds[index] = e.target.value;
-                          tempIds = tempIds.slice(0, index + 1);
-                          setListIds([...tempIds]);
-                          return;
-                        }
-                        setListIds([...listIds, e.target.value]);
-                      }}
-                      value={item?.children
-                        ?.find((item: any) =>
-                          listIds.includes(item.id?.toString())
-                            ? item
-                            : "",
-                        )
-                        ?.id?.toString()}
-                    >
-                      <option value="" dir={langDir} translate="no">
-                        {t("select_sub_category")}
-                      </option>
-                      {item?.children?.map((item: any) => (
-                        <option
-                          value={item.id?.toString()}
-                          key={item.id}
-                          dir={langDir}
-                        >
-                          {item.name}
-                        </option>
-                      ))}
-                    </select>
+                                  if (listIds[index]) {
+                                    let tempIds = listIds;
+                                    tempIds[index] = e.target.value;
+                                    tempIds = tempIds.slice(0, index + 1);
+                                    setListIds([...tempIds]);
+                                    return;
+                                  }
+                                  setListIds([...listIds, e.target.value]);
+                                }}
+                                value={item?.children
+                                  ?.find((item: any) =>
+                                    listIds.includes(item.id?.toString())
+                                      ? item
+                                      : "",
+                                  )
+                                  ?.id?.toString()}
+                              >
+                                <option value="" dir={langDir} translate="no">
+                                  {t("select_sub_category")}
+                                </option>
+                                {item?.children?.map((item: any) => (
+                                  <option
+                                    value={item.id?.toString()}
+                                    key={item.id}
+                                    dir={langDir}
+                                  >
+                                    {item.name}
+                                  </option>
+                                ))}
+                              </select>
                     <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                       <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                       </svg>
-                    </div>
+                            </div>
                   </div>
                   {formContext.formState.errors["categoryLocation"] && (
                     <p className="text-sm text-red-500 flex items-center gap-1 mt-1" dir={langDir}>
@@ -355,10 +355,10 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                       {formContext.formState.errors["categoryLocation"]?.message as string}
                     </p>
                   )}
-                </div>
-              ))
-            : null}
-        </div>
+                          </div>
+                        ))
+                      : null}
+                  </div>
       </div>
 
       {/* Product Name Section */}
@@ -373,62 +373,62 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
             </h4>
           </div>
         </div>
-        
-        <ControlledTextInput
-          label={t("product_name")}
-          name="productName"
-          placeholder={t("product_name")}
-          disabled={copy}
-          dir={langDir}
-          translate="no"
-        />
-      </div>
+
+                  <ControlledTextInput
+                    label={t("product_name")}
+                    name="productName"
+                    placeholder={t("product_name")}
+                    disabled={copy}
+                    dir={langDir}
+                    translate="no"
+                  />
+                              </div>
 
       {/* Product Details Section */}
       <div className="space-y-6">
         <div className="flex items-center gap-3 pb-4 border-b border-gray-100">
           <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
             <span className="text-white text-sm font-semibold">3</span>
-          </div>
+                                </div>
           <div>
             <h4 className="text-lg font-semibold text-gray-900">
               {t("product_details")}
             </h4>
-          </div>
-        </div>
+                                </div>
+                              </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <BrandSelect
-            selectedBrandType={formContext.getValues("typeOfProduct")}
-            productType={activeProductType}
-          />
+                    <BrandSelect
+                      selectedBrandType={formContext.getValues("typeOfProduct")}
+                      productType={activeProductType}
+                    />
 
           <div className="space-y-3">
             <Label className="text-sm font-medium text-gray-700 flex items-center gap-2" dir={langDir} translate="no">
               <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              {t("product_condition")}
-            </Label>
-            <Controller
-              name="productCondition"
-              control={formContext.control}
-              render={({ field }) => (
-                <ReactSelect
-                  {...field}
-                  onChange={(newValue) => {
-                    field.onChange(newValue?.value);
-                  }}
-                  options={productConditions()}
-                  value={productConditions().find(
-                    (item: any) => item.value === field.value,
-                  )}
-                  styles={customStyles}
-                  instanceId="productCondition"
-                  placeholder={t("select")}
-                />
-              )}
-            />
+                        {t("product_condition")}
+                      </Label>
+                      <Controller
+                        name="productCondition"
+                        control={formContext.control}
+                        render={({ field }) => (
+                          <ReactSelect
+                            {...field}
+                            onChange={(newValue) => {
+                              field.onChange(newValue?.value);
+                            }}
+                            options={productConditions()}
+                            value={productConditions().find(
+                              (item: any) => item.value === field.value,
+                            )}
+                            styles={customStyles}
+                            instanceId="productCondition"
+                            placeholder={t("select")}
+                          />
+                        )}
+                      />
             {formContext.formState.errors["productCondition"] && (
               <p className="text-sm text-red-500 flex items-center gap-1 mt-1" dir={langDir}>
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -451,21 +451,21 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
             <h4 className="text-lg font-semibold text-gray-900">
               {t("tags")}
             </h4>
-          </div>
-        </div>
-        
-        <AccordionMultiSelectV2
-          label={t("tags")}
-          name="productTagList"
-          options={tagsList || []}
-          placeholder={t("tags")}
-          canCreate={true}
-          createOption={handleCreateTag}
-          error={
-            formContext.formState.errors["productTagList"]
-              ?.message as string
-          }
-        />
+                    </div>
+                  </div>
+
+                  <AccordionMultiSelectV2
+                    label={t("tags")}
+                    name="productTagList"
+                    options={tagsList || []}
+                    placeholder={t("tags")}
+                    canCreate={true}
+                    createOption={handleCreateTag}
+                    error={
+                      formContext.formState.errors["productTagList"]
+                        ?.message as string
+                    }
+                  />
       </div>
 
       {/* Product Images Section */}
@@ -496,7 +496,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                 className="relative group aspect-square rounded-xl border-2 border-gray-200 overflow-hidden bg-gray-50 hover:border-orange-300 transition-colors duration-200"
               >
                 {isImage(item.path) ? (
-                  <Image
+                                              <Image
                     src={typeof item.path === "object" ? URL.createObjectURL(item.path) : item.path}
                     alt="product-image"
                     fill
@@ -520,7 +520,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                     title={t("edit_image")}
                   >
                     <input
-                      type="file"
+                                                type="file"
                       id="editImage"
                       className="hidden"
                       onChange={(e) => {
@@ -543,8 +543,8 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
                   </button>
-                </div>
-              </div>
+                                        </div>
+                                      </div>
             ))}
             
             {/* Add Image Button */}
@@ -555,28 +555,28 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
               >
                 <div className="w-12 h-12 rounded-full bg-gray-100 group-hover:bg-orange-100 flex items-center justify-center mb-2 transition-colors duration-200">
                   <IoMdAdd className="w-6 h-6" />
-                </div>
+                              </div>
                 <span className="text-sm font-medium">{t("add_image")}</span>
                 <span className="text-xs text-gray-400 mt-1">{t("click_to_upload")}</span>
               </label>
               <input
-                type="file"
-                multiple
+                              type="file"
+                              multiple
                 className="hidden"
                 onChange={(e) => {
                   if (e.target.files) {
                     const filesArray = Array.from(e.target.files).map((file) => ({
-                      path: file,
-                      id: uuidv4(),
-                    }));
-                    formContext.setValue(
-                      "productImages",
+                                    path: file,
+                                    id: uuidv4(),
+                                  }));
+                                  formContext.setValue(
+                                    "productImages",
                       [...(formContext.getValues("productImages") || []), ...filesArray],
-                    );
-                  }
-                }}
-                id="productImages"
-                ref={photosRef}
+                                  );
+                                }
+                              }}
+                              id="productImages"
+                              ref={photosRef}
                 accept="image/*,video/*"
               />
             </div>

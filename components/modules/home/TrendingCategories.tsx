@@ -188,93 +188,125 @@ const TrendingCategories: React.FC<TrendingCategoriesProps> = ({
           -ms-overflow-style: none;
           scrollbar-width: none;
         }
+        .category-card {
+          animation: fadeInUp 0.5s ease-out forwards;
+          opacity: 0;
+        }
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
       `}</style>
 
       {/* Main Categories */}
-      <div className="space-y-8">
-        {/* <div className="text-center">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            {t("explore_categories")}
-          </h2>
-          <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-            {t("choose_from_wide_range_of_categories")}
-          </p>
-        </div> */}
-
+      <div className="space-y-6 sm:space-y-8">
         <div className="relative">
-          {/* Scroll Buttons - Show only if more than 5 categories */}
-          {mainCategories.length > 5 && (
-            <>
-              <div className="absolute left-0 top-1/2 -translate-y-1/2 z-20">
-                <button
-                  onClick={() => {
-                    const container = document.getElementById('main-categories-scroll');
-                    if (container) container.scrollBy({ left: -300, behavior: 'smooth' });
-                  }}
-                  className="hidden md:flex items-center justify-center w-12 h-12 rounded-full bg-white/90 backdrop-blur-xs shadow-lg hover:bg-white transition-all duration-300 hover:scale-110"
-                >
-                  <ChevronRight className="h-5 w-5 text-gray-600 rotate-180" />
-                </button>
-              </div>
-              <div className="absolute right-0 top-1/2 -translate-y-1/2 z-20">
-                <button
-                  onClick={() => {
-                    const container = document.getElementById('main-categories-scroll');
-                    if (container) container.scrollBy({ left: 300, behavior: 'smooth' });
-                  }}
-                  className="hidden md:flex items-center justify-center w-12 h-12 rounded-full bg-white/90 backdrop-blur-xs shadow-lg hover:bg-white transition-all duration-300 hover:scale-110"
-                >
-                  <ChevronRight className="h-5 w-5 text-gray-600" />
-                </button>
-              </div>
-            </>
-          )}
-
-          {/* Scrollable Container */}
-          <div 
-            id="main-categories-scroll"
-            className="flex gap-4 overflow-x-auto pb-4 scroll-smooth scrollbar-hide pl-4 pr-8"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-          >
+          {/* Desktop Grid Layout */}
+          <div className="hidden lg:grid lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {mainCategories.map((category: CategoryProps, index: number) => (
-              <div 
-                key={category.id} 
-                className="group relative shrink-0"
+              <button
+                key={category.id}
+                onClick={() => handleMainCategoryClick(category)}
+                className={cn(
+                  "category-card group relative overflow-hidden rounded-2xl bg-white text-center transition-all duration-300 h-40 shadow-md border border-gray-100",
+                  category.children && category.children.length > 0 
+                    ? "hover:shadow-xl hover:-translate-y-1 cursor-pointer" 
+                    : "cursor-default opacity-75"
+                )}
                 style={{ animationDelay: `${index * 50}ms` }}
               >
+                {/* Background Image */}
+                <div className="absolute inset-0 rounded-2xl overflow-hidden">
+                  {renderCategoryBackground(category)}
+                  <div className="absolute inset-0 bg-black/50 group-hover:bg-black/40 transition-colors duration-300" />
+                </div>
+                
+                {/* Content */}
+                <div className="relative z-10 h-full flex flex-col justify-end p-5 text-white">
+                  <h3 className="text-base font-bold mb-2 drop-shadow-lg text-white group-hover:scale-105 transition-transform duration-300">
+                    {category.name}
+                  </h3>
+                  <p className="text-xs text-gray-200 mb-3 drop-shadow-sm">
+                    {category.children?.length || 0} {t("subcategories")}
+                  </p>
+                  
+                  {category.children && category.children.length > 0 && (
+                    <div className="flex justify-center">
+                      <div className="rounded-full p-1.5 bg-white/20 text-white backdrop-blur-sm group-hover:bg-white/30 transition-colors">
+                        {expandedMainCategory === category.id ? (
+                          <ChevronDown className="h-4 w-4" />
+                        ) : (
+                          <ChevronRight className="h-4 w-4" />
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </button>
+            ))}
+          </div>
+
+          {/* Mobile/Tablet Horizontal Scroll */}
+          <div className="lg:hidden relative">
+            {/* Scroll Indicators */}
+            {mainCategories.length > 2 && (
+              <>
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 z-20 pointer-events-none">
+                  <div className="hidden sm:flex items-center justify-center w-10 h-10 rounded-full bg-white/90 shadow-lg">
+                    <ChevronRight className="h-5 w-5 text-gray-600 rotate-180" />
+                  </div>
+                </div>
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 z-20 pointer-events-none">
+                  <div className="hidden sm:flex items-center justify-center w-10 h-10 rounded-full bg-white/90 shadow-lg">
+                    <ChevronRight className="h-5 w-5 text-gray-600" />
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* Scrollable Container */}
+            <div 
+              id="main-categories-scroll"
+              className="flex gap-3 sm:gap-4 overflow-x-auto pb-4 scroll-smooth scrollbar-hide snap-x snap-mandatory"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
+              {mainCategories.map((category: CategoryProps, index: number) => (
                 <button
+                  key={category.id}
                   onClick={() => handleMainCategoryClick(category)}
                   className={cn(
-                    "relative overflow-hidden rounded-2xl border-0 bg-white text-center transition-all duration-300 w-48 h-32 shadow-md",
+                    "category-card group relative shrink-0 snap-start overflow-hidden rounded-2xl bg-white text-center transition-all duration-300 shadow-md border border-gray-100",
+                    "w-40 h-32 sm:w-48 sm:h-36",
                     category.children && category.children.length > 0 
-                      ? "hover:shadow-lg cursor-pointer" 
+                      ? "active:scale-95 cursor-pointer" 
                       : "cursor-default opacity-75"
                   )}
+                  style={{ animationDelay: `${index * 50}ms` }}
                 >
                   {/* Background Image */}
                   <div className="absolute inset-0 rounded-2xl overflow-hidden">
                     {renderCategoryBackground(category)}
-                    {/* Dark Overlay */}
-                    <div className="absolute inset-0 bg-linear-to-t from-black/60 via-black/30 to-black/10" />
+                    <div className="absolute inset-0 bg-black/50 active:bg-black/60 transition-colors duration-200" />
                   </div>
                   
-                  
                   {/* Content */}
-                  <div className="relative z-10 h-full flex flex-col justify-end p-4 text-white">
-                    {/* Category Name */}
-                    <h3 className="text-sm font-bold mb-1 drop-shadow-lg text-white">
+                  <div className="relative z-10 h-full flex flex-col justify-end p-3 sm:p-4 text-white">
+                    <h3 className="text-xs sm:text-sm font-bold mb-1 sm:mb-2 drop-shadow-lg text-white line-clamp-2">
                       {category.name}
                     </h3>
-                    
-                    {/* Subtitle */}
-                    <p className="text-xs text-gray-200 mb-2 drop-shadow-sm">
+                    <p className="text-[10px] sm:text-xs text-gray-200 mb-2 drop-shadow-sm">
                       {category.children?.length || 0} {t("subcategories")}
                     </p>
                     
-                    {/* Expand Indicator */}
                     {category.children && category.children.length > 0 && (
                       <div className="flex justify-center">
-                        <div className="rounded-full p-1 bg-white/20 text-white backdrop-blur-xs">
+                        <div className="rounded-full p-1 bg-white/20 text-white backdrop-blur-sm">
                           {expandedMainCategory === category.id ? (
                             <ChevronDown className="h-3 w-3" />
                           ) : (
@@ -284,24 +316,23 @@ const TrendingCategories: React.FC<TrendingCategoriesProps> = ({
                       </div>
                     )}
                   </div>
-
                 </button>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
       {/* Sub Categories - Show when main category is expanded */}
       {expandedMainCategory && (
-        <div className="mt-12 animate-in slide-in-from-top-4 duration-700">
-          <div className="mb-8 text-center">
-            <div className="inline-flex items-center gap-3 rounded-md bg-gray-100 px-6 py-3">
-              <div className="rounded-full bg-blue-600 p-2">
-                <Grid3X3 className="h-5 w-5 text-white" />
+        <div className="mt-8 sm:mt-12 animate-in slide-in-from-top-4 duration-700">
+          <div className="mb-6 sm:mb-8 flex justify-center">
+            <div className="inline-flex items-center gap-2 sm:gap-3 rounded-xl bg-blue-50 border border-blue-100 px-4 sm:px-6 py-2 sm:py-3 shadow-sm">
+              <div className="rounded-full bg-blue-600 p-1.5 sm:p-2">
+                <Grid3X3 className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
               </div>
               <div className="text-left">
-                <h4 className="text-lg font-bold text-gray-800">
+                <h4 className="text-sm sm:text-lg font-bold text-gray-900">
                   {mainCategories.find((cat: any) => cat.id === expandedMainCategory)?.name}
                 </h4>
               </div>
@@ -309,98 +340,100 @@ const TrendingCategories: React.FC<TrendingCategoriesProps> = ({
                 variant="ghost"
                 size="sm"
                 onClick={() => setExpandedMainCategory(null)}
-                className="ml-2 rounded-full bg-white/50 text-gray-600 hover:bg-white hover:text-gray-800 h-6 w-6 p-1"
+                className="ml-1 sm:ml-2 rounded-full bg-white/70 hover:bg-white text-gray-600 hover:text-gray-900 h-7 w-7 sm:h-8 sm:w-8 p-0 transition-all"
               >
-                <ChevronDown className="h-3 w-3" />
+                <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4" />
               </Button>
             </div>
           </div>
           
-          <div className="relative">
-            {/* Scroll Buttons for Sub Categories - Show only if more than 5 subcategories */}
-            {(() => {
-              const subCategories = mainCategories.find((cat: any) => cat.id === expandedMainCategory)?.children || [];
-              return subCategories.length > 5 && (
-                <>
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 z-20">
-                    <button
-                      onClick={() => {
-                        const container = document.getElementById('sub-categories-scroll');
-                        if (container) container.scrollBy({ left: -250, behavior: 'smooth' });
-                      }}
-                      className="hidden md:flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 shadow-md hover:bg-gray-200 transition-all duration-300"
-                    >
-                      <ChevronRight className="h-4 w-4 text-gray-600 rotate-180" />
-                    </button>
+          {/* Desktop Grid for Subcategories */}
+          <div className="hidden md:grid md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 lg:gap-4">
+            {mainCategories
+              .find((cat: any) => cat.id === expandedMainCategory)
+              ?.children?.map((subCategory: CategoryProps, index: number) => (
+                <button
+                  key={subCategory.id}
+                  onClick={() => handleSubCategoryClick(subCategory, mainCategories.find((cat: any) => cat.id === expandedMainCategory)!)}
+                  className={cn(
+                    "category-card group relative overflow-hidden rounded-xl bg-white text-center transition-all duration-300 h-28 lg:h-32 shadow-md border border-gray-100",
+                    subCategory.children && subCategory.children.length > 0 
+                      ? "hover:shadow-lg hover:-translate-y-0.5 cursor-pointer" 
+                      : "cursor-default opacity-75"
+                  )}
+                  style={{ animationDelay: `${index * 30}ms` }}
+                >
+                  <div className="absolute inset-0 rounded-xl overflow-hidden">
+                    {renderCategoryBackground(subCategory)}
+                    <div className="absolute inset-0 bg-black/60 group-hover:bg-black/50 transition-colors duration-300" />
                   </div>
-                  <div className="absolute right-0 top-1/2 -translate-y-1/2 z-20">
-                    <button
-                      onClick={() => {
-                        const container = document.getElementById('sub-categories-scroll');
-                        if (container) container.scrollBy({ left: 250, behavior: 'smooth' });
-                      }}
-                      className="hidden md:flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 shadow-md hover:bg-gray-200 transition-all duration-300"
-                    >
-                      <ChevronRight className="h-4 w-4 text-gray-600" />
-                    </button>
+                  
+                  <div className="relative z-10 h-full flex flex-col justify-end p-3 text-white">
+                    <h4 className="text-xs lg:text-sm font-semibold mb-2 drop-shadow-lg text-white line-clamp-2">
+                      {subCategory.name}
+                    </h4>
+                    
+                    {subCategory.children && subCategory.children.length > 0 && (
+                      <div className="flex justify-center">
+                        <div className="rounded-full p-1 bg-white/20 text-white backdrop-blur-sm group-hover:bg-white/30 transition-colors">
+                          {expandedSubCategory === subCategory.id ? (
+                            <ChevronDown className="h-3 w-3" />
+                          ) : (
+                            <ChevronRight className="h-3 w-3" />
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
-                </>
-              );
-            })()}
+                </button>
+              ))}
+          </div>
 
-            {/* Scrollable Container */}
+          {/* Mobile Horizontal Scroll for Subcategories */}
+          <div className="md:hidden relative">
             <div 
               id="sub-categories-scroll"
-              className="flex gap-3 overflow-x-auto pb-4 scroll-smooth scrollbar-hide pl-4 pr-8"
+              className="flex gap-3 overflow-x-auto pb-4 scroll-smooth scrollbar-hide snap-x snap-mandatory"
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
               {mainCategories
                 .find((cat: any) => cat.id === expandedMainCategory)
                 ?.children?.map((subCategory: CategoryProps, index: number) => (
-                  <div 
-                    key={subCategory.id} 
-                    className="group shrink-0"
+                  <button
+                    key={subCategory.id}
+                    onClick={() => handleSubCategoryClick(subCategory, mainCategories.find((cat: any) => cat.id === expandedMainCategory)!)}
+                    className={cn(
+                      "category-card group relative shrink-0 snap-start overflow-hidden rounded-xl bg-white text-center transition-all duration-300 shadow-md border border-gray-100",
+                      "w-32 h-24 sm:w-36 sm:h-28",
+                      subCategory.children && subCategory.children.length > 0 
+                        ? "active:scale-95 cursor-pointer" 
+                        : "cursor-default opacity-75"
+                    )}
                     style={{ animationDelay: `${index * 30}ms` }}
                   >
-                    <button
-                      onClick={() => handleSubCategoryClick(subCategory, mainCategories.find((cat: any) => cat.id === expandedMainCategory)!)}
-                      className={cn(
-                        "relative overflow-hidden rounded-xl border-0 bg-white text-center transition-all duration-300 w-36 h-24 shadow-md",
-                        subCategory.children && subCategory.children.length > 0 
-                          ? "hover:shadow-lg cursor-pointer" 
-                          : "cursor-default opacity-75"
-                      )}
-                    >
-                      {/* Background Image */}
-                      <div className="absolute inset-0 rounded-xl overflow-hidden">
-                        {renderCategoryBackground(subCategory)}
-                        {/* Dark Overlay */}
-                        <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/40 to-black/20" />
-                      </div>
+                    <div className="absolute inset-0 rounded-xl overflow-hidden">
+                      {renderCategoryBackground(subCategory)}
+                      <div className="absolute inset-0 bg-black/60 active:bg-black/70 transition-colors duration-200" />
+                    </div>
+                    
+                    <div className="relative z-10 h-full flex flex-col justify-end p-3 text-white">
+                      <h4 className="text-xs font-semibold mb-2 drop-shadow-lg text-white line-clamp-2">
+                        {subCategory.name}
+                      </h4>
                       
-                      {/* Content */}
-                      <div className="relative z-10 h-full flex flex-col justify-end p-3 text-white">
-                        {/* Category Name */}
-                        <h4 className="relative text-xs font-semibold mb-1 drop-shadow-lg text-white">
-                          {subCategory.name}
-                        </h4>
-                        
-                        {/* Expand Indicator */}
-                        {subCategory.children && subCategory.children.length > 0 && (
-                          <div className="relative flex justify-center">
-                            <div className="rounded-full p-0.5 bg-white/20 text-white backdrop-blur-xs">
-                              {expandedSubCategory === subCategory.id ? (
-                                <ChevronDown className="h-2 w-2" />
-                              ) : (
-                                <ChevronRight className="h-2 w-2" />
-                              )}
-                            </div>
+                      {subCategory.children && subCategory.children.length > 0 && (
+                        <div className="flex justify-center">
+                          <div className="rounded-full p-0.5 bg-white/20 text-white backdrop-blur-sm">
+                            {expandedSubCategory === subCategory.id ? (
+                              <ChevronDown className="h-2.5 w-2.5" />
+                            ) : (
+                              <ChevronRight className="h-2.5 w-2.5" />
+                            )}
                           </div>
-                        )}
-                      </div>
-
-                    </button>
-                  </div>
+                        </div>
+                      )}
+                    </div>
+                  </button>
                 ))}
             </div>
           </div>
@@ -409,14 +442,14 @@ const TrendingCategories: React.FC<TrendingCategoriesProps> = ({
 
       {/* Sub-Sub Categories - Show when sub category is expanded */}
       {expandedSubCategory && (
-        <div className="mt-8 animate-in slide-in-from-top-4 duration-500">
-          <div className="mb-6 text-center">
-            <div className="inline-flex items-center gap-3 rounded-md bg-gray-100 px-6 py-3">
-              <div className="rounded-full bg-indigo-600 p-2">
-                <Layers className="h-5 w-5 text-white" />
+        <div className="mt-6 sm:mt-8 animate-in slide-in-from-top-4 duration-500">
+          <div className="mb-4 sm:mb-6 flex justify-center">
+            <div className="inline-flex items-center gap-2 sm:gap-3 rounded-xl bg-purple-50 border border-purple-100 px-4 sm:px-6 py-2 sm:py-3 shadow-sm">
+              <div className="rounded-full bg-purple-600 p-1.5 sm:p-2">
+                <Layers className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
               </div>
               <div className="text-left">
-                <h4 className="text-lg font-bold text-gray-800">
+                <h4 className="text-sm sm:text-lg font-bold text-gray-900">
                   {mainCategories
                     .find((cat: any) => cat.id === expandedMainCategory)
                     ?.children?.find((sub: any) => sub.id === expandedSubCategory)?.name}
@@ -426,90 +459,79 @@ const TrendingCategories: React.FC<TrendingCategoriesProps> = ({
                 variant="ghost"
                 size="sm"
                 onClick={() => setExpandedSubCategory(null)}
-                className="ml-2 rounded-full bg-white/50 text-gray-600 hover:bg-white hover:text-gray-800 h-6 w-6 p-1"
+                className="ml-1 sm:ml-2 rounded-full bg-white/70 hover:bg-white text-gray-600 hover:text-gray-900 h-7 w-7 sm:h-8 sm:w-8 p-0 transition-all"
               >
-                <ChevronDown className="h-3 w-3" />
+                <ChevronDown className="h-3 w-3 sm:h-4 sm:w-4" />
               </Button>
             </div>
           </div>
           
-          <div className="relative">
-            {/* Scroll Buttons for Sub-Sub Categories - Show only if more than 5 sub-subcategories */}
-            {(() => {
-              const subSubCategories = mainCategories
-                .find((cat: any) => cat.id === expandedMainCategory)
-                ?.children?.find((sub: any) => sub.id === expandedSubCategory)
-                ?.children || [];
-              return subSubCategories.length > 5 && (
-                <>
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 z-20">
-                    <button
-                      onClick={() => {
-                        const container = document.getElementById('sub-sub-categories-scroll');
-                        if (container) container.scrollBy({ left: -200, behavior: 'smooth' });
-                      }}
-                      className="hidden md:flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 shadow-md hover:bg-gray-200 transition-all duration-300"
-                    >
-                      <ChevronRight className="h-3 w-3 text-gray-600 rotate-180" />
-                    </button>
+          {/* Desktop Grid for Sub-Sub Categories */}
+          <div className="hidden sm:grid sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-2 lg:gap-3">
+            {mainCategories
+              .find((cat: any) => cat.id === expandedMainCategory)
+              ?.children?.find((sub: any) => sub.id === expandedSubCategory)
+              ?.children?.map((subSubCategory: CategoryProps, index: number) => (
+                <button
+                  key={subSubCategory.id}
+                  onClick={() => handleCategorySelect(
+                    subSubCategory, 
+                    'subsub', 
+                    mainCategories
+                      .find((cat: any) => cat.id === expandedMainCategory)
+                      ?.children?.find((sub: any) => sub.id === expandedSubCategory)
+                  )}
+                  className="category-card group relative overflow-hidden rounded-lg bg-white text-center shadow-md border border-gray-100 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 h-20 lg:h-24"
+                  style={{ animationDelay: `${index * 20}ms` }}
+                >
+                  <div className="absolute inset-0 rounded-lg overflow-hidden">
+                    {renderCategoryBackground(subSubCategory)}
+                    <div className="absolute inset-0 bg-black/60 group-hover:bg-black/50 transition-colors duration-300" />
                   </div>
-                  <div className="absolute right-0 top-1/2 -translate-y-1/2 z-20">
-                    <button
-                      onClick={() => {
-                        const container = document.getElementById('sub-sub-categories-scroll');
-                        if (container) container.scrollBy({ left: 200, behavior: 'smooth' });
-                      }}
-                      className="hidden md:flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 shadow-md hover:bg-gray-200 transition-all duration-300"
-                    >
-                      <ChevronRight className="h-3 w-3 text-gray-600" />
-                    </button>
+                  
+                  <div className="relative z-10 h-full flex flex-col justify-end p-2 text-white">
+                    <h5 className="text-[10px] lg:text-xs font-medium text-white drop-shadow-lg line-clamp-2">
+                      {subSubCategory.name}
+                    </h5>
                   </div>
-                </>
-              );
-            })()}
+                </button>
+              ))}
+          </div>
 
-            {/* Scrollable Container */}
+          {/* Mobile Horizontal Scroll for Sub-Sub Categories */}
+          <div className="sm:hidden relative">
             <div 
               id="sub-sub-categories-scroll"
-              className="flex gap-2 overflow-x-auto pb-4 scroll-smooth scrollbar-hide pl-4 pr-8"
+              className="flex gap-2 overflow-x-auto pb-4 scroll-smooth scrollbar-hide snap-x snap-mandatory"
               style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             >
               {mainCategories
                 .find((cat: any) => cat.id === expandedMainCategory)
                 ?.children?.find((sub: any) => sub.id === expandedSubCategory)
                 ?.children?.map((subSubCategory: CategoryProps, index: number) => (
-                  <div 
-                    key={subSubCategory.id} 
-                    className="group shrink-0"
+                  <button
+                    key={subSubCategory.id}
+                    onClick={() => handleCategorySelect(
+                      subSubCategory, 
+                      'subsub', 
+                      mainCategories
+                        .find((cat: any) => cat.id === expandedMainCategory)
+                        ?.children?.find((sub: any) => sub.id === expandedSubCategory)
+                    )}
+                    className="category-card group relative shrink-0 snap-start overflow-hidden rounded-lg bg-white text-center shadow-md border border-gray-100 transition-all duration-300 active:scale-95 w-24 h-20"
                     style={{ animationDelay: `${index * 20}ms` }}
                   >
-                    <button
-                      onClick={() => handleCategorySelect(
-                        subSubCategory, 
-                        'subsub', 
-                        mainCategories
-                          .find((cat: any) => cat.id === expandedMainCategory)
-                          ?.children?.find((sub: any) => sub.id === expandedSubCategory)
-                      )}
-                      className="relative overflow-hidden rounded-lg border-0 bg-white text-center shadow-md transition-all duration-300 hover:scale-105 hover:shadow-lg w-28 h-20"
-                    >
-                      {/* Background Image */}
-                      <div className="absolute inset-0 rounded-lg overflow-hidden">
-                        {renderCategoryBackground(subSubCategory)}
-                        {/* Dark Overlay */}
-                        <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/40 to-black/20" />
-                      </div>
-                      
-                      {/* Content */}
-                      <div className="relative z-10 h-full flex flex-col justify-end p-2 text-white">
-                        {/* Category Name */}
-                        <h5 className="relative text-xs font-medium text-white drop-shadow-lg">
-                          {subSubCategory.name}
-                        </h5>
-                      </div>
-
-                    </button>
-                  </div>
+                    <div className="absolute inset-0 rounded-lg overflow-hidden">
+                      {renderCategoryBackground(subSubCategory)}
+                      <div className="absolute inset-0 bg-black/60 active:bg-black/70 transition-colors duration-200" />
+                    </div>
+                    
+                    <div className="relative z-10 h-full flex flex-col justify-end p-2 text-white">
+                      <h5 className="text-[10px] font-medium text-white drop-shadow-lg line-clamp-2">
+                        {subSubCategory.name}
+                      </h5>
+                    </div>
+                  </button>
                 ))}
             </div>
           </div>

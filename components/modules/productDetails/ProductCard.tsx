@@ -111,15 +111,15 @@ const ProductCard: React.FC<ProductCardProps> = ({
   );
 
   return (
-    <div className="group relative h-[500px] w-full bg-white p-6 transition-all duration-300 hover:shadow-xl">
+    <div className="relative h-full w-full bg-white p-4">
       <Link href={`/trending/${id}`}>
         {askForPrice !== "true" ? (
           consumerDiscount ? (
-            <div className="absolute right-3 top-3 z-10 inline-flex items-center rounded-full bg-red-500 px-3 py-1.5 text-xs font-bold text-white shadow-lg">
+            <div className="absolute left-2 top-2 z-10 inline-flex items-center bg-red-600 px-2 py-0.5 text-xs font-medium text-white">
               <span>
                 {consumerDiscountType === "PERCENTAGE" 
-                  ? `${consumerDiscount}% OFF` 
-                  : `${currency.symbol}${consumerDiscount} OFF`
+                  ? `-${consumerDiscount}%` 
+                  : `-${currency.symbol}${consumerDiscount}`
                 }
               </span>
             </div>
@@ -127,7 +127,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         ) : null}
         
         {/* Product Image */}
-        <div className="relative mx-auto mb-4 h-48 w-full overflow-hidden rounded-xl bg-gray-50">
+        <div className="relative mx-auto mb-3 h-48 w-full bg-white flex items-center justify-center">
           <Image
             src={
               productImages?.[0]?.image &&
@@ -136,72 +136,91 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 : PlaceholderImage
             }
             alt={productName}
-            className="object-cover transition-transform duration-300 group-hover:scale-110"
+            className="object-contain"
             fill
           />
         </div>
       </Link>
 
       {/* Product Info */}
-      <div className="flex h-[calc(100%-192px)] flex-col justify-between">
-        <div className="flex-1">
-          <Link href={`/trending/${id}`}>
-            <div className="text-center">
-              <h4 className="mb-2 h-12 overflow-hidden text-lg font-bold text-gray-900 transition-colors group-hover:text-orange-600" title={productName}>
-                {productName}
-              </h4>
-              
-              {/* Rating */}
-              <div className="mb-3 flex items-center justify-center gap-1">
-                <div className="flex items-center">
-                  {calculateRatings(calculateAvgRating)}
-                </div>
-                <span className="ml-1 text-sm text-gray-500">({productReview?.length})</span>
-              </div>
-              
-              {/* Price */}
-              <div className="mb-3 h-12 flex items-center justify-center">
-                {askForPrice === "true" ? (
-                  <span className="inline-block rounded-full bg-blue-100 px-4 py-2 text-sm font-semibold text-blue-600">
-                    {t("ask_for_price")}
-                  </span>
-                ) : (
-                  <div className="flex items-center justify-center gap-2">
-                    <span className="text-2xl font-bold text-gray-900">
-                      {currency.symbol}{calculateDiscountedPrice()}
-                    </span>
-                    {productProductPrice && calculateDiscountedPrice() < Number(productProductPrice) && (
-                      <span className="text-lg text-gray-500 line-through">
-                        {currency.symbol}{productProductPrice}
-                      </span>
+      <div className="flex flex-col">
+        <Link href={`/trending/${id}`}>
+          <div>
+            <h4 className="mb-2 line-clamp-2 text-sm text-gray-900" title={productName}>
+              {productName}
+            </h4>
+            
+            {/* Rating */}
+            <div className="mb-2 flex items-center gap-1">
+              <div className="flex items-center">
+                {[...Array(5)].map((_, i) => (
+                  <span key={i}>
+                    {i < calculateAvgRating ? (
+                      <FaStar size={14} color="#FFA41C" />
+                    ) : (
+                      <FaRegStar size={14} color="#FFA41C" />
                     )}
-                  </div>
-                )}
+                  </span>
+                ))}
               </div>
-              
-              {/* Short Description */}
-              <p className="h-10 overflow-hidden text-sm text-gray-600" title={shortDescription}>
+              <span className="text-xs text-blue-600">({productReview?.length})</span>
+            </div>
+            
+            {/* Price */}
+            <div className="mb-2">
+              {askForPrice === "true" ? (
+                <span className="text-sm font-medium text-gray-700">
+                  {t("ask_for_price")}
+                </span>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <span className="text-xl font-medium text-gray-900">
+                    {currency.symbol}{calculateDiscountedPrice()}
+                  </span>
+                  {productProductPrice && calculateDiscountedPrice() < Number(productProductPrice) && (
+                    <span className="text-sm text-gray-500 line-through">
+                      {currency.symbol}{productProductPrice}
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Short Description */}
+            {shortDescription && shortDescription !== "-" && (
+              <p className="mb-2 line-clamp-2 text-xs text-gray-600" title={shortDescription}>
                 {shortDescription}
               </p>
-            </div>
-          </Link>
-        </div>
+            )}
 
-        {/* Action Buttons - Fixed at bottom */}
-        <div className="mt-4 flex items-center justify-center gap-3">
+            {/* Discount Badge */}
+            {askForPrice !== "true" && consumerDiscount && consumerDiscount > 0 && (
+              <div className="mb-2 flex items-center gap-1">
+                <span className="text-xs font-medium text-red-600">
+                  Save {consumerDiscountType === "PERCENTAGE" 
+                    ? `${consumerDiscount}%` 
+                    : `${currency.symbol}${consumerDiscount}`
+                  }
+                </span>
+              </div>
+            )}
+          </div>
+        </Link>
+
+        {/* Action Buttons */}
+        <div className="mt-3 flex items-center gap-2">
           {askForPrice !== "true" ? (
             <Button
               onClick={onAdd}
-              className="flex-1 rounded-full bg-orange-500 px-6 py-2.5 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:bg-orange-600 hover:shadow-xl"
+              className="flex-1 bg-yellow-400 px-4 py-2 text-xs font-medium text-gray-900 hover:bg-yellow-500"
             >
-              <ShoppingIcon className="mr-2 h-4 w-4" />
               {t("add_to_cart")}
             </Button>
           ) : (
             <Link href={`/seller-rfq-request?product_id=${id}`} className="flex-1">
               <button
                 type="button"
-                className="w-full rounded-full bg-blue-500 px-6 py-2.5 text-sm font-semibold text-white shadow-lg transition-all duration-200 hover:bg-blue-600 hover:shadow-xl"
+                className="w-full bg-blue-500 px-4 py-2 text-xs font-medium text-white hover:bg-blue-600"
                 dir={langDir}
                 translate="no"
               >
@@ -210,29 +229,16 @@ const ProductCard: React.FC<ProductCardProps> = ({
             </Link>
           )}
 
-          <Link href={`/trending/${id}`}>
-            <Button
-              variant="outline"
-              className="h-11 w-11 rounded-full border-2 border-gray-200 bg-white shadow-md transition-all duration-200 hover:border-orange-300 hover:bg-orange-50 hover:shadow-lg"
-            >
-              <FiEye className="h-5 w-5 text-gray-600" />
-            </Button>
-          </Link>
-          
           {haveAccessToken ? (
             <Button
               variant="outline"
               onClick={onWishlist}
-              className={`h-11 w-11 rounded-full border-2 shadow-md transition-all duration-200 hover:shadow-lg ${
-                inWishlist 
-                  ? "border-red-200 bg-red-50 hover:border-red-300 hover:bg-red-100" 
-                  : "border-gray-200 bg-white hover:border-red-300 hover:bg-red-50"
-              }`}
+              className="h-9 w-9 border-0 bg-gray-100 p-0 hover:bg-gray-200"
             >
               {inWishlist ? (
-                <FaHeart className="h-5 w-5 text-red-500" />
+                <FaHeart className="h-4 w-4 text-red-500" />
               ) : (
-                <FaRegHeart className="h-5 w-5 text-gray-600" />
+                <FaRegHeart className="h-4 w-4 text-gray-600" />
               )}
             </Button>
           ) : null}

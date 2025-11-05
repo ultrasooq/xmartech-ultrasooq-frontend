@@ -223,6 +223,7 @@ export const fetchVendorRecentOrders = (payload: {
   status?: string;
   startDate?: string;
   endDate?: string;
+  sellType?: string;
 }) => {
   return axios({
     method: "GET",

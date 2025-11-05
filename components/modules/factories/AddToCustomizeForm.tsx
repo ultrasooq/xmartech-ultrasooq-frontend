@@ -29,7 +29,6 @@ import { IoCloseSharp } from "react-icons/io5";
 import ReactPlayer from "react-player";
 import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
-import AddImageContent from "../profile/AddImageContent";
 
 type AddToCustomizeFormProps = {
   selectedProductId?: number;
@@ -348,9 +347,9 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
 
   return (
     <>
-      <div className="modal-header justify-between!">
+      <div className="flex items-center justify-between border-b border-gray-200 pb-4 mb-6 px-6 pt-6">
         <DialogTitle
-          className="text-center text-xl font-bold"
+          className="text-2xl font-bold text-gray-900"
           dir={langDir}
           translate="no"
         >
@@ -358,7 +357,9 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
         </DialogTitle>
         <Button
           onClick={onClose}
-          className="absolute top-2 right-2 z-10 bg-white! text-black! shadow-none"
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 hover:bg-gray-100 rounded-full"
         >
           <IoCloseSharp size={20} />
         </Button>
@@ -366,241 +367,234 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="card-item card-payment-form px-5 pt-3 pb-5"
+          className="space-y-6 px-6 pb-6"
         >
-          <div className="relative mb-4 w-full">
-            <div className="space-y-2">
-              <label
-                className="text-color-dark text-sm leading-none font-medium"
-                dir={langDir}
-                translate="no"
-              >
-                {t("product_image")}
-              </label>
-              <div className="flex w-full flex-wrap">
-                <div className="grid grid-cols-3">
-                  {watchProductImages?.map((item: any, index: number) => (
-                    <FormField
-                      control={form.control}
-                      name="productImages"
-                      key={index}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormControl>
-                            <div className="relative mb-3 w-full px-2">
-                              <div className="relative m-auto flex h-48 w-full flex-wrap items-center justify-center rounded-xl border-2 border-dashed border-gray-300 text-center">
-                                {watchProductImages?.length ? (
-                                  <button
-                                    type="button"
-                                    className="common-close-btn-uploader-s1"
-                                    onClick={() => {
-                                      handleRemovePreviewImage(item?.id);
-                                      if (photosRef.current)
-                                        photosRef.current.value = "";
+          {/* Product Images Section */}
+          <div className="space-y-3">
+            <label
+              className="text-base font-semibold text-gray-900 block"
+              dir={langDir}
+              translate="no"
+            >
+              {t("product_image")}
+            </label>
+            <div className="flex w-full flex-wrap">
+              <div className="grid grid-cols-3 gap-3 w-full">
+                {watchProductImages?.map((item: any, index: number) => (
+                  <FormField
+                    control={form.control}
+                    name="productImages"
+                    key={index}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <div className="relative w-full aspect-square">
+                            <div className="relative w-full h-full rounded-lg border border-gray-200 overflow-hidden bg-gray-50 group">
+                              {watchProductImages?.length ? (
+                                <button
+                                  type="button"
+                                  className="absolute top-2 right-2 z-10 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
+                                  onClick={() => {
+                                    handleRemovePreviewImage(item?.id);
+                                    if (photosRef.current)
+                                      photosRef.current.value = "";
+                                  }}
+                                >
+                                  <IoCloseSharp size={16} />
+                                </button>
+                              ) : null}
+                              {item?.path && isImage(item.path) ? (
+                                <div className="relative w-full h-full">
+                                  <Image
+                                    src={
+                                      typeof item.path === "object"
+                                        ? URL.createObjectURL(item.path)
+                                        : typeof item.path === "string"
+                                          ? item.path
+                                          : "/images/no-image.jpg"
+                                    }
+                                    alt="product-image"
+                                    fill
+                                    className="object-cover"
+                                    priority
+                                  />
+                                  <Input
+                                    type="file"
+                                    accept="image/*"
+                                    multiple={false}
+                                    className="absolute inset-0 w-full h-full cursor-pointer opacity-0"
+                                    onChange={(event) => {
+                                      if (event.target.files) {
+                                        if (
+                                          event.target.files[0].size >
+                                          524288000
+                                        ) {
+                                          toast({
+                                            title: t(
+                                              "one_of_file_should_be_less_than_size",
+                                              { size: "500MB" },
+                                            ),
+                                            variant: "danger",
+                                          });
+                                          return;
+                                        }
+                                        handleEditPreviewImage(
+                                          item?.id,
+                                          event.target.files,
+                                        );
+                                      }
                                     }}
-                                  >
-                                    <Image
-                                      src="/images/close-white.svg"
-                                      alt="close-icon"
-                                      height={22}
-                                      width={22}
-                                    />
-                                  </button>
-                                ) : null}
-                                {item?.path && isImage(item.path) ? (
-                                  <div className="relative h-44">
-                                    <Image
-                                      src={
+                                    id="productImages"
+                                  />
+                                </div>
+                              ) : item?.path && isVideo(item.path) ? (
+                                <div className="relative w-full h-full">
+                                  <div className="relative w-full h-full flex items-center justify-center bg-black">
+                                    <ReactPlayer
+                                      url={
                                         typeof item.path === "object"
                                           ? URL.createObjectURL(item.path)
                                           : typeof item.path === "string"
                                             ? item.path
                                             : "/images/no-image.jpg"
                                       }
-                                      alt="profile"
-                                      fill
-                                      priority
-                                    />
-                                    <Input
-                                      type="file"
-                                      accept="image/*"
-                                      multiple={false}
-                                      className="bottom-0! h-44 w-full! cursor-pointer opacity-0"
-                                      onChange={(event) => {
-                                        if (event.target.files) {
-                                          if (
-                                            event.target.files[0].size >
-                                            524288000
-                                          ) {
-                                            toast({
-                                              title: t(
-                                                "one_of_file_should_be_less_than_size",
-                                                { size: "500MB" },
-                                              ),
-                                              variant: "danger",
-                                            });
-                                            return;
-                                          }
-                                          handleEditPreviewImage(
-                                            item?.id,
-                                            event.target.files,
-                                          );
-                                        }
-                                      }}
-                                      id="productImages"
+                                      width="100%"
+                                      height="100%"
+                                      controls
                                     />
                                   </div>
-                                ) : item?.path && isVideo(item.path) ? (
-                                  <div className="relative h-44">
-                                    <div className="player-wrapper px-2">
-                                      <ReactPlayer
-                                        url={
-                                          typeof item.path === "object"
-                                            ? URL.createObjectURL(item.path)
-                                            : typeof item.path === "string"
-                                              ? item.path
-                                              : "/images/no-image.jpg"
+                                  <Input
+                                    type="file"
+                                    accept="video/*"
+                                    multiple={false}
+                                    className="absolute inset-0 w-full h-full cursor-pointer opacity-0"
+                                    onChange={(event) => {
+                                      if (event.target.files) {
+                                        if (
+                                          event.target.files[0].size >
+                                          524288000
+                                        ) {
+                                          toast({
+                                            title: t(
+                                              "one_of_file_should_be_less_than_size",
+                                              { size: "500MB" },
+                                            ),
+                                            variant: "danger",
+                                          });
+                                          return;
                                         }
-                                        width="100%"
-                                        height="100%"
-                                        // playing
-                                        controls
-                                      />
-                                    </div>
 
-                                    <div className="absolute h-20 w-full p-5">
-                                      <p
-                                        className="rounded-lg border border-gray-300 bg-gray-100 py-2 text-sm font-semibold"
-                                        dir={langDir}
-                                        translate="no"
-                                      >
-                                        {t("upload_video")}
-                                      </p>
-                                    </div>
-                                    <Input
-                                      type="file"
-                                      accept="video/*"
-                                      multiple={false}
-                                      className="bottom-0! h-20 w-full! cursor-pointer opacity-0"
-                                      onChange={(event) => {
-                                        if (event.target.files) {
-                                          if (
-                                            event.target.files[0].size >
-                                            524288000
-                                          ) {
-                                            toast({
-                                              title: t(
-                                                "one_of_file_should_be_less_than_size",
-                                                { size: "500MB" },
-                                              ),
-                                              variant: "danger",
-                                            });
-                                            return;
-                                          }
-
-                                          handleEditPreviewImage(
-                                            item?.id,
-                                            event.target.files,
-                                          );
-                                        }
-                                      }}
-                                      id="productImages"
-                                    />
-                                  </div>
-                                ) : (
-                                  <AddImageContent
-                                    description={t("drop_your_file")}
+                                        handleEditPreviewImage(
+                                          item?.id,
+                                          event.target.files,
+                                        );
+                                      }
+                                    }}
+                                    id="productImages"
                                   />
-                                )}
-                              </div>
+                                </div>
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center p-4">
+                                  <div className="text-center">
+                                    <Image
+                                      src="/images/upload.png"
+                                      className="mb-2 mx-auto opacity-60"
+                                      width={32}
+                                      height={32}
+                                      alt="upload"
+                                    />
+                                    <span className="text-sm text-gray-600 block">{t("drop_your_file")}</span>
+                                  </div>
+                                </div>
+                              )}
                             </div>
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                  ))}
-                  <div className="relative mb-3 w-full pl-2">
-                    <div className="absolute m-auto flex h-48 w-full cursor-pointer flex-wrap items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-white text-center">
-                      <div
-                        className="text-color-dark text-sm leading-4 font-medium"
-                        dir={langDir}
-                      >
-                        <Image
-                          src="/images/plus.png"
-                          className="m-auto mb-3"
-                          alt="camera-icon"
-                          width={29}
-                          height={28}
-                        />
-                        <span translate="no">{t("add_more")}</span>
-                      </div>
+                          </div>
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                ))}
+                <div className="relative w-full aspect-square">
+                  <div className="absolute m-auto flex h-full w-full cursor-pointer flex-wrap items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100 hover:border-blue-400 transition-colors">
+                    <div
+                      className="text-gray-600 text-sm font-medium flex flex-col items-center gap-2"
+                      dir={langDir}
+                    >
+                      <Image
+                        src="/images/plus.png"
+                        className="opacity-60"
+                        alt="add-icon"
+                        width={32}
+                        height={32}
+                      />
+                      <span translate="no">{t("add_more")}</span>
                     </div>
+                  </div>
 
-                    <Input
-                      type="file"
-                      accept="image/*, video/*"
-                      multiple
-                      className="bottom-0! h-48 w-full! cursor-pointer opacity-0"
-                      onChange={(event) =>
-                        // handleFileChanges(event, field, item)
-                        {
-                          if (event.target.files) {
-                            const filesArray = Array.from(event.target.files);
-                            console.log(filesArray);
-                            if (
-                              filesArray.some((file) => file.size > 524288000)
-                            ) {
-                              toast({
-                                title: t(
-                                  "one_of_file_should_be_less_than_size",
-                                  { size: "500MB" },
-                                ),
-                                variant: "danger",
-                              });
-                              return;
-                            }
-
-                            const newImages = filesArray.map((file) => ({
-                              path: file,
-                              id: uuidv4(),
-                            }));
-                            const updatedProductImages = [
-                              ...(watchProductImages || []),
-                              ...newImages,
-                            ];
-
-                            form.setValue(
-                              "productImages",
-                              updatedProductImages,
-                            );
+                  <Input
+                    type="file"
+                    accept="image/*, video/*"
+                    multiple
+                    className="absolute inset-0 w-full h-full cursor-pointer opacity-0"
+                    onChange={(event) =>
+                      {
+                        if (event.target.files) {
+                          const filesArray = Array.from(event.target.files);
+                          if (
+                            filesArray.some((file) => file.size > 524288000)
+                          ) {
+                            toast({
+                              title: t(
+                                "one_of_file_should_be_less_than_size",
+                                { size: "500MB" },
+                              ),
+                              variant: "danger",
+                            });
+                            return;
                           }
+
+                          const newImages = filesArray.map((file) => ({
+                            path: file,
+                            id: uuidv4(),
+                          }));
+                          const updatedProductImages = [
+                            ...(watchProductImages || []),
+                            ...newImages,
+                          ];
+
+                          form.setValue(
+                            "productImages",
+                            updatedProductImages,
+                          );
                         }
                       }
-                      id="productImages"
-                      ref={photosRef}
-                    />
-                  </div>
+                    }
+                    id="productImages"
+                    ref={photosRef}
+                  />
                 </div>
               </div>
-
-              <p className="text-[13px] text-red-500!" dir={langDir}>
-                {!watchProductImages?.length
-                  ? form.formState.errors?.productImages?.message
-                  : ""}
-              </p>
             </div>
+
+            <p className="text-sm text-red-600" dir={langDir}>
+              {!watchProductImages?.length
+                ? form.formState.errors?.productImages?.message
+                : ""}
+            </p>
           </div>
 
+          {/* Note Section */}
           <ControlledTextareaInput
             label={t("write_a_note")}
             name="note"
-            placeholder=""
-            rows={6}
+            placeholder={t("write_a_note")}
+            rows={4}
             dir={langDir}
             translate="no"
           />
 
-          <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
+          {/* Price Range Section */}
+          <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-2">
             <ControlledTextInput
               label={t("offer_price_from")}
               name="fromPrice"
@@ -620,13 +614,14 @@ const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
             />
           </div>
 
+          {/* Submit Button */}
           <Button
             disabled={
               updateForCustomize?.isPending ||
               updateFactoriesCartWithLogin?.isPending
             }
             type="submit"
-            className="theme-primary-btn bg-dark-orange mt-3 h-12 w-full rounded text-center text-lg leading-6 font-bold"
+            className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg text-base transition-colors"
             dir={langDir}
             translate="no"
           >

@@ -189,7 +189,6 @@ const ProductEditForm: React.FC<EditFormProps> = ({
   };
 
   const onSubmit = async (formData: any) => {
-    console.log(formData)
     const updatedFormData = {
       ...formData,
     };

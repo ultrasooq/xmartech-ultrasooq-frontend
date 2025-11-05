@@ -99,25 +99,25 @@ const VendorsSection: React.FC<VendorsSectionProps> = ({
 
   if (isLoading) {
     return (
-      <div className="py-12">
+      <div className="py-6 sm:py-12">
         <div className="w-full">
-          <div className="mb-8">
-            <div className="h-8 w-64 bg-gray-300 rounded animate-pulse mb-4"></div>
-            <div className="h-4 w-96 bg-gray-300 rounded animate-pulse"></div>
+          <div className="mb-4 sm:mb-8">
+            <div className="h-6 w-32 sm:h-8 sm:w-64 bg-gray-300 rounded animate-pulse mb-2 sm:mb-4"></div>
+            <div className="h-3 w-48 sm:h-4 sm:w-96 bg-gray-300 rounded animate-pulse"></div>
           </div>
-          <div className="space-y-8">
+          <div className="space-y-4 sm:space-y-8">
             {Array.from({ length: 3 }).map((_, index) => (
-              <div key={index} className="bg-white rounded-lg shadow-xs p-6">
-                <div className="flex items-center space-x-4 mb-6">
-                  <div className="h-12 w-12 bg-gray-300 rounded-full animate-pulse"></div>
+              <div key={index} className="bg-white rounded-lg shadow-xs p-3 sm:p-6">
+                <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+                  <div className="h-10 w-10 sm:h-12 sm:w-12 bg-gray-300 rounded-full animate-pulse"></div>
                   <div className="space-y-2">
-                    <div className="h-4 w-32 bg-gray-300 rounded animate-pulse"></div>
-                    <div className="h-3 w-24 bg-gray-300 rounded animate-pulse"></div>
+                    <div className="h-3 w-24 sm:h-4 sm:w-32 bg-gray-300 rounded animate-pulse"></div>
+                    <div className="h-2 w-16 sm:h-3 sm:w-24 bg-gray-300 rounded animate-pulse"></div>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                  {Array.from({ length: 6 }).map((_, i) => (
-                    <div key={i} className="h-32 bg-gray-300 rounded animate-pulse"></div>
+                <div className="flex gap-2 sm:gap-4 overflow-x-hidden">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="h-24 w-32 sm:h-32 sm:w-48 bg-gray-300 rounded animate-pulse shrink-0"></div>
                   ))}
                 </div>
               </div>
@@ -130,13 +130,13 @@ const VendorsSection: React.FC<VendorsSectionProps> = ({
 
   if (!vendors.length) {
     return (
-      <div className="py-12">
+      <div className="py-8 sm:py-12">
         <div className="w-full text-center">
-          <Building2 className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+          <Building2 className="h-12 w-12 sm:h-16 sm:w-16 text-gray-400 mx-auto mb-3 sm:mb-4" />
+          <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-1 sm:mb-2">
             {t("no_vendors_found")}
           </h3>
-          <p className="text-gray-600">
+          <p className="text-sm sm:text-base text-gray-600">
             {t("no_vendors_available_description")}
           </p>
         </div>
@@ -148,24 +148,24 @@ const VendorsSection: React.FC<VendorsSectionProps> = ({
     <div className="w-full">
       <div className="w-full">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+        <div className="mb-4 sm:mb-8">
+          <div className="flex flex-col gap-4 sm:gap-6 md:flex-row md:items-center md:justify-between mb-4 sm:mb-6">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1 sm:mb-2">
                 {t("vendors")}
               </h2>
-              <p className="text-gray-600">
+              <p className="text-sm sm:text-base text-gray-600">
                 {t("discover_trusted_vendors_and_their_products")}
               </p>
             </div>
-            <div className="mt-4 md:mt-0">
+            <div className="w-full md:w-auto">
               <div className="relative">
                 <Input
                   type="text"
                   placeholder={t("search_vendors")}
                   value={searchTerm}
                   onChange={(e) => handleSearch(e.target.value)}
-                  className="pl-10 w-64"
+                  className="pl-10 w-full md:w-64"
                   dir={langDir}
                 />
                 <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -177,7 +177,7 @@ const VendorsSection: React.FC<VendorsSectionProps> = ({
         </div>
 
         {/* Vendors with Products */}
-        <div className="space-y-8">
+        <div className="space-y-4 sm:space-y-8">
           {paginatedVendors.map((vendor) => {
             const vendorProducts = productsByVendor[vendor.id] || [];
             
@@ -193,10 +193,10 @@ const VendorsSection: React.FC<VendorsSectionProps> = ({
 
         {/* Pagination Controls */}
         {totalPages > 1 && (
-          <div className="mt-8 flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
+          <div className="mt-4 sm:mt-8 flex flex-col gap-3 sm:gap-0 sm:flex-row items-center justify-between">
             {/* Items per page selector */}
-            <div className="flex items-center space-x-2">
-              <span className="text-sm text-gray-700">
+            <div className="flex items-center space-x-2 text-xs sm:text-sm">
+              <span className="text-gray-700">
                 {t("show")}:
               </span>
               <Select
@@ -206,7 +206,7 @@ const VendorsSection: React.FC<VendorsSectionProps> = ({
                   setCurrentPage(1);
                 }}
               >
-                <SelectTrigger className="w-20">
+                <SelectTrigger className="w-16 h-8 sm:w-20 sm:h-10 text-xs sm:text-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -216,27 +216,27 @@ const VendorsSection: React.FC<VendorsSectionProps> = ({
                   <SelectItem value="12">12</SelectItem>
                 </SelectContent>
               </Select>
-              <span className="text-sm text-gray-700">
+              <span className="text-gray-700">
                 {t("per_page")}
               </span>
             </div>
 
             {/* Pagination info */}
-            <div className="text-sm text-gray-700">
-              {t("showing")} {startIndex + 1} - {Math.min(endIndex, filteredVendors.length)} {t("of")} {filteredVendors.length} {t("vendors")}
+            <div className="text-xs sm:text-sm text-gray-700 order-3 sm:order-2">
+              {t("showing")} {startIndex + 1} - {Math.min(endIndex, filteredVendors.length)} {t("of")} {filteredVendors.length}
             </div>
 
             {/* Pagination buttons */}
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center gap-1 sm:gap-2 order-2 sm:order-3">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setCurrentPage(1)}
                 disabled={currentPage === 1}
-                className="flex items-center space-x-1"
+                className="flex items-center gap-1 h-8 px-2 sm:h-10 sm:px-3"
               >
-                <ChevronsLeft className="h-4 w-4" />
-                <span className="hidden sm:inline">{t("first")}</span>
+                <ChevronsLeft className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline text-xs sm:text-sm">{t("first")}</span>
               </Button>
               
               <Button
@@ -244,33 +244,32 @@ const VendorsSection: React.FC<VendorsSectionProps> = ({
                 size="sm"
                 onClick={() => setCurrentPage(currentPage - 1)}
                 disabled={currentPage === 1}
-                className="flex items-center space-x-1"
+                className="h-8 w-8 sm:h-10 sm:w-10 p-0"
               >
-                <ChevronLeft className="h-4 w-4" />
-                <span className="hidden sm:inline">{t("previous")}</span>
+                <ChevronLeft className="h-3 w-3 sm:h-4 sm:w-4" />
               </Button>
 
               {/* Page numbers */}
-              <div className="flex items-center space-x-1">
-                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              <div className="flex items-center gap-1">
+                {Array.from({ length: Math.min(3, totalPages) }, (_, i) => {
                   let pageNumber;
-                  if (totalPages <= 5) {
+                  if (totalPages <= 3) {
                     pageNumber = i + 1;
-                  } else if (currentPage <= 3) {
+                  } else if (currentPage <= 2) {
                     pageNumber = i + 1;
-                  } else if (currentPage >= totalPages - 2) {
-                    pageNumber = totalPages - 4 + i;
+                  } else if (currentPage >= totalPages - 1) {
+                    pageNumber = totalPages - 2 + i;
                   } else {
-                    pageNumber = currentPage - 2 + i;
+                    pageNumber = currentPage - 1 + i;
                   }
 
                   return (
                     <Button
                       key={pageNumber}
-                      variant={currentPage === pageNumber ? "default" : "outline-solid"}
+                      variant={currentPage === pageNumber ? "default" : "outline"}
                       size="sm"
                       onClick={() => setCurrentPage(pageNumber)}
-                      className="w-8 h-8 p-0"
+                      className="h-8 w-8 sm:h-10 sm:w-10 p-0 text-xs sm:text-sm"
                     >
                       {pageNumber}
                     </Button>
@@ -283,10 +282,9 @@ const VendorsSection: React.FC<VendorsSectionProps> = ({
                 size="sm"
                 onClick={() => setCurrentPage(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className="flex items-center space-x-1"
+                className="h-8 w-8 sm:h-10 sm:w-10 p-0"
               >
-                <span className="hidden sm:inline">{t("next")}</span>
-                <ChevronRight className="h-4 w-4" />
+                <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
               </Button>
               
               <Button
@@ -294,10 +292,10 @@ const VendorsSection: React.FC<VendorsSectionProps> = ({
                 size="sm"
                 onClick={() => setCurrentPage(totalPages)}
                 disabled={currentPage === totalPages}
-                className="flex items-center space-x-1"
+                className="flex items-center gap-1 h-8 px-2 sm:h-10 sm:px-3"
               >
-                <span className="hidden sm:inline">{t("last")}</span>
-                <ChevronsRight className="h-4 w-4" />
+                <span className="hidden sm:inline text-xs sm:text-sm">{t("last")}</span>
+                <ChevronsRight className="h-3 w-3 sm:h-4 sm:w-4" />
               </Button>
             </div>
           </div>
@@ -332,45 +330,45 @@ const VendorWithProducts: React.FC<{
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-xs p-6">
+    <div className="bg-white rounded-lg shadow-xs p-3 sm:p-6">
       {/* Vendor Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center space-x-4">
-          <div className="h-12 w-12 bg-gray-100 rounded-full flex items-center justify-center">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 mb-4 sm:mb-6">
+        <div className="flex items-start sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
+          <div className="h-10 w-10 sm:h-12 sm:w-12 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
             {vendor.profilePicture ? (
               <img
                 src={vendor.profilePicture}
                 alt={vendor.firstName}
-                className="h-12 w-12 rounded-full object-cover"
+                className="h-10 w-10 sm:h-12 sm:w-12 rounded-full object-cover"
               />
             ) : (
-              <Building2 className="h-6 w-6 text-gray-400" />
+              <Building2 className="h-5 w-5 sm:h-6 sm:w-6 text-gray-400" />
             )}
           </div>
-          <div>
-            <h3 className="text-xl font-semibold text-gray-900">
+          <div className="flex-1 min-w-0">
+            <h3 className="text-base sm:text-xl font-semibold text-gray-900 truncate">
               {vendor.firstName} {vendor.lastName}
             </h3>
-            <div className="flex items-center space-x-4 text-sm text-gray-600">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600 mt-1">
               <span className="capitalize">{vendor.tradeRole.toLowerCase()}</span>
-              <div className="flex items-center space-x-1">
-                <Package className="h-4 w-4" />
+              <div className="flex items-center gap-1">
+                <Package className="h-3 w-3 sm:h-4 sm:w-4" />
                 <span>{vendor.productCount} {t("products")}</span>
               </div>
-              <div className="flex items-center space-x-1">
-                <Star className="h-4 w-4 text-yellow-400" />
+              <div className="flex items-center gap-1">
+                <Star className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-400" />
                 <span>{(vendor.averageRating || 0).toFixed(1)}</span>
               </div>
             </div>
             {vendor.businessTypes && vendor.businessTypes.length > 0 && (
-              <div className="flex flex-wrap gap-1 mt-2">
+              <div className="flex flex-wrap gap-1 mt-1 sm:mt-2">
                 {vendor.businessTypes.slice(0, 3).map((type, index) => (
-                  <Badge key={index} variant="secondary" className="text-xs">
+                  <Badge key={index} variant="secondary" className="text-[10px] sm:text-xs">
                     {type}
                   </Badge>
                 ))}
                 {vendor.businessTypes.length > 3 && (
-                  <Badge variant="secondary" className="text-xs">
+                  <Badge variant="secondary" className="text-[10px] sm:text-xs">
                     +{vendor.businessTypes.length - 3}
                   </Badge>
                 )}
@@ -378,9 +376,9 @@ const VendorWithProducts: React.FC<{
             )}
           </div>
         </div>
-        <Button variant="outline" className="flex items-center space-x-2">
+        <Button variant="outline" size="sm" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm whitespace-nowrap w-full sm:w-auto">
           <span>{t("view_products")}</span>
-          <ExternalLink className="h-4 w-4" />
+          <ExternalLink className="h-3 w-3 sm:h-4 sm:w-4" />
         </Button>
       </div>
 
@@ -389,57 +387,86 @@ const VendorWithProducts: React.FC<{
         <div className="relative">
           <div 
             ref={scrollContainerRef}
-            className="flex space-x-4 overflow-x-auto pb-4 scrollbar-hide"
+            className="flex gap-2 sm:gap-4 overflow-x-auto pb-2 sm:pb-4 scrollbar-hide -mx-3 sm:mx-0 px-3 sm:px-0"
             style={{ 
               scrollbarWidth: 'none', 
               msOverflowStyle: 'none'
             }}
           >
             {products.map((product) => (
-              <div key={product.id} className="shrink-0 w-64">
-                <ProductCard
-                  productVariants={[]}
-                  item={product}
-                  onWishlist={() => {}}
-                  inWishlist={false}
-                  haveAccessToken={false}
-                  isInteractive={false}
-                  productQuantity={0}
-                  productVariant={null}
-                  cartId=""
-                  relatedCart={null}
-                  isAddedToCart={false}
-                />
+              <div key={product.id} className="shrink-0 w-48 sm:w-64">
+                <div className="vendor-product-card">
+                  <style jsx global>{`
+                    .vendor-product-card > div {
+                      flex-direction: column !important;
+                    }
+                    .vendor-product-card > div > a {
+                      width: 100% !important;
+                    }
+                    .vendor-product-card > div > a > div.relative {
+                      height: 160px !important;
+                    }
+                    @media (min-width: 640px) {
+                      .vendor-product-card > div > a > div.relative {
+                        height: 192px !important;
+                      }
+                    }
+                    .vendor-product-card div.absolute.z-20.rounded-full {
+                      left: auto !important;
+                      right: 4px !important;
+                      top: 4px !important;
+                    }
+                    @media (min-width: 640px) {
+                      .vendor-product-card div.absolute.z-20.rounded-full {
+                        right: 12px !important;
+                        top: 12px !important;
+                      }
+                    }
+                  `}</style>
+                  <ProductCard
+                    productVariants={[]}
+                    item={product}
+                    onWishlist={() => {}}
+                    inWishlist={false}
+                    haveAccessToken={false}
+                    isInteractive={false}
+                    productQuantity={0}
+                    productVariant={null}
+                    cartId=""
+                    relatedCart={null}
+                    isAddedToCart={false}
+                  />
+                </div>
               </div>
             ))}
           </div>
           
           {/* Scroll Buttons */}
-          {products.length > 3 && (
+          {products.length > 2 && (
             <>
               <Button
                 variant="outline"
                 size="sm"
-                className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-2 bg-white shadow-lg"
+                className="hidden sm:flex absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-2 bg-white shadow-lg h-8 w-8 sm:h-10 sm:w-10 p-0"
                 onClick={() => scroll('left')}
               >
-                <ChevronLeft className="h-4 w-4" />
+                <ChevronLeft className="h-3 w-3 sm:h-4 sm:w-4" />
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-2 bg-white shadow-lg"
+                className="hidden sm:flex absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-2 bg-white shadow-lg h-8 w-8 sm:h-10 sm:w-10 p-0"
                 onClick={() => scroll('right')}
               >
-                <ChevronRight className="h-4 w-4" />
+                <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
               </Button>
             </>
           )}
         </div>
       ) : (
-        <div className="text-center py-8 text-gray-500">
-          <Package className="h-12 w-12 mx-auto mb-2 text-gray-400" />
-          <p>{t("this_vendor_has_no_products_available")}</p>
+        <div className="text-center py-6 sm:py-8 text-gray-500">
+          <Package className="h-8 w-8 sm:h-12 sm:w-12 mx-auto mb-2 text-gray-400" />
+          <p className="text-xs sm:text-sm">{t("this_vendor_has_no_products_available")}</p>
         </div>
       )}
     </div>
