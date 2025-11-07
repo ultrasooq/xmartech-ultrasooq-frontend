@@ -190,39 +190,48 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
   const deleteFromWishlist = useDeleteFromWishList();
 
   const memoizedProducts = useMemo(() => {
-    return (
-      productsQuery.data?.data?.map((item: any) => {
-        return {
-          id: item?.id,
-          productName: item?.productName || "-",
-          productPrice: item?.productPrice || 0,
-          offerPrice: item?.offerPrice || 0,
-          productImage: item?.productImages?.[0]?.image,
-          categoryName: item?.category?.name || "-",
-          skuNo: item?.skuNo,
-          brandName: item?.brand?.brandName || "-",
-          productReview: item?.productReview || [],
-          shortDescription: item?.product_productShortDescription?.length
-            ? item?.product_productShortDescription?.[0]?.shortDescription
-            : "-",
-          status: item?.status || "-",
-          productWishlist: item?.product_wishlist || [],
-          inWishlist: item?.product_wishlist?.find(
-            (ele: any) => ele?.userId === me.data?.data?.id,
-          ),
-          productProductPriceId: item?.product_productPrice?.[0]?.id,
-          productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
-          consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
-          consumerDiscountType:
-            item?.product_productPrice?.[0]?.consumerDiscountType,
-          vendorDiscount: item?.product_productPrice?.[0]?.vendorDiscount,
-          vendorDiscountType:
-            item?.product_productPrice?.[0]?.vendorDiscountType,
-          askForPrice: item?.product_productPrice?.[0]?.askForPrice,
-          productPrices: item?.product_productPrice,
-        };
-      }) || []
-    );
+    const mapped = (productsQuery.data?.data?.map((item: any) => {
+      // Find the active product price entry (status: "ACTIVE")
+      // If no active entry, fall back to the first one
+      const activePriceEntry = item?.product_productPrice?.find(
+        (pp: any) => pp?.status === "ACTIVE"
+      ) || item?.product_productPrice?.[0];
+      
+      const mappedItem = {
+        id: item?.id,
+        productName: item?.productName || "-",
+        productPrice: item?.productPrice || 0,
+        offerPrice: item?.offerPrice || 0,
+        productImage: item?.productImages?.[0]?.image,
+        categoryName: item?.category?.name || "-",
+        skuNo: item?.skuNo,
+        brandName: item?.brand?.brandName || "-",
+        productReview: item?.productReview || [],
+        shortDescription: item?.product_productShortDescription?.length
+          ? item?.product_productShortDescription?.[0]?.shortDescription
+          : "-",
+        status: item?.status || "-",
+        productWishlist: item?.product_wishlist || [],
+        inWishlist: item?.product_wishlist?.find(
+          (ele: any) => ele?.userId === me.data?.data?.id,
+        ),
+        productProductPriceId: activePriceEntry?.id,
+        productProductPrice: activePriceEntry?.offerPrice,
+        consumerDiscount: activePriceEntry?.consumerDiscount,
+        consumerDiscountType: activePriceEntry?.consumerDiscountType,
+        vendorDiscount: activePriceEntry?.vendorDiscount,
+        vendorDiscountType: activePriceEntry?.vendorDiscountType,
+        askForPrice: activePriceEntry?.askForPrice,
+        productPrices: item?.product_productPrice,
+        categoryId: item?.categoryId,
+        categoryLocation: item?.categoryLocation,
+        consumerType: activePriceEntry?.consumerType,
+      };
+      
+      return mappedItem;
+    }) || []);
+    
+    return mapped;
   }, [
     productsQuery.data?.data,
     me.data?.data?.id,
@@ -239,6 +248,12 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
   const memoizedVendorProducts = useMemo(() => {
     return (
       vendorProductsQuery.data?.data?.map((item: any) => {
+        // Find the active product price entry (status: "ACTIVE")
+        // If no active entry, fall back to the first one
+        const activePriceEntry = item?.product_productPrice?.find(
+          (pp: any) => pp?.status === "ACTIVE"
+        ) || item?.product_productPrice?.[0];
+        
         return {
           id: item?.id,
           productName: item?.productName || "-",
@@ -257,16 +272,17 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
           inWishlist: item?.product_wishlist?.find(
             (ele: any) => ele?.userId === me.data?.data?.id,
           ),
-          productProductPriceId: item?.product_productPrice?.[0]?.id,
-          productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
-          consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
-          consumerDiscountType:
-            item?.product_productPrice?.[0]?.consumerDiscountType,
-          vendorDiscount: item?.product_productPrice?.[0]?.vendorDiscount,
-          vendorDiscountType:
-            item?.product_productPrice?.[0]?.vendorDiscountType,
-          askForPrice: item?.product_productPrice?.[0]?.askForPrice,
+          productProductPriceId: activePriceEntry?.id,
+          productProductPrice: activePriceEntry?.offerPrice,
+          consumerDiscount: activePriceEntry?.consumerDiscount,
+          consumerDiscountType: activePriceEntry?.consumerDiscountType,
+          vendorDiscount: activePriceEntry?.vendorDiscount,
+          vendorDiscountType: activePriceEntry?.vendorDiscountType,
+          askForPrice: activePriceEntry?.askForPrice,
           productPrices: item?.product_productPrice,
+          categoryId: item?.categoryId,
+          categoryLocation: item?.categoryLocation,
+          consumerType: activePriceEntry?.consumerType,
         };
       }) || []
     );

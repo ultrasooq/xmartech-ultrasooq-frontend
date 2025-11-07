@@ -24,6 +24,10 @@ import { useAuth } from "@/context/AuthContext";
 import { useClickOutside } from "use-events";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { IoCloseSharp } from "react-icons/io5";
+import { useVendorBusinessCategories } from "@/hooks/useVendorBusinessCategories";
+import { checkCategoryConnection } from "@/utils/categoryConnection";
+import { useCategory } from "@/apis/queries/category.queries";
+import { useCurrentAccount } from "@/apis/queries/auth.queries";
 
 type ProductCardProps = {
   item: TrendingProduct;
@@ -67,34 +71,172 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const t = useTranslations();
   const { user, langDir, currency } = useAuth();
   const language = useLocale(); // Get the current locale (e.g., "en" or "ar")
+  const currentAccount = useCurrentAccount();
+  const vendorBusinessCategoryIds = useVendorBusinessCategories();
 
   const [timeLeft, setTimeLeft] = useState<string | null>(null);
 
   const deviceId = getOrCreateDeviceId() || "";
 
+  // Get the current account's trade role (for multi-account system)
+  const currentTradeRole = currentAccount?.data?.data?.account?.tradeRole || user?.tradeRole;
+
+  // DEBUG: Log vendor business categories
+  if (currentTradeRole && currentTradeRole !== "BUYER") {
+    console.log("🔍 DEBUG ProductCard - Vendor Business Categories:", {
+      productId: item.id,
+      productName: item.productName,
+      currentTradeRole,
+      vendorBusinessCategoryIds: vendorBusinessCategoryIds,
+      vendorBusinessCategoryIdsLength: vendorBusinessCategoryIds.length,
+    });
+  }
+
+  // Fetch product category data to get connections (only if vendor and categoryId exists)
+  const productCategoryQuery = useCategory(
+    item.categoryId?.toString(),
+    !!(currentTradeRole && currentTradeRole !== "BUYER" && item.categoryId)
+  );
+  
+  const categoryConnections = productCategoryQuery?.data?.data?.category_categoryIdDetail || [];
+
+  // DEBUG: Log category query data
+  if (currentTradeRole && currentTradeRole !== "BUYER" && item.categoryId) {
+    console.log("🔍 DEBUG ProductCard - Category Query:", {
+      productId: item.id,
+      productName: item.productName,
+      productCategoryId: item.categoryId,
+      productCategoryLocation: item.categoryLocation,
+      categoryQueryEnabled: !!(currentTradeRole && currentTradeRole !== "BUYER" && item.categoryId),
+      categoryQueryLoading: productCategoryQuery.isLoading,
+      categoryQueryData: productCategoryQuery?.data?.data,
+      categoryConnections: categoryConnections,
+      categoryConnectionsLength: categoryConnections.length,
+    });
+  }
+
+  // Helper function to get the applicable discount for the current user
+  const getApplicableDiscount = () => {
+    // Normalize consumerType to uppercase and handle both "VENDOR" and "VENDORS"
+    const rawConsumerType = item.consumerType || "CONSUMER";
+    const consumerType = typeof rawConsumerType === "string" 
+      ? rawConsumerType.toUpperCase().trim() 
+      : "CONSUMER";
+    
+    // Check if it's a vendor type (VENDOR or VENDORS)
+    const isVendorType = consumerType === "VENDOR" || consumerType === "VENDORS";
+    const isConsumerType = consumerType === "CONSUMER";
+    const isEveryoneType = consumerType === "EVERYONE";
+    
+    // Check if vendor business category matches product category
+    const isCategoryMatch = checkCategoryConnection(
+      vendorBusinessCategoryIds,
+      item.categoryId || 0,
+      item.categoryLocation,
+      categoryConnections
+    );
+
+    // DEBUG: Log category match check
+    console.log("🔍 DEBUG ProductCard - Category Match Check:", {
+      productId: item.id,
+      productName: item.productName,
+      vendorBusinessCategoryIds: vendorBusinessCategoryIds,
+      productCategoryId: item.categoryId,
+      productCategoryLocation: item.categoryLocation,
+      categoryConnections: categoryConnections,
+      isCategoryMatch: isCategoryMatch,
+      categoryConnectionsDetails: categoryConnections.map((conn: any) => ({
+        connectTo: conn.connectTo,
+        connectToId: conn.connectToId,
+        connectToDetail: conn.connectToDetail,
+      })),
+    });
+    
+    let discount = 0;
+    let discountType: string | undefined;
+    
+    // Apply discount logic based on your table
+    // IMPORTANT: Category match is ALWAYS required for vendor discounts, regardless of consumerType
+    if (currentTradeRole && currentTradeRole !== "BUYER") {
+      // VENDOR user
+      if (isVendorType || isEveryoneType) {
+        // consumerType is VENDOR/VENDORS or EVERYONE - vendor can get vendor discount
+        // BUT category match is REQUIRED for vendor discounts
+        if (isCategoryMatch) {
+          // Same relation - Vendor gets vendor discount if available
+          if (item.vendorDiscount && item.vendorDiscount > 0) {
+            discount = item.vendorDiscount;
+            discountType = item.vendorDiscountType;
+          } else {
+            // No vendor discount available, no discount
+            discount = 0;
+          }
+        } else {
+          // Not same relation - No vendor discount
+          // If consumerType is EVERYONE, fallback to consumer discount
+          if (isEveryoneType) {
+            discount = item.consumerDiscount || 0;
+            discountType = item.consumerDiscountType;
+          } else {
+            // consumerType is VENDOR/VENDORS but no category match - no discount
+            discount = 0;
+          }
+        }
+      } else {
+        // consumerType is CONSUMER - vendors get no discount
+        discount = 0;
+      }
+    } else {
+      // CONSUMER (BUYER) - Gets consumer discount if consumerType is CONSUMER or EVERYONE
+      // NO discount if consumerType is VENDOR or VENDORS
+      if (isConsumerType || isEveryoneType) {
+        discount = item.consumerDiscount || 0;
+        discountType = item.consumerDiscountType;
+      } else {
+        // consumerType is VENDOR/VENDORS - no discount for buyers
+        discount = 0;
+      }
+    }
+
+    // DEBUG: Log final discount calculation
+    console.log("✅ DEBUG ProductCard - Final Discount Calculation:", {
+      productId: item.id,
+      productName: item.productName,
+      currentTradeRole,
+      consumerType: rawConsumerType,
+      normalizedConsumerType: consumerType,
+      isVendorType,
+      isConsumerType,
+      isEveryoneType,
+      isCategoryMatch,
+      vendorDiscount: item.vendorDiscount,
+      vendorDiscountType: item.vendorDiscountType,
+      consumerDiscount: item.consumerDiscount,
+      consumerDiscountType: item.consumerDiscountType,
+      finalDiscount: discount,
+      finalDiscountType: discountType,
+    });
+    
+    return { discount, discountType };
+  };
+
   const calculateDiscountedPrice = () => {
     const price = item.productProductPrice
       ? Number(item.productProductPrice)
       : 0;
-    let discount = item.consumerDiscount || 0;
-    let discountType = item.consumerDiscountType;
     
-    // For non-BUYER users, try vendor discount first, but fall back to consumer discount if vendor discount is not available
-    if (user?.tradeRole && user?.tradeRole != "BUYER") {
-      if (item.vendorDiscount && item.vendorDiscount > 0) {
-        discount = item.vendorDiscount;
-        discountType = item.vendorDiscountType;
+    const { discount, discountType } = getApplicableDiscount();
+    
+    // Calculate final price
+    if (discount > 0 && discountType) {
+      if (discountType === "PERCENTAGE") {
+        return Number((price - (price * discount) / 100).toFixed(2));
+      } else if (discountType === "FLAT") {
+        return Number((price - discount).toFixed(2));
       }
-      // If vendor discount is not available, keep using consumer discount
     }
     
-    if (discountType == "PERCENTAGE") {
-      return Number((price - (price * discount) / 100).toFixed(2));
-    } else if (discountType == "FLAT") {
-      return Number((price - discount).toFixed(2));
-    }
-    // Default fallback for any other discount type
-    return Number((price - discount).toFixed(2));
+    return price;
   };
 
   const calculateAvgRating = useMemo(() => {
@@ -545,15 +687,18 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
       {/* Product Image Container */}
       <Link href={`/trending/${item.id}`} className="block sm:w-full w-32 flex-shrink-0">
-        {/* Discount Badge */}
-        {item?.askForPrice !== "true" && item.consumerDiscount ? (
-          <div className="absolute right-auto left-1 sm:right-3 sm:left-auto top-20 sm:top-12 z-20 bg-linear-to-r from-orange-500 to-red-500 text-white px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-bold shadow-lg">
-            {item.consumerDiscountType === "PERCENTAGE" 
-              ? `${item.consumerDiscount}%` 
-              : `${currency.symbol}${item.consumerDiscount}`
-            }
-          </div>
-        ) : null}
+        {/* Discount Badge - Only show if user is eligible for discount */}
+        {(() => {
+          const { discount, discountType } = getApplicableDiscount();
+          return item?.askForPrice !== "true" && discount > 0 && discountType ? (
+            <div className="absolute right-auto left-1 sm:right-3 sm:left-auto top-20 sm:top-12 z-20 bg-linear-to-r from-orange-500 to-red-500 text-white px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-bold shadow-lg">
+              {discountType === "PERCENTAGE" 
+                ? `${discount}%` 
+                : `${currency.symbol}${discount}`
+              }
+            </div>
+          ) : null;
+        })()}
 
         <div className="relative w-full h-full sm:h-48 lg:h-56 bg-gray-50 overflow-hidden min-h-[140px]">
           <Image

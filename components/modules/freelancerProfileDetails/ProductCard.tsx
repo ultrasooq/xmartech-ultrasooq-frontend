@@ -27,6 +27,10 @@ import {
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { IoCloseSharp } from "react-icons/io5";
 import { useClickOutside } from "use-events";
+import { useVendorBusinessCategories } from "@/hooks/useVendorBusinessCategories";
+import { checkCategoryConnection } from "@/utils/categoryConnection";
+import { useCategory } from "@/apis/queries/category.queries";
+import { useCurrentAccount } from "@/apis/queries/auth.queries";
 
 type ProductCardProps = {
   item: TrendingProduct;
@@ -57,6 +61,19 @@ const ProductCard: React.FC<ProductCardProps> = ({
 }) => {
   const t = useTranslations();
   const { user, langDir, currency } = useAuth();
+  const currentAccount = useCurrentAccount();
+  const vendorBusinessCategoryIds = useVendorBusinessCategories();
+
+  // Get the current account's trade role (for multi-account system)
+  const currentTradeRole = currentAccount?.data?.data?.account?.tradeRole || user?.tradeRole;
+
+  // Fetch product category data to get connections (only if vendor and categoryId exists)
+  const productCategoryQuery = useCategory(
+    item.categoryId?.toString(),
+    !!(currentTradeRole && currentTradeRole !== "BUYER" && item.categoryId)
+  );
+  
+  const categoryConnections = productCategoryQuery?.data?.data?.category_categoryIdDetail || [];
 
   const [productVariantTypes, setProductVariantTypes] = useState<string[]>([]);
   const [quantity, setQuantity] = useState<number>(cartQuantity);
@@ -102,29 +119,85 @@ const ProductCard: React.FC<ProductCardProps> = ({
     }
   }, [productVariants.length, productVariant]);
 
+  // Helper function to get the applicable discount for the current user
+  const getApplicableDiscount = () => {
+    // Normalize consumerType to uppercase and handle both "VENDOR" and "VENDORS"
+    const rawConsumerType = item.consumerType || "CONSUMER";
+    const consumerType = typeof rawConsumerType === "string" 
+      ? rawConsumerType.toUpperCase().trim() 
+      : "CONSUMER";
+    
+    // Check if it's a vendor type (VENDOR or VENDORS)
+    const isVendorType = consumerType === "VENDOR" || consumerType === "VENDORS";
+    const isConsumerType = consumerType === "CONSUMER";
+    const isEveryoneType = consumerType === "EVERYONE";
+    
+    // Check if vendor business category matches product category
+    const isCategoryMatch = checkCategoryConnection(
+      vendorBusinessCategoryIds,
+      item.categoryId || 0,
+      item.categoryLocation,
+      categoryConnections
+    );
+    
+    let discount = 0;
+    let discountType: string | undefined;
+    
+    // Apply discount logic based on your table
+    if (currentTradeRole && currentTradeRole !== "BUYER") {
+      // VENDOR (V) or EVERYONE (E) as vendor
+      if (isCategoryMatch) {
+        // Same relation - Vendor gets vendor discount
+        if (item.vendorDiscount && item.vendorDiscount > 0) {
+          discount = item.vendorDiscount;
+          discountType = item.vendorDiscountType;
+        } else {
+          // No vendor discount available, no discount
+          discount = 0;
+        }
+      } else {
+        // Not same relation
+        if (isEveryoneType) {
+          // E + Not Same relation → Consumer Discount
+          discount = item.consumerDiscount || 0;
+          discountType = item.consumerDiscountType;
+        } else {
+          // VENDORS or CONSUMER + Not Same relation → No Discount
+          discount = 0;
+        }
+      }
+    } else {
+      // CONSUMER (BUYER) - Gets consumer discount if consumerType is CONSUMER or EVERYONE
+      // NO discount if consumerType is VENDOR or VENDORS
+      if (isConsumerType || isEveryoneType) {
+        discount = item.consumerDiscount || 0;
+        discountType = item.consumerDiscountType;
+      } else {
+        // consumerType is VENDOR/VENDORS - no discount for buyers
+        discount = 0;
+      }
+    }
+    
+    return { discount, discountType };
+  };
+
   const calculateDiscountedPrice = () => {
     const price = item.productProductPrice
       ? Number(item.productProductPrice)
       : 0;
-    let discount = item.consumerDiscount || 0;
-    let discountType = item.consumerDiscountType;
     
-    // For non-BUYER users, try vendor discount first, but fall back to consumer discount if vendor discount is not available
-    if (user?.tradeRole && user?.tradeRole != "BUYER") {
-      if (item.vendorDiscount && item.vendorDiscount > 0) {
-        discount = item.vendorDiscount;
-        discountType = item.vendorDiscountType;
+    const { discount, discountType } = getApplicableDiscount();
+    
+    // Calculate final price
+    if (discount > 0 && discountType) {
+      if (discountType === "PERCENTAGE") {
+        return Number((price - (price * discount) / 100).toFixed(2));
+      } else if (discountType === "FLAT") {
+        return Number((price - discount).toFixed(2));
       }
-      // If vendor discount is not available, keep using consumer discount
     }
     
-    if (discountType == "PERCENTAGE") {
-      return Number((price - (price * discount) / 100).toFixed(2));
-    } else if (discountType == "FLAT") {
-      return Number((price - discount).toFixed(2));
-    }
-    // Default fallback for any other discount type
-    return Number((price - discount).toFixed(2));
+    return price;
   };
 
   const calculateAvgRating = useMemo(() => {
@@ -342,18 +415,19 @@ const ProductCard: React.FC<ProductCardProps> = ({
     >
       <div className="product-list-s1-box relative cursor-pointer ">
         <Link href={`/trending/${item.id}`}>
-          {item?.askForPrice !== "true" ? (
-            item.consumerDiscount ? (
+          {(() => {
+            const { discount, discountType } = getApplicableDiscount();
+            return item?.askForPrice !== "true" && discount > 0 && discountType ? (
               <div className="absolute right-2.5 top-2.5 z-10 inline-block rounded bg-dark-orange px-2 py-1.5 text-xs font-medium capitalize leading-5 text-white">
                 <span>
-                  {item.consumerDiscountType === "PERCENTAGE" 
-                    ? `${item.consumerDiscount || 0}%` 
-                    : `${currency.symbol}${item.consumerDiscount || 0}`
+                  {discountType === "PERCENTAGE" 
+                    ? `${discount}%` 
+                    : `${currency.symbol}${discount}`
                   }
                 </span>
               </div>
-            ) : null
-          ) : null}
+            ) : null;
+          })()}
           <div className="relative mx-auto mb-4 h-[110px] w-full md:h-36 xl:w-36">
             <Image
               src={
@@ -453,10 +527,15 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <h5 className="py-1 text-[#1D77D1]">
               {currency.symbol}
               {calculateDiscountedPrice()}{" "}
-              <span className="text-gray-500 line-through!">
-                {currency.symbol}
-                {item.productProductPrice}
-              </span>
+              {(() => {
+                const { discount } = getApplicableDiscount();
+                return discount > 0 && item.productProductPrice && Number(item.productProductPrice) > calculateDiscountedPrice() && (
+                  <span className="text-gray-500 line-through!">
+                    {currency.symbol}
+                    {item.productProductPrice}
+                  </span>
+                );
+              })()}
             </h5>
           </Link>
         )}

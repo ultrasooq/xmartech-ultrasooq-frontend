@@ -16,6 +16,10 @@ import { useAuth } from "@/context/AuthContext";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { IoCloseSharp } from "react-icons/io5";
 import { useClickOutside } from "use-events";
+import { useVendorBusinessCategories } from "@/hooks/useVendorBusinessCategories";
+import { checkCategoryConnection } from "@/utils/categoryConnection";
+import { useCategory } from "@/apis/queries/category.queries";
+import { useCurrentAccount } from "@/apis/queries/auth.queries";
 
 type RfqProductCardProps = {
   id: number;
@@ -38,6 +42,9 @@ type RfqProductCardProps = {
   inWishlist?: boolean;
   haveAccessToken: boolean;
   productPrices?: any[];
+  categoryId?: number;
+  categoryLocation?: string;
+  consumerType?: "CONSUMER" | "VENDORS" | "EVERYONE";
 };
 
 const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
@@ -59,9 +66,25 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
   inWishlist,
   haveAccessToken,
   productPrices,
+  categoryId,
+  categoryLocation,
+  consumerType,
 }) => {
   const t = useTranslations();
   const { user, langDir, currency } = useAuth();
+  const currentAccount = useCurrentAccount();
+  const vendorBusinessCategoryIds = useVendorBusinessCategories();
+
+  // Get the current account's trade role (for multi-account system)
+  const currentTradeRole = currentAccount?.data?.data?.account?.tradeRole || user?.tradeRole;
+  
+  // Fetch product category data to get connections (only if vendor and categoryId exists)
+  const productCategoryQuery = useCategory(
+    categoryId?.toString(),
+    !!(currentTradeRole && currentTradeRole !== "BUYER" && categoryId)
+  );
+  
+  const categoryConnections = productCategoryQuery?.data?.data?.category_categoryIdDetail || [];
   const [productVariantTypes, setProductVariantTypes] = useState<string[]>([]);
   const [quantity, setQuantity] = useState(0);
   const [selectedProductVariant, setSelectedProductVariant] = useState<any>(productVariant);
@@ -305,49 +328,102 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
     setIsConfirmDialogOpen(false);
   };
 
-  const calculateDiscountedPrice = () => {
-    const price = productPrices?.[0]?.offerPrice ? Number(productPrices[0]?.offerPrice) : 0;
-    let discount = productPrices?.[0]?.consumerDiscount || 0;
-    let discountType = productPrices?.[0]?.consumerDiscountType;
+  // Helper function to get the applicable discount for the current user
+  const getApplicableDiscount = () => {
+    // Normalize consumerType to uppercase and handle both "VENDOR" and "VENDORS"
+    const rawConsumerType = consumerType || productPrices?.[0]?.consumerType || "CONSUMER";
+    const productConsumerType = typeof rawConsumerType === "string" 
+      ? rawConsumerType.toUpperCase().trim() 
+      : "CONSUMER";
     
-    // For non-BUYER users, try vendor discount first, but fall back to consumer discount if vendor discount is not available
-    if (user?.tradeRole && user?.tradeRole != 'BUYER') {
-      if (productPrices?.[0]?.vendorDiscount && productPrices?.[0]?.vendorDiscount > 0) {
-        discount = productPrices?.[0]?.vendorDiscount;
-        discountType = productPrices?.[0]?.vendorDiscountType;
+    // Check if it's a vendor type (VENDOR or VENDORS)
+    const isVendorType = productConsumerType === "VENDOR" || productConsumerType === "VENDORS";
+    const isConsumerType = productConsumerType === "CONSUMER";
+    const isEveryoneType = productConsumerType === "EVERYONE";
+    
+    // Check if vendor business category matches product category
+    const isCategoryMatch = checkCategoryConnection(
+      vendorBusinessCategoryIds,
+      categoryId || 0,
+      categoryLocation,
+      categoryConnections
+    );
+    
+    let discount = 0;
+    let discountType: string | undefined;
+    
+    // Apply discount logic based on your table
+    if (currentTradeRole && currentTradeRole !== "BUYER") {
+      // VENDOR (V) or EVERYONE (E) as vendor
+      if (isCategoryMatch) {
+        // Same relation - Vendor gets vendor discount
+        if (productPrices?.[0]?.vendorDiscount && productPrices?.[0]?.vendorDiscount > 0) {
+          discount = productPrices?.[0]?.vendorDiscount;
+          discountType = productPrices?.[0]?.vendorDiscountType;
+        } else {
+          // No vendor discount available, no discount
+          discount = 0;
+        }
+      } else {
+        // Not same relation
+        if (isEveryoneType) {
+          // E + Not Same relation → Consumer Discount
+          discount = productPrices?.[0]?.consumerDiscount || 0;
+          discountType = productPrices?.[0]?.consumerDiscountType;
+        } else {
+          // VENDORS or CONSUMER + Not Same relation → No Discount
+          discount = 0;
+        }
       }
-      // If vendor discount is not available, keep using consumer discount
+    } else {
+      // CONSUMER (BUYER) - Gets consumer discount if consumerType is CONSUMER or EVERYONE
+      // NO discount if consumerType is VENDOR or VENDORS
+      if (isConsumerType || isEveryoneType) {
+        discount = productPrices?.[0]?.consumerDiscount || 0;
+        discountType = productPrices?.[0]?.consumerDiscountType;
+      } else {
+        // consumerType is VENDOR/VENDORS - no discount for buyers
+        discount = 0;
+      }
     }
-    if (discountType == 'PERCENTAGE') {
-      return Number((price - (price * discount) / 100).toFixed(2));
-    } else if (discountType == 'FIXED' || discountType == 'FLAT') {
-      return Number((price - discount).toFixed(2));
-    }
-    // If no discount or discount type, return original price
-    if (!discount) {
-      return price;
-    }
-    // Default fallback for any other discount type
-    return Number((price - discount).toFixed(2));
+    
+    return { discount, discountType };
   };
 
-  const discountAmount = productPrices?.[0]?.consumerDiscount || 0;
-  const discountType = productPrices?.[0]?.consumerDiscountType;
+  const calculateDiscountedPrice = () => {
+    const price = productPrices?.[0]?.offerPrice ? Number(productPrices[0]?.offerPrice) : 0;
+    
+    const { discount, discountType } = getApplicableDiscount();
+    
+    // Calculate final price
+    if (discount > 0 && discountType) {
+      if (discountType === "PERCENTAGE") {
+        return Number((price - (price * discount) / 100).toFixed(2));
+      } else if (discountType === "FLAT" || discountType === "FIXED") {
+        return Number((price - discount).toFixed(2));
+      }
+    }
+    
+    return price;
+  };
 
   return (
     <>
       <div className="group relative bg-white rounded-lg sm:rounded-xl shadow-sm sm:shadow-lg border border-gray-100 hover:shadow-xl hover:border-gray-200 transition-all duration-300 overflow-hidden h-full flex flex-col">
         {/* Product Image Container */}
         <Link href={`/factories/${id}`} className="block w-full">
-          {/* Discount Badge */}
-          {discountAmount > 0 && (
-            <div className="absolute right-3 top-3 z-20 bg-gradient-to-r from-orange-500 to-red-500 text-white px-2 py-1 rounded-full text-xs font-bold shadow-lg">
-              {discountType === "PERCENTAGE" 
-                ? `${discountAmount}%` 
-                : `${currency.symbol}${discountAmount}`
-              }
-            </div>
-          )}
+          {/* Discount Badge - Only show if user is eligible for discount */}
+          {(() => {
+            const { discount, discountType } = getApplicableDiscount();
+            return discount > 0 && discountType ? (
+              <div className="absolute right-3 top-3 z-20 bg-gradient-to-r from-orange-500 to-red-500 text-white px-2 py-1 rounded-full text-xs font-bold shadow-lg">
+                {discountType === "PERCENTAGE" 
+                  ? `${discount}%` 
+                  : `${currency.symbol}${discount}`
+                }
+              </div>
+            ) : null;
+          })()}
 
           <div className="relative w-full h-48 lg:h-56 bg-gray-50 overflow-hidden">
             <Image
@@ -428,11 +504,14 @@ const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
                 <span className="text-lg sm:text-xl font-bold text-blue-600">
                   {currency.symbol}{calculateDiscountedPrice()}
                 </span>
-                {discountAmount > 0 && (
-                  <span className="text-sm text-gray-500 line-through">
-                    {currency.symbol}{productPrices?.[0]?.offerPrice}
-                  </span>
-                )}
+                {(() => {
+                  const { discount } = getApplicableDiscount();
+                  return discount > 0 && (
+                    <span className="text-sm text-gray-500 line-through">
+                      {currency.symbol}{productPrices?.[0]?.offerPrice}
+                    </span>
+                  );
+                })()}
               </div>
             </div>
           ) : (

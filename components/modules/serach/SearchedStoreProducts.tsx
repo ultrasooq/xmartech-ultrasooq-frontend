@@ -77,6 +77,9 @@ const SearchedStoreProducts: React.FC<SearchedStoreProductsType> = ({
                 vendorDiscountType: item?.product_productPrice?.[0]?.vendorDiscountType,
                 askForPrice: item?.product_productPrice?.[0]?.askForPrice,
                 productPrices: item?.product_productPrice,
+                categoryId: item?.categoryId,
+                categoryLocation: item?.categoryLocation,
+                consumerType: item?.product_productPrice?.[0]?.consumerType,
             })) || []
         );
         // eslint-disable-next-line react-hooks/exhaustive-deps

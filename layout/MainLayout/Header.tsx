@@ -148,18 +148,6 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
     currentAccount?.data?.data?.account?.tradeRole || me?.data?.data?.tradeRole;
   const userStatus = accessControl.userStatus;
 
-  // Debug logging for account switching
-  console.log("Header - currentTradeRole:", currentTradeRole);
-  console.log("Header - userStatus:", userStatus);
-  console.log("Header - currentAccount data:", currentAccount?.data);
-  console.log("Header - me data:", me?.data?.data);
-  console.log("Header - accessControl.userStatus:", accessControl.userStatus);
-  console.log("Header - accessControl.isActive:", accessControl.isActive);
-  console.log(
-    "Header - accessControl.hasFullAccess:",
-    accessControl.hasFullAccess,
-  );
-
   const [searchTerm, setSearchTerm] = useState(searchParams?.get("term") || "");
 
   const [isActive, setIsActive] = useState(false);
@@ -226,15 +214,6 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
     }
 
     const initials = getInitials(firstName, lastName);
-    console.log("Header - memoizedInitials:", initials);
-    console.log("Header - currentAccount data:", currentAccount?.data?.data);
-    console.log("Header - me.data?.data:", me.data?.data);
-    console.log("Header - firstName:", firstName);
-    console.log("Header - lastName:", lastName);
-    console.log(
-      "Header - isMainAccount:",
-      currentAccount?.data?.data?.isMainAccount,
-    );
     return initials;
   }, [
     currentAccount?.data?.data,

@@ -221,8 +221,8 @@ const ProductDetailsPage = () => {
               {/* Product Images - Left Side */}
               <div className="lg:col-span-6">
                 <div className="sticky top-4">
-                  <ProductImagesCard
-                    productDetails={productDetails}
+            <ProductImagesCard
+              productDetails={productDetails}
                     onAdd={() => {
                       handleToggleAddModal();
                       setSelectedProductId(productDetails?.id);
@@ -232,23 +232,23 @@ const ProductDetailsPage = () => {
                       setSelectedProductId(productDetails?.id);
                     }}
                     onToCheckout={() => {
-                      handleToggleAddModal();
-                      setSelectedProductId(productDetails?.id);
-                    }}
-                    openCartCard={handelOpenCartLayout}
+                handleToggleAddModal();
+                setSelectedProductId(productDetails?.id);
+              }}
+              openCartCard={handelOpenCartLayout}
                     hasItem={cartList?.find((item: any) => item.productId == productDetails?.id) ? true : false}
-                    isLoading={productQueryById?.isLoading}
-                    onWishlist={handleAddToWishlist}
+              isLoading={productQueryById?.isLoading}
+              onWishlist={handleAddToWishlist}
                     haveAccessToken={!!getCookie(PUREMOON_TOKEN_KEY)}
-                    inWishlist={!!productInWishlist}
+              inWishlist={!!productInWishlist}
                     askForPrice={productDetails?.product_productPrice?.[0]?.askForPrice}
                     onProductUpdateSuccess={() => {}}
-                    isAddedToCart={
-                      cartList?.find((item: any) => item.productId == productDetails?.id) ? true : false
-                    }
-                    cartQuantity={
-                      cartList?.find((item: any) => item.productId == productDetails?.id)?.quantity || 0
-                    }
+              isAddedToCart={
+                cartList?.find((item: any) => item.productId == productDetails?.id) ? true : false
+              }
+              cartQuantity={
+                cartList?.find((item: any) => item.productId == productDetails?.id)?.quantity || 0
+              }
                     saleNotStarted={false}
                     saleExpired={false}
                   />
@@ -257,29 +257,29 @@ const ProductDetailsPage = () => {
 
               {/* Product Info - Right Side */}
               <div className="lg:col-span-6">
-                <ProductDescriptionCard
-                  productId={searchParams?.id ? (searchParams?.id as string) : ""}
-                  productName={productDetails?.productName}
+            <ProductDescriptionCard
+              productId={searchParams?.id ? (searchParams?.id as string) : ""}
+              productName={productDetails?.productName}
                   productType="RFQ"
-                  brand={productDetails?.brand?.brandName}
-                  productPrice={productDetails?.productPrice}
-                  offerPrice={productDetails?.product_productPrice?.[0]?.offerPrice}
-                  skuNo={productDetails?.skuNo}
-                  category={productDetails?.category?.name}
-                  productTags={productDetails?.productTags}
-                  productShortDescription={
-                    productDetails?.product_productShortDescription
-                  }
-                  productQuantity={
-                    cartList?.find((item: any) => item.productId == productDetails?.id)?.quantity || 0
-                  }
+              brand={productDetails?.brand?.brandName}
+              productPrice={productDetails?.productPrice}
+              offerPrice={productDetails?.product_productPrice?.[0]?.offerPrice}
+              skuNo={productDetails?.skuNo}
+              category={productDetails?.category?.name}
+              productTags={productDetails?.productTags}
+              productShortDescription={
+                productDetails?.product_productShortDescription
+              }
+              productQuantity={
+                cartList?.find((item: any) => item.productId == productDetails?.id)?.quantity || 0
+              }
                   onQuantityChange={(quantity, action) => {
                     // For RFQ, opening modal instead of direct quantity change
                     handleToggleAddModal();
                     setSelectedProductId(productDetails?.id);
                     setQuantity(quantity);
                   }}
-                  productReview={productDetails?.productReview}
+              productReview={productDetails?.productReview}
                   onAdd={(quantity, action) => {
                     // For RFQ, opening modal instead of direct add
                     handleToggleAddModal();
@@ -291,16 +291,16 @@ const ProductDetailsPage = () => {
                     handleToggleAddModal();
                     setSelectedProductId(productDetails?.id);
                   }}
-                  isLoading={productQueryById.isLoading}
+              isLoading={productQueryById.isLoading}
                   soldBy={`${productDetails?.product_productPrice?.[0]?.adminDetail?.firstName || ''} ${productDetails?.product_productPrice?.[0]?.adminDetail?.lastName || ''}`.trim() || "Unknown Seller"}
-                  soldByTradeRole={
-                    productDetails?.product_productPrice?.[0]?.adminDetail
-                      ?.tradeRole
-                  }
-                  userId={me.data?.data?.id}
-                  sellerId={
-                    productDetails?.product_productPrice?.[0]?.adminDetail?.id
-                  }
+              soldByTradeRole={
+                productDetails?.product_productPrice?.[0]?.adminDetail
+                  ?.tradeRole
+              }
+              userId={me.data?.data?.id}
+              sellerId={
+                productDetails?.product_productPrice?.[0]?.adminDetail?.id
+              }
                   adminId={
                     productDetails?.product_productPrice?.[0]?.adminDetail?.id
                   }
@@ -410,8 +410,8 @@ const ProductDetailsPage = () => {
         <div className="container mx-auto max-w-7xl px-4 py-8 lg:px-8">
           <div className="grid grid-cols-1 gap-8">
             {/* Main Content - Tabs */}
-            <div className="w-full">
-              <Tabs onValueChange={(e) => setActiveTab(e)} value={activeTab}>
+              <div className="w-full">
+                <Tabs onValueChange={(e) => setActiveTab(e)} value={activeTab}>
                 {/* Clean Modern Tabs */}
                 <div className="bg-white">
                   <TabsList className="flex w-full items-center justify-start gap-1 bg-transparent p-0">
@@ -489,7 +489,7 @@ const ProductDetailsPage = () => {
                 </div>
 
                 {/* Tab Content - Description */}
-                <TabsContent value="description" className="mt-0">
+                  <TabsContent value="description" className="mt-0">
                   <div className="min-h-[400px] bg-white p-8 sm:p-10 lg:p-12">
                     {productDetails?.description ? (
                       <div className="space-y-4">
@@ -500,7 +500,7 @@ const ProductDetailsPage = () => {
                             // If it's already an object, use it directly
                             if (typeof desc === 'object' && desc !== null) {
                               return (
-                                <PlateEditor
+                      <PlateEditor
                                   description={desc}
                                   readOnly={true}
                                   fixedToolbar={false}
@@ -555,9 +555,9 @@ const ProductDetailsPage = () => {
                                   return (
                                     <PlateEditor
                                       description={parsed}
-                                      readOnly={true}
-                                      fixedToolbar={false}
-                                    />
+                        readOnly={true}
+                        fixedToolbar={false}
+                      />
                                   );
                                 } catch (error) {
                                   return (
@@ -593,13 +593,13 @@ const ProductDetailsPage = () => {
                         </p>
                       </div>
                     )}
-                  </div>
-                </TabsContent>
+                    </div>
+                  </TabsContent>
 
                 {/* Tab Content - Specification */}
-                <TabsContent value="specification" className="mt-0">
+                  <TabsContent value="specification" className="mt-0">
                   <div className="min-h-[400px] bg-white p-8 sm:p-10 lg:p-12">
-                    {!productDetails?.product_productSpecification?.length ? (
+                      {!productDetails?.product_productSpecification?.length ? (
                       <div className="flex min-h-[200px] flex-col items-center justify-center text-center">
                         <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
                           <svg className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -617,14 +617,14 @@ const ProductDetailsPage = () => {
                       <div className="space-y-6">
                         <h2 className="text-xl font-semibold text-gray-900" dir={langDir} translate="no">
                           {t("technical_specifications")}
-                        </h2>
+                          </h2>
                         <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
                           <div className="divide-y divide-gray-100">
-                            {productDetails?.product_productSpecification?.map(
-                              (item: {
-                                id: number;
-                                label: string;
-                                specification: string;
+                                {productDetails?.product_productSpecification?.map(
+                                  (item: {
+                                    id: number;
+                                    label: string;
+                                    specification: string;
                               }, index: number) => (
                                 <div key={item?.id} className={`p-6 ${index % 2 === 0 ? "bg-white" : "bg-gray-50/50"}`}>
                                   <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
@@ -635,18 +635,18 @@ const ProductDetailsPage = () => {
                                       {item?.specification}
                                     </dd>
                                   </div>
-                                </div>
-                              ),
-                            )}
+                                    </div>
+                                  ),
+                                )}
                           </div>
                         </div>
-                      </div>
+                    </div>
                     )}
-                  </div>
-                </TabsContent>
+                    </div>
+                  </TabsContent>
 
                 {/* Tab Content - Reviews */}
-                <TabsContent value="reviews" className="mt-0">
+                  <TabsContent value="reviews" className="mt-0">
                   <div className="min-h-[400px] bg-white p-8 sm:p-10 lg:p-12">
                     <div className="space-y-4">
                       <h2 className="text-xl font-semibold text-gray-900" dir={langDir} translate="no">
@@ -661,18 +661,18 @@ const ProductDetailsPage = () => {
                         }
                       />
                     </div>
-                  </div>
-                </TabsContent>
+                    </div>
+                  </TabsContent>
 
                 {/* Tab Content - Q&A */}
-                <TabsContent value="qanda" className="mt-0">
+                  <TabsContent value="qanda" className="mt-0">
                   <div className="min-h-[400px] bg-white p-8 sm:p-10 lg:p-12">
-                    <QuestionsAnswersSection
-                      hasAccessToken={true}
-                      productId={searchParams?.id as string}
-                    />
-                  </div>
-                </TabsContent>
+                      <QuestionsAnswersSection
+                        hasAccessToken={true}
+                        productId={searchParams?.id as string}
+                      />
+                    </div>
+                  </TabsContent>
 
                 {/* Tab Content - Vendor */}
                 <TabsContent value="vendor" className="mt-0">
@@ -687,19 +687,19 @@ const ProductDetailsPage = () => {
                         }
                       />
                     </div>
-                  </div>
-                </TabsContent>
-              </Tabs>
+                    </div>
+                  </TabsContent>
+                </Tabs>
             </div>
           </div>
         </div>
 
         {/* Related Products Section */}
-        <RelatedProductsSection
-          calculateTagIds={calculateTagIds}
-          productId={searchParams?.id as string}
-        />
-      </div>
+          <RelatedProductsSection
+            calculateTagIds={calculateTagIds}
+            productId={searchParams?.id as string}
+          />
+        </div>
 
       <Footer />
 

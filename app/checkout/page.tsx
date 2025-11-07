@@ -41,6 +41,9 @@ import AddIcon from "@/public/images/addbtn.svg";
 import { useAddToWishList } from "@/apis/queries/wishlist.queries";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import { useCurrentAccount } from "@/apis/queries/auth.queries";
+import { useVendorBusinessCategories } from "@/hooks/useVendorBusinessCategories";
+import { checkCategoryConnection } from "@/utils/categoryConnection";
 import { usePreOrderCalculation } from "@/apis/queries/orders.queries";
 import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
 import { IoCloseSharp } from "react-icons/io5";
@@ -51,6 +54,9 @@ import ServiceCard from "@/components/modules/checkout/ServiceCard";
 const CheckoutPage = () => {
   const t = useTranslations();
   const { user, langDir, currency } = useAuth();
+  const currentAccount = useCurrentAccount();
+  const currentTradeRole = currentAccount?.data?.data?.account?.tradeRole || user?.tradeRole;
+  const vendorBusinessCategoryIds = useVendorBusinessCategories() ?? [];
   const router = useRouter();
   const wrapperRef = useRef(null);
   const { toast } = useToast();
@@ -187,13 +193,109 @@ const CheckoutPage = () => {
     discountType?: string,
   ) => {
     const price = offerPrice ? Number(offerPrice) : 0;
-    if (discountType == "PERCENTAGE") {
-      return Number((price - (price * discount) / 100).toFixed(2));
-    } else if (discountType == 'FIXED' || discountType == 'FLAT') {
-      return Number((price - discount).toFixed(2));
+    if (!price) return 0;
+
+    if (discount > 0 && discountType) {
+      const normalizedType = discountType.toString().toUpperCase().trim();
+      if (normalizedType === "PERCENTAGE") {
+        return Number((price - (price * discount) / 100).toFixed(2));
+      }
+      if (
+        normalizedType === "FIXED" ||
+        normalizedType === "FLAT" ||
+        normalizedType === "AMOUNT"
+      ) {
+        return Number((price - discount).toFixed(2));
+      }
     }
-    // If no discount type is specified, treat as fixed discount
-    return Number((price - discount).toFixed(2));
+
+    return price;
+  };
+
+  const getApplicableDiscountedPrice = (
+    cartItem: CartItem,
+  ) => {
+    const productPriceDetails: any = cartItem.productPriceDetails || {};
+    const rawConsumerType =
+      productPriceDetails?.consumerType || "";
+    const consumerType =
+      typeof rawConsumerType === "string"
+        ? rawConsumerType.toUpperCase().trim()
+        : "";
+
+    const isVendorType = consumerType === "VENDOR" || consumerType === "VENDORS";
+    const isConsumerType = consumerType === "CONSUMER";
+    const isEveryoneType = consumerType === "EVERYONE";
+
+    const categoryIdValue =
+      productPriceDetails?.productPrice_product?.categoryId ??
+      productPriceDetails?.productCategoryId ??
+      0;
+    const categoryId = Number(categoryIdValue) || 0;
+    const categoryLocation =
+      productPriceDetails?.productPrice_product?.categoryLocation ||
+      productPriceDetails?.productCategoryLocation;
+    const categoryConnections =
+      productPriceDetails?.productPrice_product?.category?.category_categoryIdDetail ||
+      productPriceDetails?.categoryConnections ||
+      [];
+
+    const isCategoryMatch = checkCategoryConnection(
+      vendorBusinessCategoryIds,
+      Number.isFinite(categoryId) ? categoryId : 0,
+      categoryLocation,
+      categoryConnections,
+    );
+
+    const vendorDiscountValue = Number(productPriceDetails?.vendorDiscount || 0);
+    const vendorDiscountType = productPriceDetails?.vendorDiscountType;
+    const normalizedVendorDiscountType = vendorDiscountType
+      ? vendorDiscountType.toString().toUpperCase().trim()
+      : undefined;
+
+    const consumerDiscountValue = Number(productPriceDetails?.consumerDiscount || 0);
+    const consumerDiscountType = productPriceDetails?.consumerDiscountType;
+    const normalizedConsumerDiscountType = consumerDiscountType
+      ? consumerDiscountType.toString().toUpperCase().trim()
+      : undefined;
+
+    let discount = 0;
+    let discountType: string | undefined;
+
+    if (currentTradeRole && currentTradeRole !== "BUYER") {
+      if (isVendorType || isEveryoneType) {
+        let eligibleForVendorDiscount = isCategoryMatch;
+
+        if (!eligibleForVendorDiscount && vendorDiscountValue > 0 && normalizedVendorDiscountType) {
+          eligibleForVendorDiscount = true;
+        }
+
+        if (eligibleForVendorDiscount && vendorDiscountValue > 0 && normalizedVendorDiscountType) {
+          discount = vendorDiscountValue;
+          discountType = normalizedVendorDiscountType;
+        } else if (
+          isEveryoneType &&
+          consumerDiscountValue > 0 &&
+          normalizedConsumerDiscountType
+        ) {
+          discount = consumerDiscountValue;
+          discountType = normalizedConsumerDiscountType;
+        }
+      }
+    } else {
+      if (isConsumerType || isEveryoneType) {
+        if (consumerDiscountValue > 0 && normalizedConsumerDiscountType) {
+          discount = consumerDiscountValue;
+          discountType = normalizedConsumerDiscountType;
+        }
+      }
+    }
+
+    return calculateDiscountedPrice(
+      productPriceDetails?.offerPrice ?? 0,
+      discount,
+      discountType,
+    );
   };
 
   const calculateTotalAmount = () => {
@@ -221,21 +323,18 @@ const CheckoutPage = () => {
             },
           ) => {
             // @ts-ignore
-            if (curr.cartType == "DEFAULT" && !invalidProducts.includes(curr.productId) && !notAvailableProducts.includes(curr.productId)) {
-              let discount = curr?.productPriceDetails?.consumerDiscount;
-              let discountType = curr?.productPriceDetails?.consumerDiscountType;
-              if (user?.tradeRole && user.tradeRole != "BUYER") {
-                discount = curr?.productPriceDetails?.vendorDiscount;
-                discountType = curr?.productPriceDetails?.vendorDiscountType;
-              }
-              let calculatedDiscount = calculateDiscountedPrice(
-                curr.productPriceDetails?.offerPrice ?? 0,
-                discount || 0,
-                discountType,
+            const productId = curr.productId;
+            const isInvalidProduct =
+              typeof productId === "number" && invalidProducts.includes(productId);
+            const isNotAvailable =
+              typeof productId === "number" && notAvailableProducts.includes(productId);
+
+            if (curr.cartType == "DEFAULT" && !isInvalidProduct && !isNotAvailable) {
+              const discountedPrice = getApplicableDiscountedPrice(
+                curr as unknown as CartItem,
               );
-  
               return Number(
-                (acc + calculatedDiscount * curr.quantity).toFixed(2),
+                (acc + discountedPrice * curr.quantity).toFixed(2),
               );
             }
 
@@ -275,12 +374,21 @@ const CheckoutPage = () => {
             },
           ) => {
             // @ts-ignore
-            if (curr.cartType == "DEFAULT"  && !invalidProducts.includes(curr.productId) && !notAvailableProducts.includes(curr.productId)) {
+            const productId = curr.productId;
+            const isInvalidProduct =
+              typeof productId === "number" && invalidProducts.includes(productId);
+            const isNotAvailable =
+              typeof productId === "number" && notAvailableProducts.includes(productId);
+
+            if (curr.cartType == "DEFAULT" && !isInvalidProduct && !isNotAvailable) {
+              const discountedPrice = calculateDiscountedPrice(
+                curr.productPriceDetails?.offerPrice ?? 0,
+                Number((curr.productPriceDetails as any)?.consumerDiscount || 0),
+                (curr.productPriceDetails as any)?.consumerDiscountType,
+              );
+
               return Number(
-                (
-                  acc +
-                  +(curr.productPriceDetails?.offerPrice ?? 0) * curr.quantity
-                ).toFixed(2),
+                (acc + discountedPrice * curr.quantity).toFixed(2),
               );
             }
 
@@ -960,6 +1068,10 @@ const CheckoutPage = () => {
                                     vendorDiscountType={
                                       item.productPriceDetails?.vendorDiscountType
                                     }
+                                    consumerType={(item.productPriceDetails as any)?.consumerType}
+                                    categoryId={(item.productPriceDetails as any)?.productCategoryId}
+                                    categoryLocation={(item.productPriceDetails as any)?.productCategoryLocation}
+                                    categoryConnections={(item.productPriceDetails as any)?.categoryConnections || []}
                                     onAdd={handleAddToCart}
                                     onRemove={(cartId: number) => {
                                       setIsConfirmDialogOpen(true);

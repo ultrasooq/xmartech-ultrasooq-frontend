@@ -9,6 +9,10 @@ import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 import { Trash2 } from "lucide-react";
+import { useVendorBusinessCategories } from "@/hooks/useVendorBusinessCategories";
+import { checkCategoryConnection } from "@/utils/categoryConnection";
+import { useCategory } from "@/apis/queries/category.queries";
+import { useCurrentAccount } from "@/apis/queries/auth.queries";
 
 type WishlistCardProps = {
   productId: number;
@@ -25,6 +29,24 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
 }) => {
   const t = useTranslations();
   const { user, langDir, currency } = useAuth();
+  const currentAccount = useCurrentAccount();
+  const vendorBusinessCategoryIds = useVendorBusinessCategories();
+
+  // Get the current account's trade role (for multi-account system)
+  const currentTradeRole = currentAccount?.data?.data?.account?.tradeRole || user?.tradeRole;
+  
+  // Get category data from wishlistData
+  const categoryId = wishlistData?.categoryId || wishlistData?.category?.id;
+  const categoryLocation = wishlistData?.categoryLocation;
+  const consumerType = wishlistData?.product_productPrice?.[0]?.consumerType || "CONSUMER";
+  
+  // Fetch product category data to get connections (only if vendor and categoryId exists)
+  const productCategoryQuery = useCategory(
+    categoryId?.toString(),
+    !!(currentTradeRole && currentTradeRole !== "BUYER" && categoryId)
+  );
+  
+  const categoryConnections = productCategoryQuery?.data?.data?.category_categoryIdDetail || [];
   
   // Helper function to get local timestamp from date and time strings
   const getLocalTimestamp = (dateStr?: string, timeStr?: string) => {
@@ -85,24 +107,74 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
     const price = wishlistData?.product_productPrice?.[0]?.offerPrice
       ? Number(wishlistData.product_productPrice?.[0]?.offerPrice)
       : 0;
-    let discount = wishlistData?.product_productPrice?.[0]?.consumerDiscount || 0;
-    let discountType = wishlistData?.product_productPrice?.[0]?.consumerDiscountType;
     
-    // For non-BUYER users, try vendor discount first, but fall back to consumer discount if vendor discount is not available
-    if (user?.tradeRole && user?.tradeRole != 'BUYER') {
-      if (wishlistData?.product_productPrice?.[0]?.vendorDiscount && wishlistData?.product_productPrice?.[0]?.vendorDiscount > 0) {
-        discount = wishlistData?.product_productPrice?.[0]?.vendorDiscount;
-        discountType = wishlistData?.product_productPrice?.[0]?.vendorDiscountType;
+    // Normalize consumerType to uppercase and handle both "VENDOR" and "VENDORS"
+    const rawConsumerType = consumerType || wishlistData?.product_productPrice?.[0]?.consumerType || "CONSUMER";
+    const productConsumerType = typeof rawConsumerType === "string" 
+      ? rawConsumerType.toUpperCase().trim() 
+      : "CONSUMER";
+    
+    // Check if it's a vendor type (VENDOR or VENDORS)
+    const isVendorType = productConsumerType === "VENDOR" || productConsumerType === "VENDORS";
+    const isConsumerType = productConsumerType === "CONSUMER";
+    const isEveryoneType = productConsumerType === "EVERYONE";
+    
+    // Check if vendor business category matches product category
+    const isCategoryMatch = checkCategoryConnection(
+      vendorBusinessCategoryIds,
+      categoryId || 0,
+      categoryLocation,
+      categoryConnections
+    );
+    
+    let discount = 0;
+    let discountType: string | undefined;
+    
+    // Apply discount logic based on your table
+    if (currentTradeRole && currentTradeRole !== "BUYER") {
+      // VENDOR (V) or EVERYONE (E) as vendor
+      if (isCategoryMatch) {
+        // Same relation - Vendor gets vendor discount
+        if (wishlistData?.product_productPrice?.[0]?.vendorDiscount && wishlistData?.product_productPrice?.[0]?.vendorDiscount > 0) {
+          discount = wishlistData?.product_productPrice?.[0]?.vendorDiscount;
+          discountType = wishlistData?.product_productPrice?.[0]?.vendorDiscountType;
+        } else {
+          // No vendor discount available, no discount
+          discount = 0;
+        }
+      } else {
+        // Not same relation
+        if (isEveryoneType) {
+          // E + Not Same relation → Consumer Discount
+          discount = wishlistData?.product_productPrice?.[0]?.consumerDiscount || 0;
+          discountType = wishlistData?.product_productPrice?.[0]?.consumerDiscountType;
+        } else {
+          // V + Not Same relation → No Discount
+          discount = 0;
+        }
       }
-      // If vendor discount is not available, keep using consumer discount
+    } else {
+      // CONSUMER (BUYER) - Gets consumer discount if consumerType is CONSUMER or EVERYONE
+      // NO discount if consumerType is VENDOR or VENDORS
+      if (isConsumerType || isEveryoneType) {
+        discount = wishlistData?.product_productPrice?.[0]?.consumerDiscount || 0;
+        discountType = wishlistData?.product_productPrice?.[0]?.consumerDiscountType;
+      } else {
+        // consumerType is VENDOR/VENDORS - no discount for buyers
+        discount = 0;
+      }
     }
-    if (discountType == 'PERCENTAGE') {
-      return Number((price - (price * discount) / 100).toFixed(2));
-    } else if (discountType == 'FLAT') {
-      return Number((price - discount).toFixed(2));
+    
+    // Calculate final price
+    if (discount > 0 && discountType) {
+      if (discountType === "PERCENTAGE") {
+        return Number((price - (price * discount) / 100).toFixed(2));
+      } else if (discountType === "FLAT") {
+        return Number((price - discount).toFixed(2));
+      }
     }
-    // Default fallback for any other discount type
-    return Number((price - discount).toFixed(2));
+    
+    return price;
   };
 
   const calculateAvgRating = useMemo(() => {

@@ -18,6 +18,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { IoCloseSharp } from "react-icons/io5";
 import { useClickOutside } from "use-events";
 import { Trash2 } from "lucide-react";
+import { useCurrentAccount } from "@/apis/queries/auth.queries";
 
 type ProductCardProps = {
   cartId: number;
@@ -35,6 +36,7 @@ type ProductCardProps = {
   consumerDiscountType?: string;
   vendorDiscount: number;
   vendorDiscountType?: string;
+  consumerType?: string;
   minQuantity?: number;
   maxQuantity?: number;
   relatedCart?: any;
@@ -56,12 +58,15 @@ const ProductCard: React.FC<ProductCardProps> = ({
   consumerDiscountType,
   vendorDiscount,
   vendorDiscountType,
+  consumerType,
   minQuantity,
   maxQuantity,
   relatedCart
 }) => {
   const t = useTranslations();
   const { user, langDir, currency } = useAuth();
+  const currentAccount = useCurrentAccount();
+  const currentTradeRole = currentAccount?.data?.data?.account?.tradeRole || user?.tradeRole;
   const [quantity, setQuantity] = useState(1);
   const [selectedProductVariant, setSelectedProductVariant] = useState<any>();
   const deviceId = getOrCreateDeviceId() || "";
@@ -78,34 +83,48 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const calculateDiscountedPrice = () => {
     const price = offerPrice ? Number(offerPrice) : 0;
     
-    // Always use consumer discount for cart display - this is what customers see
-    const discount = consumerDiscount || 0;
-    const discountType = consumerDiscountType || '';
+    // Get consumerType and normalize it
+    const normalizedConsumerType = consumerType?.toString().toUpperCase().trim() || "";
+    const isVendorType = normalizedConsumerType === "VENDOR" || normalizedConsumerType === "VENDORS";
+    const isConsumerType = normalizedConsumerType === "CONSUMER";
+    const isEveryoneType = normalizedConsumerType === "EVERYONE";
     
-    console.log('Cart ProductCard - Simple Discount Logic:', {
-      productName,
-      price,
-      consumerDiscount,
-      consumerDiscountType,
-      discount,
-      discountType
-    });
+    // Determine which discount to use based on user's trade role AND consumerType
+    let discount = 0;
+    let discountType: string | undefined;
+    
+    if (currentTradeRole && currentTradeRole !== "BUYER") {
+      // VENDOR: Can only get vendor discount if consumerType allows it (VENDORS or EVERYONE)
+      if (isVendorType || isEveryoneType) {
+        discount = vendorDiscount || 0;
+        discountType = vendorDiscountType;
+      } else {
+        // consumerType is CONSUMER - vendors get no discount
+        discount = 0;
+        discountType = undefined;
+      }
+    } else {
+      // BUYER: Can only get consumer discount if consumerType allows it (CONSUMER or EVERYONE)
+      if (isConsumerType || isEveryoneType) {
+        discount = consumerDiscount || 0;
+        discountType = consumerDiscountType;
+      } else {
+        // consumerType is VENDORS - buyers get no discount
+        discount = 0;
+        discountType = undefined;
+      }
+    }
     
     // Apply discount calculation
     if (discount > 0 && discountType) {
       if (discountType === 'PERCENTAGE') {
-        const discountedPrice = Number((price - (price * discount) / 100).toFixed(2));
-        console.log('✅ Percentage discount applied:', { originalPrice: price, discount, discountedPrice });
-        return discountedPrice;
+        return Number((price - (price * discount) / 100).toFixed(2));
       } else if (discountType === 'FIXED' || discountType === 'FLAT') {
-        const discountedPrice = Number((price - discount).toFixed(2));
-        console.log('✅ Fixed discount applied:', { originalPrice: price, discount, discountedPrice });
-        return discountedPrice;
+        return Number((price - discount).toFixed(2));
       }
     }
     
     // If no discount, return original price
-    console.log('❌ No discount applied, returning original price:', { originalPrice: price, discount, discountType });
     return price;
   };
 

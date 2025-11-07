@@ -65,6 +65,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { getCookie } from "cookies-next";
 import { useTranslations } from "next-intl";
 import CategoryFilter from "@/components/modules/manageProducts/CategoryFilter";
+import { useCurrentAccount } from "@/apis/queries/auth.queries";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FaPlus } from "react-icons/fa";
@@ -85,7 +86,9 @@ interface TrendingPageProps {
 const TrendingPage = (props0: TrendingPageProps) => {
   const searchParams = use(props0.searchParams || Promise.resolve({}));
   const t = useTranslations();
-  const { langDir, currency } = useAuth();
+  const { langDir, currency, user } = useAuth();
+  const currentAccount = useCurrentAccount();
+  const currentTradeRole = currentAccount?.data?.data?.account?.tradeRole || user?.tradeRole;
   const queryClient = useQueryClient();
   const categoryStore = useCategoryStore();
   const { toast } = useToast();
@@ -909,8 +912,20 @@ const TrendingPage = (props0: TrendingPageProps) => {
                             let unitPrice = 0;
                             if (cartItem.cartType === "DEFAULT" && cartItem.productPriceDetails) {
                               const offerPrice = cartItem.productPriceDetails.offerPrice || 0;
-                              const discount = cartItem.productPriceDetails.consumerDiscount || 0;
-                              const discountType = cartItem.productPriceDetails.consumerDiscountType || '';
+                              // Determine which discount to use based on user's trade role
+                              let discount = 0;
+                              let discountType: string | undefined;
+                              
+                              if (currentTradeRole && currentTradeRole !== "BUYER") {
+                                // VENDOR: Use vendor discount if available
+                                discount = cartItem.productPriceDetails.vendorDiscount || 0;
+                                discountType = cartItem.productPriceDetails.vendorDiscountType;
+                              } else {
+                                // BUYER: Use consumer discount if available
+                                discount = cartItem.productPriceDetails.consumerDiscount || 0;
+                                discountType = cartItem.productPriceDetails.consumerDiscountType;
+                              }
+                              
                               unitPrice = calculateDiscountedPrice(offerPrice, discount, discountType);
                             } else {
                               // Fallback to offerPrice if available
@@ -1189,8 +1204,20 @@ const TrendingPage = (props0: TrendingPageProps) => {
                       let unitPrice = 0;
                       if (cartItem.cartType === "DEFAULT" && cartItem.productPriceDetails) {
                         const offerPrice = cartItem.productPriceDetails.offerPrice || 0;
-                        const discount = cartItem.productPriceDetails.consumerDiscount || 0;
-                        const discountType = cartItem.productPriceDetails.consumerDiscountType || '';
+                        // Determine which discount to use based on user's trade role
+                        let discount = 0;
+                        let discountType: string | undefined;
+                        
+                        if (currentTradeRole && currentTradeRole !== "BUYER") {
+                          // VENDOR: Use vendor discount if available
+                          discount = cartItem.productPriceDetails.vendorDiscount || 0;
+                          discountType = cartItem.productPriceDetails.vendorDiscountType;
+                        } else {
+                          // BUYER: Use consumer discount if available
+                          discount = cartItem.productPriceDetails.consumerDiscount || 0;
+                          discountType = cartItem.productPriceDetails.consumerDiscountType;
+                        }
+                        
                         unitPrice = calculateDiscountedPrice(offerPrice, discount, discountType);
                       } else {
                         unitPrice = Number(cartItem.productPriceDetails?.offerPrice || cartItem.productPrice || 0);

@@ -15,6 +15,10 @@ import Link from "next/link";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import { useVendorBusinessCategories } from "@/hooks/useVendorBusinessCategories";
+import { checkCategoryConnection } from "@/utils/categoryConnection";
+import { useCategory } from "@/apis/queries/category.queries";
+import { useCurrentAccount } from "@/apis/queries/auth.queries";
 
 type ProducTableProps = {
   list: TrendingProduct[];
@@ -23,27 +27,79 @@ type ProducTableProps = {
 const ProductTable: React.FC<ProducTableProps> = ({ list }) => {
   const t = useTranslations();
   const { user, langDir, currency } = useAuth();
+  const currentAccount = useCurrentAccount();
+  const vendorBusinessCategoryIds = useVendorBusinessCategories();
 
-  const calculateDiscountedPrice = ({ item }: { item: any }) => {
+  // Get the current account's trade role (for multi-account system)
+  const currentTradeRole = currentAccount?.data?.data?.account?.tradeRole || user?.tradeRole;
+
+  const calculateDiscountedPrice = ({ item }: { item: TrendingProduct }) => {
     const price = item.productProductPrice ? Number(item.productProductPrice) : 0;
-    let discount = item.consumerDiscount || 0;
-    let discountType = item.consumerDiscountType;
     
-    // For non-BUYER users, try vendor discount first, but fall back to consumer discount if vendor discount is not available
-    if (user?.tradeRole && user?.tradeRole != 'BUYER') {
-      if (item.vendorDiscount && item.vendorDiscount > 0) {
-        discount = item.vendorDiscount;
-        discountType = item.vendorDiscountType;
+    // Normalize consumerType to uppercase and handle both "VENDOR" and "VENDORS"
+    const rawConsumerType = item.consumerType || "CONSUMER";
+    const consumerType = typeof rawConsumerType === "string" 
+      ? rawConsumerType.toUpperCase().trim() 
+      : "CONSUMER";
+    
+    // Check if it's a vendor type (VENDOR or VENDORS)
+    const isVendorType = consumerType === "VENDOR" || consumerType === "VENDORS";
+    const isConsumerType = consumerType === "CONSUMER";
+    const isEveryoneType = consumerType === "EVERYONE";
+    
+    // For ProductTable, we can't fetch category for each item efficiently
+    // So we'll use a simplified check - if categoryId matches any vendor business category
+    // This is a fallback - ideally categoryConnections should be checked
+    const isCategoryMatch = item.categoryId && vendorBusinessCategoryIds.includes(item.categoryId);
+    
+    let discount = 0;
+    let discountType: string | undefined;
+    
+    // Apply discount logic based on your table
+    if (currentTradeRole && currentTradeRole !== "BUYER") {
+      // VENDOR (V) or EVERYONE (E) as vendor
+      if (isCategoryMatch) {
+        // Same relation - Vendor gets vendor discount
+        if (item.vendorDiscount && item.vendorDiscount > 0) {
+          discount = item.vendorDiscount;
+          discountType = item.vendorDiscountType;
+        } else {
+          // No vendor discount available, no discount
+          discount = 0;
+        }
+      } else {
+        // Not same relation
+        if (isEveryoneType) {
+          // E + Not Same relation → Consumer Discount
+          discount = item.consumerDiscount || 0;
+          discountType = item.consumerDiscountType;
+        } else {
+          // VENDORS or CONSUMER + Not Same relation → No Discount
+          discount = 0;
+        }
       }
-      // If vendor discount is not available, keep using consumer discount
+    } else {
+      // CONSUMER (BUYER) - Gets consumer discount if consumerType is CONSUMER or EVERYONE
+      // NO discount if consumerType is VENDOR or VENDORS
+      if (isConsumerType || isEveryoneType) {
+        discount = item.consumerDiscount || 0;
+        discountType = item.consumerDiscountType;
+      } else {
+        // consumerType is VENDOR/VENDORS - no discount for buyers
+        discount = 0;
+      }
     }
-    if (discountType == 'PERCENTAGE') {
-      return Number((price - (price * discount) / 100).toFixed(2));
-    } else if (discountType == 'FLAT') {
-      return Number((price - discount).toFixed(2));
+    
+    // Calculate final price
+    if (discount > 0 && discountType) {
+      if (discountType === "PERCENTAGE") {
+        return Number((price - (price * discount) / 100).toFixed(2));
+      } else if (discountType === "FLAT") {
+        return Number((price - discount).toFixed(2));
+      }
     }
-    // Default fallback for any other discount type
-    return Number((price - discount).toFixed(2));
+    
+    return price;
   };
 
   return (

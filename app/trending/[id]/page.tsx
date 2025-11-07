@@ -679,6 +679,9 @@ const ProductDetailsPage = () => {
               offerPrice={productDetails?.product_productPrice?.[0]?.offerPrice}
               skuNo={productDetails?.skuNo}
               category={productDetails?.category?.name}
+              categoryId={productDetails?.categoryId}
+              categoryLocation={productDetails?.categoryLocation}
+              consumerType={productDetails?.product_productPrice?.[0]?.consumerType}
               productTags={productDetails?.productTags}
               productShortDescription={
                 productDetails?.product_productShortDescription

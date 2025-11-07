@@ -73,6 +73,7 @@ import { Package, Building2, X, ShoppingCart } from "lucide-react";
 import { startDebugger } from "remove-child-node-error-debugger";
 import Cart from "@/components/modules/cartList/Cart";
 import CategoryFilter from "@/components/modules/manageProducts/CategoryFilter";
+import { useCurrentAccount } from "@/apis/queries/auth.queries";
 import {
   Sheet,
   SheetContent,
@@ -80,6 +81,9 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { useVendorBusinessCategories } from "@/hooks/useVendorBusinessCategories";
+import { checkCategoryConnection } from "@/utils/categoryConnection";
+import { useCategory } from "@/apis/queries/category.queries";
 
 interface TrendingPageProps {
   searchParams?: Promise<{ term?: string }>;
@@ -88,9 +92,12 @@ interface TrendingPageProps {
 const TrendingPage = (props0: TrendingPageProps) => {
   const searchParams = props0.searchParams ? use(props0.searchParams) : {};
   const t = useTranslations();
-  const { langDir, currency } = useAuth();
+  const { langDir, currency, user } = useAuth();
+  const currentAccount = useCurrentAccount();
+  const currentTradeRole = currentAccount?.data?.data?.account?.tradeRole || user?.tradeRole;
   const queryClient = useQueryClient();
   const categoryStore = useCategoryStore();
+  const vendorBusinessCategoryIds = useVendorBusinessCategories();
   // const searchParams = useSearchParams();
   const { toast } = useToast();
   const deviceId = getOrCreateDeviceId() || "";
@@ -260,7 +267,14 @@ const TrendingPage = (props0: TrendingPageProps) => {
 
   const memoizedProductList = useMemo(() => {
     return (
-      combinedProducts?.map((item: any) => ({
+      combinedProducts?.map((item: any) => {
+        // Find the active product price entry (status: "ACTIVE")
+        // If no active entry, fall back to the first one
+        const activePriceEntry = item?.product_productPrice?.find(
+          (pp: any) => pp?.status === "ACTIVE"
+        ) || item?.product_productPrice?.[0];
+        
+        return {
         id: item.id,
         productName: (() => {
           // For dropship products, use the customized name
@@ -272,7 +286,7 @@ const TrendingPage = (props0: TrendingPageProps) => {
           return item?.productName || "-";
         })(),
         productPrice: item?.productPrice || 0,
-        offerPrice: item?.product_productPrice?.[0]?.offerPrice || item?.offerPrice || 0,
+          offerPrice: activePriceEntry?.offerPrice || item?.offerPrice || 0,
         productImage: (() => {
           // For dropship products, prioritize marketing images
           if (item?.isDropshipped) {
@@ -302,9 +316,9 @@ const TrendingPage = (props0: TrendingPageProps) => {
           }
           
           // For regular products, use existing logic
-          return item?.product_productPrice?.[0]
+            return activePriceEntry
             ?.productPrice_productSellerImage?.length
-            ? item?.product_productPrice?.[0]
+              ? activePriceEntry
               ?.productPrice_productSellerImage?.[0]?.image
             : item?.productImages?.[0]?.image;
         })(),
@@ -327,15 +341,30 @@ const TrendingPage = (props0: TrendingPageProps) => {
             ? item?.product_productShortDescription?.[0]?.shortDescription
             : "-";
         })(),
-        productProductPriceId: item?.product_productPrice?.[0]?.id,
-        productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
-        consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
-        consumerDiscountType:
-          item?.product_productPrice?.[0]?.consumerDiscountType,
-        vendorDiscount: item?.product_productPrice?.[0]?.vendorDiscount,
-        vendorDiscountType: item?.product_productPrice?.[0]?.vendorDiscountType,
-        askForPrice: item?.product_productPrice?.[0]?.askForPrice,
+          productProductPriceId: activePriceEntry?.id,
+          productProductPrice: activePriceEntry?.offerPrice,
+          consumerDiscount: activePriceEntry?.consumerDiscount,
+          consumerDiscountType: activePriceEntry?.consumerDiscountType,
+          vendorDiscount: activePriceEntry?.vendorDiscount,
+          vendorDiscountType: activePriceEntry?.vendorDiscountType,
+          askForPrice: activePriceEntry?.askForPrice,
         productPrices: item?.product_productPrice,
+          categoryId: item?.categoryId,
+          categoryLocation: item?.categoryLocation,
+          categoryConnections: item?.category?.category_categoryIdDetail || [],
+          consumerType: activePriceEntry?.consumerType,
+          
+          // DEBUG: Log product data for discount calculation
+          _debug: {
+            activePriceEntry: activePriceEntry,
+            vendorDiscount: activePriceEntry?.vendorDiscount,
+            vendorDiscountType: activePriceEntry?.vendorDiscountType,
+            consumerDiscount: activePriceEntry?.consumerDiscount,
+            consumerDiscountType: activePriceEntry?.consumerDiscountType,
+            consumerType: activePriceEntry?.consumerType,
+            categoryId: item?.categoryId,
+            categoryLocation: item?.categoryLocation,
+          },
          // Add vendor information
          vendorId: item?.addedBy || item?.userId,
          vendorName: (() => {
@@ -377,7 +406,8 @@ const TrendingPage = (props0: TrendingPageProps) => {
          vendorTradeRole: usersMap.get(item?.userId)?.tradeRole || item?.user?.tradeRole,
          vendorUserProfile: usersMap.get(item?.userId)?.userProfile || item?.user?.userProfile,
          status: item?.status || 'ACTIVE',
-      })) || []
+        };
+      }) || []
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
@@ -452,6 +482,201 @@ const TrendingPage = (props0: TrendingPageProps) => {
       return vendor;
     });
   }, [memoizedProductList]);
+
+  const getCartPricing = React.useCallback(
+    (productData: any, cartItem: any) => {
+      if (!cartItem) {
+        return {
+          unitPrice: 0,
+          totalPrice: 0,
+          originalUnitPrice: 0,
+          originalTotalPrice: 0,
+        };
+      }
+
+      const quantity = Number(cartItem?.quantity) || 1;
+
+      const cartPriceDetails = cartItem?.productPriceDetails || {};
+
+      if (process.env.NODE_ENV !== "production") {
+        console.groupCollapsed(
+          "🧮 Cart pricing | product",
+          productData?.id || cartItem?.productId || "unknown",
+        );
+        console.log("Input productData", productData);
+        console.log("Input cartItem", cartItem);
+        console.log("Input cartPriceDetails", cartPriceDetails);
+      }
+
+      let originalPrice = 0;
+      if (productData?.productProductPrice) {
+        originalPrice = Number(productData.productProductPrice) || 0;
+      } else if (productData?.productPrice) {
+        originalPrice = Number(productData.productPrice) || 0;
+      }
+
+      const backendOriginalPrice = Number(
+        cartPriceDetails?.price ?? cartPriceDetails?.basePrice ?? 0,
+      );
+
+      if (!originalPrice && backendOriginalPrice > 0) {
+        originalPrice = backendOriginalPrice;
+      }
+
+      if (!originalPrice) {
+        const cartOfferPrice = Number(
+          cartPriceDetails?.offerPrice ?? cartItem?.offerPrice ?? 0,
+        );
+        const cartConsumerDiscount = Number(
+          cartPriceDetails?.consumerDiscount ?? 0,
+        );
+        const cartConsumerDiscountType = cartPriceDetails?.consumerDiscountType;
+
+        if (cartOfferPrice > 0 && cartConsumerDiscount > 0 && cartConsumerDiscountType) {
+          const normalizedDiscountType = cartConsumerDiscountType
+            ?.toString()
+            .toUpperCase()
+            .trim();
+
+          if (normalizedDiscountType === "PERCENTAGE") {
+            originalPrice = cartOfferPrice / (1 - cartConsumerDiscount / 100);
+          } else if (
+            normalizedDiscountType === "AMOUNT" ||
+            normalizedDiscountType === "FLAT" ||
+            normalizedDiscountType === "FIXED"
+          ) {
+            originalPrice = cartOfferPrice + cartConsumerDiscount;
+          } else {
+            originalPrice = cartOfferPrice;
+          }
+        } else {
+          originalPrice = cartOfferPrice;
+        }
+      }
+
+      const rawConsumerType =
+        productData?.consumerType || cartItem?.productPriceDetails?.consumerType || "CONSUMER";
+      const consumerType =
+        typeof rawConsumerType === "string"
+          ? rawConsumerType.toUpperCase().trim()
+          : "CONSUMER";
+
+      const isVendorType = consumerType === "VENDOR" || consumerType === "VENDORS";
+      const isConsumerType = consumerType === "CONSUMER";
+      const isEveryoneType = consumerType === "EVERYONE";
+
+      const categoryId = Number(productData?.categoryId || 0);
+      const categoryLocation = productData?.categoryLocation;
+      const categoryConnections = productData?.categoryConnections;
+
+      const isCategoryMatch = checkCategoryConnection(
+        vendorBusinessCategoryIds,
+        categoryId,
+        categoryLocation,
+        categoryConnections,
+      );
+
+      const vendorDiscountValue = Number(
+        productData?.vendorDiscount ?? cartItem?.productPriceDetails?.vendorDiscount ?? 0,
+      );
+      const vendorDiscountType =
+        productData?.vendorDiscountType || cartItem?.productPriceDetails?.vendorDiscountType;
+
+      const consumerDiscountValue = Number(
+        productData?.consumerDiscount ?? cartItem?.productPriceDetails?.consumerDiscount ?? 0,
+      );
+      const consumerDiscountType =
+        productData?.consumerDiscountType || cartItem?.productPriceDetails?.consumerDiscountType;
+
+      let discount = 0;
+      let discountType: string | undefined;
+
+      if (currentTradeRole && currentTradeRole !== "BUYER") {
+        if (isVendorType || isEveryoneType) {
+          let eligibleForVendorDiscount = isCategoryMatch;
+
+          if (!eligibleForVendorDiscount && vendorDiscountValue > 0 && vendorDiscountType) {
+            eligibleForVendorDiscount = true;
+          }
+
+          if (eligibleForVendorDiscount && vendorDiscountValue > 0 && vendorDiscountType) {
+            discount = vendorDiscountValue;
+            discountType = vendorDiscountType;
+          } else if (isEveryoneType && consumerDiscountValue > 0 && consumerDiscountType) {
+            discount = consumerDiscountValue;
+            discountType = consumerDiscountType;
+          }
+        }
+      } else {
+        if (isConsumerType || isEveryoneType) {
+          if (consumerDiscountValue > 0 && consumerDiscountType) {
+            discount = consumerDiscountValue;
+            discountType = consumerDiscountType;
+          }
+        }
+      }
+
+      let finalPrice = originalPrice;
+      if (discount > 0 && discountType) {
+        const normalizedDiscountType = discountType.toString().toUpperCase().trim();
+        if (normalizedDiscountType === "PERCENTAGE") {
+          finalPrice = originalPrice * (1 - discount / 100);
+        } else if (
+          normalizedDiscountType === "AMOUNT" ||
+          normalizedDiscountType === "FLAT" ||
+          normalizedDiscountType === "FIXED"
+        ) {
+          finalPrice = originalPrice - discount;
+        }
+      }
+
+      const backendOfferPrice = Number(
+        cartPriceDetails?.offerPrice ?? cartItem?.offerPrice ?? 0,
+      );
+
+      if (backendOfferPrice > 0) {
+        finalPrice = finalPrice > 0 ? Math.min(finalPrice, backendOfferPrice) : backendOfferPrice;
+      }
+
+      if (backendOriginalPrice > 0) {
+        originalPrice = originalPrice > 0 ? Math.max(originalPrice, backendOriginalPrice) : backendOriginalPrice;
+      }
+
+      if (!Number.isFinite(finalPrice) || finalPrice < 0) {
+        finalPrice = 0;
+      }
+
+      if (!Number.isFinite(originalPrice) || originalPrice < 0) {
+        originalPrice = 0;
+      }
+
+      const unitPrice = Number(finalPrice.toFixed(2));
+      const originalUnitPrice = Number(originalPrice.toFixed(2));
+      const totalPrice = Number((unitPrice * quantity).toFixed(2));
+      const originalTotalPrice = Number((originalUnitPrice * quantity).toFixed(2));
+
+      if (process.env.NODE_ENV !== "production") {
+        console.log("Computed pricing", {
+          originalPrice,
+          finalPrice,
+          discount,
+          discountType,
+          quantity,
+          totalPrice,
+          originalTotalPrice,
+        });
+        console.groupEnd();
+      }
+
+      return {
+        unitPrice,
+        totalPrice,
+        originalUnitPrice,
+        originalTotalPrice,
+      };
+    },
+    [currentTradeRole, vendorBusinessCategoryIds],
+  );
 
   const getProductVariants = async () => {
     let productPriceIds = memoizedProductList
@@ -850,10 +1075,10 @@ const TrendingPage = (props0: TrendingPageProps) => {
                   {/* Product Count */}
                   <div className="flex-1 sm:flex-none">
                     <p className="text-base sm:text-lg font-semibold text-gray-800" dir={langDir} translate="no">
-                      {t("n_products_found", {
-                        n: totalCount,
-                      })}
-                    </p>
+                    {t("n_products_found", {
+                      n: totalCount,
+                    })}
+                  </p>
                   </div>
                 </div>
 
@@ -862,56 +1087,56 @@ const TrendingPage = (props0: TrendingPageProps) => {
                   {/* Sort Dropdown */}
                   <Select onValueChange={(e) => setSortBy(e)} value={sortBy}>
                     <SelectTrigger className="w-full sm:w-[180px] h-10 bg-white border-gray-300">
-                      <SelectValue
-                        placeholder={t("sort_by")}
-                        dir={langDir}
-                        translate="no"
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectItem
-                          value="desc"
-                          dir={langDir}
-                          translate="no"
-                        >
-                          {t("sort_by_latest")}
-                        </SelectItem>
-                        <SelectItem
-                          value="asc"
-                          dir={langDir}
-                          translate="no"
-                        >
-                          {t("sort_by_oldest")}
-                        </SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
+                          <SelectValue
+                            placeholder={t("sort_by")}
+                            dir={langDir}
+                            translate="no"
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectItem
+                              value="desc"
+                              dir={langDir}
+                              translate="no"
+                            >
+                              {t("sort_by_latest")}
+                            </SelectItem>
+                            <SelectItem
+                              value="asc"
+                              dir={langDir}
+                              translate="no"
+                            >
+                              {t("sort_by_oldest")}
+                            </SelectItem>
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
 
                   {/* View Type Buttons */}
                   <div className="hidden sm:flex items-center gap-2 bg-white border border-gray-300 rounded-lg p-1">
-                    <button
-                      type="button"
+                      <button
+                        type="button"
                       className={`p-2 rounded transition-colors ${
                         viewType === "grid" 
                           ? "bg-blue-600 text-white" 
                           : "text-gray-600 hover:bg-gray-100"
                       }`}
-                      onClick={() => setViewType("grid")}
-                    >
-                      <GridIcon active={viewType === "grid"} />
-                    </button>
-                    <button
-                      type="button"
+                        onClick={() => setViewType("grid")}
+                      >
+                        <GridIcon active={viewType === "grid"} />
+                      </button>
+                      <button
+                        type="button"
                       className={`p-2 rounded transition-colors ${
                         viewType === "list" 
                           ? "bg-blue-600 text-white" 
                           : "text-gray-600 hover:bg-gray-100"
                       }`}
-                      onClick={() => setViewType("list")}
-                    >
-                      <ListIcon active={viewType === "list"} />
-                    </button>
+                        onClick={() => setViewType("list")}
+                      >
+                        <ListIcon active={viewType === "list"} />
+                      </button>
                   </div>
                 </div>
               </div>
@@ -987,12 +1212,12 @@ const TrendingPage = (props0: TrendingPageProps) => {
                 </div>
               ) : null}
 
-              <Pagination
-                page={page}
-                setPage={setPage}
-                totalCount={totalCount}
-                limit={limit}
-              />
+                <Pagination
+                  page={page}
+                  setPage={setPage}
+                  totalCount={totalCount}
+                  limit={limit}
+                />
                 </TabsContent>
 
                 <TabsContent value="vendors" className="space-y-6">
@@ -1061,32 +1286,15 @@ const TrendingPage = (props0: TrendingPageProps) => {
                               </p>
                               <div className="text-right">
                                 {(() => {
-                                  const originalPrice = parseFloat(productData?.productPrice || "0");
-                                  const basePrice = parseFloat(productData?.productProductPrice || productData?.productPrice || "0");
-                                  const consumerDiscount = parseFloat(productData?.consumerDiscount || "0");
-                                  const consumerDiscountType = productData?.consumerDiscountType;
-                                  
-                                  // Calculate discounted price
-                                  let discountedPrice = basePrice;
-                                  if (consumerDiscount > 0) {
-                                    if (consumerDiscountType === 'PERCENTAGE') {
-                                      discountedPrice = basePrice * (1 - consumerDiscount / 100);
-                                    } else if (consumerDiscountType === 'AMOUNT' || consumerDiscountType === 'FLAT') {
-                                      discountedPrice = basePrice - consumerDiscount;
-                                    }
-                                  }
-                                  
-                                  const quantity = cartItem.quantity || 1;
-                                  const totalPrice = discountedPrice * quantity;
-                                  
+                                  const pricing = getCartPricing(productData, cartItem);
                                   return (
                                     <>
                                       <p className="text-sm font-semibold text-green-600">
-                                        {currency.symbol}{totalPrice.toFixed(2)}
+                                        {currency.symbol}{pricing.totalPrice.toFixed(2)}
                                       </p>
-                                      {discountedPrice < originalPrice && (
+                                      {pricing.originalTotalPrice > pricing.totalPrice && (
                                         <p className="text-xs text-gray-500 line-through">
-                                          {currency.symbol}{(originalPrice * quantity).toFixed(2)}
+                                          {currency.symbol}{pricing.originalTotalPrice.toFixed(2)}
                                         </p>
                                       )}
                                     </>
@@ -1360,31 +1568,15 @@ const TrendingPage = (props0: TrendingPageProps) => {
                               </p>
                               <div className="text-right">
                                 {(() => {
-                                  const originalPrice = parseFloat(productData?.productPrice || "0");
-                                  const basePrice = parseFloat(productData?.productProductPrice || productData?.productPrice || "0");
-                                  const consumerDiscount = parseFloat(productData?.consumerDiscount || "0");
-                                  const consumerDiscountType = productData?.consumerDiscountType;
-                                  
-                                  let discountedPrice = basePrice;
-                                  if (consumerDiscount > 0) {
-                                    if (consumerDiscountType === 'PERCENTAGE') {
-                                      discountedPrice = basePrice * (1 - consumerDiscount / 100);
-                                    } else if (consumerDiscountType === 'AMOUNT' || consumerDiscountType === 'FLAT') {
-                                      discountedPrice = basePrice - consumerDiscount;
-                                    }
-                                  }
-                                  
-                                  const quantity = cartItem.quantity || 1;
-                                  const totalPrice = discountedPrice * quantity;
-                                  
+                                  const pricing = getCartPricing(productData, cartItem);
                                   return (
                                     <>
                                       <p className="text-sm font-semibold text-green-600">
-                                        {currency.symbol}{totalPrice.toFixed(2)}
+                                        {currency.symbol}{pricing.totalPrice.toFixed(2)}
                                       </p>
-                                      {discountedPrice < originalPrice && (
+                                      {pricing.originalTotalPrice > pricing.totalPrice && (
                                         <p className="text-xs text-gray-500 line-through">
-                                          {currency.symbol}{(originalPrice * quantity).toFixed(2)}
+                                          {currency.symbol}{pricing.originalTotalPrice.toFixed(2)}
                                         </p>
                                       )}
                                     </>

@@ -2,6 +2,10 @@ import { useAuth } from "@/context/AuthContext";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import React from "react";
+import { useVendorBusinessCategories } from "@/hooks/useVendorBusinessCategories";
+import { checkCategoryConnection } from "@/utils/categoryConnection";
+import { useCategory } from "@/apis/queries/category.queries";
+import { useCurrentAccount } from "@/apis/queries/auth.queries";
 
 type SellerCardProps = {
   productId: number;
@@ -22,6 +26,9 @@ type SellerCardProps = {
   sellerId?: number;
   soldByTradeRole?: string;
   onChooseSeller?: () => void;
+  categoryId?: number;
+  categoryLocation?: string;
+  consumerType?: "CONSUMER" | "VENDORS" | "EVERYONE";
 };
 
 const SellerCard: React.FC<SellerCardProps> = ({
@@ -43,29 +50,80 @@ const SellerCard: React.FC<SellerCardProps> = ({
   sellerId,
   soldByTradeRole,
   onChooseSeller,
+  categoryId,
+  categoryLocation,
+  consumerType,
 }) => {
   const t = useTranslations();
   const { user, langDir, currency } = useAuth();
+  const currentAccount = useCurrentAccount();
+  const vendorBusinessCategoryIds = useVendorBusinessCategories();
+
+  // Get the current account's trade role (for multi-account system)
+  const currentTradeRole = currentAccount?.data?.data?.account?.tradeRole || user?.tradeRole;
+  
+  // Fetch product category data to get connections (only if vendor and categoryId exists)
+  const productCategoryQuery = useCategory(
+    categoryId?.toString(),
+    !!(currentTradeRole && currentTradeRole !== "BUYER" && categoryId)
+  );
+  
+  const categoryConnections = productCategoryQuery?.data?.data?.category_categoryIdDetail || [];
+  
   const calculateDiscountedPrice = () => {
     const price = productProductPrice ? Number(productProductPrice) : 0;
+    const productConsumerType = consumerType || "CONSUMER";
+    
+    // Check if vendor business category matches product category
+    const isCategoryMatch = checkCategoryConnection(
+      vendorBusinessCategoryIds,
+      categoryId || 0,
+      categoryLocation,
+      categoryConnections
+    );
+    
     let discount = consumerDiscount || 0;
     let discountType = consumerDiscountType;
     
-    // For non-BUYER users, try vendor discount first, but fall back to consumer discount if vendor discount is not available
-    if (user?.tradeRole && user.tradeRole != 'BUYER') {
-      if (vendorDiscount && vendorDiscount > 0) {
-        discount = vendorDiscount;
-        discountType = vendorDiscountType;
+    // Apply discount logic based on your table
+    if (currentTradeRole && currentTradeRole !== "BUYER") {
+      // VENDOR (V) or EVERYONE (E) as vendor
+      if (isCategoryMatch) {
+        // Same relation - Vendor gets vendor discount
+        if (vendorDiscount && vendorDiscount > 0) {
+          discount = vendorDiscount;
+          discountType = vendorDiscountType;
+        } else {
+          // No vendor discount available, no discount
+          discount = 0;
+        }
+      } else {
+        // Not same relation
+        if (productConsumerType === "EVERYONE") {
+          // E + Not Same relation → Consumer Discount
+          discount = consumerDiscount || 0;
+          discountType = consumerDiscountType;
+        } else {
+          // V + Not Same relation → No Discount
+          discount = 0;
+        }
       }
-      // If vendor discount is not available, keep using consumer discount
+    } else {
+      // CONSUMER (C) - Always gets consumer discount
+      discount = consumerDiscount || 0;
+      discountType = consumerDiscountType;
     }
-    if (discountType == 'PERCENTAGE') {
-      return Number((price - (price * discount) / 100).toFixed(2));
-    } else if (discountType == 'FLAT') {
-      return Number((price - discount).toFixed(2));
+    
+    // Calculate final price
+    if (discount > 0 && discountType) {
+      if (discountType === "PERCENTAGE") {
+        return Number((price - (price * discount) / 100).toFixed(2));
+      } else if (discountType === "FLAT") {
+        return Number((price - discount).toFixed(2));
+      }
     }
-    // Default fallback for any other discount type
-    return Number((price - discount).toFixed(2));
+    
+    return price;
   };
 
   return (

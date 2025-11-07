@@ -1,12 +1,15 @@
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import MinusIcon from "@/public/images/upDownBtn-minus.svg";
 import PlusIcon from "@/public/images/upDownBtn-plus.svg";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 import { Trash2, Heart } from "lucide-react";
+import { useCurrentAccount } from "@/apis/queries/auth.queries";
+import { useVendorBusinessCategories } from "@/hooks/useVendorBusinessCategories";
+import { checkCategoryConnection } from "@/utils/categoryConnection";
 
 type ProductCardProps = {
   cartId: number;
@@ -25,6 +28,10 @@ type ProductCardProps = {
   consumerDiscountType?: string;
   vendorDiscount: number;
   vendorDiscountType?: string;
+  consumerType?: string;
+  categoryId?: number;
+  categoryLocation?: string;
+  categoryConnections?: any[];
   invalidProduct?: boolean;
   cannotBuy?: boolean;
 };
@@ -46,33 +53,102 @@ const ProductCard: React.FC<ProductCardProps> = ({
   consumerDiscountType,
   vendorDiscount,
   vendorDiscountType,
+  consumerType,
+  categoryId,
+  categoryLocation,
+  categoryConnections,
   invalidProduct,
   cannotBuy
 }) => {
   const t = useTranslations();
   const { user, langDir, currency } = useAuth();
+  const currentAccount = useCurrentAccount();
+  const vendorBusinessCategoryIds = useVendorBusinessCategories() ?? [];
+  const currentTradeRole = currentAccount?.data?.data?.account?.tradeRole || user?.tradeRole;
   const [quantity, setQuantity] = useState(1);
 
-  const calculateDiscountedPrice = () => {
+  const applicablePrice = useMemo(() => {
     const price = offerPrice ? Number(offerPrice) : 0;
-    let discount = consumerDiscount || 0;
-    let discountType = consumerDiscountType;
-    if (user?.tradeRole && user?.tradeRole != 'BUYER') {
-      discount = vendorDiscount || 0;
-      discountType = vendorDiscountType;
+    if (!price) return 0;
+
+    const normalizedConsumerType =
+      typeof consumerType === "string" ? consumerType.toUpperCase().trim() : "";
+    const isVendorType = normalizedConsumerType === "VENDOR" || normalizedConsumerType === "VENDORS";
+    const isConsumerType = normalizedConsumerType === "CONSUMER";
+    const isEveryoneType = normalizedConsumerType === "EVERYONE";
+
+    const isCategoryMatch = checkCategoryConnection(
+      vendorBusinessCategoryIds,
+      Number(categoryId || 0),
+      categoryLocation,
+      categoryConnections,
+    );
+
+    const vendorDiscountValue = Number(vendorDiscount || 0);
+    const normalizedVendorDiscountType = vendorDiscountType
+      ? vendorDiscountType.toString().toUpperCase().trim()
+      : undefined;
+
+    const consumerDiscountValue = Number(consumerDiscount || 0);
+    const normalizedConsumerDiscountType = consumerDiscountType
+      ? consumerDiscountType.toString().toUpperCase().trim()
+      : undefined;
+
+    let discount = 0;
+    let discountType: string | undefined;
+
+    if (currentTradeRole && currentTradeRole !== "BUYER") {
+      if (isVendorType || isEveryoneType) {
+        let eligibleForVendorDiscount = isCategoryMatch;
+
+        if (!eligibleForVendorDiscount && vendorDiscountValue > 0 && normalizedVendorDiscountType) {
+          eligibleForVendorDiscount = true;
+        }
+
+        if (eligibleForVendorDiscount && vendorDiscountValue > 0 && normalizedVendorDiscountType) {
+          discount = vendorDiscountValue;
+          discountType = normalizedVendorDiscountType;
+        } else if (
+          isEveryoneType &&
+          consumerDiscountValue > 0 &&
+          normalizedConsumerDiscountType
+        ) {
+          discount = consumerDiscountValue;
+          discountType = normalizedConsumerDiscountType;
+        }
+      }
+    } else {
+      if (isConsumerType || isEveryoneType) {
+        if (consumerDiscountValue > 0 && normalizedConsumerDiscountType) {
+          discount = consumerDiscountValue;
+          discountType = normalizedConsumerDiscountType;
+        }
+      }
     }
-    if (discountType == 'PERCENTAGE') {
-      return Number((price - (price * discount) / 100).toFixed(2));
-    } else if (discountType == 'FIXED' || discountType == 'FLAT') {
-      return Number((price - discount).toFixed(2));
+
+    if (discount > 0 && discountType) {
+      if (discountType === "PERCENTAGE") {
+        return Number((price - (price * discount) / 100).toFixed(2));
+      }
+      if (discountType === "FLAT" || discountType === "FIXED" || discountType === "AMOUNT") {
+        return Number((price - discount).toFixed(2));
+      }
     }
-    // If no discount or discount type, return original price
-    if (!discount) {
-      return price;
-    }
-    // Default fallback for any other discount type
-    return Number((price - discount).toFixed(2));
-  };
+
+    return price;
+  }, [
+    offerPrice,
+    consumerDiscount,
+    consumerDiscountType,
+    vendorDiscount,
+    vendorDiscountType,
+    consumerType,
+    categoryId,
+    categoryLocation,
+    categoryConnections,
+    currentTradeRole,
+    vendorBusinessCategoryIds,
+  ]);
 
   useEffect(() => {
     setQuantity(productQuantity);
@@ -199,10 +275,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <div className="text-xl font-bold text-gray-900" dir={langDir}>
               {invalidProduct || cannotBuy ? (
                 <span className="line-through text-gray-500">
-                  {currency.symbol}{quantity * calculateDiscountedPrice()}
+                  {currency.symbol}{quantity * applicablePrice}
                 </span>
               ) : (
-                `${currency.symbol}${quantity * calculateDiscountedPrice()}`
+                `${currency.symbol}${quantity * applicablePrice}`
               )}
             </div>
             {invalidProduct || cannotBuy ? (

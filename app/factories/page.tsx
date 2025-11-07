@@ -833,6 +833,9 @@ const FactoriesPage = (props: FactoriesPageProps) => {
                                 )}
                                 haveAccessToken={haveAccessToken}
                                 productPrices={item?.product_productPrice}
+                                categoryId={item?.categoryId}
+                                categoryLocation={item?.categoryLocation}
+                                consumerType={item?.product_productPrice?.[0]?.consumerType}
                               />
                             );
                           })}

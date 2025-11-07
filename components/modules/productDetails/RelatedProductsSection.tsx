@@ -121,6 +121,9 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
           vendorDiscount: item?.product_productPrice?.[0]?.vendorDiscount,
           vendorDiscountType: item?.product_productPrice?.[0]?.vendorDiscountType,
           askForPrice: item?.product_productPrice?.[0]?.askForPrice,
+          categoryId: item?.categoryId,
+          categoryLocation: item?.categoryLocation,
+          consumerType: item?.product_productPrice?.[0]?.consumerType,
         })) || []
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -338,6 +341,9 @@ const RelatedProductsSection: React.FC<RelatedProductsSectionProps> = ({
                     vendorDiscount={item?.vendorDiscount}
                     vendorDiscountType={item?.vendorDiscountType}
                     askForPrice={item?.askForPrice}
+                    categoryId={item?.categoryId}
+                    categoryLocation={item?.categoryLocation}
+                    consumerType={item?.consumerType}
                   />
                 </div>
               ))}

@@ -125,6 +125,9 @@ export interface TrendingProduct {
   askForPrice?: string;
   productPrices?: any[];
   sold?: number;
+  categoryId?: number;
+  categoryLocation?: string;
+  consumerType?: "CONSUMER" | "VENDORS" | "EVERYONE";
 }
 
 export type ProductImageProps = {

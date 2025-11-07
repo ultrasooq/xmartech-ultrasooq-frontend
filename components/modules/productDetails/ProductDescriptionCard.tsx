@@ -25,6 +25,10 @@ import { useProductVariant } from "@/apis/queries/product.queries";
 import { Label } from "@/components/ui/label";
 import { Select, SelectItem } from "@/components/ui/select";
 import { SelectContent } from "@radix-ui/react-select";
+import { useVendorBusinessCategories } from "@/hooks/useVendorBusinessCategories";
+import { checkCategoryConnection } from "@/utils/categoryConnection";
+import { useCategory } from "@/apis/queries/category.queries";
+import { useCurrentAccount } from "@/apis/queries/auth.queries";
 
 type ProductDescriptionCardProps = {
   productId: string;
@@ -36,6 +40,9 @@ type ProductDescriptionCardProps = {
   skuNo: string;
   productTags: any[];
   category: string;
+  categoryId?: number;
+  categoryLocation?: string;
+  consumerType?: "CONSUMER" | "VENDORS" | "EVERYONE";
   productShortDescription: any[];
   productQuantity: number;
   productReview: { rating: number }[];
@@ -92,6 +99,9 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   skuNo,
   productTags,
   category,
+  categoryId,
+  categoryLocation,
+  consumerType,
   productShortDescription,
   productQuantity = 0, // Default to 1 if undefined
   productReview,
@@ -135,6 +145,20 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
 }) => {
   const t = useTranslations();
   const { user, langDir, currency } = useAuth();
+  const currentAccount = useCurrentAccount();
+  const vendorBusinessCategoryIds = useVendorBusinessCategories();
+
+  // Get the current account's trade role (for multi-account system)
+  const currentTradeRole = currentAccount?.data?.data?.account?.tradeRole || user?.tradeRole;
+  
+  // Fetch product category data to get connections (only if vendor and categoryId exists)
+  const productCategoryQuery = useCategory(
+    categoryId?.toString(),
+    !!(currentTradeRole && currentTradeRole !== "BUYER" && categoryId)
+  );
+  
+  const categoryConnections = productCategoryQuery?.data?.data?.category_categoryIdDetail || [];
+  
   const [selectedProductVariants, setSelectedProductVariants] = useState<any>(
     selectedProductVariant,
   );
@@ -175,23 +199,68 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
       return offerPriceValue;
     }
     
+    // Normalize consumerType to uppercase and handle both "VENDOR" and "VENDORS"
+    const rawConsumerType = consumerType || "CONSUMER";
+    const productConsumerType = typeof rawConsumerType === "string" 
+      ? rawConsumerType.toUpperCase().trim() 
+      : "CONSUMER";
+    
+    // Check if it's a vendor type (VENDOR or VENDORS)
+    const isVendorType = productConsumerType === "VENDOR" || productConsumerType === "VENDORS";
+    const isConsumerType = productConsumerType === "CONSUMER";
+    const isEveryoneType = productConsumerType === "EVERYONE";
+    
+    // Check if vendor business category matches product category
+    const isCategoryMatch = checkCategoryConnection(
+      vendorBusinessCategoryIds,
+      categoryId || 0,
+      categoryLocation,
+      categoryConnections
+    );
+    
     let discount = consumerDiscount || 0;
     let discountType = consumerDiscountType;
     
-    // For non-BUYER users, try vendor discount first, but fall back to consumer discount if vendor discount is not available
-    if (user?.tradeRole && user.tradeRole != "BUYER") {
-      if (vendorDiscount && vendorDiscount > 0) {
-        discount = vendorDiscount;
-        discountType = vendorDiscountType;
+    // Apply discount logic based on your table
+    if (currentTradeRole && currentTradeRole !== "BUYER") {
+      // VENDOR (V) or EVERYONE (E) as vendor
+      if (isCategoryMatch) {
+        // Same relation - Vendor gets vendor discount
+        if (vendorDiscount && vendorDiscount > 0) {
+          discount = vendorDiscount;
+          discountType = vendorDiscountType;
+        } else {
+          // No vendor discount available, no discount
+          discount = 0;
+        }
+      } else {
+        // Not same relation
+        if (isEveryoneType) {
+          // E + Not Same relation → Consumer Discount
+          discount = consumerDiscount || 0;
+          discountType = consumerDiscountType;
+        } else {
+          // V + Not Same relation → No Discount
+          discount = 0;
+        }
       }
-      // If vendor discount is not available, keep using consumer discount
+    } else {
+      // CONSUMER (BUYER) - Gets consumer discount if consumerType is CONSUMER or EVERYONE
+      // NO discount if consumerType is VENDOR or VENDORS
+      if (isConsumerType || isEveryoneType) {
+        discount = consumerDiscount || 0;
+        discountType = consumerDiscountType;
+      } else {
+        // consumerType is VENDOR/VENDORS - no discount for buyers
+        discount = 0;
+      }
     }
     
-    // Only apply discount if we have valid discount values
+    // Calculate final price
     if (discount > 0 && discountType) {
-      if (discountType == "PERCENTAGE") {
+      if (discountType === "PERCENTAGE") {
         return Number((price - (price * discount) / 100).toFixed(2));
-      } else if (discountType == "FLAT") {
+      } else if (discountType === "FLAT") {
         return Number((price - discount).toFixed(2));
       }
     }
