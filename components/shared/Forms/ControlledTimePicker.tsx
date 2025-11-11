@@ -75,9 +75,9 @@ const ControlledTimePicker: React.FC<ControlledTimePickerProps> = ({
                 >
                   <div className="flex items-center justify-between w-full">
                     <span>
-                      {field.value ? (
+                  {field.value ? (
                         timeOptions.find(option => option.value === field.value)?.label || field.value
-                      ) : (
+                  ) : (
                         t("select") + " " + (label || t("time"))
                       )}
                     </span>
@@ -114,7 +114,7 @@ const ControlledTimePicker: React.FC<ControlledTimePickerProps> = ({
                           <span className="text-xs opacity-70">{option.value}</span>
                         </div>
                       </button>
-                    ))}
+                ))}
                   </div>
                 </ScrollArea>
               </div>
