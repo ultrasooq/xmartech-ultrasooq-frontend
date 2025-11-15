@@ -48,7 +48,6 @@ export const useAddQuestion = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -70,7 +69,6 @@ export const useUpdateAnswer = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -111,7 +109,6 @@ export const useAddServiceQuestion = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -133,7 +130,6 @@ export const useUpdateServiceAnswer = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };

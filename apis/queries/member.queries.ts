@@ -19,7 +19,6 @@ export const useCreateMember = () => {
         });
       },
       onError: (err: APIResponseError) => {
-        console.log(err);
       },
     });
   };
@@ -40,7 +39,6 @@ export const useCreateMember = () => {
           });
         },
         onError: (err: APIResponseError) => {
-          console.log(err);
         },
       });
     };
@@ -87,7 +85,6 @@ export const useCreateMember = () => {
           });
         },
         onError: (err: APIResponseError) => {
-          console.log(err);
         },
       });
     };
@@ -121,7 +118,6 @@ export const useCreateMember = () => {
         });
       },
       onError: (err: APIResponseError) => {
-        console.log(err);
       },
     });
   };

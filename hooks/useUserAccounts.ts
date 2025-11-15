@@ -51,7 +51,6 @@ export const useUserAccounts = (userIds: number[]) => {
             }
             return null;
           } catch (err) {
-            console.error(`Error fetching user ${userId}:`, err);
             return {
               userId,
               data: {
@@ -80,7 +79,6 @@ export const useUserAccounts = (userIds: number[]) => {
 
         setUsersData(newUsersMap);
       } catch (err) {
-        console.error("Error fetching users:", err);
         setError(err);
       } finally {
         setIsLoading(false);

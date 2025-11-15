@@ -680,7 +680,6 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
               }));
             }
           } catch (error) {
-            console.error(`Error fetching states for country ${country.value}:`, error);
           }
         }
         
@@ -714,7 +713,6 @@ const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
               }));
             }
           } catch (error) {
-            console.error(`Error fetching cities for state ${state.value}:`, error);
           }
         }
         

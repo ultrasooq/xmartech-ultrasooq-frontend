@@ -63,7 +63,6 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         try {
           // Check file size (max 5MB before compression)
           if (file.size > 5 * 1024 * 1024) {
-            console.warn(`File ${file.name} is too large, compressing...`);
           }
           
           // Compress the image
@@ -76,7 +75,6 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
             onImagesChange(updatedImages);
           }
         } catch (error) {
-          console.error('Error compressing image:', error);
           // Fallback to original file if compression fails
           const reader = new FileReader();
           reader.onload = (e) => {

@@ -147,9 +147,6 @@ const ExistingProductsPage = () => {
       productId: item,
       status: "INACTIVE",
     }));
-    console.log({
-      productPrice: data,
-    });
     // return;
     const response = await addMultiplePriceForProductIds.mutateAsync({
       productPrice: data,

@@ -214,7 +214,6 @@ export default function EditBranchPage() {
       branchId: Number(activeBranchId),
     };
 
-    console.log(data);
     // return;
     const response = await updateFreelancerBranch.mutateAsync(data);
 

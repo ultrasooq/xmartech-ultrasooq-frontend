@@ -36,7 +36,6 @@ export const useCreateCompanyProfile = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -66,7 +65,6 @@ export const useUpdateCompanyProfile = () => {
       queryClient.refetchQueries({ queryKey: ["unique-user"] });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -91,7 +89,6 @@ export const useUpdateCompanyBranch = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -125,7 +122,6 @@ export const useCreateCompanyBranch = () => {
       queryClient.refetchQueries({ queryKey: ["unique-user"] });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };

@@ -38,7 +38,6 @@ export const useSubmitQuery = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 }

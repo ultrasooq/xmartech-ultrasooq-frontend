@@ -24,7 +24,6 @@ export const useCreateService = () => {
       //   });
     },
     onError: (err: any) => {
-      console.log(err);
     },
   });
 };
@@ -50,7 +49,6 @@ export const useUpdateService = () => {
       //   });
     },
     onError: (err: any) => {
-      console.log(err);
     },
   });
 };
@@ -126,7 +124,6 @@ export const useAddServiceToCart = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };

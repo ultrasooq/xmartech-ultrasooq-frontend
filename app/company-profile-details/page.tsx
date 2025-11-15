@@ -53,8 +53,6 @@ export default function CompanyProfileDetailsPage() {
   // Debug log to see what data we're getting
   useEffect(() => {
     if (me.data?.data) {
-      console.log("User data:", me.data.data);
-      console.log("User branches:", me.data.data.userBranch);
     }
   }, [me.data]);
 

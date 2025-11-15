@@ -78,7 +78,6 @@ export const useDepositToWallet = () => {
       queryClient.invalidateQueries({ queryKey: ["wallet", "transactions"] });
     },
     onError: (error: APIResponseError) => {
-      console.error("Deposit failed:", error);
     },
   });
 };
@@ -93,7 +92,6 @@ export const useWithdrawFromWallet = () => {
       queryClient.invalidateQueries({ queryKey: ["wallet", "transactions"] });
     },
     onError: (error: APIResponseError) => {
-      console.error("Withdrawal failed:", error);
     },
   });
 };
@@ -108,7 +106,6 @@ export const useTransferToUser = () => {
       queryClient.invalidateQueries({ queryKey: ["wallet", "transactions"] });
     },
     onError: (error: APIResponseError) => {
-      console.error("Transfer failed:", error);
     },
   });
 };
@@ -122,7 +119,6 @@ export const useUpdateWalletSettings = () => {
       queryClient.invalidateQueries({ queryKey: ["wallet", "settings"] });
     },
     onError: (error: APIResponseError) => {
-      console.error("Settings update failed:", error);
     },
   });
 };
@@ -157,7 +153,6 @@ export const useUpdateWalletStatus = () => {
       queryClient.invalidateQueries({ queryKey: ["wallet", "balance"] });
     },
     onError: (error: APIResponseError) => {
-      console.error("Wallet status update failed:", error);
     },
   });
 };

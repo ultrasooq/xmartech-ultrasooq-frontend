@@ -104,10 +104,47 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [catList, setCatList] = useState<any[]>([]);
   const [listIds, setListIds] = useState<string[]>([]);
+  const [hasInitializedCategories, setHasInitializedCategories] = useState(false);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const createTag = useCreateTag();
   const t = useTranslations();
   const { langDir } = useAuth();
+
+  // Helper function to recursively find a category in the hierarchy
+  const findCategoryInHierarchy = (categories: any[], targetId: string | number): any => {
+    if (!categories || !Array.isArray(categories)) return null;
+    
+    for (const category of categories) {
+      if (category.id?.toString() === targetId?.toString() || Number(category.id) === Number(targetId)) {
+        return category;
+      }
+      if (category.children && category.children.length > 0) {
+        const found = findCategoryInHierarchy(category.children, targetId);
+        if (found) return found;
+      }
+    }
+    return null;
+  };
+
+  // Helper function to find the root category that contains a target category
+  const findRootCategoryForTarget = (categories: any[], targetId: string | number): any => {
+    if (!categories || !Array.isArray(categories)) return null;
+    
+    for (const category of categories) {
+      // Check if this category itself matches
+      if (category.id?.toString() === targetId?.toString() || Number(category.id) === Number(targetId)) {
+        return category;
+      }
+      // Check if target is in this category's children/descendants
+      if (category.children && category.children.length > 0) {
+        const found = findCategoryInHierarchy(category.children, targetId);
+        if (found) {
+          return category; // Return the root category that contains the target
+        }
+      }
+    }
+    return null;
+  };
 
   const watchProductImages = formContext.watch("productImages");
 
@@ -173,10 +210,97 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
     [currentId],
   );
 
+  // Reset state when selectedCategoryIds changes (for edit mode)
   useEffect(() => {
-    if (selectedCategoryIds?.length && catList?.length && !listIds.length) {
-      setCurrentId(selectedCategoryIds[currentIndex]);
-      setCurrentIndex((prevIndex) => prevIndex + 1);
+    if (selectedCategoryIds?.length && !hasInitializedCategories) {
+      setListIds([]);
+      setCurrentIndex(0);
+      setCatList([]);
+      setCurrentId("");
+    } else if (!selectedCategoryIds?.length) {
+      setHasInitializedCategories(false);
+    }
+  }, [selectedCategoryIds, hasInitializedCategories]);
+  
+  // Mark as initialized after catList is set
+  useEffect(() => {
+    if (catList.length > 0 && selectedCategoryIds?.length && !hasInitializedCategories) {
+      setHasInitializedCategories(true);
+    }
+  }, [catList.length, selectedCategoryIds, hasInitializedCategories]);
+
+  // Initialize catList with first category when selectedCategoryIds are provided
+  useEffect(() => {
+    // Check if we should initialize
+    const shouldInitialize = selectedCategoryIds?.length && 
+                             memoizedCategories.length > 0 && 
+                             catList.length === 0 && 
+                             !hasInitializedCategories;
+    
+    if (shouldInitialize) {
+      const firstCategoryId = selectedCategoryIds[0];
+      
+      // Find the category from memoizedCategories
+      const firstCategory = memoizedCategories.find((cat: any) => cat.value?.toString() === firstCategoryId);
+      
+      // First, try to find it directly in top-level categories
+      let categoryFromQuery = null;
+      if (categoryQuery?.data?.data?.children) {
+        categoryFromQuery = categoryQuery.data.data.children.find((item: any) => 
+          item.id?.toString() === firstCategoryId || 
+          Number(item.id) === Number(firstCategoryId)
+        );
+      }
+      
+      // If not found directly, search in the hierarchy (subcategories)
+      if (!categoryFromQuery && categoryQuery?.data?.data?.children) {
+        // Find the root category that contains this target category
+        const rootCategory = findRootCategoryForTarget(categoryQuery.data.data.children, firstCategoryId);
+        
+        if (rootCategory) {
+          // If the root category itself matches, use it
+          if (rootCategory.id?.toString() === firstCategoryId?.toString()) {
+            categoryFromQuery = rootCategory;
+          } else {
+            // Otherwise, we need to load the root category and then navigate to the target
+            categoryFromQuery = rootCategory;
+          }
+        }
+      }
+      
+      if (categoryFromQuery) {
+        setCatList([categoryFromQuery]);
+        setCurrentId(firstCategoryId);
+        setCurrentIndex(1);
+        formContext.setValue("categoryId", Number(firstCategoryId));
+      } else if (firstCategory) {
+        // Fallback: create a minimal category object
+        const minimalCategory = {
+          id: Number(firstCategoryId),
+          name: firstCategory.label,
+          children: []
+        };
+        setCatList([minimalCategory]);
+        setCurrentId(firstCategoryId);
+        setCurrentIndex(1);
+        formContext.setValue("categoryId", Number(firstCategoryId));
+      } else {
+        // Last resort: try to fetch the category directly by ID
+        if (firstCategoryId) {
+          setCurrentId(firstCategoryId);
+          setCurrentIndex(1);
+          formContext.setValue("categoryId", Number(firstCategoryId));
+        }
+      }
+    }
+  }, [selectedCategoryIds, memoizedCategories, catList.length, categoryQuery?.data?.data?.children, hasInitializedCategories, formContext]);
+
+  useEffect(() => {
+    if (selectedCategoryIds?.length && catList?.length && listIds.length < selectedCategoryIds.length) {
+      if (currentIndex < selectedCategoryIds.length) {
+        setCurrentId(selectedCategoryIds[currentIndex]);
+        setCurrentIndex((prevIndex) => prevIndex + 1);
+      }
       if (selectedCategoryIds.length == currentIndex + 1) {
         setListIds(selectedCategoryIds);
       }

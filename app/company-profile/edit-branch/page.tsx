@@ -255,7 +255,6 @@ export default function EditBranchPage() {
       data.proofOfAddress = getProofOfAddressImageUrl;
     }
 
-    console.log(data);
     // return;
     const response = await updateCompanyBranch.mutateAsync(data);
 

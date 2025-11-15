@@ -13,21 +13,12 @@ export const useAccessControl = () => {
   const { data: currentAccount } = useCurrentAccount();
 
   const userStatus = useMemo(() => {
-    console.log("useAccessControl - currentAccount:", currentAccount);
-    console.log("useAccessControl - me:", me?.data?.data);
-
     if (currentAccount?.data?.account?.status) {
-      console.log(
-        "useAccessControl - using currentAccount status:",
-        currentAccount.data.account.status,
-      );
       return currentAccount.data.account.status;
     }
     if (me?.data?.data?.status) {
-      console.log("useAccessControl - using me status:", me.data.data.status);
       return me.data.data.status;
     }
-    console.log("useAccessControl - using default status: WAITING");
     return "WAITING"; // Default fallback
   }, [currentAccount, me?.data?.data]);
 

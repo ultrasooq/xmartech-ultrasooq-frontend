@@ -386,7 +386,6 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
         });
       }
     } catch (error) {
-      console.error('Update error:', error);
       toast({
         title: t("error"),
         description: t("failed_to_update_product"),
@@ -513,19 +512,40 @@ const ManageProductCard: React.FC<ManageProductCardProps> = ({
 
           {/* Product Image */}
           <div className="relative h-24 w-24 overflow-hidden rounded-lg border border-gray-200">
-            <Image
-              src={
-                productImage && validator.isURL(productImage)
-                  ? productImage
-                  : PlaceholderImage
-              }
-              alt="product-image"
-              fill
-              sizes="96px"
-              className="object-cover"
-              blurDataURL="/images/product-placeholder.png"
-              placeholder="blur"
-            />
+            {productImage && validator.isURL(productImage) ? (
+              // Check if the image is from an allowed domain (S3 bucket)
+              productImage.includes('puremoon.s3.amazonaws.com') ? (
+                <Image
+                  src={productImage}
+                  alt="product-image"
+                  fill
+                  sizes="96px"
+                  className="object-cover"
+                  blurDataURL="/images/product-placeholder.png"
+                  placeholder="blur"
+                />
+              ) : (
+                // Use regular img tag for external URLs not in allowed domains
+                <img
+                  src={productImage}
+                  alt="product-image"
+                  className="h-full w-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.src = PlaceholderImage.src;
+                  }}
+                />
+              )
+            ) : (
+              <Image
+                src={PlaceholderImage}
+                alt="product-image"
+                fill
+                sizes="96px"
+                className="object-cover"
+                blurDataURL="/images/product-placeholder.png"
+                placeholder="blur"
+              />
+            )}
           </div>
 
           {/* Product Details */}

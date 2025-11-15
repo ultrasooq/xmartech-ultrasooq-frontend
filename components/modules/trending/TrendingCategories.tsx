@@ -68,7 +68,6 @@ const TrendingCategories = () => {
                       item={{ name: item?.name, path: item?.icon }}
                       isActiveIndex={activeThirdLevelCategoryIndex === index}
                       onActiveCategory={() => {
-                        console.log(item);
                         setActiveThirdLevelCategoryIndex(index);
                       }}
                     />

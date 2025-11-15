@@ -75,7 +75,6 @@ export const useCreateProduct = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -155,7 +154,6 @@ export const useDeleteProduct = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -176,7 +174,6 @@ export const useUpdateProduct = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -432,7 +429,6 @@ export const useAddMultiplePriceForProduct = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -453,7 +449,6 @@ export const useUpdateMultipleProductPrice = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -604,7 +599,6 @@ export const useUpdateProductPriceByProductCondition = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -620,7 +614,6 @@ export const useUpdateProductStatus = () => {
       return res.data;
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -708,7 +701,6 @@ export const useUpdateSingleProduct = () => {
       return res.data;
     },
     onError: (err: APIResponseError) => {
-      console.error("Update product error:", err);
     },
   });
 };
@@ -724,7 +716,6 @@ export const useRemoveProduct = () => {
       return res.data;
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -738,7 +729,6 @@ export const useProductVariant = () => {
     },
     onSuccess: () => {},
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };

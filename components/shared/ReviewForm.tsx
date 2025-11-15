@@ -72,7 +72,6 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ onClose, reviewId }) => {
       productId: Number(searchParams?.id),
     };
 
-    console.log(updatedFormData);
     // return;
 
     if (reviewId) {

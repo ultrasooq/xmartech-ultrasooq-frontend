@@ -100,7 +100,6 @@ export const useCreateOrder = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -128,7 +127,6 @@ export const useCreateOrderUnAuth = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -144,10 +142,8 @@ export const useCreatePaymentIntent = () => {
       return res.data;
     },
     onSuccess: () => {
-      console.log("Intent Created");
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -163,10 +159,8 @@ export const useCreatePaymentLink = () => {
       return res.data;
     },
     onSuccess: () => {
-      console.log("Intent Created");
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -182,10 +176,8 @@ export const useCreateEMIPayment = () => {
       return res.data;
     },
     onSuccess: () => {
-      console.log("Intent Created");
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -264,7 +256,6 @@ export const useUpdateProductStatus = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -286,7 +277,6 @@ export const useUpdateCancelReason = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -311,7 +301,6 @@ export const useUpdateOrderShippingStatus = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -330,7 +319,6 @@ export const usePreOrderCalculation = () => {
 
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -406,7 +394,6 @@ export const useUpdateOrderStatus = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -431,7 +418,6 @@ export const useAddOrderTracking = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };

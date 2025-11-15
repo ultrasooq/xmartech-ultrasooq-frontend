@@ -135,7 +135,6 @@ const RfqCartPage = () => {
       rfqCartIds: memoizedRfqCartList.map((item: any) => item.id),
       rfqDate: formData.rfqDate,
     };
-    console.log(updatedFormData);
     // return;
     const response = await addQuotes.mutateAsync(updatedFormData);
     if (response.status) {

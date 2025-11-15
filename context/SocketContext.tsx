@@ -103,12 +103,10 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
 
       socketIo.on("connect", () => {
         setConnected(true);
-        console.log("Connected to socket server");
       });
 
       socketIo.on("disconnect", () => {
         setConnected(false);
-        console.log("Disconnected from socket server");
       });
 
       socketIo.on("receivedMessage", (message: newMessageType) => {

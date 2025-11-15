@@ -162,7 +162,6 @@ const OrdersPage = () => {
        
          data.paymentMethod = paymentType;
          if (paymentIntentId )  data.paymentIntentId = paymentIntentId;
-        console.log(data) ; 
         const response = await createOrderUnAuth.mutateAsync(data);
 
       if (response?.data) {

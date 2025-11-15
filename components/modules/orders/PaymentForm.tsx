@@ -115,7 +115,6 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
     });
 
     if (error) {
-      console.error(error);
       toast({
         title: t("payment_error"),
         description: error.message,

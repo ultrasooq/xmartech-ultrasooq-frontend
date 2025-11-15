@@ -15,7 +15,6 @@ export const useUploadFile = () =>
     },
     onSuccess: () => {},
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 
@@ -27,7 +26,6 @@ export const useUploadMultipleFile = () =>
     },
     onSuccess: () => {},
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 
@@ -45,6 +43,5 @@ export const useDeleteFile = () =>
     },
     onSuccess: () => {},
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });

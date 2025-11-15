@@ -85,7 +85,6 @@ export const useDeleteMemberRole = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 }
@@ -109,7 +108,6 @@ export const useCreateBrand = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -131,7 +129,6 @@ export const useCreateUserRole = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -153,7 +150,6 @@ export const useCopyUserRole = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -175,7 +171,6 @@ export const useUpdateUserRole = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 }
@@ -223,7 +218,6 @@ export const useFetchStatesByCountry = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -245,7 +239,6 @@ export const useFetchCitiesByState = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };

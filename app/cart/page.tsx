@@ -26,6 +26,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { ShoppingBag } from "lucide-react";
 import { useCurrentAccount } from "@/apis/queries/auth.queries";
 import { useAllProducts } from "@/apis/queries/product.queries";
+import { useCategory } from "@/apis/queries/category.queries";
 
 const CartListPage = () => {
   const t = useTranslations();
@@ -93,6 +94,36 @@ const CartListPage = () => {
     haveAccessToken && uniqueProductIds.length > 0
   );
 
+  // Get unique category IDs from products in cart
+  const uniqueCategoryIds = useMemo(() => {
+    const categoryIds = new Set<number>();
+    if (allProductsQuery?.data?.data) {
+      allProductsQuery.data.data.forEach((product: any) => {
+        if (uniqueProductIds.includes(product.id)) {
+          const categoryId = product?.categoryId ?? product?.category?.id;
+          if (categoryId) {
+            categoryIds.add(categoryId);
+          }
+        }
+      });
+    }
+    return Array.from(categoryIds);
+  }, [allProductsQuery?.data?.data, uniqueProductIds]);
+
+  // Fetch category data for the first category (if vendor)
+  // Note: We fetch one category at a time to avoid hooks rule violations
+  // In practice, most carts will have products from the same category
+  const firstCategoryId = uniqueCategoryIds.length > 0 ? uniqueCategoryIds[0] : undefined;
+  const firstCategoryQuery = useCategory(
+    firstCategoryId?.toString(),
+    !!(currentTradeRole && currentTradeRole !== "BUYER" && firstCategoryId)
+  );
+
+  // For now, we'll use the category connections from the product query
+  // but prioritize fresh data from category query if available
+  // This is a limitation - ideally we'd fetch all categories, but that requires
+  // either a batch API or individual components for each category
+
   // Create a map of productId -> pricing metadata required for discount calculation
   const productPricingInfoMap = useMemo(() => {
     const map = new Map<
@@ -116,22 +147,33 @@ const CartListPage = () => {
             product?.product_productPrice?.find((pp: any) => pp?.status === "ACTIVE") ||
             product?.product_productPrice?.[0];
 
+          const categoryId = product?.categoryId ?? product?.category?.id;
+          
+          // Get fresh category connections - prioritize from category query if it matches
+          // Otherwise fall back to product query data
+          let freshCategoryConnections: any[] = [];
+          if (categoryId === firstCategoryId && firstCategoryQuery?.data?.data?.category_categoryIdDetail) {
+            freshCategoryConnections = firstCategoryQuery.data.data.category_categoryIdDetail;
+          } else if (product?.category?.category_categoryIdDetail) {
+            freshCategoryConnections = product.category.category_categoryIdDetail;
+          }
+
           map.set(product.id, {
             consumerType: activePriceEntry?.consumerType,
             vendorDiscount: activePriceEntry?.vendorDiscount,
             vendorDiscountType: activePriceEntry?.vendorDiscountType,
             consumerDiscount: activePriceEntry?.consumerDiscount,
             consumerDiscountType: activePriceEntry?.consumerDiscountType,
-            categoryId: product?.categoryId ?? product?.category?.id,
+            categoryId: categoryId,
             categoryLocation: product?.categoryLocation ?? product?.category?.categoryLocation,
-            categoryConnections: product?.category?.category_categoryIdDetail || [],
+            categoryConnections: freshCategoryConnections,
           });
         }
       });
     }
 
     return map;
-  }, [allProductsQuery?.data?.data, uniqueProductIds]);
+  }, [allProductsQuery?.data?.data, uniqueProductIds, firstCategoryId, firstCategoryQuery?.data?.data]);
 
   const calculateDiscountedPrice = (
     offerPrice: string | number,
@@ -201,24 +243,37 @@ const CartListPage = () => {
             let applicableDiscountType: string | undefined;
 
             if (currentTradeRole && currentTradeRole !== "BUYER") {
+              // VENDOR user
               if (isVendorType || isEveryoneType) {
-                let eligibleForVendorDiscount = isCategoryMatch;
-
-                if (!eligibleForVendorDiscount && vendorDiscountValue > 0 && normalizedVendorDiscountType) {
-                  eligibleForVendorDiscount = true;
+                // consumerType is VENDOR/VENDORS or EVERYONE - vendor can get vendor discount
+                // BUT category match is REQUIRED for vendor discounts
+                if (isCategoryMatch) {
+                  // Same relation - Vendor gets vendor discount if available
+                  if (vendorDiscountValue > 0 && normalizedVendorDiscountType) {
+                    discount = vendorDiscountValue;
+                    applicableDiscountType = normalizedVendorDiscountType;
+                  } else {
+                    // No vendor discount available, no discount
+                    discount = 0;
+                  }
+                } else {
+                  // Not same relation - No vendor discount
+                  // If consumerType is EVERYONE, fallback to consumer discount
+                  if (isEveryoneType) {
+                    if (consumerDiscountValue > 0 && normalizedConsumerDiscountType) {
+                      discount = consumerDiscountValue;
+                      applicableDiscountType = normalizedConsumerDiscountType;
+                    } else {
+                      discount = 0;
+                    }
+                  } else {
+                    // consumerType is VENDOR/VENDORS but no category match - no discount
+                    discount = 0;
+                  }
                 }
-
-                if (eligibleForVendorDiscount && vendorDiscountValue > 0 && normalizedVendorDiscountType) {
-                  discount = vendorDiscountValue;
-                  applicableDiscountType = normalizedVendorDiscountType;
-                } else if (
-                  isEveryoneType &&
-                  consumerDiscountValue > 0 &&
-                  normalizedConsumerDiscountType
-                ) {
-                  discount = consumerDiscountValue;
-                  applicableDiscountType = normalizedConsumerDiscountType;
-                }
+              } else {
+                // consumerType is CONSUMER - vendors get no discount
+                discount = 0;
               }
             } else {
               if (isConsumerType || isEveryoneType) {

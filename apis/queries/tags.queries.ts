@@ -32,7 +32,6 @@ export const useCreateTag = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };

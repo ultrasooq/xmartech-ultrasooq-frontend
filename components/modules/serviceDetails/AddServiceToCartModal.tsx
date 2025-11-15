@@ -112,7 +112,6 @@ const AddServiceToCartModal: React.FC<AddServiceToCartModalProps> = ({
     }, [serviceQueryById?.data?.data]);
 
     useEffect(() => {
-        console.log("features", features);
         setSelectedFeatures(features);
     }, [features]);
 
@@ -201,7 +200,6 @@ const AddServiceToCartModal: React.FC<AddServiceToCartModalProps> = ({
                 };
             }
         } catch (error: any) {
-            console.log(error);
             toast({
                 title: t("failed_to_add"),
                 description: error.message,
@@ -209,7 +207,6 @@ const AddServiceToCartModal: React.FC<AddServiceToCartModalProps> = ({
             });
         }
     };
-    console.log("selectedFeatures", selectedFeatures);
     return (
         <DialogContent className="custom-action-type-chose-picker">
             <div className="modal-headerpart">

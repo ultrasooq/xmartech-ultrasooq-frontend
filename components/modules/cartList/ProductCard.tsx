@@ -19,6 +19,8 @@ import { IoCloseSharp } from "react-icons/io5";
 import { useClickOutside } from "use-events";
 import { Trash2 } from "lucide-react";
 import { useCurrentAccount } from "@/apis/queries/auth.queries";
+import { useVendorBusinessCategories } from "@/hooks/useVendorBusinessCategories";
+import { checkCategoryConnection } from "@/utils/categoryConnection";
 
 type ProductCardProps = {
   cartId: number;
@@ -37,6 +39,9 @@ type ProductCardProps = {
   vendorDiscount: number;
   vendorDiscountType?: string;
   consumerType?: string;
+  categoryId?: number;
+  categoryLocation?: string;
+  categoryConnections?: any[];
   minQuantity?: number;
   maxQuantity?: number;
   relatedCart?: any;
@@ -59,6 +64,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
   vendorDiscount,
   vendorDiscountType,
   consumerType,
+  categoryId,
+  categoryLocation,
+  categoryConnections,
   minQuantity,
   maxQuantity,
   relatedCart
@@ -67,6 +75,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const { user, langDir, currency } = useAuth();
   const currentAccount = useCurrentAccount();
   const currentTradeRole = currentAccount?.data?.data?.account?.tradeRole || user?.tradeRole;
+  const vendorBusinessCategoryIds = useVendorBusinessCategories();
   const [quantity, setQuantity] = useState(1);
   const [selectedProductVariant, setSelectedProductVariant] = useState<any>();
   const deviceId = getOrCreateDeviceId() || "";
@@ -89,29 +98,56 @@ const ProductCard: React.FC<ProductCardProps> = ({
     const isConsumerType = normalizedConsumerType === "CONSUMER";
     const isEveryoneType = normalizedConsumerType === "EVERYONE";
     
-    // Determine which discount to use based on user's trade role AND consumerType
+    // Check category match for vendor discounts
+    const isCategoryMatch = checkCategoryConnection(
+      vendorBusinessCategoryIds,
+      categoryId || 0,
+      categoryLocation,
+      categoryConnections || []
+    );
+    
+    // Determine which discount to use based on user's trade role, consumerType, and category match
     let discount = 0;
     let discountType: string | undefined;
     
     if (currentTradeRole && currentTradeRole !== "BUYER") {
-      // VENDOR: Can only get vendor discount if consumerType allows it (VENDORS or EVERYONE)
+      // VENDOR user
       if (isVendorType || isEveryoneType) {
-        discount = vendorDiscount || 0;
-        discountType = vendorDiscountType;
+        // consumerType is VENDOR/VENDORS or EVERYONE - vendor can get vendor discount
+        // BUT category match is REQUIRED for vendor discounts
+        if (isCategoryMatch) {
+          // Same relation - Vendor gets vendor discount if available
+          if (vendorDiscount > 0 && vendorDiscountType) {
+            discount = vendorDiscount;
+            discountType = vendorDiscountType;
+          } else {
+            // No vendor discount available, no discount
+            discount = 0;
+          }
+        } else {
+          // Not same relation - No vendor discount
+          // If consumerType is EVERYONE, fallback to consumer discount
+          if (isEveryoneType) {
+            discount = consumerDiscount || 0;
+            discountType = consumerDiscountType;
+          } else {
+            // consumerType is VENDOR/VENDORS but no category match - no discount
+            discount = 0;
+          }
+        }
       } else {
         // consumerType is CONSUMER - vendors get no discount
         discount = 0;
-        discountType = undefined;
       }
     } else {
-      // BUYER: Can only get consumer discount if consumerType allows it (CONSUMER or EVERYONE)
+      // CONSUMER (BUYER) - Gets consumer discount if consumerType is CONSUMER or EVERYONE
+      // NO discount if consumerType is VENDOR or VENDORS
       if (isConsumerType || isEveryoneType) {
         discount = consumerDiscount || 0;
         discountType = consumerDiscountType;
       } else {
-        // consumerType is VENDORS - buyers get no discount
+        // consumerType is VENDOR/VENDORS - no discount for buyers
         discount = 0;
-        discountType = undefined;
       }
     }
     

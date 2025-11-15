@@ -11,13 +11,14 @@ import ProductDetailsSection from "@/components/modules/createProduct/ProductDet
 import DescriptionAndSpecificationSection from "@/components/modules/createProduct/DescriptionAndSpecificationSection";
 import DropshipProductForm from "@/components/modules/createProduct/DropshipProductForm";
 import Footer from "@/components/shared/Footer";
-import { useCreateProduct, useProductById, useProductVariant, useExistingProductById, useUpdateSingleProduct, useOneProductByProductCondition } from "@/apis/queries/product.queries";
+import { useCreateProduct, useProductById, useProductVariant, useExistingProductById, useUpdateSingleProduct, useOneProductByProductCondition, useUpdateProduct } from "@/apis/queries/product.queries";
 import { useCurrentAccount } from "@/apis/queries/auth.queries";
 import { getCookie } from "cookies-next";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import { useUploadMultipleFile } from "@/apis/queries/upload.queries";
 import {
   ALPHANUMERIC_REGEX,
@@ -233,10 +234,7 @@ const formSchemaForTypeP = (t: any) => {
       productName: z
         .string()
         .trim()
-        .min(2, { message: t("product_name_is_required") })
-        .max(50, {
-          message: t("product_name_must_be_less_than_50_characters"),
-        }),
+        .min(2, { message: t("product_name_is_required") }),
       categoryId: z.number().optional(),
       categoryLocation: z.string().trim().optional(),
       typeOfProduct: z
@@ -246,15 +244,9 @@ const formSchemaForTypeP = (t: any) => {
         })
         .trim(),
       brandId: z.number().min(1, { message: t("brand_is_required") }),
-      productCountryId: z
-        .number()
-        .min(1, { message: t("product_country_is_required") }),
-      productStateId: z
-        .number()
-        .min(1, { message: t("product_state_is_required") }),
-      productCityId: z
-        .number()
-        .min(1, { message: t("product_city_is_required") }),
+      productCountryId: z.coerce.number().optional().or(z.literal(0)),
+      productStateId: z.coerce.number().optional().or(z.literal(0)),
+      productCityId: z.coerce.number().optional().or(z.literal(0)),
       productTown: z.string().trim().optional(),
       productLatLng: z.string().trim().optional(),
       sellCountryIds: z.any().optional(),
@@ -264,26 +256,27 @@ const formSchemaForTypeP = (t: any) => {
       productCondition: z
         .string()
         .trim()
-        .min(1, { message: t("product_condition_is_required") }),
+        .optional(),
       productTagList: z
         .array(
           z.object({
             label: z.string().trim(),
             value: z.number(),
           }),
-          {
-            invalid_type_error: t("tag_is_required"),
-            required_error: t("tag_is_required"),
-          },
         )
-        .min(1, { message: t("tag_is_required") })
-        .transform((value) => value.map((item) => ({ tagId: item.value }))),
+        .refine((value) => value && value.length > 0, {
+          message: t("tag_is_required"),
+        })
+        .transform((value) => {
+          if (!value || value.length === 0) {
+            return [];
+          }
+          return value.map((item) => ({ tagId: item.value }));
+        }),
       productImagesList: z.any().optional(),
       productPrice: z.coerce.number().optional().or(z.literal("")),
       offerPrice: z.coerce.number().optional().or(z.literal("")),
-      placeOfOriginId: z
-        .number()
-        .min(1, { message: t("place_of_origin_is_required") }),
+      placeOfOriginId: z.coerce.number().optional().or(z.literal(0)),
       productShortDescriptionList: z.array(
         z.object({
           shortDescription: z
@@ -417,10 +410,7 @@ const formSchemaForTypeR = (t: any) => {
       productName: z
         .string()
         .trim()
-        .min(2, { message: t("product_name_is_required") })
-        .max(50, {
-          message: t("product_name_must_be_less_than_50_characters"),
-        }),
+        .min(2, { message: t("product_name_is_required") }),
       categoryId: z.number().optional(),
       categoryLocation: z.string().trim().optional(),
       typeOfProduct: z
@@ -433,7 +423,7 @@ const formSchemaForTypeR = (t: any) => {
       productCondition: z
         .string()
         .trim()
-        .min(1, { message: t("product_condition_is_required") }),
+        .optional(),
       productTagList: z
         .array(
           z.object({
@@ -441,8 +431,11 @@ const formSchemaForTypeR = (t: any) => {
             value: z.number(),
           }),
         )
-        .min(1, { message: t("tag_is_required") })
+        .optional()
         .transform((value) => {
+          if (!value || value.length === 0) {
+            return [];
+          }
           let temp: any = [];
           value.forEach((item) => {
             temp.push({ tagId: item.value });
@@ -452,9 +445,7 @@ const formSchemaForTypeR = (t: any) => {
       productImagesList: z.any().optional(),
       productPrice: z.coerce.number().optional(),
       offerPrice: z.coerce.number().optional(),
-      placeOfOriginId: z
-        .number()
-        .min(1, { message: t("place_of_origin_is_required") }),
+      placeOfOriginId: z.coerce.number().optional().or(z.literal(0)),
       productShortDescriptionList: z.array(
         z.object({
           shortDescription: z
@@ -633,6 +624,7 @@ const CreateProductPage = () => {
   const t = useTranslations();
   const { langDir } = useAuth();
   const router = useRouter();
+  const queryClient = useQueryClient();
   const searchParams = useSearchParams();
   const productId = searchParams?.get('copy') || searchParams?.get('productId') || searchParams?.get('existingProductId');
   const isEditMode = searchParams?.get('edit') === 'true';
@@ -688,7 +680,6 @@ const CreateProductPage = () => {
     if (isEditMode && editProductQuery.data?.data) {
       const productData = editProductQuery.data.data;
       
-      
       // Based on console output, check if there's additional data in nested objects
       const productPriceData = productData;
       
@@ -716,94 +707,6 @@ const CreateProductPage = () => {
         : Object.keys(additionalData).length > 0 
           ? additionalData 
           : productData;
-
-      // Debug: Log the structures (after priceData is declared)
-      console.log('Product Price Data:', productPriceData);
-      console.log('Price Specific Data:', priceSpecificData);
-      console.log('Additional Data:', additionalData);
-      console.log('Final Price Data:', priceData);
-      console.log('Full Product Data Keys:', Object.keys(productData));
-      
-      // Log specific nested objects to understand the structure
-      if (productData.product_productPrice) {
-        console.log('product_productPrice:', productData.product_productPrice);
-      }
-      if (productData.productImages) {
-        console.log('productImages count:', productData.productImages.length);
-      }
-      
-      // Debug missing fields specifically
-      console.log('=== MISSING FIELDS DEBUG ===');
-      console.log('consumerType in productData:', (productData as any).consumerType);
-      console.log('consumerType in priceSpecificData:', (priceSpecificData as any).consumerType);
-      console.log('consumerType in priceData:', (priceData as any).consumerType);
-      console.log('sellType in productData:', (productData as any).sellType);
-      console.log('sellType in priceSpecificData:', (priceSpecificData as any).sellType);
-      console.log('sellType in priceData:', (priceData as any).sellType);
-      console.log('stock in productData:', (productData as any).stock);
-      console.log('stock in priceSpecificData:', (priceSpecificData as any).stock);
-      console.log('stock in priceData:', (priceData as any).stock);
-      console.log('productStateId in productData:', productData.productStateId);
-      console.log('productCityId in productData:', productData.productCityId);
-      console.log('productTown in productData:', productData.productTown);
-      console.log('productLatLng in productData:', productData.productLatLng);
-      
-      // Debug all possible field variations
-      console.log('=== FIELD VARIATIONS DEBUG ===');
-      console.log('All productData keys:', Object.keys(productData));
-      console.log('Looking for consumerType variations:', {
-        consumerType: productData.consumerType,
-        consumer_type: productData.consumer_type,
-        consumerTypeId: productData.consumerTypeId,
-        consumer_type_id: productData.consumer_type_id
-      });
-      console.log('Looking for sellType variations:', {
-        sellType: productData.sellType,
-        sell_type: productData.sell_type,
-        sellTypeId: productData.sellTypeId,
-        sell_type_id: productData.sell_type_id
-      });
-      console.log('Looking for stock variations:', {
-        stock: productData.stock,
-        stockQuantity: productData.stockQuantity,
-        quantity: productData.quantity,
-        availableStock: productData.availableStock
-      });
-      console.log('Looking for location variations:', {
-        productStateId: productData.productStateId,
-        stateId: productData.stateId,
-        productCityId: productData.productCityId,
-        cityId: productData.cityId,
-        productTown: productData.productTown,
-        town: productData.town,
-        productLatLng: productData.productLatLng,
-        latLng: productData.latLng
-      });
-
-      // Debug product_productPrice array for location data
-      console.log('=== PRODUCT_PRICE DEBUG ===');
-      if (productData.product_productPrice && productData.product_productPrice.length > 0) {
-        console.log('product_productPrice array length:', productData.product_productPrice.length);
-        console.log('First product_price object:', productData.product_productPrice[0]);
-        console.log('First product_price keys:', Object.keys(productData.product_productPrice[0]));
-        
-        // Check for location fields in the first product_price object
-        const firstPrice = productData.product_productPrice[0];
-        console.log('Location fields in product_price:', {
-          productStateId: firstPrice.productStateId,
-          stateId: firstPrice.stateId,
-          productCityId: firstPrice.productCityId,
-          cityId: firstPrice.cityId,
-          productTown: firstPrice.productTown,
-          town: firstPrice.town,
-          productLatLng: firstPrice.productLatLng,
-          latLng: firstPrice.latLng,
-          productCountryId: firstPrice.productCountryId,
-          countryId: firstPrice.countryId
-        });
-      } else {
-        console.log('No product_productPrice array found');
-      }
       
       // Enhanced field extraction with multiple variations
       const getFieldValue = (obj: any, fieldVariations: string[], defaultValue: any = null) => {
@@ -861,24 +764,10 @@ const CreateProductPage = () => {
         status: priceData.status || 'ACTIVE',
       }];
 
-      // Debug askForPrice and askForStock fields
-      console.log('=== ASK FOR FIELDS DEBUG ===');
-      console.log('productData.askForPrice:', productData.askForPrice);
-      console.log('productData.askForStock:', productData.askForStock);
-      console.log('priceData.askForPrice:', priceData.askForPrice);
-      console.log('priceData.askForStock:', priceData.askForStock);
-      console.log('productData.productPrice:', productData.productPrice);
-      console.log('productData.offerPrice:', productData.offerPrice);
-      console.log('productData.stock:', productData.stock);
-      console.log('Final askForPrice:', productPriceList[0].askForPrice);
-      console.log('Final askForStock:', productPriceList[0].askForStock);
-      console.log('Final isStockRequired:', productPriceList[0].askForStock === 'YES');
-      console.log('Final isOfferPriceRequired:', productPriceList[0].askForPrice === 'YES');
-
       const editData = {
         // Basic product information
         productName: productData.productName || '',
-        productCondition: productData.productCondition || '',
+        productCondition: productData.productCondition || productData.product_productPrice?.[0]?.productCondition || 'New',
         categoryId: productData.categoryId || 0,
         brandId: productData.brandId || 0,
         skuNo: productData.skuNo || '',
@@ -886,17 +775,17 @@ const CreateProductPage = () => {
         shortDescription: productData.shortDescription || '',
         
         // Location information (use enhanced field extraction from multiple sources)
-        productCountryId: getFieldValue(productData, ['productCountryId', 'countryId', 'country_id']) || 
-                         (productData.product_productPrice?.[0] ? getFieldValue(productData.product_productPrice[0], ['productCountryId', 'countryId', 'country_id']) : null) || 0,
-        productStateId: getFieldValue(productData, ['productStateId', 'stateId', 'state_id']) || 
-                       (productData.product_productPrice?.[0] ? getFieldValue(productData.product_productPrice[0], ['productStateId', 'stateId', 'state_id']) : null) || 0,
-        productCityId: getFieldValue(productData, ['productCityId', 'cityId', 'city_id']) || 
-                      (productData.product_productPrice?.[0] ? getFieldValue(productData.product_productPrice[0], ['productCityId', 'cityId', 'city_id']) : null) || 0,
+        productCountryId: Number(getFieldValue(productData, ['productCountryId', 'countryId', 'country_id']) || 
+                         (productData.product_productPrice?.[0] ? getFieldValue(productData.product_productPrice[0], ['productCountryId', 'countryId', 'country_id']) : null) || 0),
+        productStateId: Number(getFieldValue(productData, ['productStateId', 'stateId', 'state_id']) || 
+                       (productData.product_productPrice?.[0] ? getFieldValue(productData.product_productPrice[0], ['productStateId', 'stateId', 'state_id']) : null) || 0),
+        productCityId: Number(getFieldValue(productData, ['productCityId', 'cityId', 'city_id']) || 
+                      (productData.product_productPrice?.[0] ? getFieldValue(productData.product_productPrice[0], ['productCityId', 'cityId', 'city_id']) : null) || 0),
         productTown: getFieldValue(productData, ['productTown', 'town', 'product_town']) || 
                     (productData.product_productPrice?.[0] ? getFieldValue(productData.product_productPrice[0], ['productTown', 'town', 'product_town']) : null) || '',
         productLatLng: getFieldValue(productData, ['productLatLng', 'latLng', 'lat_lng', 'coordinates']) || 
                       (productData.product_productPrice?.[0] ? getFieldValue(productData.product_productPrice[0], ['productLatLng', 'latLng', 'lat_lng', 'coordinates']) : null) || '',
-        placeOfOriginId: productData.placeOfOriginId || 1,
+        placeOfOriginId: Number(productData.placeOfOriginId || 1),
         
         // Selling locations
         sellCountryIds: productData.sellCountryIds || [],
@@ -936,39 +825,39 @@ const CreateProductPage = () => {
         typeOfProduct: productData.typeOfProduct || productData.typeOfProduct || 'BRAND',
         categoryLocation: productData.categoryLocation || '',
       };
-
+      
       // Reset form first to ensure clean state
       form.reset();
       
-      // Set form values
+      // Set form values first
       Object.entries(editData).forEach(([key, value]) => {
         form.setValue(key as any, value);
       });
       
+      // Set category IDs - try multiple times to ensure it works
+      if (editData.categoryLocation && editData.categoryLocation.trim()) {
+        const categoryIds = editData.categoryLocation.split(',').filter((item: string) => item.trim());
+        
+        // Set immediately
+        setSelectedCategoryIds(categoryIds);
+        
+        // Also set after delays to ensure component has loaded
+        setTimeout(() => {
+          setSelectedCategoryIds(categoryIds);
+        }, 200);
+        
+        setTimeout(() => {
+          setSelectedCategoryIds(categoryIds);
+        }, 500);
+        
+        setTimeout(() => {
+          setSelectedCategoryIds(categoryIds);
+        }, 1000);
+      }
+      
       // Force form to re-render by triggering a change event
       setTimeout(() => {
         form.trigger(); // This will trigger validation and re-render
-        
-        // Debug: Check form values after setting
-        const formValues = form.getValues();
-        console.log('=== FORM VALUES AFTER SETTING ===');
-        console.log('productPriceList[0].consumerType:', formValues.productPriceList?.[0]?.consumerType);
-        console.log('productPriceList[0].sellType:', formValues.productPriceList?.[0]?.sellType);
-        console.log('productPriceList[0].stock:', formValues.productPriceList?.[0]?.stock);
-        console.log('Full productPriceList:', formValues.productPriceList);
-        
-        // Final verification after a longer delay
-        setTimeout(() => {
-          const finalFormValues = form.getValues();
-          console.log('=== FINAL VERIFICATION ===');
-          console.log('Final consumerType:', finalFormValues.productPriceList?.[0]?.consumerType);
-          console.log('Final sellType:', finalFormValues.productPriceList?.[0]?.sellType);
-          console.log('Final stock:', finalFormValues.productPriceList?.[0]?.stock);
-          console.log('Final askForPrice:', finalFormValues.productPriceList?.[0]?.askForPrice);
-          console.log('Final askForStock:', finalFormValues.productPriceList?.[0]?.askForStock);
-          console.log('Final isStockRequired:', finalFormValues.isStockRequired);
-          console.log('Final isOfferPriceRequired:', finalFormValues.isOfferPriceRequired);
-        }, 500);
       }, 100);
 
       // Manually set critical fields with the correct values from our mapping
@@ -976,99 +865,23 @@ const CreateProductPage = () => {
       form.setValue('productPriceList.0.sellType', productPriceList[0].sellType);
       form.setValue('productPriceList.0.stock', productPriceList[0].stock);
       
-      console.log('=== MANUALLY SETTING CRITICAL FIELDS ===');
-      console.log('Setting consumerType to:', productPriceList[0].consumerType);
-      console.log('Setting sellType to:', productPriceList[0].sellType);
-      console.log('Setting stock to:', productPriceList[0].stock);
-      
       // Set location fields if they're missing or have default values
       const currentValues = form.getValues();
       if (!currentValues.productStateId || currentValues.productStateId === 0) {
         form.setValue('productStateId', 1); // Default state
-        console.log('Set productStateId to default: 1');
       }
       if (!currentValues.productCityId || currentValues.productCityId === 0) {
         form.setValue('productCityId', 1); // Default city
-        console.log('Set productCityId to default: 1');
       }
       if (!currentValues.productCountryId || currentValues.productCountryId === 0) {
         form.setValue('productCountryId', 1); // Default country (India)
-        console.log('Set productCountryId to default: 1');
       }
       if (!currentValues.productTown || currentValues.productTown === '') {
         form.setValue('productTown', 'Default Town'); // Default town
-        console.log('Set productTown to default: Default Town');
       }
       if (!currentValues.productLatLng || currentValues.productLatLng === '') {
         form.setValue('productLatLng', '0,0'); // Default coordinates
-        console.log('Set productLatLng to default: 0,0');
       }
-
-      // Debug: Log what was set
-      console.log('Edit Data Set:', editData);
-      console.log('Form Values After Setting:', form.getValues());
-      
-      // Enhanced debugging for specific fields
-      console.log('=== FORM VALUES BEING SET ===');
-      console.log('productPriceList[0].consumerType:', productPriceList[0].consumerType);
-      console.log('productPriceList[0].sellType:', productPriceList[0].sellType);
-      console.log('productPriceList[0].stock:', productPriceList[0].stock);
-      console.log('productStateId:', editData.productStateId);
-      console.log('productCityId:', editData.productCityId);
-      console.log('productTown:', editData.productTown);
-      console.log('productLatLng:', editData.productLatLng);
-      
-      // Debug location extraction process
-      console.log('=== LOCATION EXTRACTION DEBUG ===');
-      console.log('From productData - productStateId:', productData.productStateId);
-      console.log('From productData - productCityId:', productData.productCityId);
-      console.log('From productData - productTown:', productData.productTown);
-      console.log('From productData - productLatLng:', productData.productLatLng);
-      
-      if (productData.product_productPrice?.[0]) {
-        const firstPrice = productData.product_productPrice[0];
-        console.log('From product_productPrice[0] - productStateId:', firstPrice.productStateId);
-        console.log('From product_productPrice[0] - productCityId:', firstPrice.productCityId);
-        console.log('From product_productPrice[0] - productTown:', firstPrice.productTown);
-        console.log('From product_productPrice[0] - productLatLng:', firstPrice.productLatLng);
-        console.log('From product_productPrice[0] - productCountryId:', firstPrice.productCountryId);
-      }
-
-      // Final form values check
-      const finalValues = form.getValues();
-      console.log('=== FINAL FORM VALUES ===');
-      console.log('Final consumerType:', finalValues.productPriceList?.[0]?.consumerType);
-      console.log('Final sellType:', finalValues.productPriceList?.[0]?.sellType);
-      console.log('Final stock:', finalValues.productPriceList?.[0]?.stock);
-      console.log('Final productStateId:', finalValues.productStateId);
-      console.log('Final productCityId:', finalValues.productCityId);
-      console.log('Final productCountryId:', finalValues.productCountryId);
-      console.log('Final productTown:', finalValues.productTown);
-      console.log('Final productLatLng:', finalValues.productLatLng);
-      
-      // Summary of what should be working now
-      console.log('=== SUMMARY ===');
-      console.log('✅ Consumer Type:', finalValues.productPriceList?.[0]?.consumerType || 'MISSING');
-      console.log('✅ Sell Type:', finalValues.productPriceList?.[0]?.sellType || 'MISSING');
-      console.log('✅ Stock:', finalValues.productPriceList?.[0]?.stock || 'MISSING');
-      console.log('✅ State ID:', finalValues.productStateId || 'MISSING');
-      console.log('✅ City ID:', finalValues.productCityId || 'MISSING');
-      console.log('✅ Country ID:', finalValues.productCountryId || 'MISSING');
-      console.log('✅ Town:', finalValues.productTown || 'MISSING');
-      console.log('✅ LatLng:', finalValues.productLatLng || 'MISSING');
-      
-      // Debug: Check specific fields that might be missing
-      console.log('Consumer Type:', priceData.consumerType);
-      console.log('Sell Type:', priceData.sellType);
-      console.log('Delivery After:', priceData.deliveryAfter);
-      console.log('Stock:', priceData.stock);
-      console.log('Country ID:', productData.productCountryId);
-      console.log('State ID:', productData.productStateId);
-      console.log('City ID:', productData.productCityId);
-      console.log('Description:', productData.description);
-      console.log('Product Images:', productData.productImages);
-      console.log('Product Short Description:', productData.product_productShortDescription);
-      console.log('Product Specification:', productData.product_productSpecification);
 
       // Set product type based on sell type
       if (priceData.sellType === 'BUYGROUP') {
@@ -1082,7 +895,8 @@ const CreateProductPage = () => {
   const uploadMultiple = useUploadMultipleFile();
   const tagsQuery = useTags();
   const createProduct = useCreateProduct();
-  const updateProduct = useUpdateSingleProduct();
+  const updateProductPrice = useUpdateSingleProduct();
+  const updateProductFull = useUpdateProduct();
   const watchProductImages = form.watch("productImages");
   const watchSetUpPrice = form.watch("setUpPrice");
   
@@ -1168,23 +982,10 @@ const CreateProductPage = () => {
 
   useEffect(() => {
     // Handle existing product data when copying or creating from existing
-    console.log('=== EXISTING PRODUCT USE EFFECT TRIGGERED ===');
-    console.log('existingProductQueryById:', existingProductQueryById);
-    console.log('existingProductQueryById?.data:', existingProductQueryById?.data);
-    console.log('existingProductQueryById?.data?.data:', existingProductQueryById?.data?.data);
-    console.log('productId:', productId);
-    console.log('searchParams?.get("copy"):', searchParams?.get('copy'));
-    console.log('searchParams?.get("fromExisting"):', searchParams?.get('fromExisting'));
-    console.log('searchParams?.get("copy") !== null:', searchParams?.get('copy') !== null);
-    console.log('searchParams?.get("fromExisting") === "true":', searchParams?.get('fromExisting') === 'true');
     
     if (existingProductQueryById?.data?.data) {
       const existingProduct = existingProductQueryById?.data?.data;
-      console.log('Found existing product data:', existingProduct);
       populateFormWithExistingProductData(existingProduct);
-    } else {
-      console.log('No existing product data found');
-      console.log('Query enabled:', !!productId && (searchParams?.get('copy') !== null || searchParams?.get('fromExisting') === 'true'));
     }
   }, [existingProductQueryById?.data?.data]);
 
@@ -1200,16 +1001,18 @@ const CreateProductPage = () => {
       form.setValue("productName", product.productName);
       form.setValue("typeOfProduct", product.typeOfProduct);
       form.setValue("brandId", product.brandId);
-      form.setValue("productCondition", product.product_productPrice?.[0]?.productCondition);
-      form.setValue(
-        "productTagList",
-        product.productTags?.filter((item: any) => item.productTagsTag)?.map((item: any) => {
-          return {
-            label: item.productTagsTag.tagName,
-            value: item.productTagsTag.id
-          }
-        }) || []
-      );
+      form.setValue("productCondition", product.product_productPrice?.[0]?.productCondition || "New");
+      const productTagList = product.productTags?.filter((item: any) => item.productTagsTag)?.map((item: any) => {
+        return {
+          label: item.productTagsTag.tagName,
+          value: item.productTagsTag.id
+        }
+      }) || [];
+      form.setValue("productTagList", productTagList);
+      // Trigger validation after setting tags
+      setTimeout(() => {
+        form.trigger("productTagList");
+      }, 100);
 
       const productSellerImages = product?.product_productPrice?.[0]
         ?.productPrice_productSellerImage?.length
@@ -1250,14 +1053,6 @@ const CreateProductPage = () => {
   };
 
   const populateFormWithExistingProductData = (existingProduct: any) => {
-    console.log('=== POPULATING FORM WITH EXISTING PRODUCT DATA ===');
-    console.log('existingProduct:', existingProduct);
-    console.log('existingProduct.productName:', existingProduct.productName);
-    console.log('existingProduct.categoryId:', existingProduct.categoryId);
-    console.log('existingProduct.brandId:', existingProduct.brandId);
-    console.log('existingProduct.typeOfProduct:', existingProduct.typeOfProduct);
-    console.log('existingProduct.existingProductImages:', existingProduct.existingProductImages);
-    console.log('existingProduct.existingProductTags:', existingProduct.existingProductTags);
     
     setActiveProductType(existingProduct.productType);
     
@@ -1268,20 +1063,21 @@ const CreateProductPage = () => {
     );
 
     form.setValue("productName", existingProduct.productName);
-    console.log('Set productName:', existingProduct.productName);
     
     form.setValue("typeOfProduct", existingProduct.typeOfProduct);
     form.setValue("brandId", existingProduct.brandId);
     form.setValue("productCondition", "New"); // Default for existing products
-    form.setValue(
-      "productTagList",
-      existingProduct.existingProductTags?.filter((item: any) => item.existingProductTag)?.map((item: any) => {
-        return {
-          label: item.existingProductTag.tagName,
-          value: item.existingProductTag.id
-        }
-      }) || []
-    );
+    const productTagList = existingProduct.existingProductTags?.filter((item: any) => item.existingProductTag)?.map((item: any) => {
+      return {
+        label: item.existingProductTag.tagName,
+        value: item.existingProductTag.id
+      }
+    }) || [];
+    form.setValue("productTagList", productTagList);
+    // Trigger validation after setting tags
+    setTimeout(() => {
+      form.trigger("productTagList");
+    }, 100);
 
     // Use existingProductImages for existing products
     const productImages = existingProduct.existingProductImages?.filter((item: any) => item.image)
@@ -1292,7 +1088,6 @@ const CreateProductPage = () => {
         type: 'image'
       })) || [];
 
-    console.log('Setting productImages:', productImages);
     form.setValue("productImages", productImages);
     form.setValue("productPrice", existingProduct.productPrice);
     form.setValue("offerPrice", existingProduct.offerPrice);
@@ -1316,7 +1111,6 @@ const CreateProductPage = () => {
           ]);
         }
       } catch (e) {
-        console.log('Description is not valid JSON, creating Slate format from plain text');
         // Create proper Slate format from plain text
         form.setValue("descriptionJson", [
           {
@@ -1417,12 +1211,9 @@ const CreateProductPage = () => {
     form.setValue("productType", existingProduct.productType);
     form.setValue("typeProduct", existingProduct.typeProduct);
     
-    console.log('=== FORM POPULATION COMPLETE ===');
   };
 
   const onSubmit = async (formData: any) => {
-    console.log('=== FORM SUBMIT TRIGGERED ===');
-    console.log('formData received:', formData);
     
     // Get the current user ID from the current account for debugging
     const currentUserId = currentAccount?.data?.account?.id;
@@ -1620,7 +1411,6 @@ const CreateProductPage = () => {
     // Add existingProductId if creating from existing product
     if (productId && searchParams?.get('copy')) {
       updatedFormData.existingProductId = parseInt(productId);
-      console.log('Adding existingProductId to payload:', parseInt(productId));
     }
 
     // TODO: category input field change
@@ -1773,22 +1563,17 @@ const CreateProductPage = () => {
       updatedFormData.status = "ACTIVE";
     }
 
-    console.log('=== FINAL FORM DATA BEING SENT TO BACKEND ===');
-    console.log('updatedFormData:', updatedFormData);
-    console.log('productShortDescriptionList:', updatedFormData.productShortDescriptionList);
-    console.log('productSpecificationList:', updatedFormData.productSpecificationList);
-    console.log('shortDescription:', updatedFormData.shortDescription);
     
     let response;
     
     try {
-      console.log('=== STARTING API CALL ===');
-      console.log('isEditMode:', isEditMode);
       
       if (isEditMode) {
         // Handle edit mode - update existing product
         const productPriceId = searchParams?.get('productPriceId');
-        if (!productPriceId) {
+        const actualProductId = productId || editProductQuery?.data?.data?.id;
+        
+        if (!productPriceId || !actualProductId) {
           toast({
             title: t("error"),
             description: "Product ID not found for editing",
@@ -1797,12 +1582,38 @@ const CreateProductPage = () => {
           return;
         }
 
-        // Prepare update data for single product update
-        const updateData = {
-          productPriceId: parseInt(productPriceId),
+        // Calculate status based on the same logic as create mode
+        const calculatedStatus = activeProductType === "R"
+          ? (updatedFormData.offerPrice || updatedFormData.isOfferPriceRequired)
+            ? "ACTIVE"
+            : "INACTIVE"
+          : (updatedFormData.productPrice || updatedFormData.isOfferPriceRequired)
+            ? "ACTIVE"
+            : "INACTIVE";
+
+        // Prepare full product update data (product-level fields: name, category, brand, images, description, etc.)
+        const fullProductUpdateData = {
+          productId: parseInt(actualProductId),
+          productType: updatedFormData.productType || (activeProductType === "R" ? "R" : "P"),
           productName: updatedFormData.productName,
+          categoryId: updatedFormData.categoryId,
+          brandId: updatedFormData.brandId,
+          skuNo: updatedFormData.skuNo || editProductQuery?.data?.data?.skuNo || "",
+          productTagList: updatedFormData.productTagList?.map((tag: any) => ({
+            tagId: typeof tag === 'object' ? tag.value || tag.tagId : tag
+          })) || [],
+          productImagesList: updatedFormData.productImagesList || [],
+          placeOfOriginId: updatedFormData.placeOfOriginId || 0,
           productPrice: updatedFormData.productPrice || 0,
           offerPrice: updatedFormData.offerPrice || 0,
+          description: updatedFormData.description || "",
+          specification: updatedFormData.specification || "",
+          status: calculatedStatus as "ACTIVE" | "INACTIVE",
+        };
+
+        // Prepare product price update data (price-level fields: discounts, stock, delivery, etc.)
+        const priceUpdateData = {
+          productPriceId: parseInt(productPriceId),
           stock: updatedFormData.productPriceList?.[0]?.stock || 0,
           deliveryAfter: updatedFormData.productPriceList?.[0]?.deliveryAfter || 0,
           timeOpen: updatedFormData.productPriceList?.[0]?.timeOpen || null,
@@ -1822,28 +1633,79 @@ const CreateProductPage = () => {
           productCondition: updatedFormData.productCondition,
           askForPrice: updatedFormData.isOfferPriceRequired ? "YES" : "NO",
           askForStock: updatedFormData.isStockRequired ? "YES" : "NO",
-          status: updatedFormData.productPriceList?.[0]?.status || 'ACTIVE',
+          status: calculatedStatus,
+          productPrice: updatedFormData.productPrice || 0,
+          offerPrice: updatedFormData.offerPrice || 0,
         };
 
-        console.log('=== UPDATE DATA FOR EDIT MODE ===');
-        console.log('updateData:', updateData);
-        console.log('Calling updateProduct.mutateAsync...');
+        // Update product-level fields first
+        const productUpdateResponse = await updateProductFull.mutateAsync(fullProductUpdateData);
+        
+        // If product update failed, show error and return early
+        if (!productUpdateResponse.status) {
+          toast({
+            title: t("product_update_failed"),
+            description: productUpdateResponse?.message || "Failed to update product details",
+            variant: "danger",
+          });
+          return;
+        }
+        
+        // Then update product price details (this is critical for trending page visibility)
+        // The trending page filters by product_productPrice[].status === "ACTIVE"
+        const priceUpdateResponse = await updateProductPrice.mutateAsync(priceUpdateData);
 
-        response = await updateProduct.mutateAsync(updateData);
+        // Use the price update response as the main response (it's more specific)
+        response = priceUpdateResponse;
+        
+        // If price update failed, show error
+        if (!priceUpdateResponse.status) {
+          toast({
+            title: t("product_update_failed"),
+            description: priceUpdateResponse?.message || "Failed to update product price details",
+            variant: "danger",
+          });
+          return;
+        }
+        
+        // Both updates succeeded - invalidate queries immediately to refresh trending page
+        // The trending page uses "existing-products" query key with payload
+        // Use predicate to invalidate all queries that start with "existing-products"
+        queryClient.invalidateQueries({ 
+          predicate: (query) => {
+            return query.queryKey[0] === "existing-products";
+          }
+        });
+        queryClient.invalidateQueries({ queryKey: ["products"] });
+        queryClient.invalidateQueries({ queryKey: ["managed-products"] });
+        queryClient.invalidateQueries({ 
+          predicate: (query) => {
+            return query.queryKey[0] === "product-by-id";
+          }
+        });
+        
+        // Force refetch all existing-products queries to ensure data is fresh
+        queryClient.refetchQueries({ 
+          predicate: (query) => {
+            return query.queryKey[0] === "existing-products";
+          }
+        });
       } else {
         // Handle create mode - create new product
-        console.log('=== CREATE MODE - CALLING API ===');
-        console.log('Calling createProduct.mutateAsync with updatedFormData...');
-        console.log('createProduct mutation object:', createProduct);
         
         response = await createProduct.mutateAsync(updatedFormData);
       }
 
-      console.log('=== API RESPONSE RECEIVED ===');
-      console.log('response:', response);
 
       if (response && response.status && response.data) {
-        console.log('=== SUCCESS RESPONSE ===');
+        // For create mode, invalidate queries
+        if (!isEditMode) {
+          queryClient.invalidateQueries({ queryKey: ["products"] });
+          queryClient.invalidateQueries({ queryKey: ["all-products"] });
+          queryClient.invalidateQueries({ queryKey: ["managed-products"] });
+          queryClient.invalidateQueries({ queryKey: ["existing-products"] });
+        }
+        
         toast({
           title: isEditMode ? t("product_update_successful") : t("product_create_successful"),
           description: response.message,
@@ -1851,7 +1713,10 @@ const CreateProductPage = () => {
         });
         form.reset();
         if (isEditMode) {
-          router.push("/manage-products");
+          // Small delay to ensure queries are invalidated before navigation
+          setTimeout(() => {
+            router.push("/manage-products");
+          }, 100);
         } else if (activeProductType === "R") {
           router.push("/rfq");
         } else if (activeProductType === "F") {
@@ -1862,10 +1727,6 @@ const CreateProductPage = () => {
           router.push("/manage-products");
         }
       } else {
-        console.log('=== ERROR RESPONSE ===');
-        console.log('response.status:', response?.status);
-        console.log('response.data:', response?.data);
-        console.log('response.message:', response?.message);
         toast({
           title: isEditMode ? t("product_update_failed") : t("product_create_failed"),
           description: response?.message || "Unknown error occurred",
@@ -1873,12 +1734,6 @@ const CreateProductPage = () => {
         });
       }
     } catch (error: any) {
-      console.error('=== API CALL ERROR ===');
-      console.error('Error details:', error);
-      console.error('Error message:', error?.message);
-      console.error('Error response:', error?.response);
-      console.error('Error response data:', error?.response?.data);
-      
       toast({
         title: isEditMode ? t("product_update_failed") : t("product_create_failed"),
         description: error?.response?.data?.message || error?.message || "Network error occurred",
@@ -2099,29 +1954,20 @@ const CreateProductPage = () => {
 
                         <Button
                           disabled={
-                            createProduct.isPending || uploadMultiple.isPending || updateProduct.isPending
+                            createProduct.isPending || uploadMultiple.isPending || updateProductFull.isPending || updateProductPrice.isPending
                           }
                           type="submit"
                           className="px-8 py-3 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                           dir={langDir}
                           translate="no"
                           onClick={() => {
-                            console.log('=== CONTINUE BUTTON CLICKED ===');
-                            console.log('Button disabled state:', createProduct.isPending || uploadMultiple.isPending || updateProduct.isPending);
-                            console.log('Form errors (detailed):', JSON.stringify(form.formState.errors, null, 2));
-                            console.log('Form isValid:', form.formState.isValid);
-                            console.log('Form values:', form.getValues());
-                            
                             // Force trigger validation to see all errors
-                            form.trigger().then((isValid) => {
-                              console.log('Manual validation result:', isValid);
-                              console.log('All validation errors:', JSON.stringify(form.formState.errors, null, 2));
-                            });
+                            form.trigger();
                           }}
                         >
                           {createProduct.isPending ||
                             uploadMultiple.isPending ||
-                            updateProduct.isPending ? (
+                            (updateProductFull.isPending || updateProductPrice.isPending) ? (
                             <LoaderWithMessage message={t("please_wait")} />
                           ) : (
                             isEditMode ? t("update_product") : t("continue")

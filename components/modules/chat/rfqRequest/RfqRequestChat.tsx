@@ -659,7 +659,6 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
         try {
           await uploadAttachment(formData);
         } catch (error) {
-          console.error("File upload failed:", error);
         }
       });
       await Promise.all(uploadPromises);

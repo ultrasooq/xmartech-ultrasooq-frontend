@@ -270,7 +270,6 @@ const ManageProductsPage = () => {
         variant: "success",
       });
     } catch (error: any) {
-      console.error('Error deleting dropship product:', error);
       toast({
         title: t("error"),
         description: error.message || t("failed_to_delete_dropship_product"),
@@ -637,7 +636,6 @@ const ManageProductsPage = () => {
   useEffect(() => {
     if (data?.data) {
       // Debug: Log the actual data structure
-      console.log("Raw API data:", data.data[0]);
       let filteredProducts = [...data.data];
       
       // Apply "Show Only Selected" filter if enabled
@@ -877,9 +875,6 @@ const ManageProductsPage = () => {
       return item;
     });
 
-    console.log({
-      productPrice: [...finalData],
-    });
 
     // Note: updateMultipleProductPrice is not imported, need to add the import
     // const response = await updateMultipleProductPrice.mutateAsync({

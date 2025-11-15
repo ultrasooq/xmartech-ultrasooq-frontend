@@ -34,7 +34,6 @@ export const useUpdateProfile = () => {
       queryClient.refetchQueries({ queryKey: ["unique-user"] });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -44,7 +43,6 @@ export const useMe = (enabled = true) =>
     queryKey: ["me"],
     queryFn: async () => {
       const res = await fetchMe();
-      console.log("fetchMe response:", res.data); // Debug log
       return res.data;
     },
     enabled,

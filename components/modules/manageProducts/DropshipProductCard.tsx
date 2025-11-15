@@ -3,6 +3,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import Image from "next/image";
+import validator from "validator";
 import { 
   IoMdCreate, 
   IoMdTrash,
@@ -178,12 +179,23 @@ const DropshipProductCard: React.FC<DropshipProductCardProps> = ({
             
             {/* Product Images */}
             <div className="relative w-20 h-20 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0 shadow-sm">
-              <Image
-                src={productImage || PlaceholderImage}
-                alt={productName}
-                fill
-                className="object-cover"
-              />
+              {productImage && validator.isURL(productImage) && !productImage.includes('puremoon.s3.amazonaws.com') ? (
+                <img
+                  src={productImage}
+                  alt={productName}
+                  className="h-full w-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.src = PlaceholderImage.src;
+                  }}
+                />
+              ) : (
+                <Image
+                  src={productImage || PlaceholderImage}
+                  alt={productName}
+                  fill
+                  className="object-cover"
+                />
+              )}
               {productImages.length > 1 && (
                 <div className="absolute top-1 right-1 bg-blue-600 text-white text-xs px-1.5 py-0.5 rounded-md font-medium">
                   +{productImages.length - 1}

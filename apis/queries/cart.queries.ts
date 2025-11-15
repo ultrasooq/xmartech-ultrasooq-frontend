@@ -79,7 +79,6 @@ export const useUpdateCartWithLogin = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -110,7 +109,6 @@ export const useUpdateCartByDevice = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -145,7 +143,6 @@ export const useUpdateCartWithService = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -176,7 +173,6 @@ export const useDeleteCartItem = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -207,7 +203,6 @@ export const useDeleteServiceFromCart = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -232,7 +227,6 @@ export const useUpdateUserCartByDeviceId = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -288,7 +282,6 @@ export const useAddServiceToCartWithProduct = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };

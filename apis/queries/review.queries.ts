@@ -50,7 +50,6 @@ export const useAddReview = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -77,7 +76,6 @@ export const useUpdateReview = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -145,7 +143,6 @@ export const useAddSellerReview = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -175,7 +172,6 @@ export const useUpdateSellerReview = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };

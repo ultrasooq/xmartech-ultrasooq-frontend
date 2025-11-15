@@ -67,7 +67,6 @@ export const useAddToWishList = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -113,7 +112,6 @@ export const useDeleteFromWishList = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };

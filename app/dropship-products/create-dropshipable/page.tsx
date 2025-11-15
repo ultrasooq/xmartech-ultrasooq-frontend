@@ -289,15 +289,33 @@ const CreateDropshipableProductPage = () => {
                             className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-blue-300 transition-colors"
                           >
                             <div className="flex items-center gap-4">
-                              <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
+                              <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden relative">
                                 {product.existingProductImages?.[0]?.image ? (
-                                  <Image
-                                    src={product.existingProductImages[0].image}
-                                    alt={product.productName}
-                                    width={64}
-                                    height={64}
-                                    className="w-full h-full object-cover"
-                                  />
+                                  (() => {
+                                    const imageSrc = product.existingProductImages[0].image;
+                                    const isExternalUrl = imageSrc && 
+                                      typeof imageSrc === "string" && 
+                                      imageSrc.startsWith("http") && 
+                                      !imageSrc.includes("puremoon.s3.amazonaws.com");
+                                    
+                                    return isExternalUrl ? (
+                                      <img
+                                        src={imageSrc}
+                                        alt={product.productName}
+                                        className="w-full h-full object-cover"
+                                        onError={(e) => {
+                                          e.currentTarget.src = "/images/no-image.jpg";
+                                        }}
+                                      />
+                                    ) : (
+                                      <Image
+                                        src={imageSrc}
+                                        alt={product.productName}
+                                        fill
+                                        className="object-cover"
+                                      />
+                                    );
+                                  })()
                                 ) : (
                                   <div className="text-gray-400 text-xs text-center">
                                     {t("no_image")}
@@ -387,23 +405,41 @@ const CreateDropshipableProductPage = () => {
               <div>
                 <h4 className="font-medium text-gray-900 mb-2">{t("product_images")}</h4>
                 <div className="grid grid-cols-2 gap-2">
-                  {viewProduct.existingProductImages?.map((image: any, index: number) => (
-                    <div key={index} className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
-                      {image.image ? (
-                        <Image
-                          src={image.image}
-                          alt={`${viewProduct.productName} - Image ${index + 1}`}
-                          width={200}
-                          height={200}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
-                          {t("no_image")}
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                  {viewProduct.existingProductImages?.map((image: any, index: number) => {
+                    const imageSrc = image.image;
+                    const isExternalUrl = imageSrc && 
+                      typeof imageSrc === "string" && 
+                      imageSrc.startsWith("http") && 
+                      !imageSrc.includes("puremoon.s3.amazonaws.com");
+                    
+                    return (
+                      <div key={index} className="aspect-square bg-gray-100 rounded-lg overflow-hidden relative">
+                        {imageSrc ? (
+                          isExternalUrl ? (
+                            <img
+                              src={imageSrc}
+                              alt={`${viewProduct.productName} - Image ${index + 1}`}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.currentTarget.src = "/images/no-image.jpg";
+                              }}
+                            />
+                          ) : (
+                            <Image
+                              src={imageSrc}
+                              alt={`${viewProduct.productName} - Image ${index + 1}`}
+                              fill
+                              className="object-cover"
+                            />
+                          )
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
+                            {t("no_image")}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                   {(!viewProduct.existingProductImages || viewProduct.existingProductImages.length === 0) && (
                     <div className="col-span-2 aspect-video bg-gray-100 rounded-lg flex items-center justify-center">
                       <div className="text-gray-400 text-center">

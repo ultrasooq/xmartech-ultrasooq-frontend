@@ -56,7 +56,6 @@ export const useRegister = () =>
     },
     onSuccess: () => {},
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 
@@ -68,7 +67,6 @@ export const useVerifyOtp = () =>
     },
     onSuccess: () => {},
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 
@@ -80,7 +78,6 @@ export const useResendOtp = () =>
     },
     onSuccess: () => {},
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 
@@ -92,7 +89,6 @@ export const useLogin = () =>
     },
     onSuccess: () => {},
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 
@@ -104,7 +100,6 @@ export const useForgotPassword = () =>
     },
     onSuccess: () => {},
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 
@@ -116,7 +111,6 @@ export const useResetPassword = () =>
     },
     onSuccess: () => {},
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 
@@ -132,7 +126,6 @@ export const usePasswordResetVerify = () =>
     },
     onSuccess: () => {},
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 
@@ -144,7 +137,6 @@ export const useChangePassword = () =>
     },
     onSuccess: () => {},
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 
@@ -156,7 +148,6 @@ export const useChangeEmail = () =>
     },
     onSuccess: () => {},
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 
@@ -178,7 +169,6 @@ export const useChangeEmailVerify = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -206,7 +196,6 @@ export const useSocialLogin = () =>
     },
     onSuccess: () => {},
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 
@@ -216,11 +205,9 @@ export const useMyAccounts = () => {
     queryKey: ["myAccounts"],
     queryFn: async () => {
       if (process.env.NODE_ENV === "development") {
-        console.log("useMyAccounts - fetching data");
       }
       const res = await myAccounts();
       if (process.env.NODE_ENV === "development") {
-        console.log("useMyAccounts - received data:", res.data);
       }
       return res.data;
     },
@@ -237,9 +224,7 @@ export const useCurrentAccount = () => {
   return useQuery<ICurrentAccount, APIResponseError>({
     queryKey: ["currentAccount"],
     queryFn: async () => {
-      console.log("useCurrentAccount - fetching data");
       const res = await currentAccount();
-      console.log("useCurrentAccount - received data:", res.data);
       return res.data;
     },
     enabled: !!getCookie(PUREMOON_TOKEN_KEY),
@@ -256,7 +241,6 @@ export const useCreateAccount = () => {
   return useMutation<ICreateAccount, APIResponseError, ICreateAccountRequest>({
     mutationFn: (payload) => createAccount(payload).then((res) => res.data),
     onSuccess: (data) => {
-      console.log("CreateAccount onSuccess - invalidating myAccounts cache");
 
       // Reset all queries to ensure complete cache clearing
       // This ensures fresh data is fetched after account creation
@@ -269,10 +253,8 @@ export const useCreateAccount = () => {
       // Force refetch for auth queries
       queryClient.refetchQueries({ queryKey: ["myAccounts"] });
       queryClient.refetchQueries({ queryKey: ["currentAccount"] });
-      console.log("CreateAccount onSuccess - cache invalidation completed");
     },
     onError: (error) => {
-      console.error("CreateAccount onError:", error);
     },
   });
 };

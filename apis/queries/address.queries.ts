@@ -48,7 +48,6 @@ export const useAddAddress = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -70,7 +69,6 @@ export const useUpdateAddress = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -105,7 +103,6 @@ export const useDeleteAddress = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };

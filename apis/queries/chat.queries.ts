@@ -20,7 +20,6 @@ export const useCreatePrivateRoom = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -36,7 +35,6 @@ export const useUpdateRfqPriceRequestStatus = () => {
       return res.data;
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };

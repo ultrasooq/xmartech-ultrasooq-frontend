@@ -172,7 +172,6 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
         })),
       );
     } catch (error) {
-      console.error("Error fetching states:", error);
     }
   };
 
@@ -255,7 +254,6 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
         })),
       );
     } catch (error) {
-      console.error("Error fetching cities:", error);
     }
   };
 
@@ -290,7 +288,6 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
         },
       );
     } else {
-      console.error("Geolocation is not supported by this browser.");
     }
   }); // ✅ Add setValue as dependency
 
@@ -320,7 +317,6 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
 
           setStatesByCountry(statesData);
         } catch (error) {
-          console.error("Error fetching states:", error);
         }
       };
 
@@ -354,7 +350,6 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
 
           setCitiesByState(citiesData);
         } catch (error) {
-          console.error("Error fetching cities:", error);
         }
       };
 

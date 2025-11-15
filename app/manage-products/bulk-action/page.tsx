@@ -85,11 +85,6 @@ const BulkActionPage = () => {
 
     setIsUpdating(true);
     try {
-      console.log("🔍 Bulk update data:", updateData);
-      console.log("🔍 Number of selected products:", selectedProducts.length);
-      console.log("🔍 Update data keys:", Object.keys(updateData));
-      console.log("🔍 Update data values:", Object.values(updateData));
-      
       // Prepare the payload for bulk update according to backend DTO
       const productPriceArray = selectedProducts.map(product => {
         const productPriceData: any = {
@@ -132,27 +127,18 @@ const BulkActionPage = () => {
         if (updateData.timeOpen !== undefined) productPriceData.timeOpen = Number(updateData.timeOpen);
         if (updateData.timeClose !== undefined) productPriceData.timeClose = Number(updateData.timeClose);
 
-        console.log(`📦 Product ${product.id} data:`, productPriceData);
         return productPriceData;
       });
       
       const payload = {
         productPrice: productPriceArray
       };
-
-      console.log("📤 Sending payload to API:", payload);
-      console.log("📤 First product data:", productPriceArray[0]);
-      console.log("📤 Payload structure:", JSON.stringify(payload, null, 2));
       
       // Call the actual API
       const result = await updateMultipleProductPriceMutation.mutateAsync(payload);
-      console.log("API response:", result);
       
       // Check if the API call was actually successful
       if (result?.status && result?.data) {
-        console.log("✅ API call successful!");
-        console.log("✅ Result status:", result.status);
-        console.log("✅ Result data:", result.data);
         
         // Show success message with updated values
         const updatedFields = Object.keys(updateData).filter(key => 
@@ -168,27 +154,17 @@ const BulkActionPage = () => {
         // Refresh the page to show updated data (increased delay to see console logs)
         if (!debugMode) {
           setTimeout(() => {
-            console.log("🔄 Reloading page...");
             window.location.reload();
           }, 5000); // Increased from 1000ms to 5000ms (5 seconds)
         } else {
-          console.log("🐛 Debug mode enabled - page reload disabled");
-          console.log("🐛 You can now inspect the console logs and data");
-          console.log("🔄 Refreshing product data to show updates...");
           // Refresh the product data even in debug mode
           allProductsQuery.refetch();
         }
       } else {
-        console.log("❌ API call failed!");
-        console.log("❌ Result status:", result?.status);
-        console.log("❌ Result data:", result?.data);
         throw new Error("API returned unsuccessful response");
       }
       
     } catch (error: any) {
-      console.error("Bulk update error:", error);
-      console.error("Error response:", error?.response?.data);
-      console.error("Error status:", error?.response?.status);
       
       toast({
         title: "Update Failed",

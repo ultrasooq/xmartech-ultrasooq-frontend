@@ -220,7 +220,6 @@ export default function FreelancerProfilePage() {
     );
   }, [tagsQuery?.data]);
 
-  console.log(form.formState.errors);
 
   const onSubmit = async (formData: any) => {
     const data = {
@@ -240,7 +239,6 @@ export default function FreelancerProfilePage() {
     delete data.branchList[0].aboutUs;
     delete data.branchList[0].aboutUsJson;
 
-    console.log(data);
     // return;
     const response = await createFreelancerProfile.mutateAsync(data);
 

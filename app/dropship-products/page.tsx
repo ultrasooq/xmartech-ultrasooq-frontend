@@ -680,7 +680,6 @@ const DropshipProductsPage = (props: DropshipProductsPageProps) => {
                           productCondition={item.productCondition || item.product_productPrice?.[0]?.productCondition || "New"}
                           onRemove={(id) => {
                             // Handle product removal
-                            console.log("Remove product:", id);
                           }}
                           onWishlist={() =>
                             handleAddToWishlist(

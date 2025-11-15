@@ -83,7 +83,6 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
 
   // Handle main category selection
   const handleMainCategoryChange = (checked: boolean, category: CategoryProps) => {
-    console.log("🔍 CategoryFilter - main category change:", checked, category.name, category.id);
     let newSelectedMainCategories = [...selectedMainCategories];
     
     if (checked) {
@@ -109,7 +108,6 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
       }
     }
     
-    console.log("🔍 CategoryFilter - new main categories:", newSelectedMainCategories.map(c => c.name));
     setSelectedMainCategories(newSelectedMainCategories);
   };
 

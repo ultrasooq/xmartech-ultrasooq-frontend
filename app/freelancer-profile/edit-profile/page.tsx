@@ -46,7 +46,6 @@ export default function EditProfilePage() {
       userProfileId: me.data?.data?.userProfile?.[0]?.id as number,
     };
 
-    console.log(data);
     // return;
     const response = await updateFreelancerProfile.mutateAsync(data);
 

@@ -202,7 +202,6 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
         try {
           await uploadAttachment(formData);
         } catch (error) {
-          console.error("File upload failed:", error);
         }
       });
       await Promise.all(uploadPromises);

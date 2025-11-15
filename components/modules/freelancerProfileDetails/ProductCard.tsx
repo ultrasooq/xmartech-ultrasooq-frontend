@@ -486,7 +486,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
               variant="ghost"
               className="relative h-8 w-8 rounded-full p-0 shadow-md"
               onClick={() => {
-                console.log("shared");
               }}
             >
               <ShareIcon />

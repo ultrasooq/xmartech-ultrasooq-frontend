@@ -72,9 +72,6 @@ export default function MyAccountsPage() {
 
   // Debug logging (remove in production)
   if (process.env.NODE_ENV === 'development') {
-    console.log("MyAccountsPage - accountsData:", accountsData);
-    console.log("MyAccountsPage - isLoading:", isLoading);
-    console.log("MyAccountsPage - error:", error);
   }
 
   const form = useForm<z.infer<typeof createAccountSchema>>({
@@ -128,10 +125,6 @@ export default function MyAccountsPage() {
 
   const handleCreateAccount = async (formData: z.infer<typeof createAccountSchema>) => {
     try {
-      // Debug: Log the raw form data
-      console.log("Raw form data received:", formData);
-      console.log("Form data keys:", Object.keys(formData));
-      
       // Send simplified sub-account data (personal info inherited from Master Account)
       const cleanedData = {
         accountName: formData.accountName?.trim() || 'New Account',
@@ -143,19 +136,10 @@ export default function MyAccountsPage() {
         ...(formData.companyWebsite?.trim() && { companyWebsite: formData.companyWebsite.trim() }),
         ...(formData.companyTaxId?.trim() && { companyTaxId: formData.companyTaxId.trim() }),
       };
-
-      if (process.env.NODE_ENV === 'development') {
-        console.log("Creating account with cleaned data:", cleanedData);
-      }
-
-      // Debug: Log the cleaned data being sent
-      console.log("Cleaned data being sent to backend:", cleanedData);
-      console.log("Cleaned data keys:", Object.keys(cleanedData));
       
       const result = await createAccount.mutateAsync(cleanedData);
       
       if (process.env.NODE_ENV === 'development') {
-        console.log("Account creation result:", result);
       }
 
       if (result?.status) {
@@ -169,21 +153,15 @@ export default function MyAccountsPage() {
               // Force refetch after creation with a small delay to ensure backend transaction is committed
       setTimeout(async () => {
         if (process.env.NODE_ENV === 'development') {
-          console.log("Refetching accounts after creation...");
         }
         const refetchResult = await refetch();
         if (process.env.NODE_ENV === 'development') {
-          console.log("Refetch completed, new data:", refetchResult.data);
         }
       }, 500);
       } else {
         throw new Error(result?.message || "Account creation failed");
       }
     } catch (error: any) {
-      console.error("Account creation error:", error);
-      console.error("Error response:", error?.response);
-      console.error("Error data:", error?.response?.data);
-      console.error("Error message:", error?.response?.data?.message);
       
       let errorMessage = "Failed to create account";
       
@@ -197,7 +175,6 @@ export default function MyAccountsPage() {
       if (formData.tradeRole === "FREELANCER" && 
           errorMessage.toLowerCase().includes("already have") && 
           errorMessage.toLowerCase().includes("freelancer")) {
-        console.log("Detected freelancer duplicate error - this may be a backend restriction");
         errorMessage = "The backend currently restricts multiple freelancer accounts. This appears to be a business rule limitation.";
       }
       
@@ -300,7 +277,6 @@ export default function MyAccountsPage() {
     
     // Debug logging
       if (process.env.NODE_ENV === 'development') {
-        console.log("Filtering out main account from sub-accounts", account);
     }
     
     return true;

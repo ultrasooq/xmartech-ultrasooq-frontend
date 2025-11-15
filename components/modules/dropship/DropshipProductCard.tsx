@@ -66,18 +66,36 @@ const DropshipProductCard: React.FC<DropshipProductCardProps> = ({
       <CardContent className="p-0">
         {/* Product Image */}
         <div className="relative h-48 w-full overflow-hidden bg-gray-100">
-          <Image
-            src={
-              productImage && 
-              (validator.isURL(productImage) || productImage.startsWith('data:image/'))
-                ? productImage
-                : PlaceholderImage
-            }
-            alt={productName}
-            fill
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-          />
+          {productImage && (validator.isURL(productImage) || productImage.startsWith('data:image/')) ? (
+            // Check if the image is from an allowed domain (S3 bucket) or is a data URL
+            productImage.includes('puremoon.s3.amazonaws.com') || productImage.startsWith('data:image/') ? (
+              <Image
+                src={productImage}
+                alt={productName}
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-300"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+              />
+            ) : (
+              // Use regular img tag for external URLs not in allowed domains
+              <img
+                src={productImage}
+                alt={productName}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                onError={(e) => {
+                  e.currentTarget.src = PlaceholderImage.src;
+                }}
+              />
+            )
+          ) : (
+            <Image
+              src={PlaceholderImage}
+              alt={productName}
+              fill
+              className="object-cover group-hover:scale-105 transition-transform duration-300"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+            />
+          )}
           
           {/* Status Badge */}
           <div className="absolute top-3 left-3">

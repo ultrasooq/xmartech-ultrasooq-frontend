@@ -29,7 +29,6 @@ export const useCreateFreelancerProfile = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -51,7 +50,6 @@ export const useUpdateFreelancerProfile = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -73,7 +71,6 @@ export const useUpdateFreelancerBranch = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -95,7 +92,6 @@ export const useUpdatFreelancerActiveStatus = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };

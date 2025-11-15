@@ -55,7 +55,6 @@ export const useAddSellerReward = () => {
             });
         },
         onError: (err: APIResponseError) => {
-            console.log(err);
         },
     });
 };
@@ -98,7 +97,6 @@ export const useCreateShareLink = () => {
             // });
         },
         onError: (err: APIResponseError) => {
-            console.log(err);
         },
     });
 };

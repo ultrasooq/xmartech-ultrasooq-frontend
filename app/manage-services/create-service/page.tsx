@@ -320,7 +320,6 @@ const CreateServicePage = () => {
         })),
       );
     } catch (error) {
-      console.error("Error fetching states:", error);
     }
   };
 
@@ -334,7 +333,6 @@ const CreateServicePage = () => {
         })),
       );
     } catch (error) {
-      console.error("Error fetching cities:", error);
     }
   };
 

@@ -133,7 +133,6 @@ export const useAddRfqProduct = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -160,7 +159,6 @@ export const useUpdateRfqProduct = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -226,7 +224,6 @@ export const useUpdateRfqCartWithLogin = () => {
       // });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -255,7 +252,6 @@ export const useUpdateFactoriesCartWithLogin = () =>
         // });
       },
       onError: (err: APIResponseError) => {
-        console.log(err);
       },
     });
   };
@@ -272,7 +268,6 @@ export const useAddFactoriesProduct = () => {
     },
     onSuccess: () => {},
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -289,7 +284,6 @@ export const useAddCustomizeProduct = () => {
     },
     onSuccess: () => {},
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -323,7 +317,6 @@ export const useDeleteRfqCartItem = () => {
       // });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -348,7 +341,6 @@ export const useDeleteFactoriesCartItem = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -447,7 +439,6 @@ export const useAddRfqQuotes = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -472,7 +463,6 @@ export const useAddFactoriesRequestQuotes = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -489,7 +479,6 @@ export const useAddProductDuplicateRfq = () => {
     },
     onSuccess: () => {},
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };
@@ -513,7 +502,6 @@ export const useDeleteRfqQuote = () => {
       });
     },
     onError: (err: APIResponseError) => {
-      console.log(err);
     },
   });
 };

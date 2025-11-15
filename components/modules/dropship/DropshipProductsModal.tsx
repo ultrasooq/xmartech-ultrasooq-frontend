@@ -78,16 +78,41 @@ const DropshipProductsModal: React.FC<DropshipProductsModalProps> = ({
                   className="flex items-center space-x-4 p-4 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-shadow"
                 >
                   {/* Product Image */}
-                  <div className="w-16 h-16 rounded-lg overflow-hidden border border-gray-200">
-                    <Image
-                      src={
-                        product.productImages?.[0]?.image || PlaceholderImage
-                      }
-                      alt={product.productName}
-                      width={64}
-                      height={64}
-                      className="object-cover w-full h-full"
-                    />
+                  <div className="w-16 h-16 rounded-lg overflow-hidden border border-gray-200 relative">
+                    {product.productImages?.[0]?.image ? (
+                      (() => {
+                        const imageSrc = product.productImages[0].image;
+                        const isExternalUrl = imageSrc && 
+                          typeof imageSrc === "string" && 
+                          imageSrc.startsWith("http") && 
+                          !imageSrc.includes("puremoon.s3.amazonaws.com");
+                        
+                        return isExternalUrl ? (
+                          <img
+                            src={imageSrc}
+                            alt={product.productName}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.currentTarget.src = PlaceholderImage.src;
+                            }}
+                          />
+                        ) : (
+                          <Image
+                            src={imageSrc}
+                            alt={product.productName}
+                            fill
+                            className="object-cover"
+                          />
+                        );
+                      })()
+                    ) : (
+                      <Image
+                        src={PlaceholderImage}
+                        alt={product.productName}
+                        fill
+                        className="object-cover"
+                      />
+                    )}
                   </div>
 
                   {/* Product Info */}

@@ -354,17 +354,6 @@ const TrendingPage = (props0: TrendingPageProps) => {
           categoryConnections: item?.category?.category_categoryIdDetail || [],
           consumerType: activePriceEntry?.consumerType,
           
-          // DEBUG: Log product data for discount calculation
-          _debug: {
-            activePriceEntry: activePriceEntry,
-            vendorDiscount: activePriceEntry?.vendorDiscount,
-            vendorDiscountType: activePriceEntry?.vendorDiscountType,
-            consumerDiscount: activePriceEntry?.consumerDiscount,
-            consumerDiscountType: activePriceEntry?.consumerDiscountType,
-            consumerType: activePriceEntry?.consumerType,
-            categoryId: item?.categoryId,
-            categoryLocation: item?.categoryLocation,
-          },
          // Add vendor information
          vendorId: item?.addedBy || item?.userId,
          vendorName: (() => {
@@ -483,6 +472,64 @@ const TrendingPage = (props0: TrendingPageProps) => {
     });
   }, [memoizedProductList]);
 
+  const [cartList, setCartList] = useState<any[]>([]);
+
+  const cartListByDeviceQuery = useCartListByDevice(
+    {
+      page: 1,
+      limit: 100,
+      deviceId,
+    },
+    !haveAccessToken,
+  );
+
+  const cartListByUser = useCartListByUserId(
+    {
+      page: 1,
+      limit: 100,
+    },
+    haveAccessToken,
+  );
+
+  useEffect(() => {
+    if (cartListByUser.data?.data) {
+      setCartList((cartListByUser.data?.data || []).map((item: any) => item));
+    } else if (cartListByDeviceQuery.data?.data) {
+      setCartList(
+        (cartListByDeviceQuery.data?.data || []).map((item: any) => item),
+      );
+    }
+  }, [cartListByUser.data?.data, cartListByDeviceQuery.data?.data]);
+
+  // Get unique category IDs from cart items for fresh category data
+  const uniqueCartCategoryIds = useMemo(() => {
+    const categoryIds = new Set<number>();
+    cartList.forEach((cartItem: any) => {
+      const productData = memoizedProductList.find((product: any) => product.id === cartItem.productId);
+      if (productData?.categoryId) {
+        categoryIds.add(productData.categoryId);
+      }
+    });
+    return Array.from(categoryIds);
+  }, [cartList, memoizedProductList]);
+
+  // Fetch category data for the first category in cart (if vendor)
+  // This ensures we have fresh category connection data
+  const firstCartCategoryId = uniqueCartCategoryIds.length > 0 ? uniqueCartCategoryIds[0] : undefined;
+  const firstCartCategoryQuery = useCategory(
+    firstCartCategoryId?.toString(),
+    !!(currentTradeRole && currentTradeRole !== "BUYER" && firstCartCategoryId)
+  );
+
+  // Create a map of categoryId -> fresh category connections
+  const freshCategoryConnectionsMap = useMemo(() => {
+    const map = new Map<number, any[]>();
+    if (firstCartCategoryId && firstCartCategoryQuery?.data?.data?.category_categoryIdDetail) {
+      map.set(firstCartCategoryId, firstCartCategoryQuery.data.data.category_categoryIdDetail);
+    }
+    return map;
+  }, [firstCartCategoryId, firstCartCategoryQuery?.data?.data]);
+
   const getCartPricing = React.useCallback(
     (productData: any, cartItem: any) => {
       if (!cartItem) {
@@ -497,16 +544,6 @@ const TrendingPage = (props0: TrendingPageProps) => {
       const quantity = Number(cartItem?.quantity) || 1;
 
       const cartPriceDetails = cartItem?.productPriceDetails || {};
-
-      if (process.env.NODE_ENV !== "production") {
-        console.groupCollapsed(
-          "🧮 Cart pricing | product",
-          productData?.id || cartItem?.productId || "unknown",
-        );
-        console.log("Input productData", productData);
-        console.log("Input cartItem", cartItem);
-        console.log("Input cartPriceDetails", cartPriceDetails);
-      }
 
       let originalPrice = 0;
       if (productData?.productProductPrice) {
@@ -567,7 +604,12 @@ const TrendingPage = (props0: TrendingPageProps) => {
 
       const categoryId = Number(productData?.categoryId || 0);
       const categoryLocation = productData?.categoryLocation;
-      const categoryConnections = productData?.categoryConnections;
+      
+      // Get fresh category connections - prioritize from category query if available
+      let categoryConnections = productData?.categoryConnections || [];
+      if (categoryId === firstCartCategoryId && freshCategoryConnectionsMap.has(categoryId)) {
+        categoryConnections = freshCategoryConnectionsMap.get(categoryId) || [];
+      }
 
       const isCategoryMatch = checkCategoryConnection(
         vendorBusinessCategoryIds,
@@ -592,20 +634,37 @@ const TrendingPage = (props0: TrendingPageProps) => {
       let discountType: string | undefined;
 
       if (currentTradeRole && currentTradeRole !== "BUYER") {
+        // VENDOR user
         if (isVendorType || isEveryoneType) {
-          let eligibleForVendorDiscount = isCategoryMatch;
-
-          if (!eligibleForVendorDiscount && vendorDiscountValue > 0 && vendorDiscountType) {
-            eligibleForVendorDiscount = true;
+          // consumerType is VENDOR/VENDORS or EVERYONE - vendor can get vendor discount
+          // BUT category match is REQUIRED for vendor discounts
+          if (isCategoryMatch) {
+            // Same relation - Vendor gets vendor discount if available
+            if (vendorDiscountValue > 0 && vendorDiscountType) {
+              discount = vendorDiscountValue;
+              discountType = vendorDiscountType;
+            } else {
+              // No vendor discount available, no discount
+              discount = 0;
+            }
+          } else {
+            // Not same relation - No vendor discount
+            // If consumerType is EVERYONE, fallback to consumer discount
+            if (isEveryoneType) {
+              if (consumerDiscountValue > 0 && consumerDiscountType) {
+                discount = consumerDiscountValue;
+                discountType = consumerDiscountType;
+              } else {
+                discount = 0;
+              }
+            } else {
+              // consumerType is VENDOR/VENDORS but no category match - no discount
+              discount = 0;
+            }
           }
-
-          if (eligibleForVendorDiscount && vendorDiscountValue > 0 && vendorDiscountType) {
-            discount = vendorDiscountValue;
-            discountType = vendorDiscountType;
-          } else if (isEveryoneType && consumerDiscountValue > 0 && consumerDiscountType) {
-            discount = consumerDiscountValue;
-            discountType = consumerDiscountType;
-          }
+        } else {
+          // consumerType is CONSUMER - vendors get no discount
+          discount = 0;
         }
       } else {
         if (isConsumerType || isEveryoneType) {
@@ -655,18 +714,6 @@ const TrendingPage = (props0: TrendingPageProps) => {
       const totalPrice = Number((unitPrice * quantity).toFixed(2));
       const originalTotalPrice = Number((originalUnitPrice * quantity).toFixed(2));
 
-      if (process.env.NODE_ENV !== "production") {
-        console.log("Computed pricing", {
-          originalPrice,
-          finalPrice,
-          discount,
-          discountType,
-          quantity,
-          totalPrice,
-          originalTotalPrice,
-        });
-        console.groupEnd();
-      }
 
       return {
         unitPrice,
@@ -675,7 +722,7 @@ const TrendingPage = (props0: TrendingPageProps) => {
         originalTotalPrice,
       };
     },
-    [currentTradeRole, vendorBusinessCategoryIds],
+    [currentTradeRole, vendorBusinessCategoryIds, freshCategoryConnectionsMap, firstCartCategoryId],
   );
 
   const getProductVariants = async () => {
@@ -686,41 +733,6 @@ const TrendingPage = (props0: TrendingPageProps) => {
     const response = await fetchProductVariant.mutateAsync(productPriceIds);
     if (response.status) setProductVariants(response.data);
   };
-
-  useEffect(() => {
-    if (memoizedProductList.length) {
-      getProductVariants();
-    }
-  }, [memoizedProductList]);
-
-  const [cartList, setCartList] = useState<any[]>([]);
-
-  const cartListByDeviceQuery = useCartListByDevice(
-    {
-      page: 1,
-      limit: 100,
-      deviceId,
-    },
-    !haveAccessToken,
-  );
-
-  const cartListByUser = useCartListByUserId(
-    {
-      page: 1,
-      limit: 100,
-    },
-    haveAccessToken,
-  );
-
-  useEffect(() => {
-    if (cartListByUser.data?.data) {
-      setCartList((cartListByUser.data?.data || []).map((item: any) => item));
-    } else if (cartListByDeviceQuery.data?.data) {
-      setCartList(
-        (cartListByDeviceQuery.data?.data || []).map((item: any) => item),
-      );
-    }
-  }, [cartListByUser.data?.data, cartListByDeviceQuery.data?.data]);
 
   const handleDeleteFromWishlist = async (productId: number) => {
     const response = await deleteFromWishlist.mutateAsync({

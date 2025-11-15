@@ -142,7 +142,6 @@ const ProductDetailsSection: React.FC<ProductDetailsSectionProps> = () => {
       default:
         break;
     }
-    console.log(tempArr);
     setCustomFields((prevState) => [...prevState, ...tempArr]);
   };
 

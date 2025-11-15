@@ -55,7 +55,6 @@ const Footer = () => {
     setIsPrivacyModalOpen(!isPrivacyModalOpen);
 
   const onSubmit = (data: typeof defaultValues) => {
-    console.log(data);
   };
 
   return (

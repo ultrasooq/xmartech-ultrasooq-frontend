@@ -257,7 +257,6 @@ const AddBranchPage = () => {
       data.proofOfAddress = getProofOfAddressImageUrl;
     }
 
-    console.log(data);
     // return;
     const response = await createCompanyBranch.mutateAsync(data);
 

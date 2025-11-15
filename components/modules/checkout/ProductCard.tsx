@@ -98,31 +98,48 @@ const ProductCard: React.FC<ProductCardProps> = ({
     let discountType: string | undefined;
 
     if (currentTradeRole && currentTradeRole !== "BUYER") {
+      // VENDOR user
       if (isVendorType || isEveryoneType) {
-        let eligibleForVendorDiscount = isCategoryMatch;
-
-        if (!eligibleForVendorDiscount && vendorDiscountValue > 0 && normalizedVendorDiscountType) {
-          eligibleForVendorDiscount = true;
+        // consumerType is VENDOR/VENDORS or EVERYONE - vendor can get vendor discount
+        // BUT category match is REQUIRED for vendor discounts
+        if (isCategoryMatch) {
+          // Same relation - Vendor gets vendor discount if available
+          if (vendorDiscountValue > 0 && normalizedVendorDiscountType) {
+            discount = vendorDiscountValue;
+            discountType = normalizedVendorDiscountType;
+          } else {
+            // No vendor discount available, no discount
+            discount = 0;
+          }
+        } else {
+          // Not same relation - No vendor discount
+          // If consumerType is EVERYONE, fallback to consumer discount
+          if (isEveryoneType) {
+            if (consumerDiscountValue > 0 && normalizedConsumerDiscountType) {
+              discount = consumerDiscountValue;
+              discountType = normalizedConsumerDiscountType;
+            } else {
+              discount = 0;
+            }
+          } else {
+            // consumerType is VENDOR/VENDORS but no category match - no discount
+            discount = 0;
+          }
         }
-
-        if (eligibleForVendorDiscount && vendorDiscountValue > 0 && normalizedVendorDiscountType) {
-          discount = vendorDiscountValue;
-          discountType = normalizedVendorDiscountType;
-        } else if (
-          isEveryoneType &&
-          consumerDiscountValue > 0 &&
-          normalizedConsumerDiscountType
-        ) {
-          discount = consumerDiscountValue;
-          discountType = normalizedConsumerDiscountType;
-        }
+      } else {
+        // consumerType is CONSUMER - vendors get no discount
+        discount = 0;
       }
     } else {
+      // CONSUMER (BUYER) - Gets consumer discount if consumerType is CONSUMER or EVERYONE
       if (isConsumerType || isEveryoneType) {
         if (consumerDiscountValue > 0 && normalizedConsumerDiscountType) {
           discount = consumerDiscountValue;
           discountType = normalizedConsumerDiscountType;
         }
+      } else {
+        // consumerType is VENDOR/VENDORS - no discount for buyers
+        discount = 0;
       }
     }
 

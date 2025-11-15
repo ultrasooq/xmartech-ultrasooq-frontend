@@ -894,17 +894,6 @@ const TrendingPage = (props0: TrendingPageProps) => {
                       ) : (
                         <div className="space-y-3">
                           {cartList.slice(0, 3).map((cartItem: any) => {
-                            // Debug: Log cart item data
-                            console.log('Cart Item Debug:', {
-                              cartItem,
-                              productId: cartItem.productId,
-                              quantity: cartItem.quantity,
-                              productPriceDetails: cartItem.productPriceDetails,
-                              offerPrice: cartItem.productPriceDetails?.offerPrice,
-                              consumerDiscount: cartItem.productPriceDetails?.consumerDiscount,
-                              consumerDiscountType: cartItem.productPriceDetails?.consumerDiscountType,
-                            });
-                            
                             // Find the product data from our memoized product list
                             const productData = memoizedProductList.find((product: any) => product.id === cartItem.productId);
                             

@@ -70,9 +70,7 @@ const AddProductContent: React.FC<AddProductContentProps> = ({ productId, onClos
     setIsSearching(true);
     try {
       const result = await searchProducts();
-      console.log('Search result:', result);
       if (result.data?.data) {
-        console.log('Search results data:', result.data.data);
         setSearchResults(result.data.data);
       } else {
         setSearchResults([]);
@@ -90,10 +88,6 @@ const AddProductContent: React.FC<AddProductContentProps> = ({ productId, onClos
   }, [searchTerm, searchProducts, toast, t]);
 
   const handleSelectProduct = (product: any) => {
-    console.log('Selected product for copy:', product);
-    console.log('Product ID:', product.id);
-    console.log('Product Name:', product.productName);
-    console.log('Product Images:', product.existingProductImages);
     router.push(`/product?copy=${product.id}`);
     onClose?.();
   };

@@ -137,11 +137,8 @@ export default function EditProfilePage() {
   };
 
   const onSubmit = async (formData: any) => {
-    console.log('Form submission - formData:', formData);
-    console.log('Form submission - uniqueUser data:', uniqueUser.data?.data);
     
     const existingProfile = uniqueUser.data?.data?.userProfile?.[0];
-    console.log('Form submission - existing profile:', existingProfile);
     
     let data = { ...formData, aboutUs: JSON.stringify(formData.aboutUsJson || ''), profileType: "COMPANY" };
     
@@ -159,15 +156,12 @@ export default function EditProfilePage() {
 
     // If there's no existing profile, we need to create one first
     if (!existingProfile) {
-      console.log('Form submission - no existing profile, will create new one');
       // Remove userProfileId since we're creating a new profile
       delete data.userProfileId;
     } else {
-      console.log('Form submission - updating existing profile with ID:', existingProfile.id);
       data.userProfileId = existingProfile.id;
     }
 
-    console.log('Form submission - processed data:', data);
 
     formData.uploadImage = imageFile;
     let getImageUrl;
@@ -180,22 +174,18 @@ export default function EditProfilePage() {
     delete data.uploadImage;
     delete data.aboutUsJson;
 
-    console.log('Form submission - final data to send:', data);
 
     try {
       let response;
       
       if (!existingProfile) {
         // Create new profile
-        console.log('Form submission - creating new profile');
         response = await createCompanyProfile.mutateAsync(data);
       } else {
         // Update existing profile
-        console.log('Form submission - updating existing profile');
         response = await updateCompanyProfile.mutateAsync(data);
       }
       
-      console.log('Form submission - response:', response);
       
       if (response.status && response.data) {
         toast({ title: t("profile_edit_successful"), description: response.message, variant: "success", });
@@ -205,7 +195,6 @@ export default function EditProfilePage() {
         toast({ title: t("profile_edit_failed"), description: response.message, variant: "danger", });
       }
     } catch (error) {
-      console.error('Form submission - error:', error);
       toast({ title: t("profile_edit_failed"), description: "An error occurred while updating the profile", variant: "danger", });
     }
   };
@@ -213,25 +202,19 @@ export default function EditProfilePage() {
   useEffect(() => {
     const params = new URLSearchParams(document.location.search);
     let userId = params.get("userId");
-    console.log('useEffect - URL params userId:', userId);
     setActiveUserId(userId);
   }, []);
 
   useEffect(() => {
-    console.log('useEffect - uniqueUser data:', uniqueUser.data?.data);
-    console.log('useEffect - uniqueUser isLoading:', uniqueUser.isLoading);
-    console.log('useEffect - uniqueUser error:', uniqueUser.error);
     
     if (uniqueUser.data?.data) {
       const userProfile = uniqueUser.data?.data?.userProfile?.[0];
-      console.log('useEffect - userProfile:', userProfile);
       
       let abountUsJson = "";
       if (userProfile?.aboutUs) {
         try {
           abountUsJson = JSON.parse(userProfile?.aboutUs);
         } catch (error) {
-          console.error('useEffect - error parsing aboutUs:', error);
         }
       }
       
@@ -252,7 +235,6 @@ export default function EditProfilePage() {
         phoneNumber: userProfile?.phoneNumber,
       };
       
-      console.log('useEffect - form data to set:', formData);
       form.reset(formData);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

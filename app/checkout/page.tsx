@@ -45,6 +45,8 @@ import { useCurrentAccount } from "@/apis/queries/auth.queries";
 import { useVendorBusinessCategories } from "@/hooks/useVendorBusinessCategories";
 import { checkCategoryConnection } from "@/utils/categoryConnection";
 import { usePreOrderCalculation } from "@/apis/queries/orders.queries";
+import { useAllProducts } from "@/apis/queries/product.queries";
+import { useCategory } from "@/apis/queries/category.queries";
 import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
 import { IoCloseSharp } from "react-icons/io5";
 import Select from "react-select";
@@ -187,6 +189,99 @@ const CheckoutPage = () => {
     return [];
   }, [cartListByUser.data?.data, cartListByDeviceQuery.data?.data]);
 
+  // Get unique product IDs from cart for fetching fresh category data
+  const uniqueProductIds = useMemo(() => {
+    const productIds = new Set<number>();
+    memoizedCartList.forEach((item: CartItem) => {
+      if (item.cartType === "DEFAULT" && item.productId) {
+        productIds.add(item.productId);
+      }
+    });
+    return Array.from(productIds);
+  }, [memoizedCartList]);
+
+  // Fetch all products that are in the cart to get fresh category data
+  const allProductsQuery = useAllProducts(
+    {
+      page: 1,
+      limit: 1000, // Fetch enough to cover all cart items
+    },
+    haveAccessToken && uniqueProductIds.length > 0
+  );
+
+  // Get unique category IDs from products in cart
+  const uniqueCategoryIds = useMemo(() => {
+    const categoryIds = new Set<number>();
+    if (allProductsQuery?.data?.data) {
+      allProductsQuery.data.data.forEach((product: any) => {
+        if (uniqueProductIds.includes(product.id)) {
+          const categoryId = product?.categoryId ?? product?.category?.id;
+          if (categoryId) {
+            categoryIds.add(categoryId);
+          }
+        }
+      });
+    }
+    return Array.from(categoryIds);
+  }, [allProductsQuery?.data?.data, uniqueProductIds]);
+
+  // Fetch category data for the first category (if vendor)
+  const firstCategoryId = uniqueCategoryIds.length > 0 ? uniqueCategoryIds[0] : undefined;
+  const firstCategoryQuery = useCategory(
+    firstCategoryId?.toString(),
+    !!(currentTradeRole && currentTradeRole !== "BUYER" && firstCategoryId)
+  );
+
+  // Create a map of productId -> pricing metadata with fresh category connections
+  const productPricingInfoMap = useMemo(() => {
+    const map = new Map<
+      number,
+      {
+        consumerType?: string;
+        vendorDiscount?: number;
+        vendorDiscountType?: string;
+        consumerDiscount?: number;
+        consumerDiscountType?: string;
+        categoryId?: number;
+        categoryLocation?: string;
+        categoryConnections?: any[];
+      }
+    >();
+
+    if (allProductsQuery?.data?.data) {
+      allProductsQuery.data.data.forEach((product: any) => {
+        if (uniqueProductIds.includes(product.id)) {
+          const activePriceEntry =
+            product?.product_productPrice?.find((pp: any) => pp?.status === "ACTIVE") ||
+            product?.product_productPrice?.[0];
+
+          const categoryId = product?.categoryId ?? product?.category?.id;
+          
+          // Get fresh category connections - prioritize from category query if it matches
+          let freshCategoryConnections: any[] = [];
+          if (categoryId === firstCategoryId && firstCategoryQuery?.data?.data?.category_categoryIdDetail) {
+            freshCategoryConnections = firstCategoryQuery.data.data.category_categoryIdDetail;
+          } else if (product?.category?.category_categoryIdDetail) {
+            freshCategoryConnections = product.category.category_categoryIdDetail;
+          }
+
+          map.set(product.id, {
+            consumerType: activePriceEntry?.consumerType,
+            vendorDiscount: activePriceEntry?.vendorDiscount,
+            vendorDiscountType: activePriceEntry?.vendorDiscountType,
+            consumerDiscount: activePriceEntry?.consumerDiscount,
+            consumerDiscountType: activePriceEntry?.consumerDiscountType,
+            categoryId: categoryId,
+            categoryLocation: product?.categoryLocation ?? product?.category?.categoryLocation,
+            categoryConnections: freshCategoryConnections,
+          });
+        }
+      });
+    }
+
+    return map;
+  }, [allProductsQuery?.data?.data, uniqueProductIds, firstCategoryId, firstCategoryQuery?.data?.data]);
+
   const calculateDiscountedPrice = (
     offerPrice: string | number,
     discount: number,
@@ -216,8 +311,10 @@ const CheckoutPage = () => {
     cartItem: CartItem,
   ) => {
     const productPriceDetails: any = cartItem.productPriceDetails || {};
+    const productInfo = productPricingInfoMap.get(cartItem.productId);
+
     const rawConsumerType =
-      productPriceDetails?.consumerType || "";
+      productInfo?.consumerType || productPriceDetails?.consumerType || "";
     const consumerType =
       typeof rawConsumerType === "string"
         ? rawConsumerType.toUpperCase().trim()
@@ -227,34 +324,29 @@ const CheckoutPage = () => {
     const isConsumerType = consumerType === "CONSUMER";
     const isEveryoneType = consumerType === "EVERYONE";
 
-    const categoryIdValue =
-      productPriceDetails?.productPrice_product?.categoryId ??
-      productPriceDetails?.productCategoryId ??
-      0;
-    const categoryId = Number(categoryIdValue) || 0;
-    const categoryLocation =
-      productPriceDetails?.productPrice_product?.categoryLocation ||
-      productPriceDetails?.productCategoryLocation;
-    const categoryConnections =
-      productPriceDetails?.productPrice_product?.category?.category_categoryIdDetail ||
-      productPriceDetails?.categoryConnections ||
-      [];
+    const categoryId = Number(productInfo?.categoryId || 0);
+    const categoryLocation = productInfo?.categoryLocation;
+    const categoryConnections = productInfo?.categoryConnections || [];
 
     const isCategoryMatch = checkCategoryConnection(
       vendorBusinessCategoryIds,
-      Number.isFinite(categoryId) ? categoryId : 0,
+      categoryId,
       categoryLocation,
       categoryConnections,
     );
 
-    const vendorDiscountValue = Number(productPriceDetails?.vendorDiscount || 0);
-    const vendorDiscountType = productPriceDetails?.vendorDiscountType;
+    const vendorDiscountValue = Number(
+      productInfo?.vendorDiscount ?? productPriceDetails?.vendorDiscount ?? 0
+    );
+    const vendorDiscountType = productInfo?.vendorDiscountType || productPriceDetails?.vendorDiscountType;
     const normalizedVendorDiscountType = vendorDiscountType
       ? vendorDiscountType.toString().toUpperCase().trim()
       : undefined;
 
-    const consumerDiscountValue = Number(productPriceDetails?.consumerDiscount || 0);
-    const consumerDiscountType = productPriceDetails?.consumerDiscountType;
+    const consumerDiscountValue = Number(
+      productInfo?.consumerDiscount ?? productPriceDetails?.consumerDiscount ?? 0
+    );
+    const consumerDiscountType = productInfo?.consumerDiscountType || productPriceDetails?.consumerDiscountType;
     const normalizedConsumerDiscountType = consumerDiscountType
       ? consumerDiscountType.toString().toUpperCase().trim()
       : undefined;
@@ -263,31 +355,48 @@ const CheckoutPage = () => {
     let discountType: string | undefined;
 
     if (currentTradeRole && currentTradeRole !== "BUYER") {
+      // VENDOR user
       if (isVendorType || isEveryoneType) {
-        let eligibleForVendorDiscount = isCategoryMatch;
-
-        if (!eligibleForVendorDiscount && vendorDiscountValue > 0 && normalizedVendorDiscountType) {
-          eligibleForVendorDiscount = true;
+        // consumerType is VENDOR/VENDORS or EVERYONE - vendor can get vendor discount
+        // BUT category match is REQUIRED for vendor discounts
+        if (isCategoryMatch) {
+          // Same relation - Vendor gets vendor discount if available
+          if (vendorDiscountValue > 0 && normalizedVendorDiscountType) {
+            discount = vendorDiscountValue;
+            discountType = normalizedVendorDiscountType;
+          } else {
+            // No vendor discount available, no discount
+            discount = 0;
+          }
+        } else {
+          // Not same relation - No vendor discount
+          // If consumerType is EVERYONE, fallback to consumer discount
+          if (isEveryoneType) {
+            if (consumerDiscountValue > 0 && normalizedConsumerDiscountType) {
+              discount = consumerDiscountValue;
+              discountType = normalizedConsumerDiscountType;
+            } else {
+              discount = 0;
+            }
+          } else {
+            // consumerType is VENDOR/VENDORS but no category match - no discount
+            discount = 0;
+          }
         }
-
-        if (eligibleForVendorDiscount && vendorDiscountValue > 0 && normalizedVendorDiscountType) {
-          discount = vendorDiscountValue;
-          discountType = normalizedVendorDiscountType;
-        } else if (
-          isEveryoneType &&
-          consumerDiscountValue > 0 &&
-          normalizedConsumerDiscountType
-        ) {
-          discount = consumerDiscountValue;
-          discountType = normalizedConsumerDiscountType;
-        }
+      } else {
+        // consumerType is CONSUMER - vendors get no discount
+        discount = 0;
       }
     } else {
+      // CONSUMER (BUYER) - Gets consumer discount if consumerType is CONSUMER or EVERYONE
       if (isConsumerType || isEveryoneType) {
         if (consumerDiscountValue > 0 && normalizedConsumerDiscountType) {
           discount = consumerDiscountValue;
           discountType = normalizedConsumerDiscountType;
         }
+      } else {
+        // consumerType is VENDOR/VENDORS - no discount for buyers
+        discount = 0;
       }
     }
 
@@ -697,8 +806,8 @@ const CheckoutPage = () => {
   }, [cartListByUser.data?.data, cartListByDeviceQuery?.data?.data, invalidProducts, notAvailableProducts]);
 
   useEffect(() => {
-    setTotalAmount(subTotal + shippingCharge);
-  }, [itemsTotal, subTotal, shippingCharge]);
+    setTotalAmount(itemsTotal + shippingCharge + fee);
+  }, [itemsTotal, shippingCharge, fee]);
 
   useEffect(() => {
     let charge = 0;
@@ -1039,7 +1148,9 @@ const CheckoutPage = () => {
                                   (item: CartItem) =>
                                     item.productPriceDetails && item.productPriceDetails.adminId == sellerId,
                                 )
-                                ?.map((item: CartItem) => (
+                                ?.map((item: CartItem) => {
+                                  const productInfo = productPricingInfoMap.get(item.productId);
+                                  return (
                                   <ProductCard
                                     key={item.id}
                                     cartId={item.id}
@@ -1057,21 +1168,21 @@ const CheckoutPage = () => {
                                         ?.productImages
                                     }
                                     consumerDiscount={
-                                      item.productPriceDetails?.consumerDiscount || 0
+                                      productInfo?.consumerDiscount ?? item.productPriceDetails?.consumerDiscount ?? 0
                                     }
                                     consumerDiscountType={
-                                      item.productPriceDetails?.consumerDiscountType
+                                      productInfo?.consumerDiscountType ?? item.productPriceDetails?.consumerDiscountType
                                     }
                                     vendorDiscount={
-                                      item.productPriceDetails?.vendorDiscount || 0
+                                      productInfo?.vendorDiscount ?? item.productPriceDetails?.vendorDiscount ?? 0
                                     }
                                     vendorDiscountType={
-                                      item.productPriceDetails?.vendorDiscountType
+                                      productInfo?.vendorDiscountType ?? item.productPriceDetails?.vendorDiscountType
                                     }
-                                    consumerType={(item.productPriceDetails as any)?.consumerType}
-                                    categoryId={(item.productPriceDetails as any)?.productCategoryId}
-                                    categoryLocation={(item.productPriceDetails as any)?.productCategoryLocation}
-                                    categoryConnections={(item.productPriceDetails as any)?.categoryConnections || []}
+                                    consumerType={productInfo?.consumerType ?? (item.productPriceDetails as any)?.consumerType}
+                                    categoryId={productInfo?.categoryId ?? (item.productPriceDetails as any)?.productCategoryId}
+                                    categoryLocation={productInfo?.categoryLocation ?? (item.productPriceDetails as any)?.productCategoryLocation}
+                                    categoryConnections={productInfo?.categoryConnections || []}
                                     onAdd={handleAddToCart}
                                     onRemove={(cartId: number) => {
                                       setIsConfirmDialogOpen(true);
@@ -1086,7 +1197,8 @@ const CheckoutPage = () => {
                                       item.productId,
                                     )}
                                   />
-                                )) || []}
+                                  );
+                                }) || []}
                               
                               {/* Shipping Options */}
                               <div className="mt-4 p-4 bg-white rounded-lg border border-gray-200">
@@ -1706,7 +1818,7 @@ const CheckoutPage = () => {
                 onClick={onCancelRemove}
                 translate="no"
               >
-                {t("remove")}
+                {t("cancel")}
               </Button>
               <Button
                 type="button"

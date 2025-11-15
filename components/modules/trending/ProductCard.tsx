@@ -81,17 +81,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
   // Get the current account's trade role (for multi-account system)
   const currentTradeRole = currentAccount?.data?.data?.account?.tradeRole || user?.tradeRole;
 
-  // DEBUG: Log vendor business categories
-  if (currentTradeRole && currentTradeRole !== "BUYER") {
-    console.log("🔍 DEBUG ProductCard - Vendor Business Categories:", {
-      productId: item.id,
-      productName: item.productName,
-      currentTradeRole,
-      vendorBusinessCategoryIds: vendorBusinessCategoryIds,
-      vendorBusinessCategoryIdsLength: vendorBusinessCategoryIds.length,
-    });
-  }
-
   // Fetch product category data to get connections (only if vendor and categoryId exists)
   const productCategoryQuery = useCategory(
     item.categoryId?.toString(),
@@ -99,21 +88,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
   );
   
   const categoryConnections = productCategoryQuery?.data?.data?.category_categoryIdDetail || [];
-
-  // DEBUG: Log category query data
-  if (currentTradeRole && currentTradeRole !== "BUYER" && item.categoryId) {
-    console.log("🔍 DEBUG ProductCard - Category Query:", {
-      productId: item.id,
-      productName: item.productName,
-      productCategoryId: item.categoryId,
-      productCategoryLocation: item.categoryLocation,
-      categoryQueryEnabled: !!(currentTradeRole && currentTradeRole !== "BUYER" && item.categoryId),
-      categoryQueryLoading: productCategoryQuery.isLoading,
-      categoryQueryData: productCategoryQuery?.data?.data,
-      categoryConnections: categoryConnections,
-      categoryConnectionsLength: categoryConnections.length,
-    });
-  }
 
   // Helper function to get the applicable discount for the current user
   const getApplicableDiscount = () => {
@@ -136,22 +110,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
       categoryConnections
     );
 
-    // DEBUG: Log category match check
-    console.log("🔍 DEBUG ProductCard - Category Match Check:", {
-      productId: item.id,
-      productName: item.productName,
-      vendorBusinessCategoryIds: vendorBusinessCategoryIds,
-      productCategoryId: item.categoryId,
-      productCategoryLocation: item.categoryLocation,
-      categoryConnections: categoryConnections,
-      isCategoryMatch: isCategoryMatch,
-      categoryConnectionsDetails: categoryConnections.map((conn: any) => ({
-        connectTo: conn.connectTo,
-        connectToId: conn.connectToId,
-        connectToDetail: conn.connectToDetail,
-      })),
-    });
-    
     let discount = 0;
     let discountType: string | undefined;
     
@@ -197,25 +155,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
         discount = 0;
       }
     }
-
-    // DEBUG: Log final discount calculation
-    console.log("✅ DEBUG ProductCard - Final Discount Calculation:", {
-      productId: item.id,
-      productName: item.productName,
-      currentTradeRole,
-      consumerType: rawConsumerType,
-      normalizedConsumerType: consumerType,
-      isVendorType,
-      isConsumerType,
-      isEveryoneType,
-      isCategoryMatch,
-      vendorDiscount: item.vendorDiscount,
-      vendorDiscountType: item.vendorDiscountType,
-      consumerDiscount: item.consumerDiscount,
-      consumerDiscountType: item.consumerDiscountType,
-      finalDiscount: discount,
-      finalDiscountType: discountType,
-    });
     
     return { discount, discountType };
   };
@@ -701,19 +640,40 @@ const ProductCard: React.FC<ProductCardProps> = ({
         })()}
 
         <div className="relative w-full h-full sm:h-48 lg:h-56 bg-gray-50 overflow-hidden min-h-[140px]">
-          <Image
-            src={
-              item?.productImage && (validator.isURL(item.productImage) || item.productImage.startsWith('data:image/'))
-                ? item.productImage
-                : PlaceholderImage
-            }
-            alt="product-image"
-            fill
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-contain group-hover:scale-105 transition-transform duration-300"
-            blurDataURL="/images/product-placeholder.png"
-            placeholder="blur"
-          />
+          {item?.productImage && (validator.isURL(item.productImage) || item.productImage.startsWith('data:image/')) ? (
+            // Check if the image is from an allowed domain (S3 bucket) or is a data URL
+            item.productImage.includes('puremoon.s3.amazonaws.com') || item.productImage.startsWith('data:image/') ? (
+              <Image
+                src={item.productImage}
+                alt="product-image"
+                fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                className="object-contain group-hover:scale-105 transition-transform duration-300"
+                blurDataURL="/images/product-placeholder.png"
+                placeholder="blur"
+              />
+            ) : (
+              // Use regular img tag for external URLs not in allowed domains
+              <img
+                src={item.productImage}
+                alt="product-image"
+                className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+                onError={(e) => {
+                  e.currentTarget.src = PlaceholderImage.src;
+                }}
+              />
+            )
+          ) : (
+            <Image
+              src={PlaceholderImage}
+              alt="product-image"
+              fill
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              className="object-contain group-hover:scale-105 transition-transform duration-300"
+              blurDataURL="/images/product-placeholder.png"
+              placeholder="blur"
+            />
+          )}
           {/* Eye-catching ad ribbon when sale not started */}
           {saleNotStarted ? (
             <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-3">

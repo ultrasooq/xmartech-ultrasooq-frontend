@@ -121,11 +121,6 @@ const DropshipProductForm: React.FC<DropshipProductFormProps> = () => {
 
   const onSubmit = async (data: any) => {
     try {
-      console.log('=== DROPSHIP FORM SUBMIT TRIGGERED ===');
-      console.log('Dropship form data:', data);
-      console.log('Form validation errors:', form.formState.errors);
-      console.log('selectedOriginalProduct:', selectedOriginalProduct);
-      console.log('markup:', markup);
       
       // Validate payload size
       const payload = {
@@ -173,7 +168,6 @@ const DropshipProductForm: React.FC<DropshipProductFormProps> = () => {
         throw new Error(result.message);
       }
     } catch (error: any) {
-      console.error('Error creating dropship product:', error);
       
       let errorMessage = t("failed_to_create_dropship_product");
       if (error.response?.status === 413) {
@@ -191,13 +185,10 @@ const DropshipProductForm: React.FC<DropshipProductFormProps> = () => {
   };
 
   const handleProductSelect = (product: any) => {
-    console.log('=== PRODUCT SELECTED ===');
-    console.log('Selected product:', product);
     
     setSelectedOriginalProduct(product);
     const plainDescription = extractPlainText(product.description);
     
-    console.log('Plain description:', plainDescription);
     
     setCustomContent(prev => ({
       ...prev,
@@ -209,8 +200,6 @@ const DropshipProductForm: React.FC<DropshipProductFormProps> = () => {
     form.setValue('originalProductId', product.id);
     form.setValue('customProductName', product.productName);
     form.setValue('customDescription', plainDescription);
-    
-    console.log('Form values after setting:', form.getValues());
   };
 
   const handleMarkupChange = (newMarkup: number) => {
@@ -367,20 +356,13 @@ const DropshipProductForm: React.FC<DropshipProductFormProps> = () => {
               disabled={!selectedOriginalProduct || createDropshipProduct.isPending}
               onClick={(e) => {
                 e.preventDefault();
-                console.log('=== DROPSHIP FORM SUBMIT CLICKED ===');
-                console.log('selectedOriginalProduct:', selectedOriginalProduct);
-                console.log('form values:', form.getValues());
-                console.log('form errors:', form.formState.errors);
-                console.log('form isValid:', form.formState.isValid);
                 
                 // Manually trigger form submission
                 form.handleSubmit(
                   (data) => {
-                    console.log('Form validation passed, submitting:', data);
                     onSubmit(data);
                   },
                   (errors) => {
-                    console.log('Form validation failed:', errors);
                     toast({
                       title: t("validation_error"),
                       description: t("please_fill_all_required_fields"),

@@ -50,7 +50,6 @@ const ControlledCheckboxInput: React.FC<ControlledCheckboxInputProps> = ({
                         className="border border-solid border-gray-300 data-[state=checked]:bg-dark-orange!"
                         checked={field.value?.includes(item.value)}
                         onCheckedChange={(checked) => {
-                          console.log(field, item);
                           // return;
                           // return checked
                           //   ? field.onChange([...field.value, item.value])

@@ -65,10 +65,6 @@ const AddFromExistingProductPage = () => {
   }, [searchTerm, toast, t]);
 
   const handleSelectProduct = (product: any) => {
-    console.log('Selected product for copy:', product);
-    console.log('Product ID:', product.id);
-    console.log('Product Name:', product.productName);
-    console.log('Product Images:', product.existingProductImages);
     router.push(`/product?copy=${product.id}`);
   };
 
@@ -85,7 +81,6 @@ const AddFromExistingProductPage = () => {
   // Handle search results from the query
   useEffect(() => {
     if (isError) {
-      console.error('Search error:', error);
       toast({
         title: t("search_failed"),
         description: t("search_failed"),
@@ -94,7 +89,6 @@ const AddFromExistingProductPage = () => {
       setIsSearching(false);
       setSearchResults([]);
     } else if (searchData?.data) {
-      console.log('Search results from query:', searchData.data);
       setSearchResults(searchData.data);
       setIsSearching(false);
     } else if (searchTerm.trim().length >= 3) {
@@ -273,17 +267,35 @@ const AddFromExistingProductPage = () => {
                 </h4>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                   {selectedProduct.existingProductImages && selectedProduct.existingProductImages.length > 0 ? (
-                    selectedProduct.existingProductImages.map((image: any, index: number) => (
-                      <div key={index} className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
-                        <Image
-                          src={image.image}
-                          alt={`${selectedProduct.productName} - Image ${index + 1}`}
-                          width={200}
-                          height={200}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    ))
+                    selectedProduct.existingProductImages.map((image: any, index: number) => {
+                      const imageSrc = image.image;
+                      const isExternalUrl = imageSrc && 
+                        typeof imageSrc === "string" && 
+                        imageSrc.startsWith("http") && 
+                        !imageSrc.includes("puremoon.s3.amazonaws.com");
+                      
+                      return (
+                        <div key={index} className="aspect-square bg-gray-100 rounded-lg overflow-hidden relative">
+                          {isExternalUrl ? (
+                            <img
+                              src={imageSrc}
+                              alt={`${selectedProduct.productName} - Image ${index + 1}`}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.currentTarget.src = "/images/no-image.jpg";
+                              }}
+                            />
+                          ) : (
+                            <Image
+                              src={imageSrc}
+                              alt={`${selectedProduct.productName} - Image ${index + 1}`}
+                              fill
+                              className="object-cover"
+                            />
+                          )}
+                        </div>
+                      );
+                    })
                   ) : (
                     <div className="col-span-full text-center py-8 text-gray-500">
                       {t("no_images_available")}

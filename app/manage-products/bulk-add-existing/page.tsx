@@ -487,19 +487,40 @@ const BulkAddExistingProductsPage = () => {
                     <div key={product.id} className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg">
                       {/* Product Image */}
                       <div className="relative h-16 w-16 overflow-hidden rounded-lg border border-gray-200">
-                        <Image
-                          src={
-                            product.productImage && validator.isURL(product.productImage)
-                              ? product.productImage
-                              : PlaceholderImage
-                          }
-                          alt="product-image"
-                          fill
-                          sizes="64px"
-                          className="object-cover"
-                          blurDataURL="/images/product-placeholder.png"
-                          placeholder="blur"
-                        />
+                        {product.productImage && validator.isURL(product.productImage) ? (
+                          // Check if the image is from an allowed domain (S3 bucket)
+                          product.productImage.includes('puremoon.s3.amazonaws.com') ? (
+                            <Image
+                              src={product.productImage}
+                              alt="product-image"
+                              fill
+                              sizes="64px"
+                              className="object-cover"
+                              blurDataURL="/images/product-placeholder.png"
+                              placeholder="blur"
+                            />
+                          ) : (
+                            // Use regular img tag for external URLs not in allowed domains
+                            <img
+                              src={product.productImage}
+                              alt="product-image"
+                              className="h-full w-full object-cover"
+                              onError={(e) => {
+                                e.currentTarget.src = PlaceholderImage.src;
+                              }}
+                            />
+                          )
+                        ) : (
+                          <Image
+                            src={PlaceholderImage}
+                            alt="product-image"
+                            fill
+                            sizes="64px"
+                            className="object-cover"
+                            blurDataURL="/images/product-placeholder.png"
+                            placeholder="blur"
+                          />
+                        )}
                       </div>
 
                       {/* Product Details */}
