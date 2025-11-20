@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
 import AttachIcon from "@/public/images/attach.svg";
 import { useToast } from "@/components/ui/use-toast";
@@ -9,24 +8,9 @@ import ProductChatHistory from "../ProductChatHistory";
 import { newAttachmentType, useSocket } from "@/context/SocketContext";
 import { getChatHistory, getProductMessages, updateUnreadMessages, uploadAttachment } from "@/apis/requests/chat.requests";
 import { useAuth } from "@/context/AuthContext";
-import ProductMessage from "./ProductMessage";
 import EmojiPicker, { EmojiClickData } from 'emoji-picker-react';
 import { generateUniqueNumber } from "@/utils/helper";
 import { useTranslations } from "next-intl";
-
-interface ProductMessageProps {
-  user: {
-    firstName: string;
-    lastName: string;
-    profilePicture: string;
-  },
-  room: {
-    id: number
-  },
-  content: string,
-  createdAt: string,
-  unreadMsgCount: string
-}
 
 interface AdminProductChatProps {
   productId: number;
@@ -427,43 +411,7 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
 
   return (
     <>
-      <div className="w-[20%] border-r border-solid border-gray-300">
-        <div className="flex h-[55px] min-w-full items-center border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
-          <span>Messages</span>
-        </div>
-        <div className="w-full overflow-y-auto p-4">
-          {loading ? (
-            <div className="my-2 space-y-2">
-              {Array.from({ length: 2 }).map((_, i) => (
-                <Skeleton key={i} className="h-24 w-full" />
-              ))}
-            </div>
-          ) : null}
-
-          {!loading && !productMessages?.length ? (
-            <div className="my-2 space-y-2">
-              <p className="text-center text-sm font-normal text-gray-500">
-                No message found
-              </p>
-            </div>
-          ) : null}
-
-          {productMessages?.map(
-            (item: ProductMessageProps, index) => (
-              <ProductMessage
-                key={index}
-                message={item}
-                isSelected={selectedRoomId === item?.room?.id}
-                onClick={() => {
-                  setSelectedRoomId(item?.room?.id)
-                  setSelectedProductMessage(item)
-                }}
-              />
-            )
-          )}
-        </div>
-      </div>
-      <div className="w-[65%] border-r border-solid border-gray-300">
+      <div className="w-full border-r border-solid border-gray-300">
         <div className="flex w-full flex-wrap p-[20px]">
           <ProductChatHistory
             selectedChatHistory={selectedChatHistory}

@@ -1,8 +1,10 @@
 "use client";
 
 import { setUserLocale } from "@/src/services/locale";
-import { CURRENCIES, LANGUAGES } from "@/utils/constants";
-import React, { createContext, startTransition, useContext, useState } from "react";
+import { CURRENCIES, LANGUAGES, PUREMOON_TOKEN_KEY } from "@/utils/constants";
+import { fetchMe } from "@/apis/requests/user.requests";
+import { getCookie } from "cookies-next";
+import React, { createContext, startTransition, useContext, useState, useEffect } from "react";
 
 interface User {
   id: number;
@@ -36,6 +38,29 @@ export const AuthProvider: React.FC<{
   const [user, setUser] = useState<User | null>(initialUser);
 
   const [permissions, setPermissions] = useState<any[]>(initialPermissions);
+
+  // Client-side user recovery: If server-side auth failed but token exists, fetch user
+  useEffect(() => {
+    if (!user && typeof window !== "undefined") {
+      const token = getCookie(PUREMOON_TOKEN_KEY);
+      if (token) {
+        fetchMe()
+          .then((res) => {
+            if (res?.data?.data?.id) {
+              setUser({
+                id: res.data.data.id,
+                firstName: res.data.data.firstName || '',
+                lastName: res.data.data.lastName || '',
+                tradeRole: res.data.data.tradeRole || '',
+              });
+            }
+          })
+          .catch(() => {
+            // Silent fail - user will need to login again
+          });
+      }
+    }
+  }, [user]);
 
   const isAuthenticated = !!user;
 

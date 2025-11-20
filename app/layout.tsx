@@ -90,6 +90,14 @@ export default async function RootLayout({
   const locale = await getUserLocale();
   const messages = (await import(`../translations/${locale}.json`)).default;
 
+  // Create user object only if we have valid data
+  const userObject = userData?.data?.id ? {
+    id: userData.data.id,
+    firstName: userData.data.firstName || '',
+    lastName: userData.data.lastName || '',
+    tradeRole: userData.data.tradeRole || '',
+  } : null;
+
   return (
     <SessionWrapper>
       <html lang={locale}>
@@ -97,12 +105,7 @@ export default async function RootLayout({
           {/* <DisableRouteAnnouncer /> */}
           <ReactQueryProvider>
             <AuthProvider
-              user={{
-                id: userData?.data?.id,
-                firstName: userData?.data?.firstName,
-                lastName: userData?.data?.lastName,
-                tradeRole: userData?.data?.tradeRole,
-              }}
+              user={userObject}
               permissions={[
                 ...(permissions?.data?.userRoleDetail?.userRolePermission ||
                   []),

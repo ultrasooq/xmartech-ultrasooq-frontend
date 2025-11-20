@@ -6,11 +6,23 @@ import { useAuth } from "./AuthContext";
 import { MessageStatus } from "@/utils/types/chat.types";
 
 interface newMessageType {
+  id?: number;
   content: string;
   userId: number;
   roomId: number;
   rfqId: number;
   createdAt: string;
+  uniqueId?: number;
+  user?: {
+    id: number;
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
+  participants?: number[];
+  rfqProductPriceRequest?: any;
+  rfqQuotesUserId?: number | null;
+  attachments?: any[];
 }
 export interface newAttachmentType {
   uniqueId: string;
@@ -96,9 +108,37 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
   const [connected, setConnected] = useState(false);
 
   useEffect(() => {
-    if (user?.id) {
-      const socketIo = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}`, {
-        query: { userId: user.id },
+    const userId = user?.id;
+    const hasValidUserId = userId !== undefined && userId !== null && !isNaN(Number(userId));
+    
+    if (hasValidUserId) {
+      // Get socket URL dynamically based on current hostname
+      let socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL;
+      
+      if (!socketUrl && typeof window !== "undefined") {
+        // In browser, detect current hostname and use same IP for backend
+        const hostname = window.location.hostname;
+        const protocol = window.location.protocol === "https:" ? "https:" : "http:";
+        // Backend typically runs on port 3000, but use the same hostname
+        socketUrl = `${protocol}//${hostname}:3000`;
+      }
+      
+      // Fallback to localhost if still not set
+      if (!socketUrl) {
+        socketUrl = "http://localhost:3000";
+      }
+      
+      const fullSocketUrl = `${socketUrl}/ws`;
+      
+      const socketIo = io(fullSocketUrl, {
+        query: { userId: userId },
+        transports: ['websocket', 'polling'],
+        reconnection: true,
+        reconnectionDelay: 1000,
+        reconnectionAttempts: 5,
+        timeout: 20000,
+        forceNew: true,
+        autoConnect: true,
       });
 
       socketIo.on("connect", () => {
@@ -107,6 +147,11 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
 
       socketIo.on("disconnect", () => {
         setConnected(false);
+      });
+
+      socketIo.on("connect_error", (error) => {
+        setConnected(false);
+        setErrorMessage(`Connection failed: ${error.message || "Unable to connect to server"}. Please check if the backend is running on port 3000.`);
       });
 
       socketIo.on("receivedMessage", (message: newMessageType) => {
@@ -136,18 +181,21 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
         },
       );
       // ERROR MESSAGES
-      socketIo.on("createPrivateRoomError", (error: { message: string }) => {
-        setErrorMessage("Failed");
+      socketIo.on("createPrivateRoomError", (error: { message: string; status?: number }) => {
+        console.error("createPrivateRoomError:", error);
+        setErrorMessage(error?.message || "Failed to create room. Please try again.");
       });
 
-      socketIo.on("sendMessageError", (error: { message: string }) => {
-        setErrorMessage("Failed");
+      socketIo.on("sendMessageError", (error: { message: string; status?: number }) => {
+        console.error("sendMessageError:", error);
+        setErrorMessage(error?.message || "Failed to send message. Please try again.");
       });
 
       socketIo.on(
         "updateRfqPriceRequestError",
-        (error: { message: string }) => {
-          setErrorMessage("Failed");
+        (error: { message: string; status?: number }) => {
+          console.error("updateRfqPriceRequestError:", error);
+          setErrorMessage(error?.message || "Failed to update request. Please try again.");
         },
       );
 
@@ -195,21 +243,39 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
     attachments?: any[],
     uniqueId: number
   }) => {
-    if (socket) {
-      socket.emit("sendMessage", {
-        roomId,
-        rfqId,
-        content,
-        userId: user?.id,
-        rfqQuoteProductId,
-        buyerId,
-        sellerId,
-        requestedPrice,
-        rfqQuotesUserId,
-        attachments,
-        uniqueId
-      });
+    if (!socket) {
+      console.error("Socket is not initialized");
+      setErrorMessage("Not connected. Please refresh the page.");
+      return;
     }
+    
+    if (!connected) {
+      console.error("Socket is not connected");
+      setErrorMessage("Not connected to server. Please check your connection.");
+      return;
+    }
+
+    if (!user?.id) {
+      console.error("User ID is missing");
+      setErrorMessage("User not authenticated. Please login again.");
+      return;
+    }
+
+    console.log("Sending message:", { roomId, rfqId, content, uniqueId, userId: user.id });
+    
+    socket.emit("sendMessage", {
+      roomId,
+      rfqId,
+      content: content || "",
+      userId: user.id,
+      rfqQuoteProductId,
+      buyerId,
+      sellerId,
+      requestedPrice,
+      rfqQuotesUserId,
+      attachments: attachments || [],
+      uniqueId
+    });
   };
 
   const cratePrivateRoom = ({
@@ -235,22 +301,40 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
     attachments?: any[],
     uniqueId: number
   }) => {
-    if (socket) {
-      socket.emit("createPrivateRoom", {
-        creatorId: user?.id,
-        participants,
-        content,
-        rfqId,
-        rfqQuoteProductId,
-        buyerId,
-        sellerId,
-        requestedPrice,
-        rfqQuotesUserId,
-        messageStatus: MessageStatus.READ,
-        attachments,
-        uniqueId
-      });
+    if (!socket) {
+      console.error("Socket is not initialized");
+      setErrorMessage("Not connected. Please refresh the page.");
+      return;
     }
+    
+    if (!connected) {
+      console.error("Socket is not connected");
+      setErrorMessage("Not connected to server. Please check your connection.");
+      return;
+    }
+
+    if (!user?.id) {
+      console.error("User ID is missing");
+      setErrorMessage("User not authenticated. Please login again.");
+      return;
+    }
+
+    console.log("Creating private room:", { participants, rfqId, content, uniqueId, creatorId: user.id });
+    
+    socket.emit("createPrivateRoom", {
+      creatorId: user.id,
+      participants,
+      content: content || "",
+      rfqId,
+      rfqQuoteProductId,
+      buyerId,
+      sellerId,
+      requestedPrice,
+      rfqQuotesUserId,
+      messageStatus: MessageStatus.READ,
+      attachments: attachments || [],
+      uniqueId
+    });
   };
 
   const updateRfqRequestStatus = ({

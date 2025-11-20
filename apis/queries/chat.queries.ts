@@ -1,7 +1,7 @@
 import { APIResponseError } from "../../utils/types/common.types";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { CreatePrivateRoomRequest, RfqPriceStatusUpdateRequest } from "../../utils/types/chat.types";
-import { createPrivateRoom, getProductDetails, updateRfqRequestPriceStatus, getProductMessages } from "../requests/chat.requests";
+import { createPrivateRoom, getProductDetails, updateRfqRequestPriceStatus, getProductMessages, getAllProductsWithMessages } from "../requests/chat.requests";
 
 export const useCreatePrivateRoom = () => {
   const queryClient = useQueryClient();
@@ -51,4 +51,15 @@ export const useGetProductDetails = (
       return res.data;
     },
     enabled,
+  });
+
+export const useGetAllProductsWithMessages = (sellerId: number, enabled = true) =>
+  useQuery({
+    queryKey: ["allProductsWithMessages", sellerId],
+    queryFn: async () => {
+      const res = await getAllProductsWithMessages(sellerId);
+      return res.data;
+    },
+    enabled: enabled && !!sellerId,
+    refetchInterval: 30000, // Refetch every 30 seconds to get new messages
   });

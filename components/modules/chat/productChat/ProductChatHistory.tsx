@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import moment from "moment";
+import Image from "next/image";
 import { useAuth } from "@/context/AuthContext";
 import { updateUnreadMessages } from "@/apis/requests/chat.requests";
 import DownloadIconButton from "../DownloadIconButton";
@@ -52,45 +53,53 @@ const ProductChatHistory: React.FC<ProductChatHistoryProps> = ({
   };
 
   return (
-    <div ref={chatContainerRef} className="h-[300px] w-full overflow-y-auto">
-      <div className="d-flex w-full">
+    <div ref={chatContainerRef} className="h-full w-full overflow-y-auto px-4 py-4 bg-white">
+      <div className="flex flex-col w-full gap-3">
         {selectedChatHistory?.length > 0 ? (
           <div>
             {selectedChatHistory?.map((chat: any, index: number) => (
               <div key={index}>
                 {chat?.userId === user?.id ? (
-                  <div className="mt-5 flex w-full flex-wrap items-end">
-                    <div className="w-[calc(100%-2rem)] pr-2 text-right">
-                      <div className="mb-1 inline-block w-auto rounded-xl p-3 text-right text-sm">
+                  <div className="flex w-full items-end justify-end gap-3">
+                    <div className="flex max-w-[75%] flex-col items-end">
+                      <div className="mb-1.5 inline-block w-auto rounded-2xl rounded-tr-sm bg-gradient-to-br from-blue-500 to-blue-600 px-5 py-3 text-sm text-white shadow-lg shadow-blue-500/30">
                         {chat?.attachments?.length > 0 && (
-                          <div className="mb-2 w-full">
+                          <div className="mb-2 w-full space-y-2">
                             {chat?.attachments.map((file: any, index: any) => (
                               <div
                                 key={index}
-                                className="border mb-2 border-gray-300 p-2 rounded-md flex justify-between items-center"
+                                className="overflow-hidden rounded-xl border border-white/20 bg-white/10 backdrop-blur-sm"
                               >
                                 <div className="flex-1">
-                                  {file?.fileType.includes("imag") && file?.presignedUrl ? (
-                                    <img src={file?.presignedUrl} className="w-full max-w-sm h-auto" />
-                                  ) : file?.fileType.includes("video") && file?.presignedUrl && (
-                                    <video src={file?.presignedUrl} className="w-full max-w-sm h-auto" controls />
+                                  {file?.fileType.includes("imag") && file?.presignedUrl && (
+                                    <img src={file?.presignedUrl} className="w-full max-w-sm h-auto rounded-t-xl" />
                                   )}
-                                  <p className="mr-2 truncate">{file.fileName}</p>
-                                  <p className="mr-2 truncate text-xs italic">
-                                    {file?.status === "UPLOADING" ? "Uploading..." : file?.status}
-                                  </p>
+                                  {file?.fileType.includes("video") && file?.presignedUrl && (
+                                    <video src={file?.presignedUrl} className="w-full max-w-sm h-auto rounded-t-xl" controls />
+                                  )}
+                                  <div className="flex items-center justify-between gap-2 p-2">
+                                    <div className="flex-1 min-w-0">
+                                      <p className="truncate text-xs font-medium text-white/90">{file.fileName}</p>
+                                      {file?.status && (
+                                        <p className="truncate text-xs text-white/70">
+                                          {file?.status === "UPLOADING" ? "Uploading..." : file?.status}
+                                        </p>
+                                      )}
+                                    </div>
+                                    <DownloadIconButton
+                                      attachmentId={file?.id}
+                                      filePath={file?.filePath}
+                                    />
+                                  </div>
                                 </div>
-                                <DownloadIconButton
-                                  attachmentId={file?.id}
-                                  filePath={file?.filePath}
-                                />
                               </div>
                             ))}
                           </div>
                         )}
                         {chat?.content ? (
-                          <div className="inline-block w-auto rounded-xl bg-[#0086FF] p-3 text-right text-sm text-white">
+                          <div className="inline-block w-auto">
                             <p
+                              className="text-white"
                               dangerouslySetInnerHTML={{
                                 __html: chat?.content,
                               }}
@@ -100,10 +109,20 @@ const ProductChatHistory: React.FC<ProductChatHistoryProps> = ({
 
                       </div>
 
-                      <div className="w-full text-right text-xs font-normal text-[#AEAFB8]">
-                        {chat?.status === "SD" ?
-                          <span>Sending...</span> :
-                          <span>
+                      <div className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-gray-400">
+                        {chat?.status === "SD" ? (
+                          <span className="flex items-center gap-1.5">
+                            <svg className="h-3 w-3 animate-spin" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Sending...
+                          </span>
+                        ) : (
+                          <span className="flex items-center gap-1.5">
+                            <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
                             {chat.createdAt
                               ? moment(chat.createdAt)
                                 .startOf("seconds")
@@ -111,57 +130,102 @@ const ProductChatHistory: React.FC<ProductChatHistoryProps> = ({
                               : ""
                             }
                           </span>
-                        }
-
+                        )}
                       </div>
                     </div>
-                    <div className="h-[32px] w-[32px] rounded-full bg-[#F1F2F6]">
-                      <span className="flex h-full w-full items-center justify-center">
-                        {`${chat?.user?.firstName?.[0] ?? ""}${chat?.user?.lastName?.[0] ?? ""}`}
-                      </span>
-                      {/* <Image src={UserChatIcon} alt="user-chat-icon" /> */}
+                    <div className="relative h-10 w-10 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center flex-shrink-0 ring-2 ring-white shadow-md">
+                      {chat?.user?.profilePicture ? (
+                        <Image
+                          src={chat.user.profilePicture}
+                          alt={chat?.user?.firstName || "User"}
+                          fill
+                          className="rounded-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-sm font-bold text-blue-700">
+                          {chat?.user?.accountName?.[0]?.toUpperCase() || 
+                           chat?.user?.firstName?.[0]?.toUpperCase() || 
+                           chat?.user?.email?.[0]?.toUpperCase() || 
+                           "U"}
+                        </span>
+                      )}
                     </div>
                   </div>
                 ) : (chat?.attachments?.length > 0 || chat?.content) ? (
-                  <div className="mt-5 flex w-full flex-wrap items-end">
-                    <div className="h-[32px] w-[32px] rounded-full bg-[#F1F2F6]">
-                      <span className="flex h-full w-full items-center justify-center">
-                        {`${chat?.user?.firstName?.[0] ?? ""}${chat?.user?.lastName?.[0] ?? ""}`}
-                      </span>
+                  <div className="flex w-full items-start gap-3">
+                    <div className="relative h-10 w-10 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center flex-shrink-0 ring-2 ring-white shadow-md">
+                      {chat?.user?.profilePicture ? (
+                        <Image
+                          src={chat.user.profilePicture}
+                          alt={chat?.user?.firstName || "User"}
+                          fill
+                          className="rounded-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-sm font-bold text-gray-700">
+                          {chat?.user?.accountName?.[0]?.toUpperCase() || 
+                           chat?.user?.firstName?.[0]?.toUpperCase() || 
+                           chat?.user?.email?.[0]?.toUpperCase() || 
+                           "U"}
+                        </span>
+                      )}
                     </div>
-                    <div className="w-[calc(100%-2rem)] pl-2">
-                      <div className="mb-1 inline-block w-auto rounded-xl p-3 text-left text-sm">
+                    <div className="flex max-w-[75%] flex-col">
+                      {chat?.user && (chat.user.accountName || chat.user.firstName || chat.user.lastName || chat.user.email) && (
+                        <div className="mb-1.5 text-xs font-bold text-gray-800">
+                          {(() => {
+                            const accountName = chat.user.accountName;
+                            const cleanAccountName = accountName 
+                              ? accountName.replace(/\s*buyer\s*/gi, "").replace(/^\s*-\s*|\s*-\s*$/g, "").replace(/\s*-\s*/g, " ").trim()
+                              : null;
+                            
+                            return cleanAccountName || 
+                              (chat.user.firstName && chat.user.lastName 
+                                ? `${chat.user.firstName} ${chat.user.lastName}`
+                                : chat.user.firstName || chat.user.lastName || chat.user.email || "User");
+                          })()}
+                        </div>
+                      )}
+                      <div className="mb-1.5 inline-block w-auto rounded-2xl rounded-tl-sm bg-white px-5 py-3 text-sm text-gray-900 shadow-md border border-gray-200/60">
 
                         {chat?.attachments?.length > 0 ? (
-                          <div className="mb-2 w-full">
+                          <div className="mb-2 w-full space-y-2">
                             {chat?.attachments.map((file: any, index: any) => (
                               <div
                                 key={index}
-                                className="border mb-2 border-gray-300 p-2 rounded-md flex justify-between items-center"
+                                className="overflow-hidden rounded-xl border border-gray-200 bg-gray-50 shadow-sm"
                               >
                                 <div className="flex-1">
-                                  {file?.fileType.includes("imag") && file?.presignedUrl ? (
-                                    <img src={file?.presignedUrl} className="w-full max-w-sm h-auto" />
-                                  ) : file?.fileType.includes("video") && file?.presignedUrl ? (
-                                    <video src={file?.presignedUrl} className="w-full max-w-sm h-auto" controls />
-                                  ) : null}
-                                  <p className="mr-2 truncate">{file.fileName}</p>
-                                  <p className="mr-2 truncate text-xs italic">
-                                    {file?.status === "UPLOADING" ? "Uploading..." : file?.status}
-                                  </p>
+                                  {file?.fileType.includes("imag") && file?.presignedUrl && (
+                                    <img src={file?.presignedUrl} className="w-full max-w-sm h-auto rounded-t-xl" />
+                                  )}
+                                  {file?.fileType.includes("video") && file?.presignedUrl && (
+                                    <video src={file?.presignedUrl} className="w-full max-w-sm h-auto rounded-t-xl" controls />
+                                  )}
+                                  <div className="flex items-center justify-between gap-2 p-3">
+                                    <div className="flex-1 min-w-0">
+                                      <p className="truncate text-xs font-semibold text-gray-700">{file.fileName}</p>
+                                      {file?.status && (
+                                        <p className="truncate text-xs text-gray-500">
+                                          {file?.status === "UPLOADING" ? "Uploading..." : file?.status}
+                                        </p>
+                                      )}
+                                    </div>
+                                    <DownloadIconButton
+                                      attachmentId={file?.id}
+                                      filePath={file?.filePath}
+                                    />
+                                  </div>
                                 </div>
-                                <DownloadIconButton
-                                  attachmentId={file?.id}
-                                  filePath={file?.filePath}
-                                />
                               </div>
                             ))}
                           </div>
                         ) : null}
 
                         {chat?.content ? (
-                          <div className="inline-block w-auto rounded-xl bg-[#F1F2F6] p-3 text-right text-sm">
+                          <div className="inline-block w-auto">
                             <p
+                              className="text-gray-900"
                               dangerouslySetInnerHTML={{
                                 __html: chat?.content,
                               }}
@@ -169,7 +233,10 @@ const ProductChatHistory: React.FC<ProductChatHistoryProps> = ({
                           </div>
                         ) : null}
                       </div>
-                      <div className="w-full text-left text-xs font-normal text-[#AEAFB8]">
+                      <div className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-gray-400">
+                        <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
                         <span>
                           {chat.createdAt
                             ? moment(chat.createdAt)
@@ -186,8 +253,29 @@ const ProductChatHistory: React.FC<ProductChatHistoryProps> = ({
             ))}
           </div>
         ) : (
-          <div className="mt-5 flex w-full flex-wrap items-end" dir={langDir} translate="no">
-            {chatHistoryLoading ? "Loading..." : t("no_chat_history_found")}
+          <div className="flex h-full w-full items-center justify-center py-16" dir={langDir} translate="no">
+            <div className="text-center">
+              {chatHistoryLoading ? (
+                <div className="flex flex-col items-center gap-3">
+                  <div className="h-12 w-12 animate-spin rounded-full border-4 border-gray-200 border-t-blue-600"></div>
+                  <p className="text-sm font-medium text-gray-500">{t("loading") || "Loading..."}</p>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center gap-3">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
+                    <svg className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    </svg>
+                  </div>
+                  <p className="text-sm font-semibold text-gray-700">
+                    {t("no_chat_history_found") || "No chat history found"}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    {t("start_conversation") || "Start a conversation by sending a message"}
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
         )}
       </div>

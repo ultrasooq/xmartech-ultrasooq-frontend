@@ -39,6 +39,11 @@
     "failed": "Failed!",
     "copied": "Copied",
     "chat": "Chat",
+    "chat_with_seller": "Chat with Seller",
+    "message_seller": "Message Seller",
+    "product_messages": "Product Messages",
+    "no_product_messages": "No product messages yet",
+    "messages_will_appear_here": "Messages from buyers will appear here",
     "name": "Name",
     "add": "Add",
     "add_new": "Add New",
@@ -1647,5 +1652,13 @@
   "out_of_stock": "Out of Stock",
   "sale_not_started_yet": "Sale Not Started Yet",
   "sale_has_ended": "Sale Has Ended",
-  "sale_ended": "Sale Ended"
+  "sale_ended": "Sale Ended",
+  "start_conversation": "Start a conversation by sending a message",
+  "type_your_message": "Type your message...",
+  "view_product_messages": "View and respond to product inquiries",
+  "messages": "Messages",
+  "no_chat_history_found": "No chat history found",
+  "connecting_to_server": "Connecting to server...",
+  "please_type_your_message": "Please type your message",
+  "attachment_update_status_failed": "Failed to update attachment status"
 }

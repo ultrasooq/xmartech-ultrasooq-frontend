@@ -9,9 +9,10 @@ type ProductMessageProps = {
   isSelected?: boolean;
   message: {
     user: {
-      firstName: string;
-      lastName: string;
-      profilePicture: string;
+      firstName?: string;
+      lastName?: string;
+      accountName?: string;
+      profilePicture?: string;
     },
     content: string,
     createdAt: string,
@@ -44,7 +45,16 @@ const ProductMessage: React.FC<ProductMessageProps> = ({
       <div className="flex w-[calc(100%-2.5rem)] flex-wrap items-center justify-start gap-y-1 pl-3">
         <div className="flex w-full">
           <h4 className="text-color-[#333333] text-left text-[15px] font-normal uppercase">
-            {message.user.firstName + " " + message.user.lastName}
+            {(() => {
+              const accountName = message.user.accountName;
+              const cleanAccountName = accountName 
+                ? accountName.replace(/\s*buyer\s*/gi, "").replace(/^\s*-\s*|\s*-\s*$/g, "").replace(/\s*-\s*/g, " ").trim()
+                : null;
+              
+              return cleanAccountName || 
+                `${message.user.firstName || ""} ${message.user.lastName || ""}`.trim() || 
+                "User";
+            })()}
           </h4>
         </div>
 

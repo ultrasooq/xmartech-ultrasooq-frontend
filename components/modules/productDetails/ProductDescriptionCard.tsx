@@ -87,6 +87,7 @@ type ProductDescriptionCardProps = {
   sellType?: string;
   dateOpen?: string;
   startTime?: string;
+  onOpenChat?: () => void;
 };
 
 const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
@@ -142,6 +143,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   sellType,
   dateOpen,
   startTime,
+  onOpenChat,
 }) => {
   const t = useTranslations();
   const { user, langDir, currency } = useAuth();
@@ -774,6 +776,22 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
               translate="no"
             >
               {t("buy_now")}
+            </Button>
+          )}
+
+          {/* Message Seller Button - Show only if seller exists and user is not the seller */}
+          {sellerId && userId !== sellerId && onOpenChat && (
+            <Button
+              onClick={onOpenChat}
+              variant="outline"
+              className="w-full rounded-lg border-2 border-blue-500 bg-white py-3 text-base font-medium text-blue-600 shadow-md transition-all hover:bg-blue-50 hover:shadow-lg active:scale-95"
+              dir={langDir}
+              translate="no"
+            >
+              <svg className="mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+              {t("message_seller") || "Message Seller"}
             </Button>
           )}
         </div>

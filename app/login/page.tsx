@@ -96,13 +96,20 @@ export default function LoginPage() {
       // TODO: delete cart for trade role freelancer and company if logged in using device id
       // update cart
       await updateCart.mutateAsync({ deviceId });
-      setUser({ id: response.data?.id, firstName: response?.data?.firstName, lastName: response?.data?.lastName, tradeRole: response?.data?.tradeRole });
+      setUser({
+        id: response.data?.id,
+        firstName: response?.data?.firstName,
+        lastName: response?.data?.lastName,
+        tradeRole: response?.data?.tradeRole,
+      });
 
       try {
         const permissions = await fetchUserPermissions();
-        setPermissions([...(permissions?.data?.data?.userRoleDetail?.userRolePermission || [])]);
-      } catch (e) {
-      }
+        setPermissions([
+          ...(permissions?.data?.data?.userRoleDetail?.userRolePermission ||
+            []),
+        ]);
+      } catch (e) {}
 
       toast({
         title: t("login_successful"),
@@ -187,9 +194,11 @@ export default function LoginPage() {
 
   return (
     <>
-      <title dir={langDir} translate="no">{t("login")} | Ultrasooq</title>
+      <title dir={langDir} translate="no">
+        {t("login")} | Ultrasooq
+      </title>
       <section className="relative w-full py-7">
-        <div className="absolute left-0 top-0 -z-10 h-full w-full">
+        <div className="absolute top-0 left-0 -z-10 h-full w-full">
           <Image
             src={BackgroundImage}
             className="h-full w-full object-cover object-center"
@@ -198,14 +207,20 @@ export default function LoginPage() {
             priority
           />
         </div>
-        <div className="container relative z-10 m-auto">
+        <div className="relative z-10 container m-auto">
           <div className="flex">
             <div className="m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-7 shadow-xs sm:p-12 md:w-9/12 lg:w-7/12">
-              <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
-                <h2 className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10" dir={langDir} translate="no">
+              <div className="text-normal text-light-gray m-auto mb-7 w-full text-center text-sm leading-6">
+                <h2
+                  className="text-color-dark mb-3 text-center text-3xl leading-8 font-semibold sm:text-4xl sm:leading-10"
+                  dir={langDir}
+                  translate="no"
+                >
                   {t("login")}
                 </h2>
-                <p dir={langDir} translate="no">{t("login_to_your_account")}</p>
+                <p dir={langDir} translate="no">
+                  {t("login_to_your_account")}
+                </p>
               </div>
               <div className="w-full">
                 <Form {...form}>
@@ -235,12 +250,12 @@ export default function LoginPage() {
                         <div className="flex items-center space-x-2">
                           <Checkbox
                             id="remember"
-                            className="border border-solid border-gray-300 data-[state=checked]:bg-dark-orange!"
+                            className="data-[state=checked]:bg-dark-orange! border border-solid border-gray-300"
                             onCheckedChange={(val) => setRememberMe(val)}
                           />
                           <label
                             htmlFor="remember"
-                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                            className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                             dir={langDir}
                             translate="no"
                           >
@@ -249,7 +264,7 @@ export default function LoginPage() {
                         </div>
                         <div className="w-auto">
                           <Link
-                            className="cursor-pointer text-sm font-medium leading-8 text-dark-orange"
+                            className="text-dark-orange cursor-pointer text-sm leading-8 font-medium"
                             href="/forget-password"
                             dir={langDir}
                             translate="no"
@@ -263,7 +278,7 @@ export default function LoginPage() {
                       <Button
                         disabled={login.isPending}
                         type="submit"
-                        className="theme-primary-btn h-12 w-full rounded bg-dark-orange text-center text-lg font-bold leading-6"
+                        className="theme-primary-btn bg-dark-orange h-12 w-full rounded text-center text-lg leading-6 font-bold"
                         dir={langDir}
                         translate="no"
                       >
@@ -277,11 +292,15 @@ export default function LoginPage() {
                   </form>
                 </Form>
                 <div className="mb-4 w-full text-center">
-                  <span className="text-sm font-medium leading-4 text-light-gray" dir={langDir} translate="no">
+                  <span
+                    className="text-light-gray text-sm leading-4 font-medium"
+                    dir={langDir}
+                    translate="no"
+                  >
                     {t("dont_have_an_account")}{" "}
                     <Link
                       href="/register"
-                      className="cursor-pointer font-medium text-dark-orange"
+                      className="text-dark-orange cursor-pointer font-medium"
                       dir={langDir}
                     >
                       {t("signup")}
@@ -289,8 +308,8 @@ export default function LoginPage() {
                   </span>
                 </div>
               </div>
-              <div className="relative w-full py-5 text-center before:absolute before:bottom-0 before:left-0 before:right-0 before:top-0 before:m-auto before:block before:h-px before:w-full before:bg-gray-200 before:content-['']">
-                <span className="relative z-10 bg-white p-2.5 text-sm font-normal leading-8 text-gray-400">
+              <div className="relative w-full py-5 text-center before:absolute before:top-0 before:right-0 before:bottom-0 before:left-0 before:m-auto before:block before:h-px before:w-full before:bg-gray-200 before:content-['']">
+                <span className="relative z-10 bg-white p-2.5 text-sm leading-8 font-normal text-gray-400">
                   Or
                 </span>
               </div>
@@ -299,7 +318,7 @@ export default function LoginPage() {
                   <li className="mb-3 w-full p-0 sm:mb-0 sm:w-6/12 sm:pr-3">
                     <Button
                       variant="outline"
-                      className="inline-flex w-full items-center justify-center rounded-md border border-solid border-gray-300 px-5 py-6 text-sm font-normal leading-4 text-light-gray"
+                      className="text-light-gray inline-flex w-full items-center justify-center rounded-md border border-solid border-gray-300 px-5 py-6 text-sm leading-4 font-normal"
                       onClick={() => {
                         localStorage.setItem("loginType", "FACEBOOK");
                         signIn("facebook");
@@ -337,7 +356,7 @@ export default function LoginPage() {
                   <li className="w-full p-0 sm:w-6/12 sm:pl-3">
                     <Button
                       variant="outline"
-                      className="inline-flex w-full items-center justify-center rounded-md border border-solid border-gray-300 px-5 py-6 text-sm font-normal leading-4 text-light-gray"
+                      className="text-light-gray inline-flex w-full items-center justify-center rounded-md border border-solid border-gray-300 px-5 py-6 text-sm leading-4 font-normal"
                       onClick={() => {
                         localStorage.setItem("loginType", "GOOGLE");
                         signIn("google");

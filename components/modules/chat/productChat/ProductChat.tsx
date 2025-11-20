@@ -5,7 +5,6 @@ import Image from "next/image";
 import AttachIcon from "@/public/images/attach.svg";
 import { useToast } from "@/components/ui/use-toast";
 import SmileIcon from "@/public/images/smile.svg";
-import SendIcon from "@/public/images/send-button.png";
 import ProductChatHistory from "./ProductChatHistory";
 import { newAttachmentType, useSocket } from "@/context/SocketContext";
 import {
@@ -33,18 +32,22 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
   const [selectedChatHistory, setSelectedChatHistory] = useState<any>([]);
   const [isAttachmentUploading, setIsAttachmentUploading] =
     useState<boolean>(false);
-  const inputRef = useRef(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const {
     sendMessage,
     cratePrivateRoom,
     newMessage,
+    newRoom,
     errorMessage,
     clearErrorMessage,
     newAttachment,
+    connected,
+    socket,
   } = useSocket();
   const { toast } = useToast();
-  const { user } = useAuth();
+  const { user, langDir } = useAuth();
 
   const product = useGetProductDetails(productId);
 
@@ -69,7 +72,15 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedRoom]);
 
-  // receive a messaage
+  // Handle new room creation
+  useEffect(() => {
+    if (newRoom?.roomId && !selectedRoom) {
+      setSelectedRoom(newRoom.roomId);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [newRoom]);
+
+  // receive a message
   useEffect(() => {
     if (newMessage) {
       handleNewMessage(newMessage);
@@ -138,14 +149,14 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
 
   const checkRoomId = async () => {
     try {
-      if (user?.id) {
+      if (user?.id && productDetails?.id) {
         const payloadRoomFind = {
-          userId: user?.id,
-          rfqId: productDetails?.id,
+          userId: user.id,
+          rfqId: productDetails.id,
         };
         const room = await findRoomId(payloadRoomFind);
         if (room?.data?.roomId) {
-          setSelectedRoom(room?.data?.roomId);
+          setSelectedRoom(room.data.roomId);
         } else {
           setSelectedRoom(null);
           setChatHistoryLoading(false);
@@ -175,6 +186,15 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
 
   const handleSendMessage = async () => {
     try {
+      if (!connected || !socket) {
+        toast({
+          title: t("chat"),
+          description: "Not connected to server. Please wait for connection...",
+          variant: "danger",
+        });
+        return;
+      }
+
       if (message || attachments.length) {
         if (selectedRoom) {
           sendNewMessage(selectedRoom, message);
@@ -182,7 +202,6 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
           handleCreateRoom(message);
         }
         setMessage("");
-        // setAttachments([]);
         setShowEmoji(false);
       } else {
         toast({
@@ -192,6 +211,7 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
         });
       }
     } catch (error) {
+      console.error("Error sending message:", error);
       toast({
         title: t("chat"),
         description: t("failed"),
@@ -274,13 +294,21 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
 
   const handleNewMessage = (message: any) => {
     try {
+      // Only process messages for this product
+      if (message?.rfqId !== productDetails?.id) {
+        return;
+      }
+
       const chatHistory = [...selectedChatHistory];
       const index = chatHistory.findIndex(
         (chat) => chat?.uniqueId === message?.uniqueId,
       );
+      
       if (index !== -1) {
         // upload attachment once the message saved in draft mode, if attachments are selected
-        if (chatHistory[index]?.attachments?.length) handleUploadedFile();
+        if (chatHistory[index]?.attachments?.length) {
+          handleUploadedFile();
+        }
 
         const nMessage = {
           ...message,
@@ -289,20 +317,26 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
         };
         chatHistory[index] = nMessage;
       } else {
+        // New message from server (not from our draft)
         const nMessage = {
           ...message,
-          attachments: [],
+          attachments: message?.attachments || [],
+          status: "sent",
         };
         chatHistory.push(nMessage);
       }
+      
       setSelectedChatHistory(chatHistory);
-      if (!selectedRoom) {
-        setSelectedRoom(message?.roomId);
+      
+      if (!selectedRoom && message?.roomId) {
+        setSelectedRoom(message.roomId);
       }
-    } catch (error) {}
+    } catch (error) {
+      // Silent error handling
+    }
   };
 
-  const handleSendMessageKeyDown = (e: any) => {
+  const handleSendMessageKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
@@ -372,14 +406,17 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
     setMessage((prevMessage) => prevMessage + emojiObject.emoji);
   };
 
-  const handleFileChange = (e: any) => {
-    const files = Array.from(e.target.files);
-    const newData = files.map((file: any) => {
-      const uniqueId = generateUniqueNumber();
-      file.uniqueId = `${user?.id}-${uniqueId}`;
-      return file;
-    });
-    setAttachments(newData);
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files) {
+      const fileArray = Array.from(files);
+      const newData = fileArray.map((file: any) => {
+        const uniqueId = generateUniqueNumber();
+        file.uniqueId = `${user?.id}-${uniqueId}`;
+        return file;
+      });
+      setAttachments(newData);
+    }
   };
 
   const removeFile = (index: number) => {
@@ -388,153 +425,175 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
     );
   };
 
+  // If user is seller, show admin chat
+  if (user?.id === sellerId) {
+    return (
+      <AdminProductChat
+        productId={productId}
+        productDetails={productDetails}
+        sellerId={sellerId}
+      />
+    );
+  }
+
   return (
-    <div>
-      <div className="flex w-full rounded-sm border border-solid border-gray-300">
-        <div className="w-full border-r border-solid border-gray-300 lg:w-[15%]">
-          <div className="flex h-[55px] min-w-full items-center border-b border-solid border-gray-300 px-[10px] py-[10px] text-base font-normal text-[#333333]">
-            <span translate="no">{t("product")}</span>
-          </div>
-          {productDetails ? (
-            <a
-              target="_blank"
-              href={`/rfq/${productDetails?.id}`}
-              className="max-h-[720px] w-full overflow-y-auto p-2"
-            >
-              <div className="px-4">
-                <div className="flex w-full">
-                  <div className="text-xs font-normal text-gray-500">
-                    <div className="flex w-full flex-wrap">
-                      <div className="border-color-[#DBDBDB] relative h-[48px] w-[48px] border border-solid p-2">
-                        {productDetails?.productImages?.map((img: any) => (
-                          <Image
-                            key={img?.id}
-                            src={img?.image}
-                            fill
-                            alt="preview"
-                          />
-                        ))}
-                      </div>
-                      <div className="font-nromal flex w-[calc(100%-3rem)] items-center justify-start pl-3 text-xs text-black">
-                        {productDetails?.productName}
-                      </div>
-                    </div>
-                  </div>
+    <div className="flex h-full w-full flex-col">
+      {/* Product Info Section */}
+      <div className="flex-shrink-0 border-b border-gray-200 bg-white p-4">
+        {productDetails ? (
+          <a
+            target="_blank"
+            href={`/trending/${productDetails?.id}`}
+            className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+          >
+            <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg border border-gray-200">
+              {productDetails?.productImages?.[0] ? (
+                <Image
+                  src={productDetails.productImages[0].image}
+                  alt={productDetails?.productName || "Product"}
+                  fill
+                  className="object-cover"
+                />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center bg-gray-100">
+                  <svg className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
                 </div>
-                <div className="mt-2 w-[calc(100%-4rem)] items-center justify-start text-sm font-normal text-[#1D77D1]">
-                  <span className="text-[#828593]">
-                    SKU NO: {productDetails?.skuNo}
-                  </span>
-                </div>
-              </div>
-            </a>
-          ) : null}
-
-          <div className="max-h-[720px] w-full overflow-y-auto p-2">
-            {product?.isPending ? (
-              <div className="my-2 space-y-2">
-                {Array.from({ length: 1 }).map((_, i) => (
-                  <Skeleton key={i} className="h-24 w-full" />
-                ))}
-              </div>
-            ) : null}
-
-            {!product?.isPending && !productDetails ? (
-              <div className="my-2 space-y-2">
-                <p className="text-center text-sm font-normal text-gray-500" translate="no">
-                  {t("no_data_found")}
-                </p>
-              </div>
-            ) : null}
-          </div>
-        </div>
-        {user?.id === sellerId ? (
-          <AdminProductChat
-            productId={productId}
-            productDetails={productDetails}
-            sellerId={sellerId}
-          />
-        ) : (
-          <div className="w-full border-r border-solid border-gray-300 lg:w-[85%]">
-            <div className="flex w-full flex-wrap p-[20px]">
-              <div className="mb-5 max-h-[300px] w-full overflow-y-auto"></div>
-              <ProductChatHistory
-                selectedChatHistory={selectedChatHistory}
-                chatHistoryLoading={chatHistoryLoading}
-              />
+              )}
             </div>
-            {productDetails ? (
-              <div className="mt-2 flex w-full flex-wrap border-t border-solid border-gray-300 px-[15px] py-[10px]">
-                <div className="flex w-full items-center">
-                  <div className="relative flex h-[32px] w-[32px] items-center">
-                    <input
-                      ref={inputRef}
-                      type="file"
-                      className="absolute inset-0 z-10 opacity-0"
-                      multiple
-                      onChange={handleFileChange}
-                    />
-                    <div className="absolute left-0 top-0 w-auto">
-                      <Image src={AttachIcon} alt="attach-icon" />
-                    </div>
-                  </div>
-                  <div className="flex w-[calc(100%-6.5rem)] items-center">
-                    <textarea
-                      placeholder="Type your message...."
-                      className="h-[32px] w-full resize-none text-sm focus:outline-hidden"
-                      onChange={(e) => setMessage(e.target.value)}
-                      value={message}
-                      onKeyDown={handleSendMessageKeyDown}
-                    ></textarea>
-                  </div>
-                  <div className="flex w-[72px] items-center justify-between">
-                    <div className="w-auto">
-                      <Image
-                        src={SmileIcon}
-                        alt="smile-icon"
-                        onClick={() => setShowEmoji(!showEmoji)}
-                      />
-                    </div>
-                    <div className="flex w-auto">
-                      <button type="button" className="">
-                        <Image
-                          src={SendIcon}
-                          alt="send-icon"
-                          onClick={handleSendMessage}
-                        />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {showEmoji ? (
-                  <div className="mt-2 w-full border-t border-solid">
-                    <EmojiPicker onEmojiClick={onEmojiClick} className="mt-2" />
-                  </div>
-                ) : null}
-
-                {!isAttachmentUploading && attachments.length > 0 ? (
-                  <div className="mt-2 flex w-full flex-wrap gap-2">
-                    {attachments.map((file: any, index: any) => (
-                      <div
-                        key={index}
-                        className="flex items-center rounded-md border border-gray-300 p-2"
-                      >
-                        <span className="mr-2">{file.name}</span>
-                        <button
-                          onClick={() => removeFile(index)}
-                          className="text-red-500"
-                        >
-                          X
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                ) : null}
-              </div>
-            ) : null}
+            <div className="flex-1 min-w-0">
+              <h3 className="truncate text-sm font-semibold text-gray-900">
+                {productDetails?.productName}
+              </h3>
+              <p className="text-xs text-gray-500">SKU: {productDetails?.skuNo}</p>
+            </div>
+          </a>
+        ) : (
+          <div className="flex items-center gap-3">
+            <Skeleton className="h-16 w-16 rounded-lg" />
+            <div className="flex-1">
+              <Skeleton className="h-4 w-32 mb-2" />
+              <Skeleton className="h-3 w-24" />
+            </div>
           </div>
         )}
+      </div>
+
+      {/* Connection Status */}
+      {!connected && (
+        <div className="flex-shrink-0 mx-4 mt-4 rounded-lg bg-yellow-50 border border-yellow-200 p-3">
+          <div className="flex items-center gap-2">
+            <svg className="h-4 w-4 text-yellow-600 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <p className="text-xs font-medium text-yellow-800">
+              {t("connecting_to_server") || "Connecting to server..."}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Chat History Section */}
+      <div className="flex-1 overflow-hidden min-h-0">
+        <ProductChatHistory
+          selectedChatHistory={selectedChatHistory}
+          chatHistoryLoading={chatHistoryLoading}
+        />
+      </div>
+
+      {/* Input Section - Always visible */}
+      <div className="flex-shrink-0 border-t border-gray-200 bg-white p-4 relative z-10">
+        {/* Emoji Picker */}
+        {showEmoji && (
+          <div className="absolute bottom-full left-4 mb-2 z-50">
+            <EmojiPicker onEmojiClick={onEmojiClick} />
+          </div>
+        )}
+
+        {/* Attachments Preview */}
+        {!isAttachmentUploading && attachments.length > 0 && (
+          <div className="mb-3 flex flex-wrap gap-2">
+            {attachments.map((file: any, index: number) => (
+              <div
+                key={index}
+                className="flex items-center gap-2 rounded-lg border border-gray-300 bg-gray-50 px-3 py-2"
+              >
+                <svg className="h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <span className="text-xs font-medium text-gray-700 max-w-[150px] truncate">
+                  {file.name}
+                </span>
+                <button
+                  onClick={() => removeFile(index)}
+                  className="flex h-5 w-5 items-center justify-center rounded-full bg-red-100 text-red-600 hover:bg-red-200"
+                >
+                  <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Input Controls */}
+        <div className="flex items-end gap-2">
+          {/* File Input */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            className="hidden"
+            multiple
+            onChange={handleFileChange}
+          />
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
+          >
+            <Image src={AttachIcon} alt="attach" className="h-5 w-5" />
+          </button>
+
+          {/* Message Input */}
+          <div className="flex flex-1 items-end gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500">
+            <textarea
+              ref={inputRef}
+              placeholder={t("type_your_message") || "Type your message..."}
+              className="flex-1 resize-none border-0 bg-transparent text-sm text-gray-900 placeholder-gray-400 focus:outline-none max-h-32 min-h-[36px]"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyDown={handleSendMessageKeyDown}
+              rows={1}
+            />
+            <button
+              type="button"
+              onClick={() => setShowEmoji(!showEmoji)}
+              className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              <Image src={SmileIcon} alt="emoji" className="h-5 w-5" />
+            </button>
+          </div>
+
+          {/* Send Button */}
+          <button
+            type="button"
+            onClick={handleSendMessage}
+            disabled={(!message.trim() && attachments.length === 0) || !connected}
+            className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+          >
+            {connected ? (
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+              </svg>
+            ) : (
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+              </svg>
+            )}
+          </button>
+        </div>
       </div>
     </div>
   );

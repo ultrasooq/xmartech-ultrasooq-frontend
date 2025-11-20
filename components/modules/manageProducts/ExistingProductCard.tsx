@@ -129,14 +129,6 @@ const ExistingProductCard: React.FC<ExistingProductCardProps> = ({
                   ${productPrice || 0}
                 </span>
               </div>
-              {offerPrice > 0 && (
-                <div className="flex items-center space-x-2">
-                  <span className="font-medium">{t("offer_price")}:</span>
-                  <span className="text-green-600 font-semibold">
-                    ${offerPrice}
-                  </span>
-                </div>
-              )}
             </div>
 
             {/* Additional Info */}

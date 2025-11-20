@@ -113,6 +113,18 @@ export const getProductMessages = (productId: number, sellerId: number) => {
   });
 };
 
+export const getAllProductsWithMessages = (sellerId: number) => {
+  return axios({
+    method: "GET",
+    url: `${getApiUrl()}/chat/products/messages?sellerId=${sellerId}`,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
 export const uploadAttachment = (payload: any) => {
   return axios({
     method: "POST",
