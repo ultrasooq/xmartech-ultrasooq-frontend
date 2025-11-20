@@ -15,17 +15,18 @@ import { useTranslations } from "next-intl";
 interface AdminProductChatProps {
   productId: number;
   sellerId: number;
-  productDetails: any
+  productDetails: any;
+  roomId?: number;
 }
 
-const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productDetails, sellerId }) => {
+const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productDetails, sellerId, roomId }) => {
   const t = useTranslations();
   const [message, setMessage] = useState<string>('');
   const [chatHistoryLoading, setChatHistoryLoading] = useState<boolean>(false)
   const [selectedChatHistory, setSelectedChatHistory] = useState<any>([]);
   const [productMessages, setProductMessages] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [selectedRoomId, setSelectedRoomId] = useState<number | null>(null);
+  const [selectedRoomId, setSelectedRoomId] = useState<number | null>(roomId || null);
   const [selectedProductMessage, setSelectedProductMessage] = useState<any>(null);
   const [showEmoji, setShowEmoji] = useState<boolean>(false)
   const [attachments, setAttachments] = useState<any>([]);
@@ -36,9 +37,23 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
   const { user } = useAuth();
 
   useEffect(() => {
-    if (productId && sellerId) handleGetProductMessages()
+    if (roomId) {
+      // If roomId is provided, directly load that room's chat history
+      setSelectedRoomId(roomId);
+    } else if (productId && sellerId) {
+      // Otherwise, get all product messages and select the first one
+      handleGetProductMessages();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [roomId, productId, sellerId]);
+
+  // Load chat history when selectedRoomId changes (including when set from roomId prop)
+  useEffect(() => {
+    if (selectedRoomId) {
+      handleChatHistory();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedRoomId]);
 
   useEffect(() => {
     if (selectedRoomId) {
@@ -136,8 +151,13 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
   const handleChatHistory = async () => {
     try {
       setChatHistoryLoading(true)
+      const roomIdToUse = selectedRoomId || roomId;
+      if (!roomIdToUse) {
+        setChatHistoryLoading(false);
+        return;
+      }
       const payload = {
-        roomId: selectedRoomId
+        roomId: roomIdToUse
       }
       const res = await getChatHistory(payload);
       if (res?.data?.status === 200) {
@@ -422,7 +442,7 @@ const AdminProductChat: React.FC<AdminProductChatProps> = ({ productId, productD
             updateMessageCount={updateMessageCount}
           />
         </div>
-        {productDetails && productMessages?.length > 0 ? (
+        {productDetails && (selectedRoomId || productMessages?.length > 0) ? (
           <div className="mt-2 flex w-full flex-wrap border-t border-solid border-gray-300 px-[15px] py-[10px]">
             <div className="flex w-full items-center">
               <div className="relative flex h-[32px] w-[32px] items-center">

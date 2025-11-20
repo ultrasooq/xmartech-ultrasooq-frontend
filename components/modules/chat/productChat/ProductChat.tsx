@@ -20,12 +20,13 @@ import { useTranslations } from "next-intl";
 
 interface ProductChatProps {
   productId: number;
+  roomId?: number;
 }
 
-const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
+const ProductChat: React.FC<ProductChatProps> = ({ productId, roomId }) => {
   const t = useTranslations();
   const [message, setMessage] = useState<string>("");
-  const [selectedRoom, setSelectedRoom] = useState<number | null>(null);
+  const [selectedRoom, setSelectedRoom] = useState<number | null>(roomId || null);
   const [chatHistoryLoading, setChatHistoryLoading] = useState<boolean>(false);
   const [showEmoji, setShowEmoji] = useState<boolean>(false);
   const [attachments, setAttachments] = useState<any>([]);
@@ -57,13 +58,15 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
       ? productDetails?.product_productPrice[0].adminDetail?.id
       : null;
 
-  // check room id
+  // Use provided roomId or check for existing room
   useEffect(() => {
-    if (sellerId && user?.id !== sellerId) {
+    if (roomId) {
+      setSelectedRoom(roomId);
+    } else if (sellerId && user?.id !== sellerId) {
       checkRoomId();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sellerId]);
+  }, [sellerId, roomId]);
 
   useEffect(() => {
     if (selectedRoom && user?.id !== sellerId) {
@@ -432,6 +435,7 @@ const ProductChat: React.FC<ProductChatProps> = ({ productId }) => {
         productId={productId}
         productDetails={productDetails}
         sellerId={sellerId}
+        roomId={roomId}
       />
     );
   }

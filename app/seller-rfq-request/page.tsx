@@ -23,6 +23,7 @@ const SellerRfqRequestPage = () => {
   const hasPermission = checkPermission(PERMISSION_RFQ_SELLER_REQUESTS);
   const [currentTab, setCurrentTab] = useState<string>("RFQ");
   const [productId, setProductId] = useState<number | null>(null);
+  const [roomId, setRoomId] = useState<number | null>(null);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -82,6 +83,7 @@ const SellerRfqRequestPage = () => {
                     onClick={() => {
                       if (tab.id === "Product Messages") {
                         setProductId(null);
+                        setRoomId(null);
                       }
                       setCurrentTab(tab.id);
                     }}
@@ -111,13 +113,14 @@ const SellerRfqRequestPage = () => {
               <SellerChat />
             ) : currentTab === "Product Messages" ? (
               <ProductMessagesList
-                onSelectProduct={(productId) => {
+                onSelectProduct={(productId, roomId) => {
                   setProductId(productId);
+                  setRoomId(roomId);
                   setCurrentTab("MSG");
                 }}
               />
-            ) : productId && currentTab === "MSG" ? (
-              <ProductChat productId={productId} />
+            ) : productId && roomId && currentTab === "MSG" ? (
+              <ProductChat productId={productId} roomId={roomId} />
             ) : currentTab === "Vendor Operations" ? (
               <VendorOperations />
             ) : null}

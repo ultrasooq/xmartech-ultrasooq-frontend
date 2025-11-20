@@ -13,7 +13,7 @@ import { useSocket } from "@/context/SocketContext";
 import { useQueryClient } from "@tanstack/react-query";
 
 interface ProductMessagesListProps {
-  onSelectProduct: (productId: number) => void;
+  onSelectProduct: (productId: number, roomId: number, userId?: number) => void;
 }
 
 const ProductMessagesList: React.FC<ProductMessagesListProps> = ({ onSelectProduct }) => {
@@ -98,9 +98,9 @@ const ProductMessagesList: React.FC<ProductMessagesListProps> = ({ onSelectProdu
       <div className="space-y-3">
         {productsWithMessages.map((item: any) => (
           <ProductMessageItem
-            key={item.productId}
+            key={`${item.productId}-${item.userId}`}
             item={item}
-            onSelect={() => onSelectProduct(item.productId)}
+            onSelect={() => onSelectProduct(item.productId, item.roomId, item.userId)}
           />
         ))}
       </div>
@@ -111,6 +111,7 @@ const ProductMessagesList: React.FC<ProductMessagesListProps> = ({ onSelectProdu
 interface ProductMessageItemProps {
   item: {
     productId: number;
+    roomId: number;
     userId: number;
     user: {
       firstName?: string | null;
