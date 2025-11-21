@@ -41,6 +41,7 @@ import CartIcon from "@/public/images/cart.svg";
 import UnAuthUserIcon from "@/public/images/login.svg";
 import LogoIcon from "@/public/images/logo-v2.png";
 import WishlistIcon from "@/public/images/wishlist.svg";
+import NotificationBell from "@/components/shared/NotificationBell";
 import {
   CURRENCIES,
   LANGUAGES,
@@ -89,14 +90,14 @@ const ButtonLink: React.FC<ButtonLinkProps> = ({
 }) => {
   return (
     <Link href={href} onClick={onClick} {...props}>
-        <button
-          type="button"
-          className={`flex cursor-pointer text-sm uppercase md:px-8 md:py-10 md:text-sm lg:text-base xl:text-lg ${className}`}
-          style={style}
-          onClick={onClick}
-        >
-          {children}
-        </button>
+      <button
+        type="button"
+        className={`flex cursor-pointer text-sm uppercase md:px-8 md:py-10 md:text-sm lg:text-base xl:text-lg ${className}`}
+        style={style}
+        onClick={onClick}
+      >
+        {children}
+      </button>
     </Link>
   );
 };
@@ -110,10 +111,9 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
   const permissions: string[] = getPermissions();
   const { toast } = useToast();
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
-  
-  const homeButtonClasses = pathname === "/home" 
-    ? "active-nav-item" 
-    : "inactive-nav-item";
+
+  const homeButtonClasses =
+    pathname === "/home" ? "active-nav-item" : "inactive-nav-item";
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { openSidebar } = useSidebar();
   const [menuId, setMenuId] = useState<string | number>();
@@ -302,13 +302,13 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
 
   useEffect(() => {
     const controlHeader = () => {
-      if (typeof window !== 'undefined') {
+      if (typeof window !== "undefined") {
         const currentScrollY = window.scrollY;
-        
+
         // Show header when scrolling up or at the top
         if (currentScrollY < lastScrollY || currentScrollY < 10) {
           setShowHeader(true);
-        } 
+        }
         // Hide header when scrolling down and past threshold
         else if (currentScrollY > lastScrollY && currentScrollY > 80) {
           setShowHeader(false);
@@ -318,11 +318,11 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
       }
     };
 
-    if (typeof window !== 'undefined') {
-      window.addEventListener('scroll', controlHeader);
+    if (typeof window !== "undefined") {
+      window.addEventListener("scroll", controlHeader);
 
       return () => {
-        window.removeEventListener('scroll', controlHeader);
+        window.removeEventListener("scroll", controlHeader);
       };
     }
   }, [lastScrollY]);
@@ -451,18 +451,18 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
               </Link>
             </li>
             <li className="py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
-              <Link 
-                href="/wishlist" 
-                className={getActiveClass("/wishlist")} 
+              <Link
+                href="/wishlist"
+                className={getActiveClass("/wishlist")}
                 translate="no"
               >
                 {t("wishlist")}
               </Link>
             </li>
             <li className="py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
-              <Link 
-                href="/rfq-cart" 
-                className={getActiveClass("/rfq-cart")} 
+              <Link
+                href="/rfq-cart"
+                className={getActiveClass("/rfq-cart")}
                 translate="no"
               >
                 {t("rfq_cart")}
@@ -556,7 +556,11 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
         return (
           <>
             <li className="py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
-              <a href="#" className="text-light-gray hover:text-blue-400" translate="no">
+              <a
+                href="#"
+                className="text-light-gray hover:text-blue-400"
+                translate="no"
+              >
                 {t("buyer_central")}
               </a>
             </li>
@@ -567,8 +571,9 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
 
   return (
     <>
-      <style dangerouslySetInnerHTML={{
-        __html: `
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
           .me.menu button.active-nav-item {
             color: #2563eb !important;
             font-weight: 700 !important;
@@ -587,14 +592,17 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
           .scrollbar-hide::-webkit-scrollbar {
             display: none;
           }
-        `
-      }} />
-      
+        `,
+        }}
+      />
+
       {/* Mobile Header - Only visible on mobile screens */}
-      <header className={`block md:hidden bg-dark-cyan w-full shadow-md sticky top-0 z-50 transition-transform duration-300 ${showHeader ? 'translate-y-0' : '-translate-y-full'}`}>
-        <div className="w-full px-3 sm:px-4 py-2 sm:py-2.5">
+      <header
+        className={`bg-dark-cyan sticky top-0 z-50 block w-full shadow-md transition-transform duration-300 md:hidden ${showHeader ? "translate-y-0" : "-translate-y-full"}`}
+      >
+        <div className="w-full px-3 py-2 sm:px-4 sm:py-2.5">
           {/* Mobile Top Row */}
-          <div className="flex items-center justify-between mb-2 sm:mb-2.5">
+          <div className="mb-2 flex items-center justify-between sm:mb-2.5">
             {/* Logo and Menu */}
             <div className="flex items-center gap-1.5 sm:gap-2">
               {isLoggedIn && (
@@ -607,19 +615,25 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                 </button>
               )}
               <Link href="/home" className="flex items-center">
-                <Image 
-                  src={LogoIcon} 
-                  alt="logo" 
-                  className="h-6 sm:h-7 w-auto"
+                <Image
+                  src={LogoIcon}
+                  alt="logo"
+                  className="h-6 w-auto sm:h-7"
                   priority
                 />
               </Link>
             </div>
-            
+
             {/* User Actions */}
             <div className="flex items-center gap-2 sm:gap-3">
+              {/* Notifications */}
+              {isLoggedIn && <NotificationBell />}
+
               {/* Wishlist */}
-              <Link href="/wishlist" className="relative p-2 rounded-lg hover:bg-white/10 transition-all active:scale-95">
+              <Link
+                href="/wishlist"
+                className="relative rounded-lg p-2 transition-all hover:bg-white/10 active:scale-95"
+              >
                 <Image
                   src={WishlistIcon}
                   height={22}
@@ -628,14 +642,19 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                   className="h-5 w-5 sm:h-6 sm:w-6"
                 />
                 {wishlistCount.data?.data > 0 && (
-                  <div className="bg-red-500 absolute top-0 right-0 flex h-4 w-4 sm:h-5 sm:w-5 items-center justify-center rounded-full text-[10px] sm:text-xs font-bold text-white shadow-lg">
-                    {wishlistCount.data?.data > 99 ? '99+' : wishlistCount.data?.data}
+                  <div className="absolute top-0 right-0 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-lg sm:h-5 sm:w-5 sm:text-xs">
+                    {wishlistCount.data?.data > 99
+                      ? "99+"
+                      : wishlistCount.data?.data}
                   </div>
                 )}
               </Link>
-              
+
               {/* Cart */}
-              <Link href="/cart" className="relative p-2 rounded-lg hover:bg-white/10 transition-all active:scale-95">
+              <Link
+                href="/cart"
+                className="relative rounded-lg p-2 transition-all hover:bg-white/10 active:scale-95"
+              >
                 <Image
                   src={CartIcon}
                   height={22}
@@ -643,43 +662,49 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                   alt="cart"
                   className="h-5 w-5 sm:h-6 sm:w-6"
                 />
-                {((hasAccessToken && !isArray(cartCountWithLogin.data?.data) && cartCountWithLogin.data?.data > 0) ||
-                  (!hasAccessToken && !isArray(cartCountWithoutLogin.data?.data) && cartCountWithoutLogin.data?.data > 0)) && (
-                  <div className="bg-red-500 absolute top-0 right-0 flex h-4 w-4 sm:h-5 sm:w-5 items-center justify-center rounded-full text-[10px] sm:text-xs font-bold text-white shadow-lg">
+                {((hasAccessToken &&
+                  !isArray(cartCountWithLogin.data?.data) &&
+                  cartCountWithLogin.data?.data > 0) ||
+                  (!hasAccessToken &&
+                    !isArray(cartCountWithoutLogin.data?.data) &&
+                    cartCountWithoutLogin.data?.data > 0)) && (
+                  <div className="absolute top-0 right-0 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-lg sm:h-5 sm:w-5 sm:text-xs">
                     {hasAccessToken
-                      ? !isArray(cartCountWithLogin.data?.data) && cartCountWithLogin.data?.data > 99 
-                        ? '99+' 
+                      ? !isArray(cartCountWithLogin.data?.data) &&
+                        cartCountWithLogin.data?.data > 99
+                        ? "99+"
                         : cartCountWithLogin.data?.data
-                      : !isArray(cartCountWithoutLogin.data?.data) && cartCountWithoutLogin.data?.data > 99
-                        ? '99+'
+                      : !isArray(cartCountWithoutLogin.data?.data) &&
+                          cartCountWithoutLogin.data?.data > 99
+                        ? "99+"
                         : cartCountWithoutLogin.data?.data}
                   </div>
                 )}
               </Link>
-              
+
               {/* Profile */}
               {isLoggedIn ? (
                 <div className="flex items-center">
                   <DropdownMenu>
-                    <DropdownMenuTrigger className="relative h-9 w-9 sm:h-10 sm:w-10 rounded-full transition-all hover:ring-2 hover:ring-white/30 active:scale-95">
+                    <DropdownMenuTrigger className="relative h-9 w-9 rounded-full transition-all hover:ring-2 hover:ring-white/30 active:scale-95 sm:h-10 sm:w-10">
                       {me?.data?.data?.profilePicture ? (
                         <Image
                           src={me?.data?.data?.profilePicture}
                           alt="image-icon"
                           height={40}
                           width={40}
-                          className="h-full w-full rounded-full object-cover border-2 border-white/20"
+                          className="h-full w-full rounded-full border-2 border-white/20 object-cover"
                         />
                       ) : (
-                        <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center border-2 border-white/20 shadow-lg">
-                          <p className="text-xs sm:text-sm font-bold text-white">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-white/20 bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg sm:h-10 sm:w-10">
+                          <p className="text-xs font-bold text-white sm:text-sm">
                             {memoizedInitials}
                           </p>
                         </div>
                       )}
                       {userStatus && userStatus !== "ACTIVE" && (
                         <div
-                          className={`absolute -top-0.5 -right-0.5 h-3 w-3 sm:h-3.5 sm:w-3.5 rounded-full border-2 border-dark-cyan ${
+                          className={`border-dark-cyan absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full border-2 sm:h-3.5 sm:w-3.5 ${
                             userStatus === "INACTIVE"
                               ? "bg-red-500"
                               : userStatus === "WAITING"
@@ -691,7 +716,11 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                         />
                       )}
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" sideOffset={5} className="w-56">
+                    <DropdownMenuContent
+                      align="end"
+                      sideOffset={5}
+                      className="w-56"
+                    >
                       {userStatus && userStatus !== "ACTIVE" && (
                         <div className="border-b border-gray-200 px-2 py-1.5 text-xs text-gray-500">
                           Status:{" "}
@@ -699,11 +728,14 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                         </div>
                       )}
                       <Link href={handleProfile()}>
-                        <DropdownMenuItem className="cursor-pointer" translate="no">
+                        <DropdownMenuItem
+                          className="cursor-pointer"
+                          translate="no"
+                        >
                           {t("profile_information")}
                         </DropdownMenuItem>
                       </Link>
-                      
+
                       {userStatus === "WAITING" || userStatus === "INACTIVE" ? (
                         <>
                           <DropdownMenuSeparator />
@@ -718,73 +750,77 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                         <>
                           {accessControl.canAccessDashboard && (
                             <Link href="/vendor-dashboard">
-                              <DropdownMenuItem className="cursor-pointer" translate="no">
+                              <DropdownMenuItem
+                                className="cursor-pointer"
+                                translate="no"
+                              >
                                 {t("dashboard")}
                               </DropdownMenuItem>
                             </Link>
                           )}
-                          
-                          {currentTradeRole !== "BUYER" && accessControl.hasFullAccess && (
-                            <>
-                              {hideMenu(PERMISSION_TEAM_MEMBERS) && (
-                                <Link href="/team-members">
-                                  <DropdownMenuItem translate="no">
-                                    {t("team_members")}
-                                  </DropdownMenuItem>
-                                </Link>
-                              )}
-                              {hideMenu(PERMISSION_PRODUCTS) && (
-                                <Link href="/manage-products">
-                                  <DropdownMenuItem translate="no">
-                                    {t("products")}
-                                  </DropdownMenuItem>
-                                </Link>
-                              )}
-                              {hideMenu(PERMISSION_SERVICES) && (
-                                <Link href="/manage-services">
-                                  <DropdownMenuItem translate="no">
-                                    {t("services")}
-                                  </DropdownMenuItem>
-                                </Link>
-                              )}
-                              {hideMenu(PERMISSION_ORDERS) && (
-                                <Link href="/seller-orders">
-                                  <DropdownMenuItem translate="no">
-                                    {t("orders")}
-                                  </DropdownMenuItem>
-                                </Link>
-                              )}
-                              {hideMenu(PERMISSION_RFQ_QUOTES) && (
-                                <Link href="/rfq-quotes">
-                                  <DropdownMenuItem translate="no">
-                                    {t("rfq_quotes")}
-                                  </DropdownMenuItem>
-                                </Link>
-                              )}
-                              {hideMenu(PERMISSION_PRODUCTS) && (
-                                <Link href="/dropship-products">
-                                  <DropdownMenuItem translate="no">
-                                    {t("dropshipping")}
-                                  </DropdownMenuItem>
-                                </Link>
-                              )}
-                              {hideMenu(PERMISSION_RFQ_SELLER_REQUESTS) && (
-                                <Link href="/seller-rfq-request">
-                                  <DropdownMenuItem translate="no">
-                                    {t("rfq_seller_requests")}
-                                  </DropdownMenuItem>
-                                </Link>
-                              )}
-                              {hideMenu(PERMISSION_SELLER_REWARDS) && (
-                                <Link href="/seller-rewards">
-                                  <DropdownMenuItem translate="no">
-                                    {t("seller_rewards")}
-                                  </DropdownMenuItem>
-                                </Link>
-                              )}
-                            </>
-                          )}
-                          
+
+                          {currentTradeRole !== "BUYER" &&
+                            accessControl.hasFullAccess && (
+                              <>
+                                {hideMenu(PERMISSION_TEAM_MEMBERS) && (
+                                  <Link href="/team-members">
+                                    <DropdownMenuItem translate="no">
+                                      {t("team_members")}
+                                    </DropdownMenuItem>
+                                  </Link>
+                                )}
+                                {hideMenu(PERMISSION_PRODUCTS) && (
+                                  <Link href="/manage-products">
+                                    <DropdownMenuItem translate="no">
+                                      {t("products")}
+                                    </DropdownMenuItem>
+                                  </Link>
+                                )}
+                                {hideMenu(PERMISSION_SERVICES) && (
+                                  <Link href="/manage-services">
+                                    <DropdownMenuItem translate="no">
+                                      {t("services")}
+                                    </DropdownMenuItem>
+                                  </Link>
+                                )}
+                                {hideMenu(PERMISSION_ORDERS) && (
+                                  <Link href="/seller-orders">
+                                    <DropdownMenuItem translate="no">
+                                      {t("orders")}
+                                    </DropdownMenuItem>
+                                  </Link>
+                                )}
+                                {hideMenu(PERMISSION_RFQ_QUOTES) && (
+                                  <Link href="/rfq-quotes">
+                                    <DropdownMenuItem translate="no">
+                                      {t("rfq_quotes")}
+                                    </DropdownMenuItem>
+                                  </Link>
+                                )}
+                                {hideMenu(PERMISSION_PRODUCTS) && (
+                                  <Link href="/dropship-products">
+                                    <DropdownMenuItem translate="no">
+                                      {t("dropshipping")}
+                                    </DropdownMenuItem>
+                                  </Link>
+                                )}
+                                {hideMenu(PERMISSION_RFQ_SELLER_REQUESTS) && (
+                                  <Link href="/seller-rfq-request">
+                                    <DropdownMenuItem translate="no">
+                                      {t("rfq_seller_requests")}
+                                    </DropdownMenuItem>
+                                  </Link>
+                                )}
+                                {hideMenu(PERMISSION_SELLER_REWARDS) && (
+                                  <Link href="/seller-rewards">
+                                    <DropdownMenuItem translate="no">
+                                      {t("seller_rewards")}
+                                    </DropdownMenuItem>
+                                  </Link>
+                                )}
+                              </>
+                            )}
+
                           {hideMenu(PERMISSION_SHARE_LINKS) && (
                             <Link href="/share-links">
                               <DropdownMenuItem translate="no">
@@ -792,7 +828,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                               </DropdownMenuItem>
                             </Link>
                           )}
-                          
+
                           {accessControl.canAccessSettings && (
                             <Link href="/my-settings/address">
                               <DropdownMenuItem translate="no">
@@ -800,7 +836,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                               </DropdownMenuItem>
                             </Link>
                           )}
-                          
+
                           {accessControl.canAccessTransactions && (
                             <Link href="/transactions">
                               <DropdownMenuItem translate="no">
@@ -808,7 +844,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                               </DropdownMenuItem>
                             </Link>
                           )}
-                          
+
                           {accessControl.canAccessQueries && (
                             <Link href="/queries">
                               <DropdownMenuItem translate="no">
@@ -816,7 +852,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                               </DropdownMenuItem>
                             </Link>
                           )}
-                          
+
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
                             onClick={handleLogout}
@@ -830,7 +866,10 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                   </DropdownMenu>
                 </div>
               ) : (
-                <Link href="/login" className="flex items-center gap-1.5 px-3 py-1.5 bg-white/10 rounded-lg hover:bg-white/20 transition-all active:scale-95">
+                <Link
+                  href="/login"
+                  className="flex items-center gap-1.5 rounded-lg bg-white/10 px-3 py-1.5 transition-all hover:bg-white/20 active:scale-95"
+                >
                   <Image
                     src={UnAuthUserIcon}
                     height={20}
@@ -838,47 +877,59 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                     alt="login"
                     className="h-5 w-5"
                   />
-                  <span className="text-white text-xs sm:text-sm font-medium">Login</span>
+                  <span className="text-xs font-medium text-white sm:text-sm">
+                    Login
+                  </span>
                 </Link>
               )}
             </div>
           </div>
-          
+
           {/* Mobile Search Bar */}
-          <div className="flex items-center gap-2 mb-2 sm:mb-2.5">
-            <div className="flex-1 relative">
+          <div className="mb-2 flex items-center gap-2 sm:mb-2.5">
+            <div className="relative flex-1">
               <input
                 type="text"
-                className="w-full h-9 sm:h-10 pl-3 pr-10 text-sm sm:text-base rounded-lg border-2 border-white/20 bg-white/95 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-gray-400"
+                className="h-9 w-full rounded-lg border-2 border-white/20 bg-white/95 pr-10 pl-3 text-sm transition-all placeholder:text-gray-400 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none sm:h-10 sm:text-base"
                 placeholder={t("global_search_placeholder")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 onKeyDown={handleKeyDown}
                 translate="no"
               />
-              <svg className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              <svg
+                className="pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 text-gray-400 sm:h-5 sm:w-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
               </svg>
             </div>
             <button
               type="button"
-              className="h-9 sm:h-10 px-4 sm:px-5 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white text-sm sm:text-base font-semibold rounded-lg shadow-lg transition-all active:scale-95"
+              className="h-9 rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 px-4 text-sm font-semibold text-white shadow-lg transition-all hover:from-orange-600 hover:to-orange-700 active:scale-95 sm:h-10 sm:px-5 sm:text-base"
               onClick={() => updateURL(searchTerm)}
             >
               {t("search")}
             </button>
           </div>
-          
+
           {/* Mobile Navigation Menu - Home, Store, Buygroup, etc. */}
-          <div className="overflow-x-auto scrollbar-hide -mx-3 px-3 sm:-mx-4 sm:px-4 pb-2">
-            <div className="flex items-center gap-1.5 sm:gap-2 min-w-max">
+          <div className="scrollbar-hide -mx-3 overflow-x-auto px-3 pb-2 sm:-mx-4 sm:px-4">
+            <div className="flex min-w-max items-center gap-1.5 sm:gap-2">
               <Link
                 href="/home"
                 onClick={() => {
                   setMenuId(0);
                   router.push("/home");
                 }}
-                className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg whitespace-nowrap transition-all ${pathname === "/home" ? "bg-white text-blue-600 shadow-md font-semibold" : "text-white bg-white/10 hover:bg-white/20 active:scale-95"}`}
+                className={`flex items-center gap-1.5 rounded-lg px-3 py-2 whitespace-nowrap transition-all sm:gap-2 sm:px-4 sm:py-2.5 ${pathname === "/home" ? "bg-white font-semibold text-blue-600 shadow-md" : "bg-white/10 text-white hover:bg-white/20 active:scale-95"}`}
               >
                 <Image
                   src={menuBarIconList[0]}
@@ -887,27 +938,38 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                   width={18}
                   className="h-4 w-4 sm:h-5 sm:w-5"
                   style={{
-                    filter: pathname === "/home" ? "brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)" : "none"
+                    filter:
+                      pathname === "/home"
+                        ? "brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)"
+                        : "none",
                   }}
                 />
-                <span className="text-xs sm:text-sm font-medium">{t("home")}</span>
+                <span className="text-xs font-medium sm:text-sm">
+                  {t("home")}
+                </span>
               </Link>
               {memoizedMenu.map((item: any) => {
                 const getHref = () => {
-                  if (item.name.toLowerCase().includes("store")) return "/trending";
-                  if (item.name.toLowerCase().includes("buy group")) return "/buygroup";
+                  if (item.name.toLowerCase().includes("store"))
+                    return "/trending";
+                  if (item.name.toLowerCase().includes("buy group"))
+                    return "/buygroup";
                   if (item.name.toLowerCase().includes("rfq")) return "/rfq";
-                  if (item.name.toLowerCase().includes("factories")) return "/factories";
-                  if (item.name.toLowerCase().includes("service")) return "/services";
+                  if (item.name.toLowerCase().includes("factories"))
+                    return "/factories";
+                  if (item.name.toLowerCase().includes("service"))
+                    return "/services";
                   return "/trending";
                 };
 
                 const href = getHref();
-                const isActiveNav = pathname === href || 
+                const isActiveNav =
+                  pathname === href ||
                   (pathname?.startsWith("/trending") && href === "/trending") ||
                   (pathname?.startsWith("/buygroup") && href === "/buygroup") ||
                   (pathname?.startsWith("/rfq") && href === "/rfq") ||
-                  (pathname?.startsWith("/factories") && href === "/factories") ||
+                  (pathname?.startsWith("/factories") &&
+                    href === "/factories") ||
                   (pathname?.startsWith("/services") && href === "/services");
 
                 return (
@@ -918,17 +980,21 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                       setMenuId(item.id);
                       if (item.name.toLowerCase().includes("store")) {
                         router.push("/trending");
-                      } else if (item.name.toLowerCase().includes("buy group")) {
+                      } else if (
+                        item.name.toLowerCase().includes("buy group")
+                      ) {
                         router.push("/buygroup");
                       } else if (item.name.toLowerCase().includes("rfq")) {
                         router.push("/rfq");
-                      } else if (item.name.toLowerCase().includes("factories")) {
+                      } else if (
+                        item.name.toLowerCase().includes("factories")
+                      ) {
                         router.push("/factories");
                       } else if (item.name.toLowerCase().includes("service")) {
                         router.push("/services");
                       }
                     }}
-                    className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg whitespace-nowrap transition-all ${isActiveNav ? "bg-white text-blue-600 shadow-md font-semibold" : "text-white bg-white/10 hover:bg-white/20 active:scale-95"}`}
+                    className={`flex items-center gap-1.5 rounded-lg px-3 py-2 whitespace-nowrap transition-all sm:gap-2 sm:px-4 sm:py-2.5 ${isActiveNav ? "bg-white font-semibold text-blue-600 shadow-md" : "bg-white/10 text-white hover:bg-white/20 active:scale-95"}`}
                   >
                     <Image
                       src={item.icon}
@@ -937,10 +1003,14 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                       width={18}
                       className="h-4 w-4 sm:h-5 sm:w-5"
                       style={{
-                        filter: isActiveNav ? "brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)" : "none"
+                        filter: isActiveNav
+                          ? "brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)"
+                          : "none",
                       }}
                     />
-                    <span className="text-xs sm:text-sm font-medium">{item?.name}</span>
+                    <span className="text-xs font-medium sm:text-sm">
+                      {item?.name}
+                    </span>
                   </Link>
                 );
               })}
@@ -948,35 +1018,52 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
           </div>
         </div>
       </header>
-      
+
       {/* Desktop/Tablet Header - Hidden on mobile */}
-      <header className={`hidden md:block relative w-full shadow-lg sticky top-0 z-50 bg-dark-cyan transition-transform duration-300 ${showHeader ? 'translate-y-0' : '-translate-y-full'}`} key={`header-${currentTradeRole}-${currentAccount?.data?.data?.account?.id}`}>
+      <header
+        className={`bg-dark-cyan relative sticky top-0 z-50 hidden w-full shadow-lg transition-transform duration-300 md:block ${showHeader ? "translate-y-0" : "-translate-y-full"}`}
+        key={`header-${currentTradeRole}-${currentAccount?.data?.data?.account?.id}`}
+      >
         <div className="bg-dark-cyan w-full">
-          <div className="w-full px-6 md:px-8 lg:px-12 pt-2 md:pt-2.5 lg:pt-3">
+          <div className="w-full px-6 pt-2 md:px-8 md:pt-2.5 lg:px-12 lg:pt-3">
             <div className="hidden md:flex md:gap-x-2.5">
-              <div className="py-1.5 md:py-2 lg:py-2.5 text-xs md:text-sm font-normal text-white/90 md:w-4/12 lg:w-4/12">
-                <p dir={langDir} translate="no" className="hover:text-white transition-colors">
+              <div className="py-1.5 text-xs font-normal text-white/90 md:w-4/12 md:py-2 md:text-sm lg:w-4/12 lg:py-2.5">
+                <p
+                  dir={langDir}
+                  translate="no"
+                  className="transition-colors hover:text-white"
+                >
                   {t("welcome")}
                 </p>
               </div>
-              <div className="flex justify-end py-1.5 md:py-2 lg:py-2.5 text-xs md:text-sm font-normal text-white/90 md:w-8/12 lg:w-8/12">
-                <ul className="flex justify-end items-center gap-1">
+              <div className="flex justify-end py-1.5 text-xs font-normal text-white/90 md:w-8/12 md:py-2 md:text-sm lg:w-8/12 lg:py-2.5">
+                <ul className="flex items-center justify-end gap-1">
                   {currentTradeRole != "BUYER" ? (
-                    <li className="border-r border-solid border-white/30 px-3 text-xs md:text-sm font-normal text-white/90">
-                      <a href="#" dir={langDir} translate="no" className="hover:text-white transition-colors">
+                    <li className="border-r border-solid border-white/30 px-3 text-xs font-normal text-white/90 md:text-sm">
+                      <a
+                        href="#"
+                        dir={langDir}
+                        translate="no"
+                        className="transition-colors hover:text-white"
+                      >
                         {t("store_location")}
                       </a>
                     </li>
                   ) : null}
-                  <li className="border-r border-solid border-white/30 px-3 text-xs md:text-sm font-normal text-white/90">
-                    <Link href="/my-orders" dir={langDir} translate="no" className="hover:text-white transition-colors">
+                  <li className="border-r border-solid border-white/30 px-3 text-xs font-normal text-white/90 md:text-sm">
+                    <Link
+                      href="/my-orders"
+                      dir={langDir}
+                      translate="no"
+                      className="transition-colors hover:text-white"
+                    >
                       {t("track_your_order")}
                     </Link>
                   </li>
-                  <li className="border-r border-solid border-white/30 px-3 text-xs md:text-sm font-normal text-white/90">
+                  <li className="border-r border-solid border-white/30 px-3 text-xs font-normal text-white/90 md:text-sm">
                     <select
                       dir={langDir}
-                      className="border-0 bg-transparent text-white/90 hover:text-white focus:outline-none cursor-pointer transition-colors py-1 px-1 rounded"
+                      className="cursor-pointer rounded border-0 bg-transparent px-1 py-1 text-white/90 transition-colors hover:text-white focus:outline-none"
                       value={selectedCurrency}
                       onChange={(e: any) => {
                         setSelectedCurrency(e.target?.value || "USD");
@@ -1000,11 +1087,11 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                       })}
                     </select>
                   </li>
-                  <li className="google_translate px-3 pr-0 text-xs md:text-sm font-normal text-white/90">
+                  <li className="google_translate px-3 pr-0 text-xs font-normal text-white/90 md:text-sm">
                     <GoogleTranslate />
                     <select
                       dir={langDir}
-                      className="border-0 bg-transparent text-white/90 hover:text-white focus:outline-none cursor-pointer transition-colors py-1 px-1 rounded"
+                      className="cursor-pointer rounded border-0 bg-transparent px-1 py-1 text-white/90 transition-colors hover:text-white focus:outline-none"
                       value={selectedLocale}
                       onChange={(e) => {
                         setSelectedLocale(e.target.value);
@@ -1066,27 +1153,35 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
             </div>
 
             <div className="flex flex-wrap items-center">
-              <div className="order-1 flex w-5/12 flex-1 items-center py-2 md:py-2.5 md:w-2/12 lg:w-1/6">
+              <div className="order-1 flex w-5/12 flex-1 items-center py-2 md:w-2/12 md:py-2.5 lg:w-1/6">
                 <div className="flex items-center gap-2">
                   {isLoggedIn && (
                     <button
                       onClick={openSidebar}
-                      className="flex h-8 w-8 lg:h-9 lg:w-9 items-center justify-center rounded-lg transition-all hover:bg-white/10 active:scale-95"
+                      className="flex h-8 w-8 items-center justify-center rounded-lg transition-all hover:bg-white/10 active:scale-95 lg:h-9 lg:w-9"
                       title="Open Menu"
                     >
-                      <MenuIcon className="h-4 w-4 lg:h-5 lg:w-5 text-white" />
+                      <MenuIcon className="h-4 w-4 text-white lg:h-5 lg:w-5" />
                     </button>
                   )}
-                  <Link href="/home" className="flex items-center hover:opacity-90 transition-opacity">
-                    <Image src={LogoIcon} alt="logo" className="h-7 md:h-8 lg:h-9 w-auto" priority />
+                  <Link
+                    href="/home"
+                    className="flex items-center transition-opacity hover:opacity-90"
+                  >
+                    <Image
+                      src={LogoIcon}
+                      alt="logo"
+                      className="h-7 w-auto md:h-8 lg:h-9"
+                      priority
+                    />
                   </Link>
                 </div>
               </div>
-              <div className="order-3 flex w-[80%] items-center py-2 md:py-2.5 md:order-2 md:w-7/12 md:px-3 lg:w-4/6 gap-2">
-                <div className="flex-1 relative">
+              <div className="order-3 flex w-[80%] items-center gap-2 py-2 md:order-2 md:w-7/12 md:px-3 md:py-2.5 lg:w-4/6">
+                <div className="relative flex-1">
                   <input
                     type="text"
-                    className="form-control h-9 md:h-10 w-full pl-4 pr-12 text-sm md:text-base text-black rounded-lg border-2 border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-gray-400"
+                    className="form-control h-9 w-full rounded-lg border-2 border-white/20 pr-12 pl-4 text-sm text-black transition-all placeholder:text-gray-400 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none md:h-10 md:text-base"
                     placeholder={t("global_search_placeholder")}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
@@ -1094,13 +1189,23 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                     dir={langDir}
                     translate="no"
                   />
-                  <svg className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  <svg
+                    className="pointer-events-none absolute top-1/2 right-4 h-5 w-5 -translate-y-1/2 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    />
                   </svg>
                 </div>
                 <button
                   type="button"
-                  className="h-9 md:h-10 px-6 md:px-8 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white text-sm md:text-base font-semibold rounded-lg shadow-lg transition-all active:scale-95 whitespace-nowrap"
+                  className="h-9 rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 px-6 text-sm font-semibold whitespace-nowrap text-white shadow-lg transition-all hover:from-orange-600 hover:to-orange-700 active:scale-95 md:h-10 md:px-8 md:text-base"
                   onClick={() => updateURL(searchTerm)}
                   dir={langDir}
                   translate="no"
@@ -1108,12 +1213,17 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                   {t("search")}
                 </button>
               </div>
-              <div className="order-2 flex w-7/12 justify-end sm:order-2 sm:w-7/12 md:order-3 md:w-3/12 md:py-2 lg:py-2.5 lg:w-1/6">
+              <div className="order-2 flex w-7/12 justify-end sm:order-2 sm:w-7/12 md:order-3 md:w-3/12 md:py-2 lg:w-1/6 lg:py-2.5">
                 <ul className="flex items-center justify-end gap-x-3 md:gap-x-4">
+                  {isLoggedIn && (
+                    <li className="relative flex">
+                      <NotificationBell />
+                    </li>
+                  )}
                   <li className="relative">
                     <Link
                       href="/wishlist"
-                      className="flex items-center justify-center p-2 rounded-lg hover:bg-white/10 transition-all active:scale-95 relative"
+                      className="relative flex items-center justify-center rounded-lg p-2 transition-all hover:bg-white/10 active:scale-95"
                     >
                       <Image
                         src={WishlistIcon}
@@ -1123,14 +1233,19 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                         className="h-6 w-6 md:h-7 md:w-7"
                       />
                       {wishlistCount.data?.data > 0 && (
-                        <div className="bg-red-500 absolute -top-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold text-white shadow-lg">
-                          {wishlistCount.data?.data > 99 ? '99+' : wishlistCount.data?.data}
+                        <div className="absolute -top-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-lg">
+                          {wishlistCount.data?.data > 99
+                            ? "99+"
+                            : wishlistCount.data?.data}
                         </div>
                       )}
                     </Link>
                   </li>
                   <li className="relative">
-                    <Link href="/cart" className="flex items-center justify-center p-2 rounded-lg hover:bg-white/10 transition-all active:scale-95 relative">
+                    <Link
+                      href="/cart"
+                      className="relative flex items-center justify-center rounded-lg p-2 transition-all hover:bg-white/10 active:scale-95"
+                    >
                       <Image
                         src={CartIcon}
                         height={24}
@@ -1138,15 +1253,21 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                         alt="cart"
                         className="h-6 w-6 md:h-7 md:w-7"
                       />
-                      {((hasAccessToken && !isArray(cartCountWithLogin.data?.data) && cartCountWithLogin.data?.data > 0) ||
-                        (!hasAccessToken && !isArray(cartCountWithoutLogin.data?.data) && cartCountWithoutLogin.data?.data > 0)) && (
-                        <div className="bg-red-500 absolute -top-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold text-white shadow-lg">
+                      {((hasAccessToken &&
+                        !isArray(cartCountWithLogin.data?.data) &&
+                        cartCountWithLogin.data?.data > 0) ||
+                        (!hasAccessToken &&
+                          !isArray(cartCountWithoutLogin.data?.data) &&
+                          cartCountWithoutLogin.data?.data > 0)) && (
+                        <div className="absolute -top-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-lg">
                           {hasAccessToken
-                            ? !isArray(cartCountWithLogin.data?.data) && cartCountWithLogin.data?.data > 99 
-                              ? '99+' 
+                            ? !isArray(cartCountWithLogin.data?.data) &&
+                              cartCountWithLogin.data?.data > 99
+                              ? "99+"
                               : cartCountWithLogin.data?.data
-                            : !isArray(cartCountWithoutLogin.data?.data) && cartCountWithoutLogin.data?.data > 99
-                              ? '99+'
+                            : !isArray(cartCountWithoutLogin.data?.data) &&
+                                cartCountWithoutLogin.data?.data > 99
+                              ? "99+"
                               : cartCountWithoutLogin.data?.data}
                         </div>
                       )}
@@ -1156,18 +1277,18 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                     {isLoggedIn ? (
                       <div className="flex items-center gap-2">
                         <DropdownMenu>
-                          <DropdownMenuTrigger className="relative h-9 w-9 md:h-10 md:w-10 rounded-full transition-all hover:ring-2 hover:ring-white/30 active:scale-95">
+                          <DropdownMenuTrigger className="relative h-9 w-9 rounded-full transition-all hover:ring-2 hover:ring-white/30 active:scale-95 md:h-10 md:w-10">
                             {me?.data?.data?.profilePicture ? (
                               <Image
                                 src={me?.data?.data?.profilePicture}
                                 alt="image-icon"
                                 height={40}
                                 width={40}
-                                className="h-full w-full rounded-full object-cover border-2 border-white/20 shadow-lg"
+                                className="h-full w-full rounded-full border-2 border-white/20 object-cover shadow-lg"
                               />
                             ) : (
-                              <div className="h-9 w-9 md:h-10 md:w-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center border-2 border-white/20 shadow-lg">
-                                <p className="text-xs md:text-sm font-bold text-white">
+                              <div className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-white/20 bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg md:h-10 md:w-10">
+                                <p className="text-xs font-bold text-white md:text-sm">
                                   {memoizedInitials}
                                 </p>
                               </div>
@@ -1175,7 +1296,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                             {/* Status indicator - only show for non-active users */}
                             {userStatus && userStatus !== "ACTIVE" && (
                               <div
-                                className={`absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full border-2 border-dark-cyan ${
+                                className={`border-dark-cyan absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full border-2 ${
                                   userStatus === "INACTIVE"
                                     ? "bg-red-500"
                                     : userStatus === "WAITING"
@@ -1422,7 +1543,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                       <div dir={langDir} className="flex items-center gap-2">
                         <Link
                           href="/login"
-                          className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-all active:scale-95"
+                          className="flex items-center gap-2 rounded-lg bg-white/10 px-4 py-2 transition-all hover:bg-white/20 active:scale-95"
                           translate="no"
                         >
                           <Image
@@ -1432,14 +1553,18 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                             alt="login-icon"
                             className="h-5 w-5"
                           />
-                          <span className="text-sm font-semibold text-white">{t("login")}</span>
+                          <span className="text-sm font-semibold text-white">
+                            {t("login")}
+                          </span>
                         </Link>
                         <Link
                           href="/register"
-                          className="flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-lg shadow-lg transition-all active:scale-95"
+                          className="flex items-center rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-2 shadow-lg transition-all hover:from-blue-600 hover:to-blue-700 active:scale-95"
                           translate="no"
                         >
-                          <span className="text-sm font-semibold text-white">{t("register")}</span>
+                          <span className="text-sm font-semibold text-white">
+                            {t("register")}
+                          </span>
                         </Link>
                       </div>
                     )}
@@ -1468,7 +1593,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                   className={`transition-colors ${homeButtonClasses}`}
                   style={{
                     color: pathname === "/home" ? "#2563eb" : "#ffffff",
-                    fontWeight: pathname === "/home" ? "700" : "400"
+                    fontWeight: pathname === "/home" ? "700" : "400",
                   }}
                 >
                   <div
@@ -1483,7 +1608,10 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                       width={0}
                       className={`h-7 w-7 ${pathname === "/home" ? "brightness-0 saturate-100" : ""}`}
                       style={{
-                        filter: pathname === "/home" ? "brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)" : "none"
+                        filter:
+                          pathname === "/home"
+                            ? "brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)"
+                            : "none",
                       }}
                     />{" "}
                     {t("home")}
@@ -1492,21 +1620,30 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                 {memoizedMenu.map((item: any) => {
                   // Determine the href for this menu item
                   const getHref = () => {
-                    if (item.name.toLowerCase().includes("home")) return "/home";
-                    if (item.name.toLowerCase().includes("store")) return "/trending";
-                    if (item.name.toLowerCase().includes("buy group")) return "/buygroup";
+                    if (item.name.toLowerCase().includes("home"))
+                      return "/home";
+                    if (item.name.toLowerCase().includes("store"))
+                      return "/trending";
+                    if (item.name.toLowerCase().includes("buy group"))
+                      return "/buygroup";
                     if (item.name.toLowerCase().includes("rfq")) return "/rfq";
-                    if (item.name.toLowerCase().includes("factories")) return "/factories";
-                    if (item.name.toLowerCase().includes("service")) return "/services";
+                    if (item.name.toLowerCase().includes("factories"))
+                      return "/factories";
+                    if (item.name.toLowerCase().includes("service"))
+                      return "/services";
                     return "/trending";
                   };
 
                   const href = getHref();
-                  const isActive = pathname === href || 
-                    (pathname?.startsWith("/trending") && href === "/trending") ||
-                    (pathname?.startsWith("/buygroup") && href === "/buygroup") ||
+                  const isActive =
+                    pathname === href ||
+                    (pathname?.startsWith("/trending") &&
+                      href === "/trending") ||
+                    (pathname?.startsWith("/buygroup") &&
+                      href === "/buygroup") ||
                     (pathname?.startsWith("/rfq") && href === "/rfq") ||
-                    (pathname?.startsWith("/factories") && href === "/factories") ||
+                    (pathname?.startsWith("/factories") &&
+                      href === "/factories") ||
                     (pathname?.startsWith("/services") && href === "/services");
 
                   return (
@@ -1539,10 +1676,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                       href={href}
                       className={`transition-colors ${isActive ? "active-nav-item" : "inactive-nav-item"}`}
                     >
-                      <div 
-                        className="flex gap-x-3" 
-                        onClick={handleClick}
-                      >
+                      <div className="flex gap-x-3" onClick={handleClick}>
                         <Image
                           src={item.icon}
                           alt={item?.name}
@@ -1550,7 +1684,9 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                           width={0}
                           className={`h-7 w-7 ${isActive ? "brightness-0 saturate-100" : ""}`}
                           style={{
-                            filter: isActive ? "brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)" : "none"
+                            filter: isActive
+                              ? "brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)"
+                              : "none",
                           }}
                         />{" "}
                         <p>{item?.name}</p>
@@ -1846,7 +1982,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                   <li className="py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
                     <a
                       href="#"
-                      className="text-light-gray hover:text-blue-400 transition-colors"
+                      className="text-light-gray transition-colors hover:text-blue-400"
                       onClick={handleToggleQueryModal}
                       translate="no"
                     >

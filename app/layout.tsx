@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "@/context/AuthContext";
 import { SidebarProvider } from "@/context/SidebarContext";
 import { SocketProvider } from "@/context/SocketContext";
+import { NotificationProvider } from "@/context/NotificationContext";
 import Header from "@/layout/MainLayout/Header";
 import Sidebar from "@/layout/MainLayout/Sidebar";
 import ReactQueryProvider from "@/providers/ReactQueryProvider";
@@ -116,11 +117,13 @@ export default async function RootLayout({
                 <SidebarProvider>
                   <main className="overflow-x-visible">
                     <NextIntlClientProvider messages={messages}>
-                      <Sidebar />
-                      <Header locale={locale} />
-                      <NextTopLoader color="#DB2302" showSpinner={false} />
-                      {children}
-                      <Toaster />
+                      <NotificationProvider>
+                        <Sidebar />
+                        <Header locale={locale} />
+                        <NextTopLoader color="#DB2302" showSpinner={false} />
+                        {children}
+                        <Toaster />
+                      </NotificationProvider>
                     </NextIntlClientProvider>
                   </main>
                 </SidebarProvider>

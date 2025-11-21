@@ -12,7 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { v4 as uuidv4 } from "uuid";
 import Link from "next/link";
 import { PERMISSION_ORDERS, checkPermission } from "@/helpers/permission";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 import Pagination from "@/components/shared/Pagination";
@@ -21,6 +21,7 @@ const SellerOrdersPage = () => {
   const t = useTranslations();
   const { langDir } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const hasPermission = checkPermission(PERMISSION_ORDERS);
   const searchRef = useRef<HTMLInputElement>(null);
   const [page, setPage] = useState<number>(1);
@@ -28,6 +29,15 @@ const SellerOrdersPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [orderStatus, setOrderStatus] = useState<string>("");
   const [orderTime, setOrderTime] = useState<string>("");
+
+  // Read term from URL query parameter on mount
+  useEffect(() => {
+    const termFromUrl = searchParams.get("term");
+    if (termFromUrl && searchRef.current) {
+      setSearchTerm(termFromUrl);
+      searchRef.current.value = termFromUrl;
+    }
+  }, [searchParams]);
 
   const getYearDates = (
     input: string,
