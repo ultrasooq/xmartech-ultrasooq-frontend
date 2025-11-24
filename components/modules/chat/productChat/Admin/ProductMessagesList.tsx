@@ -128,6 +128,7 @@ interface ProductMessageItemProps {
 }
 
 const ProductMessageItem: React.FC<ProductMessageItemProps> = ({ item, onSelect }) => {
+  const t = useTranslations();
   const { data: productData } = useGetProductDetails(item.productId, !!item.productId);
   const product = productData?.data;
   const productName = product?.productName || `Product #${item.productId}`;

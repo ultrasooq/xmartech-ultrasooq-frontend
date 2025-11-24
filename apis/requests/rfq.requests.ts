@@ -157,9 +157,10 @@ export const fetchFactoriesCartByUserId = (payload: {
 export const updateRfqCartWithLogin = (payload: {
   productId: number;
   quantity: number;
-  offerPriceFrom: number;
-  offerPriceTo: number;
-  note: string;
+  productType?: "SAME" | "SIMILAR";
+  offerPriceFrom?: number;
+  offerPriceTo?: number;
+  note?: string;
 }) => {
   return axios({
     method: "PATCH",

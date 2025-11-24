@@ -6,6 +6,11 @@ import {
   useRfqCartListByUserId,
   useUpdateRfqCartWithLogin,
 } from "@/apis/queries/rfq.queries";
+import {
+  useAllCountries,
+  useFetchStatesByCountry,
+  useFetchCitiesByState,
+} from "@/apis/queries/masters.queries";
 import { useMe } from "@/apis/queries/user.queries";
 import RfqProductCard from "@/components/modules/rfqCart/RfqProductCard";
 import ControlledDatePicker from "@/components/shared/Forms/ControlledDatePicker";
@@ -19,7 +24,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { MdOutlineChevronLeft } from "react-icons/md";
 import { z } from "zod";
@@ -30,10 +35,17 @@ import { useAuth } from "@/context/AuthContext";
 
 const formSchema = (t: any) => {
   return z.object({
-    address: z.string().trim().min(1, { message: t("address_required") }),
+    countryId: z
+      .string()
+      .trim()
+      .min(1, { message: t("country_required") }),
+    stateId: z.string().optional(),
+    cityId: z.string().optional(),
     rfqDate: z
-      .date({ required_error: t("delivery_date_required") })
-      .transform((val) => val.toISOString()),
+      .date({ required_error: "" })
+      .optional()
+      .nullable()
+      .transform((val) => (val ? val.toISOString() : null)),
   });
 };
 
@@ -46,16 +58,20 @@ const RfqCartPage = () => {
   const form = useForm({
     resolver: zodResolver(formSchema(t)),
     defaultValues: {
-      address: "",
+      countryId: "",
+      stateId: "",
+      cityId: "",
       rfqDate: undefined as unknown as string,
     },
   });
 
+  const [states, setStates] = useState<any[]>([]);
+  const [cities, setCities] = useState<any[]>([]);
+
   const me = useMe();
-  const allUserAddressQuery = useAllUserAddress({
-    page: 1,
-    limit: 10,
-  });
+  const allCountriesQuery = useAllCountries();
+  const fetchStatesByCountry = useFetchStatesByCountry();
+  const fetchCitiesByState = useFetchCitiesByState();
   const rfqCartListByUser = useRfqCartListByUserId({
     page: 1,
     limit: 20,
@@ -64,14 +80,32 @@ const RfqCartPage = () => {
   const deleteRfqCartItem = useDeleteRfqCartItem();
   const addQuotes = useAddRfqQuotes();
 
-  const memoziedAddressList = useMemo(() => {
+  const memoizedCountryList = useMemo(() => {
     return (
-      allUserAddressQuery.data?.data.map((item: AddressItem) => ({
-        label: [item.address, item.town, item.cityDetail?.name, item?.stateDetail?.name, item.postCode, item.countryDetail?.name].filter(el => el).join(', '),
-        value: [item.address, item.town, item.cityDetail?.name, item?.stateDetail?.name, item.postCode, item.countryDetail?.name].filter(el => el).join(', '),
+      allCountriesQuery.data?.data?.map((item: any) => ({
+        label: item.name,
+        value: item.id.toString(),
       })) || []
     );
-  }, [allUserAddressQuery.data?.data]);
+  }, [allCountriesQuery.data?.data]);
+
+  const memoizedStateList = useMemo(() => {
+    return (
+      states?.map((item: any) => ({
+        label: item.name,
+        value: item.id.toString(),
+      })) || []
+    );
+  }, [states]);
+
+  const memoizedCityList = useMemo(() => {
+    return (
+      cities?.map((item: any) => ({
+        label: item.name,
+        value: item.id.toString(),
+      })) || []
+    );
+  }, [cities]);
 
   const memoizedRfqCartList = useMemo(() => {
     if (rfqCartListByUser.data?.data) {
@@ -79,6 +113,40 @@ const RfqCartPage = () => {
     }
     return [];
   }, [rfqCartListByUser.data?.data]);
+
+  // Handle country selection
+  const handleCountryChange = async (countryId: string) => {
+    form.setValue("countryId", countryId);
+    form.setValue("stateId", "");
+    form.setValue("cityId", "");
+    setStates([]);
+    setCities([]);
+
+    if (countryId) {
+      const response = await fetchStatesByCountry.mutateAsync({
+        countryId: parseInt(countryId),
+      });
+      if (response.status && response.data) {
+        setStates(response.data);
+      }
+    }
+  };
+
+  // Handle state selection
+  const handleStateChange = async (stateId: string) => {
+    form.setValue("stateId", stateId);
+    form.setValue("cityId", "");
+    setCities([]);
+
+    if (stateId) {
+      const response = await fetchCitiesByState.mutateAsync({
+        stateId: parseInt(stateId),
+      });
+      if (response.status && response.data) {
+        setCities(response.data);
+      }
+    }
+  };
 
   const handleAddToCart = async (
     quantity: number,
@@ -93,12 +161,15 @@ const RfqCartPage = () => {
       quantity,
       offerPriceFrom: offerPriceFrom || 0,
       offerPriceTo: offerPriceTo || 0,
-      note: note || '',
+      note: note || "",
     });
 
     if (response.status) {
       toast({
-        title: actionType == "add" ? t("item_added_to_cart") : t("item_removed_from_cart"),
+        title:
+          actionType == "add"
+            ? t("item_added_to_cart")
+            : t("item_removed_from_cart"),
         description: t("check_your_cart_for_more_details"),
         variant: "success",
       });
@@ -117,30 +188,28 @@ const RfqCartPage = () => {
   };
 
   const onSubmit = async (formData: any) => {
-    const address = formData.address;
-    const addressParts = address.split(";");
-    const addressObj = {
-      address: addressParts[0],
-      city: addressParts[1],
-      province: addressParts[2],
-      postCode: addressParts[3],
-      country: addressParts[4],
-    };
     const updatedFormData = {
-      ...addressObj,
-      firstName: me.data?.data?.firstName,
-      lastName: me.data?.data?.lastName,
-      phoneNumber: me.data?.data?.phoneNumber,
-      cc: me.data?.data?.cc,
+      firstName: me.data?.data?.firstName || "",
+      lastName: me.data?.data?.lastName || "",
+      phoneNumber: me.data?.data?.phoneNumber || "",
+      cc: me.data?.data?.cc || "",
+      address: "", // Keep for backward compatibility
+      city: "", // Keep for backward compatibility
+      province: "", // Keep for backward compatibility
+      postCode: "", // Keep for backward compatibility
+      country: "", // Keep for backward compatibility
+      countryId: formData.countryId,
+      stateId: formData.stateId || undefined,
+      cityId: formData.cityId || undefined,
       rfqCartIds: memoizedRfqCartList.map((item: any) => item.id),
-      rfqDate: formData.rfqDate,
+      rfqDate: formData.rfqDate || undefined,
     };
-    // return;
+
     const response = await addQuotes.mutateAsync(updatedFormData);
     if (response.status) {
       toast({
-        title: t("quotes_added_successfully"),
-        description: t("check_your_quotes_for_more_details"),
+        title: t("rfq_submitted_successfully"),
+        description: t("vendors_will_respond_via_messages"),
         variant: "success",
       });
       queryClient.invalidateQueries({
@@ -173,30 +242,76 @@ const RfqCartPage = () => {
               >
                 <MdOutlineChevronLeft />
               </button>
-              <h3 dir={langDir} translate="no">{t("rfq_cart_items")}</h3>
+              <h3 dir={langDir} translate="no">
+                {t("rfq_cart_items")}
+              </h3>
             </div>
             <div className="bodyPart">
               <div className="add-delivery-card">
-                <h3 dir={langDir} translate="no">{t("add_delivery_address_date")}</h3>
+                <h3 dir={langDir} translate="no">
+                  {t("select_location")}
+                </h3>
+                <p
+                  className="mb-3 text-sm text-gray-600"
+                  dir={langDir}
+                  translate="no"
+                >
+                  {t("location_helps_find_vendors")}
+                </p>
                 <Form {...form}>
-                  <form className="grid grid-cols-2 gap-x-5 bg-white! p-5">
+                  <form className="grid grid-cols-1 gap-5 bg-white! p-5 md:grid-cols-2">
+                    <div className="md:col-span-2">
+                      <ControlledSelectInput
+                        label={t("country") + " *"}
+                        name="countryId"
+                        options={memoizedCountryList}
+                        placeholder={t("select_country")}
+                        onChange={(e: any) =>
+                          handleCountryChange(e.target.value)
+                        }
+                      />
+                    </div>
+
                     <ControlledSelectInput
-                      label={t("address")}
-                      name="address"
-                      options={memoziedAddressList}
-                      placeholder={t("select_address")}
+                      label={t("state") + ` (${t("optional")})`}
+                      name="stateId"
+                      options={memoizedStateList}
+                      placeholder={t("select_state")}
+                      onChange={(e: any) => handleStateChange(e.target.value)}
+                      disabled={
+                        !form.watch("countryId") ||
+                        memoizedStateList.length === 0
+                      }
                     />
 
-                    <div>
-                      <Label dir={langDir} translate="no">{t("date")}</Label>
-                      <ControlledDatePicker name="rfqDate" isFuture placeholder={t("enter_date")} />
+                    <ControlledSelectInput
+                      label={t("city") + ` (${t("optional")})`}
+                      name="cityId"
+                      options={memoizedCityList}
+                      placeholder={t("select_city")}
+                      disabled={
+                        !form.watch("stateId") || memoizedCityList.length === 0
+                      }
+                    />
+
+                    <div className="md:col-span-2">
+                      <Label dir={langDir} translate="no">
+                        {t("delivery_date")} ({t("optional")})
+                      </Label>
+                      <ControlledDatePicker
+                        name="rfqDate"
+                        isFuture
+                        placeholder={t("enter_date")}
+                      />
                     </div>
                   </form>
                 </Form>
               </div>
 
               <div className="rfq-cart-item-lists">
-                <h4 dir={langDir} translate="no">{t("rfq_cart_items")}</h4>
+                <h4 dir={langDir} translate="no">
+                  {t("rfq_cart_items")}
+                </h4>
                 <div className="rfq-cart-item-ul">
                   {memoizedRfqCartList.map((item: any) => (
                     <RfqProductCard
@@ -218,7 +333,9 @@ const RfqCartPage = () => {
 
                   {!memoizedRfqCartList.length ? (
                     <div className="my-10 text-center">
-                      <h4 dir={langDir} translate="no">{t("no_cart_items")}</h4>
+                      <h4 dir={langDir} translate="no">
+                        {t("no_cart_items")}
+                      </h4>
                     </div>
                   ) : null}
                 </div>

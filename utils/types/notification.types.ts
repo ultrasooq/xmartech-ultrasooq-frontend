@@ -7,6 +7,10 @@ export enum NotificationType {
   PAYMENT = "PAYMENT",
   SHIPMENT = "SHIPMENT",
   ACCOUNT = "ACCOUNT",
+  PRODUCT = "PRODUCT",
+  BUYGROUP = "BUYGROUP",
+  STOCK = "STOCK",
+  PRICE = "PRICE",
 }
 
 export interface Notification {
@@ -20,6 +24,12 @@ export interface Notification {
     messageId?: number;
     rfqId?: number;
     reviewId?: number;
+    productId?: number;
+    productPriceId?: number;
+    buygroupSaleId?: number;
+    stockLevel?: number;
+    oldPrice?: number;
+    newPrice?: number;
     [key: string]: any;
   };
   read: boolean;
@@ -55,4 +65,3 @@ export interface NotificationPreferences {
   reviewNotifications: boolean;
   systemNotifications: boolean;
 }
-

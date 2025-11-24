@@ -10,6 +10,7 @@ type OfferPriceCardProps = {
   offerPrice: string;
   note: string;
   quantity: number;
+  productType?: string;
   address: string;
   deliveryDate: string;
   productImage: string;
@@ -23,6 +24,7 @@ const OfferPriceCard: React.FC<OfferPriceCardProps> = ({
   offerPrice,
   note,
   quantity,
+  productType,
   address,
   deliveryDate,
   productImage,
@@ -55,9 +57,9 @@ const OfferPriceCard: React.FC<OfferPriceCardProps> = ({
   };
 
   return (
-    <div className="w-[600px] border-b border-solid border-gray-300 p-4 md:w-full">
+    <div className="w-[700px] border-b border-solid border-gray-300 p-4 md:w-full">
       <div className="flex w-full">
-        <div className="w-[25%] text-xs font-normal text-gray-500">
+        <div className="w-[20%] text-xs font-normal text-gray-500">
           <div className="flex w-full flex-wrap">
             <div className="border-color-[#DBDBDB] relative h-[48px] w-[48px] border border-solid p-2">
               <Image
@@ -71,16 +73,39 @@ const OfferPriceCard: React.FC<OfferPriceCardProps> = ({
             </div>
           </div>
         </div>
-        <div className="w-[15%] px-1.5 py-2 text-xs font-normal text-black md:px-1.5 md:py-3">
+        <div className="w-[12%] px-1.5 py-2 text-xs font-normal text-black md:px-1.5 md:py-3">
+          {productType === "SAME" ? (
+            <div className="flex flex-col" dir={langDir}>
+              <span className="font-semibold text-blue-600" translate="no">
+                {t("same_product")}
+              </span>
+              <span className="text-[10px] text-gray-500" translate="no">
+                {t("same_product_required")}
+              </span>
+            </div>
+          ) : productType === "SIMILAR" ? (
+            <div className="flex flex-col" dir={langDir}>
+              <span className="font-semibold text-green-600" translate="no">
+                {t("similar_product")}
+              </span>
+              <span className="text-[10px] text-gray-500" translate="no">
+                {t("similar_products_allowed")}
+              </span>
+            </div>
+          ) : (
+            "-"
+          )}
+        </div>
+        <div className="w-[13%] px-1.5 py-2 text-xs font-normal text-black md:px-1.5 md:py-3">
           {formatDate(deliveryDate) || "-"}
         </div>
         <div className="w-[10%] px-1.5 py-2 text-xs font-normal text-black md:px-1.5 md:py-3">
           -
         </div>
-        <div className="w-[15%] px-1.5 py-2 text-xs font-normal text-black md:px-1.5 md:py-3">
+        <div className="w-[13%] px-1.5 py-2 text-xs font-normal text-black md:px-1.5 md:py-3">
           {quantity}
         </div>
-        <div className="w-[15%] px-1.5 py-2 text-xs font-normal text-black md:px-1.5 md:py-3">
+        <div className="w-[12%] px-1.5 py-2 text-xs font-normal text-black md:px-1.5 md:py-3">
           {isEditing ? (
             <div className="w-full">
               <input

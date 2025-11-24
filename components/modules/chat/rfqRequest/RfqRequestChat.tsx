@@ -718,22 +718,45 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
               </div>
             ) : null}
 
-            {vendorList?.map((item: RfqRequestVendorDetailsProps) => (
-              <RfqRequestVendorCard
-                key={item?.id}
-                name={`${item?.sellerIDDetail?.firstName} ${item?.sellerIDDetail?.lastName}`}
-                profilePicture={item?.sellerIDDetail?.profilePicture}
-                offerPrice={item?.offerPrice}
-                onClick={() => {
-                  setActiveSellerId(item?.sellerID);
-                  setRfqQuotesUserId(item.id);
-                  handleRfqProducts(item);
-                }}
-                seller={item.sellerIDDetail}
-                isSelected={activeSellerId === item?.sellerID}
-                vendor={item}
-              />
-            ))}
+            {vendorList?.map((item: RfqRequestVendorDetailsProps) => {
+              // Get vendor name with priority: accountName > firstName+lastName > firstName > email > fallback
+              const getVendorName = () => {
+                const seller = item?.sellerIDDetail;
+                if (seller?.accountName) {
+                  return seller.accountName;
+                }
+                if (seller?.firstName && seller?.lastName) {
+                  return `${seller.firstName} ${seller.lastName}`;
+                }
+                if (seller?.firstName) {
+                  return seller.firstName;
+                }
+                if (seller?.email) {
+                  return seller.email;
+                }
+                if (item?.sellerID) {
+                  return `Vendor ${item.sellerID}`;
+                }
+                return "Unknown Vendor";
+              };
+
+              return (
+                <RfqRequestVendorCard
+                  key={item?.id}
+                  name={getVendorName()}
+                  profilePicture={item?.sellerIDDetail?.profilePicture}
+                  offerPrice={item?.offerPrice}
+                  onClick={() => {
+                    setActiveSellerId(item?.sellerID);
+                    setRfqQuotesUserId(item.id);
+                    handleRfqProducts(item);
+                  }}
+                  seller={item.sellerIDDetail}
+                  isSelected={activeSellerId === item?.sellerID}
+                  vendor={item}
+                />
+              );
+            })}
           </div>
         </div>
         <div className="w-full border-r border-solid border-gray-300 lg:w-[67%]">

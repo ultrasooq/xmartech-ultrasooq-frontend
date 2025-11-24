@@ -631,8 +631,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
 
         try {
           await uploadAttachment(formData);
-        } catch (error) {
-        }
+        } catch (error) {}
       });
       await Promise.all(uploadPromises);
       setAttachments([]);
@@ -726,7 +725,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
             </span>
             <Link
               href="#"
-              className="inline-block rounded-sm bg-dark-orange px-3 py-2 text-xs font-bold capitalize text-white"
+              className="bg-dark-orange inline-block rounded-sm px-3 py-2 text-xs font-bold text-white capitalize"
               translate="no"
             >
               {t("checkout")}
@@ -735,16 +734,23 @@ const SellerChat: React.FC<SellerChatProps> = () => {
           <div className="flex w-full flex-wrap p-[20px]">
             <div className="mb-5 max-h-max w-full border border-solid border-gray-300 md:max-h-[300px]">
               <div className="w-full overflow-y-auto rounded-sm">
-                <div className="flex w-[600px] md:w-full">
+                <div className="flex w-[700px] md:w-full">
                   <div
-                    className="w-[25%] border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:text-sm"
+                    className="w-[20%] border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:text-sm"
                     dir={langDir}
                     translate="no"
                   >
                     {t("product")}
                   </div>
                   <div
-                    className="w-[15%] border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:text-sm"
+                    className="w-[12%] border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:text-sm"
+                    dir={langDir}
+                    translate="no"
+                  >
+                    {t("product_type_indicator")}
+                  </div>
+                  <div
+                    className="w-[13%] border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:text-sm"
                     dir={langDir}
                     translate="no"
                   >
@@ -758,14 +764,14 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                     {t("brand")}
                   </div>
                   <div
-                    className="w-[15%] border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:text-sm"
+                    className="w-[13%] border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:text-sm"
                     dir={langDir}
                     translate="no"
                   >
                     {t("number_of_piece")}
                   </div>
                   <div
-                    className="w-[15%] border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:text-sm"
+                    className="w-[12%] border-b border-solid border-gray-300 px-1.5 py-3 text-xs font-normal text-gray-500 md:text-sm"
                     dir={langDir}
                     translate="no"
                   >
@@ -806,6 +812,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                     priceRequest: any;
                     note: string;
                     quantity: number;
+                    productType?: string;
                     rfqProductDetails: {
                       productName: string;
                       productImages: {
@@ -822,6 +829,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                       offerPrice={item?.offerPrice}
                       note={item?.note}
                       quantity={item?.quantity}
+                      productType={item?.productType}
                       address={item?.address}
                       deliveryDate={item?.deliveryDate}
                       productImage={
@@ -859,7 +867,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                     multiple
                     onChange={handleFileChange}
                   />
-                  <div className="absolute left-0 top-0 w-auto">
+                  <div className="absolute top-0 left-0 w-auto">
                     <Image src={AttachIcon} alt="attach-icon" />
                   </div>
                 </div>

@@ -47,8 +47,14 @@ type AddToRfqFormProps = {
 const addFormSchema = (t: any) => {
   return z
     .object({
+      quantity: z.coerce.number().min(1, {
+        message: t("quantity_must_be_at_least_1"),
+      }),
+      productType: z.enum(["SAME", "SIMILAR"], {
+        message: t("product_type_required"),
+      }),
       offerPriceFrom: z.coerce
-        .number({ invalid_type_error: t("offer_price_from_required") })
+        .number()
         .min(1, {
           message: t("offer_price_from_required"),
         })
@@ -56,9 +62,10 @@ const addFormSchema = (t: any) => {
           message: t("offer_price_from_must_be_less_than_price", {
             price: 1000000,
           }),
-        }),
+        })
+        .optional(),
       offerPriceTo: z.coerce
-        .number({ invalid_type_error: t("offer_price_to_required") })
+        .number()
         .min(1, {
           message: t("offer_price_to_required"),
         })
@@ -66,7 +73,8 @@ const addFormSchema = (t: any) => {
           message: t("offer_price_to_must_be_less_than_price", {
             price: 1000000,
           }),
-        }),
+        })
+        .optional(),
       note: z
         .string()
         .trim()
@@ -78,6 +86,7 @@ const addFormSchema = (t: any) => {
     })
     .refine(
       ({ offerPriceFrom, offerPriceTo }) => {
+        if (!offerPriceFrom || !offerPriceTo) return true;
         return Number(offerPriceFrom) < Number(offerPriceTo);
       },
       {
@@ -89,6 +98,8 @@ const addFormSchema = (t: any) => {
 
 const editFormSchema = (t: any) => {
   return z.object({
+    quantity: z.coerce.number().optional(),
+    productType: z.enum(["SAME", "SIMILAR"]).optional(),
     note: z
       .string()
       .trim()
@@ -101,6 +112,8 @@ const editFormSchema = (t: any) => {
 };
 
 const addDefaultValues = {
+  quantity: 1,
+  productType: "SAME" as "SAME" | "SIMILAR",
   note: "",
   productImagesList: undefined,
   productImages: [] as { path: File; id: string }[],
@@ -124,17 +137,25 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
   const { langDir } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const form = useForm({
+  // Determine if we're in "add to cart" mode (has productId) or "edit" mode
+  // If selectedProductId exists, we're adding a product to cart
+  const isAddToCartMode = selectedProductId !== undefined;
+
+  const form = useForm<any>({
     resolver: zodResolver(
-      selectedQuantity ? addFormSchema(t) : editFormSchema(t),
-    ),
-    defaultValues: selectedQuantity
-      ? Object.assign(addDefaultValues, {
+      isAddToCartMode ? addFormSchema(t) : editFormSchema(t),
+    ) as any,
+    defaultValues: (isAddToCartMode
+      ? {
+          quantity: selectedQuantity || 1,
+          productType: "SAME" as "SAME" | "SIMILAR",
           offerPriceFrom: offerPriceFrom,
           offerPriceTo: offerPriceTo,
           note: note || "",
-        })
-      : editDefaultValues,
+          productImages: [] as { path: File; id: string }[],
+          productImagesList: undefined,
+        }
+      : editDefaultValues) as any,
   });
   const photosRef = useRef<HTMLInputElement>(null);
 
@@ -185,13 +206,15 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
   const handleAddToCart = async (
     quantity: number,
     productId: number,
-    offerPriceFrom: number,
-    offerPriceTo: number,
-    note: string,
+    productType: "SAME" | "SIMILAR",
+    offerPriceFrom?: number,
+    offerPriceTo?: number,
+    note?: string,
   ) => {
     const response = await updateRfqCartWithLogin.mutateAsync({
       productId,
       quantity,
+      productType,
       offerPriceFrom,
       offerPriceTo,
       note,
@@ -288,11 +311,26 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
 
     delete updatedFormData.productImages;
 
+    // If we're in "add to cart" mode (selectedQuantity is provided),
+    // skip product update/creation and go directly to adding to cart
+    if (selectedQuantity && selectedProductId) {
+      handleAddToCart(
+        formData?.quantity || selectedQuantity || 1,
+        selectedProductId,
+        formData?.productType || "SAME",
+        formData?.offerPriceFrom,
+        formData?.offerPriceTo,
+        formData?.note,
+      );
+      return;
+    }
+
+    // If we're editing an RFQ product (not adding to cart)
     if (
       selectedProductId &&
       productQueryById?.data?.data?.productType === "R"
     ) {
-      // R type product
+      // R type product - update it
       const response = await updateProduct.mutateAsync({
         productId: selectedProductId,
         productType: "R",
@@ -304,23 +342,12 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
           description: response.message,
           variant: "success",
         });
-
-        if (selectedQuantity) {
-          handleAddToCart(
-            selectedQuantity ? selectedQuantity : 1,
-            selectedProductId,
-            formData?.offerPriceFrom,
-            formData?.offerPriceTo,
-            formData?.note,
-          );
-        } else {
-          form.reset();
-          productQueryById.refetch();
-          queryClient.invalidateQueries({
-            queryKey: ["rfq-products"],
-          });
-          onClose();
-        }
+        form.reset();
+        productQueryById.refetch();
+        queryClient.invalidateQueries({
+          queryKey: ["rfq-products"],
+        });
+        onClose();
       } else {
         toast({
           title: t("rfq_product_update_failed"),
@@ -332,7 +359,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
       selectedProductId &&
       productQueryById?.data?.data?.productType === "P"
     ) {
-      // P type product
+      // P type product - create duplicate as R type
       const product = productQueryById?.data?.data;
       const productTagList = product?.productTags
         ? product?.productTags?.map((item: any) => {
@@ -406,23 +433,12 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
             description: dependentResponse.message,
             variant: "success",
           });
-
-          if (selectedQuantity) {
-            handleAddToCart(
-              selectedQuantity ? selectedQuantity : 1,
-              response.data.id,
-              formData?.offerPriceFrom,
-              formData?.offerPriceTo,
-              formData?.note,
-            );
-          } else {
-            form.reset();
-            productQueryById.refetch();
-            queryClient.invalidateQueries({
-              queryKey: ["rfq-products"],
-            });
-            onClose();
-          }
+          form.reset();
+          productQueryById.refetch();
+          queryClient.invalidateQueries({
+            queryKey: ["rfq-products"],
+          });
+          onClose();
         } else {
           toast({
             title: t("product_duplicate_failed"),
@@ -445,6 +461,22 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
         behavior: "smooth",
       });
   };
+
+  // Reset form when entering add to cart mode
+  useEffect(() => {
+    if (isAddToCartMode) {
+      form.reset({
+        quantity: selectedQuantity || 1,
+        productType: "SAME",
+        offerPriceFrom: offerPriceFrom,
+        offerPriceTo: offerPriceTo,
+        note: note || "",
+        productImages: [],
+        productImagesList: undefined,
+      } as any);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedProductId, selectedQuantity, isAddToCartMode]);
 
   useEffect(() => {
     if (productQueryById?.data?.data) {
@@ -484,14 +516,24 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
           })
         : undefined;
 
-      form.reset({
+      const resetData: any = {
         note: productQueryById?.data?.data?.note,
         productImages: productImages || [],
         productImagesList: productImagesList || undefined,
-      });
+      };
+
+      // If in add mode, include quantity and productType
+      if (isAddToCartMode) {
+        resetData.quantity = selectedQuantity || 1;
+        resetData.productType = "SAME";
+        resetData.offerPriceFrom = offerPriceFrom;
+        resetData.offerPriceTo = offerPriceTo;
+      }
+
+      form.reset(resetData);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedProductId, productQueryById?.data]);
+  }, [selectedProductId, productQueryById?.data, isAddToCartMode]);
 
   return (
     <>
@@ -729,6 +771,76 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
             </div>
           </div>
 
+          {/* Quantity and Product Type fields - Always show when adding to cart */}
+          {selectedProductId !== undefined && selectedProductId !== null && (
+            <>
+              <div className="mb-4">
+                <ControlledTextInput
+                  label={t("quantity") + " *"}
+                  name="quantity"
+                  placeholder={t("enter_quantity")}
+                  type="number"
+                  defaultValue={selectedQuantity || 1}
+                  dir={langDir}
+                  translate="no"
+                />
+              </div>
+
+              <div className="mb-4">
+                <label
+                  className="text-color-dark mb-2 block text-sm leading-none font-medium"
+                  dir={langDir}
+                  translate="no"
+                >
+                  {t("product_type")} *
+                </label>
+                <FormField
+                  control={form.control}
+                  name={"productType" as any}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <select
+                          {...field}
+                          value={field.value || "SAME"}
+                          className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-12 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                          dir={langDir}
+                        >
+                          <option value="SAME">{t("same_product")}</option>
+                          <option value="SIMILAR">
+                            {t("similar_product")}
+                          </option>
+                        </select>
+                      </FormControl>
+                      {(form.formState.errors as any).productType && (
+                        <p
+                          className="mt-1 text-[13px] text-red-500!"
+                          dir={langDir}
+                        >
+                          {String(
+                            (form.formState.errors as any).productType
+                              ?.message || "",
+                          )}
+                        </p>
+                      )}
+                      <div className="mt-2 text-xs text-gray-600" dir={langDir}>
+                        {(field.value || "SAME") === "SAME" ? (
+                          <p>{t("you_must_quote_exact_product_only")}</p>
+                        ) : (
+                          <p>
+                            {t(
+                              "you_can_suggest_similar_products_if_unavailable",
+                            )}
+                          </p>
+                        )}
+                      </div>
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </>
+          )}
+
           <ControlledTextareaInput
             label={t("write_a_note")}
             name="note"
@@ -738,10 +850,10 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
             translate="no"
           />
 
-          {selectedQuantity ? (
+          {isAddToCartMode ? (
             <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2">
               <ControlledTextInput
-                label={t("offer_price_from")}
+                label={t("offer_price_from") + ` (${t("optional")})`}
                 name="offerPriceFrom"
                 placeholder={t("offer_price_from")}
                 type="number"
@@ -751,7 +863,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
               />
 
               <ControlledTextInput
-                label={t("offer_price_to")}
+                label={t("offer_price_to") + ` (${t("optional")})`}
                 name="offerPriceTo"
                 placeholder={t("offer_price_to")}
                 type="number"
