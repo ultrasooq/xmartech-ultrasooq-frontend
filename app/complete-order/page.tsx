@@ -92,7 +92,12 @@ const CompleteOrderPage = () => {
   const handleCreateOrder = async () => {
     if (hasAccessToken) {
       if (orderStore.orders) {
-        if (!orderStore.orders.cartIds?.length && !orderStore.orders.serviceCartIds?.length) {
+        // Check if this is an RFQ order by checking sessionStorage
+        const rfqQuoteData = typeof window !== "undefined" ? sessionStorage.getItem("rfqQuoteData") : null;
+        const isRfqOrder = !!rfqQuoteData;
+        
+        // For RFQ orders, we don't need cartIds. For regular orders, we need cartIds or serviceCartIds
+        if (!isRfqOrder && !orderStore.orders.cartIds?.length && !orderStore.orders.serviceCartIds?.length) {
           toast({
             title: t("order_cant_be_placed"),
             description: t("order_placed_retry_info"),
@@ -133,7 +138,31 @@ const CompleteOrderPage = () => {
           }
         }
 
-        let data: {[key: string]: any} = orderStore.orders;
+        let data: {[key: string]: any} = { ...orderStore.orders };
+        
+        // If this is an RFQ order, load RFQ data from sessionStorage
+        if (isRfqOrder && rfqQuoteData) {
+          try {
+            const parsedRfqData = JSON.parse(rfqQuoteData);
+            data.rfqQuotesUserId = parsedRfqData.rfqQuotesUserId;
+            data.rfqQuotesId = parsedRfqData.rfqQuotesId;
+            data.sellerId = parsedRfqData.sellerId;
+            data.buyerId = parsedRfqData.buyerId;
+            data.rfqQuoteProducts = parsedRfqData.quoteProducts;
+            // For RFQ orders, set empty arrays for cartIds
+            data.cartIds = [];
+            data.serviceCartIds = [];
+          } catch (e) {
+            console.error("Error parsing RFQ data:", e);
+            toast({
+              title: t("order_cant_be_placed"),
+              description: t("order_placed_retry_info"),
+              variant: "danger",
+            });
+            return;
+          }
+        }
+        
         data.paymentType = paymentType;
         if (paymentType == "ADVANCE") {
           data.advanceAmount = advanceAmount;
@@ -146,7 +175,7 @@ const CompleteOrderPage = () => {
           data.paymentMethod = "WALLET";
         }
 
-        const response = await createOrder.mutateAsync(orderStore.orders);
+        const response = await createOrder.mutateAsync(data);
         if (response?.status) {
           if (paymentType == "PAYMENTLINK") {
             await handleCreatePaymentLink(response?.data?.id);
@@ -167,6 +196,10 @@ const CompleteOrderPage = () => {
             });
             orderStore.resetOrders();
             orderStore.setTotal(0);
+            // Clear RFQ data from sessionStorage if it exists
+            if (typeof window !== "undefined" && isRfqOrder) {
+              sessionStorage.removeItem("rfqQuoteData");
+            }
             // Redirect to checkout-complete with actual wallet transaction ID from backend
             router.push(`/checkout-complete?success=true&id=${transactionId}&order=${response?.data?.id}`);
           } else {

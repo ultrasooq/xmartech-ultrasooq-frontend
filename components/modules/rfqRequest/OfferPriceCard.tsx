@@ -18,6 +18,8 @@ type OfferPriceCardProps = {
   productId: number;
   onRequestPrice: (productId: number, requestedPrice: number) => void;
   priceRequest: any;
+  offerPriceFrom?: number;
+  offerPriceTo?: number;
 };
 
 const OfferPriceCard: React.FC<OfferPriceCardProps> = ({
@@ -32,6 +34,8 @@ const OfferPriceCard: React.FC<OfferPriceCardProps> = ({
   productId,
   onRequestPrice,
   priceRequest,
+  offerPriceFrom,
+  offerPriceTo,
 }) => {
   const t = useTranslations();
   const { currency, langDir } = useAuth();
@@ -42,13 +46,27 @@ const OfferPriceCard: React.FC<OfferPriceCardProps> = ({
     setEditedOfferPrice(offerPrice);
   }, [offerPrice, priceRequest]);
 
+  // Exit edit mode if price gets approved while editing
+  useEffect(() => {
+    if (priceRequest?.status === "APPROVED" && isEditing) {
+      setIsEditing(false);
+    }
+  }, [priceRequest?.status, isEditing]);
+
+  // Check if price editing is disabled (when price is approved)
+  const isPriceEditingDisabled = priceRequest?.status === "APPROVED";
+
   const handleEditClick = () => {
-    setIsEditing(true);
+    if (!isPriceEditingDisabled) {
+      setIsEditing(true);
+    }
   };
 
   const handleSaveClick = () => {
-    setIsEditing(false);
-    onRequestPrice(productId, parseInt(editedOfferPrice));
+    if (!isPriceEditingDisabled) {
+      setIsEditing(false);
+      onRequestPrice(productId, parseInt(editedOfferPrice));
+    }
   };
 
   const handleCancelClick = () => {
@@ -106,18 +124,20 @@ const OfferPriceCard: React.FC<OfferPriceCardProps> = ({
           {quantity}
         </div>
         <div className="w-[12%] px-1.5 py-2 text-xs font-normal text-black md:px-1.5 md:py-3">
-          {isEditing ? (
+          {isEditing && !isPriceEditingDisabled ? (
             <div className="w-full">
               <input
                 value={editedOfferPrice}
                 onChange={(e) => setEditedOfferPrice(e.target.value)}
                 className="w-full rounded border p-1"
                 type="number"
+                disabled={isPriceEditingDisabled}
               />
               <div className="mt-1 flex gap-1">
                 <button
                   onClick={handleSaveClick}
-                  className="text-blue-500"
+                  disabled={isPriceEditingDisabled}
+                  className="text-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
                   translate="no"
                 >
                   {t("save")}
@@ -132,15 +152,41 @@ const OfferPriceCard: React.FC<OfferPriceCardProps> = ({
               </div>
             </div>
           ) : (
-            <div>
-              {editedOfferPrice ? `${currency.symbol}${editedOfferPrice}` : "-"}
-              <button
-                onClick={handleEditClick}
-                className="ml-2 text-blue-500"
-                translate="no"
-              >
-                {t("edit")}
-              </button>
+            <div className="flex flex-col">
+              {/* Show budget range if available */}
+              {offerPriceFrom && offerPriceTo && offerPriceFrom > 0 && offerPriceTo > 0 && (
+                <div className="text-xs mb-2">
+                  <div className="text-gray-600 mb-1" translate="no">
+                    {t("budget")}:
+                  </div>
+                  <div className="font-semibold text-green-600">
+                    {currency.symbol}{offerPriceFrom} - {currency.symbol}{offerPriceTo}
+                  </div>
+                  <div className="mt-1 text-gray-500 text-[10px]" translate="no">
+                    {t("customer_budget_range")}
+                  </div>
+                </div>
+              )}
+              {/* Always show offer price and edit button (unless approved) */}
+              <div className="flex flex-col">
+                <div>
+                  {editedOfferPrice ? `${currency.symbol}${editedOfferPrice}` : "-"}
+                </div>
+                {!isPriceEditingDisabled && (
+                  <button
+                    onClick={handleEditClick}
+                    className="mt-1 text-blue-500 text-xs"
+                    translate="no"
+                  >
+                    {t("edit")}
+                  </button>
+                )}
+                {isPriceEditingDisabled && (
+                  <span className="mt-1 text-xs text-gray-500" translate="no">
+                    ({t("approved")})
+                  </span>
+                )}
+              </div>
             </div>
           )}
         </div>

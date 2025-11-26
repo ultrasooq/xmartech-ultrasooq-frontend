@@ -16,7 +16,7 @@ import RfqProductCard from "@/components/modules/rfqCart/RfqProductCard";
 import ControlledDatePicker from "@/components/shared/Forms/ControlledDatePicker";
 import ControlledSelectInput from "@/components/shared/Forms/ControlledSelectInput";
 import { Button } from "@/components/ui/button";
-import { Form } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { AddressItem } from "@/utils/types/address.types";
@@ -32,6 +32,8 @@ import BannerImage from "@/public/images/rfq-sec-bg.png";
 import Footer from "@/components/shared/Footer";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import ReactSelect from "react-select";
+import { IAllCountries, IState, ICity } from "@/utils/types/common.types";
 
 const formSchema = (t: any) => {
   return z.object({
@@ -65,6 +67,9 @@ const RfqCartPage = () => {
     },
   });
 
+  const [selectedCountry, setSelectedCountry] = useState<any | null>(null);
+  const [selectedState, setSelectedState] = useState<any | null>(null);
+  const [selectedCity, setSelectedCity] = useState<any | null>(null);
   const [states, setStates] = useState<any[]>([]);
   const [cities, setCities] = useState<any[]>([]);
 
@@ -72,6 +77,18 @@ const RfqCartPage = () => {
   const allCountriesQuery = useAllCountries();
   const fetchStatesByCountry = useFetchStatesByCountry();
   const fetchCitiesByState = useFetchCitiesByState();
+
+  const customSelectStyles = {
+    control: (base: any) => ({
+      ...base,
+      height: 48,
+      minHeight: 48,
+    }),
+    menu: (base: any) => ({
+      ...base,
+      zIndex: 20,
+    }),
+  };
   const rfqCartListByUser = useRfqCartListByUserId({
     page: 1,
     limit: 20,
@@ -82,30 +99,74 @@ const RfqCartPage = () => {
 
   const memoizedCountryList = useMemo(() => {
     return (
-      allCountriesQuery.data?.data?.map((item: any) => ({
+      allCountriesQuery.data?.data?.map((item: IAllCountries) => ({
         label: item.name,
-        value: item.id.toString(),
+        value: item.id,
       })) || []
     );
   }, [allCountriesQuery.data?.data]);
 
   const memoizedStateList = useMemo(() => {
     return (
-      states?.map((item: any) => ({
+      states?.map((item: IState) => ({
         label: item.name,
-        value: item.id.toString(),
+        value: item.id,
       })) || []
     );
   }, [states]);
 
   const memoizedCityList = useMemo(() => {
     return (
-      cities?.map((item: any) => ({
+      cities?.map((item: ICity) => ({
         label: item.name,
-        value: item.id.toString(),
+        value: item.id,
       })) || []
     );
   }, [cities]);
+
+  // Fetch states when country is selected
+  useEffect(() => {
+    if (selectedCountry) {
+      fetchStates(selectedCountry.value);
+    } else {
+      setStates([]);
+      setSelectedState(null);
+      setCities([]);
+      setSelectedCity(null);
+    }
+  }, [selectedCountry]);
+
+  // Fetch cities when state is selected
+  useEffect(() => {
+    if (selectedState) {
+      fetchCities(selectedState.value);
+    } else {
+      setCities([]);
+      setSelectedCity(null);
+    }
+  }, [selectedState]);
+
+  const fetchStates = async (countryId: number) => {
+    try {
+      const response = await fetchStatesByCountry.mutateAsync({ countryId });
+      if (response.status && response.data) {
+        setStates(response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching states:", error);
+    }
+  };
+
+  const fetchCities = async (stateId: number) => {
+    try {
+      const response = await fetchCitiesByState.mutateAsync({ stateId });
+      if (response.status && response.data) {
+        setCities(response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching cities:", error);
+    }
+  };
 
   const memoizedRfqCartList = useMemo(() => {
     if (rfqCartListByUser.data?.data) {
@@ -115,37 +176,27 @@ const RfqCartPage = () => {
   }, [rfqCartListByUser.data?.data]);
 
   // Handle country selection
-  const handleCountryChange = async (countryId: string) => {
-    form.setValue("countryId", countryId);
+  const handleCountryChange = (selectedOption: any) => {
+    setSelectedCountry(selectedOption);
+    form.setValue("countryId", selectedOption ? selectedOption.value.toString() : "");
     form.setValue("stateId", "");
     form.setValue("cityId", "");
-    setStates([]);
-    setCities([]);
-
-    if (countryId) {
-      const response = await fetchStatesByCountry.mutateAsync({
-        countryId: parseInt(countryId),
-      });
-      if (response.status && response.data) {
-        setStates(response.data);
-      }
-    }
+    setSelectedState(null);
+    setSelectedCity(null);
   };
 
   // Handle state selection
-  const handleStateChange = async (stateId: string) => {
-    form.setValue("stateId", stateId);
+  const handleStateChange = (selectedOption: any) => {
+    setSelectedState(selectedOption);
+    form.setValue("stateId", selectedOption ? selectedOption.value.toString() : "");
     form.setValue("cityId", "");
-    setCities([]);
+    setSelectedCity(null);
+  };
 
-    if (stateId) {
-      const response = await fetchCitiesByState.mutateAsync({
-        stateId: parseInt(stateId),
-      });
-      if (response.status && response.data) {
-        setCities(response.data);
-      }
-    }
+  // Handle city selection
+  const handleCityChange = (selectedOption: any) => {
+    setSelectedCity(selectedOption);
+    form.setValue("cityId", selectedOption ? selectedOption.value.toString() : "");
   };
 
   const handleAddToCart = async (
@@ -261,37 +312,91 @@ const RfqCartPage = () => {
                 <Form {...form}>
                   <form className="grid grid-cols-1 gap-5 bg-white! p-5 md:grid-cols-2">
                     <div className="md:col-span-2">
-                      <ControlledSelectInput
-                        label={t("country") + " *"}
+                      <FormField
+                        control={form.control}
                         name="countryId"
-                        options={memoizedCountryList}
-                        placeholder={t("select_country")}
-                        onChange={(e: any) =>
-                          handleCountryChange(e.target.value)
-                        }
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel dir={langDir} translate="no">
+                              {t("country")} *
+                            </FormLabel>
+                            <FormControl>
+                              <ReactSelect
+                                options={memoizedCountryList}
+                                value={memoizedCountryList.find(
+                                  (option) => option.value.toString() === field.value
+                                )}
+                                onChange={(selectedOption) => {
+                                  field.onChange(selectedOption ? selectedOption.value.toString() : "");
+                                  handleCountryChange(selectedOption);
+                                }}
+                                placeholder={t("select_country")}
+                                styles={customSelectStyles}
+                                isClearable
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
                       />
                     </div>
 
-                    <ControlledSelectInput
-                      label={t("state") + ` (${t("optional")})`}
+                    <FormField
+                      control={form.control}
                       name="stateId"
-                      options={memoizedStateList}
-                      placeholder={t("select_state")}
-                      onChange={(e: any) => handleStateChange(e.target.value)}
-                      disabled={
-                        !form.watch("countryId") ||
-                        memoizedStateList.length === 0
-                      }
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel dir={langDir} translate="no">
+                            {t("state")} ({t("optional")})
+                          </FormLabel>
+                          <FormControl>
+                            <ReactSelect
+                              options={memoizedStateList}
+                              value={memoizedStateList.find(
+                                (option) => option.value.toString() === field.value
+                              )}
+                              onChange={(selectedOption) => {
+                                field.onChange(selectedOption ? selectedOption.value.toString() : "");
+                                handleStateChange(selectedOption);
+                              }}
+                              placeholder={t("select_state")}
+                              styles={customSelectStyles}
+                              isDisabled={!selectedCountry || memoizedStateList.length === 0}
+                              isClearable
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
 
-                    <ControlledSelectInput
-                      label={t("city") + ` (${t("optional")})`}
+                    <FormField
+                      control={form.control}
                       name="cityId"
-                      options={memoizedCityList}
-                      placeholder={t("select_city")}
-                      disabled={
-                        !form.watch("stateId") || memoizedCityList.length === 0
-                      }
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel dir={langDir} translate="no">
+                            {t("city")} ({t("optional")})
+                          </FormLabel>
+                          <FormControl>
+                            <ReactSelect
+                              options={memoizedCityList}
+                              value={memoizedCityList.find(
+                                (option) => option.value.toString() === field.value
+                              )}
+                              onChange={(selectedOption) => {
+                                field.onChange(selectedOption ? selectedOption.value.toString() : "");
+                                handleCityChange(selectedOption);
+                              }}
+                              placeholder={t("select_city")}
+                              styles={customSelectStyles}
+                              isDisabled={!selectedState || memoizedCityList.length === 0}
+                              isClearable
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
 
                     <div className="md:col-span-2">

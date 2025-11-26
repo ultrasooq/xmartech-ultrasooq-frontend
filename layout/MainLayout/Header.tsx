@@ -736,6 +736,14 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                         </DropdownMenuItem>
                       </Link>
 
+                      {currentTradeRole === "BUYER" && (
+                        <Link href="/rfq-quotes">
+                          <DropdownMenuItem translate="no">
+                            {t("rfq_quotes")}
+                          </DropdownMenuItem>
+                        </Link>
+                      )}
+
                       {userStatus === "WAITING" || userStatus === "INACTIVE" ? (
                         <>
                           <DropdownMenuSeparator />
@@ -1359,13 +1367,13 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                               <>
                                 {/* Dashboard - Only for ACTIVE users */}
                                 {accessControl.canAccessDashboard && (
-                                  <Link href="/vendor-dashboard">
+                                  <Link href="/rfq-quotes">
                                     <DropdownMenuItem
                                       className="cursor-pointer"
                                       dir={langDir}
                                       translate="no"
                                     >
-                                      {t("dashboard")}
+                                      {t("rfq_quotes")}
                                     </DropdownMenuItem>
                                   </Link>
                                 )}
@@ -1443,7 +1451,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                                     {hideMenu(
                                       PERMISSION_RFQ_SELLER_REQUESTS,
                                     ) ? (
-                                      <Link href="/seller-rfq-request">
+                                      <Link href="/seller-rfq-request?tab=rfq">
                                         <DropdownMenuItem
                                           dir={langDir}
                                           translate="no"
@@ -1454,7 +1462,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                                     ) : null}
 
                                     {hideMenu(PERMISSION_MESSAGE_SYSTEM) ? (
-                                      <Link href="/seller-rfq-request">
+                                      <Link href="/seller-rfq-request?tab=product-messages">
                                         <DropdownMenuItem
                                           dir={langDir}
                                           translate="no"

@@ -37,6 +37,21 @@ const SellerRfqRequestPage = () => {
     if (pId) {
       setProductId(parseInt(pId));
       setCurrentTab("MSG");
+    } else {
+      // Check for tab parameter
+      const tabParam = params.get("tab");
+      if (
+        tabParam === "product-messages" ||
+        tabParam === "Product Messages" ||
+        tabParam === "Product%20Messages"
+      ) {
+        setCurrentTab("Product Messages");
+      } else if (tabParam === "rfq" || tabParam === "RFQ") {
+        setCurrentTab("RFQ");
+      } else {
+        // Default to RFQ tab
+        setCurrentTab("RFQ");
+      }
     }
   }, []);
 

@@ -48,6 +48,7 @@ import { usePreOrderCalculation } from "@/apis/queries/orders.queries";
 import { useAllProducts } from "@/apis/queries/product.queries";
 import { useCategory } from "@/apis/queries/category.queries";
 import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
+import { useFindOneRfqQuotesUsersByBuyerID } from "@/apis/queries/rfq.queries";
 import { IoCloseSharp } from "react-icons/io5";
 import Select from "react-select";
 import Shipping from "@/components/modules/checkout/Shipping";
@@ -116,6 +117,8 @@ const CheckoutPage = () => {
   const [shippingInfo, setShippingInfo] = useState<any[]>([]);
   const [shippingErrors, setShippingErrors] = useState<any[]>([]);
   const [shippingCharge, setShippingCharge] = useState<number>(0);
+  const [rfqQuoteData, setRfqQuoteData] = useState<any>(null);
+  const [isFromRfq, setIsFromRfq] = useState<boolean>(false);
 
   const [selectedCartId, setSelectedCartId] = useState<number>();
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] =
@@ -145,6 +148,78 @@ const CheckoutPage = () => {
 
   const orderStore = useOrderStore();
   const preOrderCalculation = usePreOrderCalculation();
+
+  // Fetch RFQ quote details if coming from RFQ
+  const rfqQuoteDetailsQuery = useFindOneRfqQuotesUsersByBuyerID(
+    {
+      rfqQuotesId: rfqQuoteData?.rfqQuotesId,
+    },
+    isFromRfq && !!rfqQuoteData?.rfqQuotesId,
+  );
+
+  // Check if coming from RFQ and load RFQ data
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const fromRfq = params.get("fromRfq") === "true";
+      setIsFromRfq(fromRfq);
+      
+      if (fromRfq) {
+        const storedRfqData = sessionStorage.getItem("rfqQuoteData");
+        if (storedRfqData) {
+          try {
+            const parsed = JSON.parse(storedRfqData);
+            setRfqQuoteData(parsed);
+            // Set total from RFQ quote
+            setTotalAmount(parsed.totalPrice || 0);
+            setSubTotal(parsed.totalPrice || 0);
+            setItemsTotal(parsed.totalPrice || 0);
+          } catch (e) {
+            console.error("Error parsing RFQ data:", e);
+          }
+        }
+      }
+    }
+  }, []);
+
+  // Get RFQ quote details with products
+  const rfqQuoteDetails = rfqQuoteDetailsQuery.data?.data;
+
+  // Recalculate total from approved product prices when RFQ quote details are loaded
+  useEffect(() => {
+    if (isFromRfq && rfqQuoteDetails && rfqQuoteData) {
+      // Calculate total from approved product prices
+      const calculatedTotal = rfqQuoteDetails.rfqQuotesProducts?.reduce((total: number, product: any) => {
+        // Find the approved price request for this product
+        const approvedPriceRequest = rfqQuoteDetails.rfqProductPriceRequests?.find(
+          (request: any) => 
+            request.rfqQuoteProductId === product.id && 
+            request.status === "APPROVED"
+        );
+        
+        if (approvedPriceRequest) {
+          const price = parseFloat(approvedPriceRequest.requestedPrice || "0");
+          const quantity = product.quantity || 1;
+          return total + price * quantity;
+        }
+        
+        // If no approved price request, use the offer price from quoteProduct data
+        const quoteProduct = rfqQuoteData.quoteProducts?.find((qp: any) => qp.id === product.id);
+        if (quoteProduct) {
+          const price = parseFloat(quoteProduct.offerPrice || "0");
+          const quantity = quoteProduct.quantity || product.quantity || 1;
+          return total + price * quantity;
+        }
+        
+        return total;
+      }, 0) || 0;
+
+      // Update totals with calculated value
+      setTotalAmount(calculatedTotal);
+      setSubTotal(calculatedTotal);
+      setItemsTotal(calculatedTotal);
+    }
+  }, [isFromRfq, rfqQuoteDetails, rfqQuoteData]);
 
   const [isClickedOutside] = useClickOutside([wrapperRef], (event) => {});
 
@@ -964,10 +1039,18 @@ const CheckoutPage = () => {
 
       const data = {
         ...selectedOrderDetails,
-        cartIds: memoizedCartList?.filter((item: any) => item.productId)?.map((item: CartItem) => item.id) || [],
+        cartIds: isFromRfq ? [] : (memoizedCartList?.filter((item: any) => item.productId)?.map((item: CartItem) => item.id) || []),
         serviceCartIds: memoizedCartList?.filter((item: any) => item.serviceId)?.map((item: CartItem) => item.id) || [],
         deliveryCharge: shippingCharge,
         shipping: prepareShippingInfo(),
+        // Add RFQ quote data if coming from RFQ
+        ...(isFromRfq && rfqQuoteData ? {
+          rfqQuotesUserId: rfqQuoteData.rfqQuotesUserId,
+          rfqQuotesId: rfqQuoteData.rfqQuotesId,
+          sellerId: rfqQuoteData.sellerId,
+          buyerId: rfqQuoteData.buyerId,
+          rfqQuoteProducts: rfqQuoteData.quoteProducts,
+        } : {}),
       };
 
       if (sameAsShipping) {
@@ -1132,7 +1215,56 @@ const CheckoutPage = () => {
               </div>
 
               <div className="p-6">
-                {memoizedCartList.filter((item: any) => item.productId).length > 0 ? (
+                {/* RFQ Products Display */}
+                {isFromRfq && rfqQuoteDetails && rfqQuoteDetails.rfqQuotesProducts?.length > 0 ? (
+                  <div className="mb-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4" dir={langDir} translate="no">
+                      {t("rfq_products") || "RFQ Products"}
+                    </h3>
+                    <div className="space-y-4">
+                      {rfqQuoteDetails.rfqQuotesProducts.map((product: any, index: number) => {
+                        const quoteProduct = rfqQuoteData?.quoteProducts?.find((qp: any) => qp.id === product.id);
+                        // Find the approved price request for this product
+                        const approvedPriceRequest = rfqQuoteDetails.rfqProductPriceRequests?.find(
+                          (request: any) => 
+                            request.rfqQuoteProductId === product.id && 
+                            request.status === "APPROVED"
+                        );
+                        // Use approved price if available, otherwise use quoteProduct offerPrice, then product offerPrice
+                        const displayPrice = approvedPriceRequest 
+                          ? approvedPriceRequest.requestedPrice 
+                          : (quoteProduct?.offerPrice || product.offerPrice || 0);
+                        const productImage = product?.rfqProductDetails?.productImages?.[0]?.image;
+                        return (
+                          <div key={product.id || index} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                            <div className="flex items-start gap-4">
+                              {productImage && (
+                                <Image
+                                  src={productImage}
+                                  alt={product?.rfqProductDetails?.productName || "Product"}
+                                  width={80}
+                                  height={80}
+                                  className="rounded-lg object-cover"
+                                />
+                              )}
+                              <div className="flex-1">
+                                <h4 className="font-semibold text-gray-900 mb-1">
+                                  {product?.rfqProductDetails?.productName || "Product"}
+                                </h4>
+                                <p className="text-sm text-gray-600 mb-2">
+                                  {t("quantity")}: {product.quantity || quoteProduct?.quantity || 1}
+                                </p>
+                                <p className="text-lg font-semibold text-gray-900">
+                                  {currency.symbol}{displayPrice}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ) : memoizedCartList.filter((item: any) => item.productId).length > 0 ? (
                   <div className="mb-6">
                     <h3 className="text-lg font-semibold text-gray-900 mb-4" dir={langDir} translate="no">
                       {t("products")}
@@ -1739,13 +1871,14 @@ const CheckoutPage = () => {
                   <Button
                     onClick={onSaveOrder}
                     disabled={
-                      !memoizedCartList?.length ||
+                      (isFromRfq ? !rfqQuoteData : !memoizedCartList?.length) ||
                       updateCartByDevice?.isPending ||
                       updateCartWithLogin?.isPending ||
                       cartListByDeviceQuery?.isFetching ||
                       cartListByUser?.isFetching ||
                       allUserAddressQuery?.isLoading ||
-                      preOrderCalculation?.isPending
+                      preOrderCalculation?.isPending ||
+                      (isFromRfq && rfqQuoteDetailsQuery?.isLoading)
                     }
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg transition-colors duration-200"
                     translate="no"
