@@ -1349,6 +1349,19 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                               </DropdownMenuItem>
                             </Link>
 
+                            {/* RFQ Quotes for Buyers */}
+                            {currentTradeRole === "BUYER" && (
+                              <Link href="/rfq-quotes">
+                                <DropdownMenuItem
+                                  className="cursor-pointer"
+                                  dir={langDir}
+                                  translate="no"
+                                >
+                                  {t("rfq_quotes")}
+                                </DropdownMenuItem>
+                              </Link>
+                            )}
+
                             {/* Check user status - if WAITING or INACTIVE, only show Profile and Logout */}
                             {userStatus === "WAITING" ||
                             userStatus === "INACTIVE" ? (
@@ -1367,13 +1380,13 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                               <>
                                 {/* Dashboard - Only for ACTIVE users */}
                                 {accessControl.canAccessDashboard && (
-                                  <Link href="/rfq-quotes">
+                                  <Link href="/vendor-dashboard">
                                     <DropdownMenuItem
                                       className="cursor-pointer"
                                       dir={langDir}
                                       translate="no"
                                     >
-                                      {t("rfq_quotes")}
+                                      {t("dashboard")}
                                     </DropdownMenuItem>
                                   </Link>
                                 )}
@@ -1467,7 +1480,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                                           dir={langDir}
                                           translate="no"
                                         >
-                                          {t("Message System")}
+                                          {t("product_messages")}
                                         </DropdownMenuItem>
                                       </Link>
                                     ) : null}

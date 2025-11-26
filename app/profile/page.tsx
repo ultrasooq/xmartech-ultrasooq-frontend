@@ -1,5 +1,6 @@
 "use client";
 import { useMe, useUniqueUser, useUpdateProfile, useUserBusinessCategories } from "@/apis/queries/user.queries";
+import { useCurrentAccount } from "@/apis/queries/auth.queries";
 import {
   Accordion,
   AccordionContent,
@@ -121,6 +122,7 @@ export default function ProfilePage() {
   const { langDir, user } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
+  const currentAccount = useCurrentAccount();
   const frontIdentityRef = useRef<HTMLInputElement>(null);
   const backIdentityRef = useRef<HTMLInputElement>(null);
   const form = useForm({
@@ -763,7 +765,16 @@ export default function ProfilePage() {
                     </div>
                   ))}
 
-                  {me.data?.data?.tradeRole !== "BUYER" ? (
+                  {/* Show identity proof upload only for COMPANY/FREELANCER subaccounts */}
+                  {/* Show for COMPANY/FREELANCER accounts - subaccount check via multiple methods */}
+                  {((me.data?.data?.tradeRole === "COMPANY" || me.data?.data?.tradeRole === "FREELANCER") &&
+                    (me.data?.data?.isSubAccount === true || 
+                     me.data?.data?.masterAccountId != null || 
+                     currentAccount?.data?.data?.isSubAccount === true ||
+                     currentAccount?.data?.data?.account?.isSubAccount === true ||
+                     (currentAccount?.data?.data?.account && currentAccount.data.data.account.id !== me.data?.data?.id) ||
+                     // Fallback: if currentAccount is not available, show for all COMPANY/FREELANCER
+                     !currentAccount?.data?.data)) ? (
                     <FormField
                       control={form.control}
                       name="uploadIdentityFrontImage"
