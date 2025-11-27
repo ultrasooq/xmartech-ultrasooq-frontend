@@ -26,6 +26,9 @@ const ControlledTextInput: React.FC<ControlledTextInputProps> = ({
   const formContext = useFormContext();
   const { langDir } = useAuth();
 
+  // Destructure value and defaultValue from props to prevent conflicts with field
+  const { value: _value, defaultValue: _defaultValue, ...restProps } = props;
+
   return (
     <FormField
       control={formContext.control}
@@ -37,7 +40,7 @@ const ControlledTextInput: React.FC<ControlledTextInputProps> = ({
         )}>
           {showLabel ? <FormLabel dir={langDir}>{label}</FormLabel> : null}
           <FormControl>
-            <Input {...props} className="theme-form-control-s1" {...field} />
+            <Input {...restProps} className="theme-form-control-s1" {...field} />
           </FormControl>
           <FormMessage />
         </FormItem>

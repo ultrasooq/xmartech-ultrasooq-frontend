@@ -6,7 +6,10 @@ import SmileIcon from "@/public/images/smile.svg";
 import Link from "next/link";
 import SendIcon from "@/public/images/send-button.png";
 import OfferPriceCard from "@/components/modules/rfqRequest/OfferPriceCard";
-import { useAllRfqQuotesUsersBySellerId } from "@/apis/queries/rfq.queries";
+import {
+  useAllRfqQuotesUsersBySellerId,
+  useHideRfqRequest,
+} from "@/apis/queries/rfq.queries";
 import { newAttachmentType, useSocket } from "@/context/SocketContext";
 import {
   findRoomId,
@@ -27,6 +30,7 @@ import validator from "validator";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { useRouter } from "next/navigation";
 import { useOrderStore } from "@/lib/orderStore";
+import { cn } from "@/lib/utils";
 
 interface RfqQuoteType {
   id: number;
@@ -78,6 +82,9 @@ const SellerChat: React.FC<SellerChatProps> = () => {
   const [showDetailView, setShowDetailView] = useState<boolean>(false);
   const [showSuggestProduct, setShowSuggestProduct] = useState<boolean>(false);
   const [suggestedProductLink, setSuggestedProductLink] = useState<string>("");
+  const [showHiddenRequests, setShowHiddenRequests] = useState<boolean>(false);
+  const [selectedRequests, setSelectedRequests] = useState<Set<number>>(new Set());
+  const [isSelectMode, setIsSelectMode] = useState<boolean>(false);
   const {
     sendMessage,
     cratePrivateRoom,
@@ -96,12 +103,143 @@ const SellerChat: React.FC<SellerChatProps> = () => {
   const allRfqQuotesQuery = useAllRfqQuotesUsersBySellerId({
     page: 1,
     limit: 10,
+    showHidden: showHiddenRequests,
   });
+
+  const hideRfqRequestMutation = useHideRfqRequest();
+
+  const handleHideRequest = async (
+    e: React.MouseEvent,
+    rfqQuotesUserId: number,
+  ) => {
+    e.stopPropagation(); // Prevent card click
+    try {
+      await hideRfqRequestMutation.mutateAsync({
+        rfqQuotesUserId,
+        isHidden: true,
+      });
+      // Remove from local state immediately if showing visible requests
+      if (!showHiddenRequests) {
+        setRfqQuotes((prev) =>
+          prev.filter((quote) => quote.id !== rfqQuotesUserId),
+        );
+      }
+      toast({
+        title: t("success") || "Success",
+        description: "Request hidden successfully",
+        variant: "success",
+      });
+    } catch (error) {
+      toast({
+        title: t("error") || "Error",
+        description: "Failed to hide request",
+        variant: "danger",
+      });
+    }
+  };
+
+  const handleUnhideRequest = async (
+    e: React.MouseEvent,
+    rfqQuotesUserId: number,
+  ) => {
+    e.stopPropagation(); // Prevent card click
+    try {
+      await hideRfqRequestMutation.mutateAsync({
+        rfqQuotesUserId,
+        isHidden: false,
+      });
+      // Remove from local state immediately if showing hidden requests
+      if (showHiddenRequests) {
+        setRfqQuotes((prev) =>
+          prev.filter((quote) => quote.id !== rfqQuotesUserId),
+        );
+      }
+      toast({
+        title: t("success") || "Success",
+        description: "Request unhidden successfully",
+        variant: "success",
+      });
+    } catch (error) {
+      toast({
+        title: t("error") || "Error",
+        description: "Failed to unhide request",
+        variant: "danger",
+      });
+    }
+  };
+
+  const handleToggleSelect = (rfqQuotesUserId: number) => {
+    setSelectedRequests((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(rfqQuotesUserId)) {
+        newSet.delete(rfqQuotesUserId);
+      } else {
+        newSet.add(rfqQuotesUserId);
+      }
+      return newSet;
+    });
+  };
+
+  const handleSelectAll = () => {
+    if (selectedRequests.size === groupedRfqQuotes.length) {
+      setSelectedRequests(new Set());
+    } else {
+      const allIds = new Set(
+        groupedRfqQuotes.map((group) => group[0].id),
+      );
+      setSelectedRequests(allIds);
+    }
+  };
+
+  const handleBulkHide = async () => {
+    if (selectedRequests.size === 0) {
+      toast({
+        title: t("error") || "Error",
+        description: "Please select at least one request",
+        variant: "danger",
+      });
+      return;
+    }
+
+    try {
+      const selectedIds = Array.from(selectedRequests);
+      const promises = selectedIds.map((id) =>
+        hideRfqRequestMutation.mutateAsync({
+          rfqQuotesUserId: id,
+          isHidden: !showHiddenRequests, // If showing hidden, unhide them; otherwise hide them
+        }),
+      );
+
+      await Promise.all(promises);
+      
+      // Remove from local state immediately
+      setRfqQuotes((prev) =>
+        prev.filter((quote) => !selectedIds.includes(quote.id)),
+      );
+      
+      toast({
+        title: t("success") || "Success",
+        description: `${
+          showHiddenRequests ? "Unhidden" : "Hidden"
+        } ${selectedRequests.size} request${selectedRequests.size > 1 ? "s" : ""} successfully`,
+        variant: "success",
+      });
+      setSelectedRequests(new Set());
+      setIsSelectMode(false);
+    } catch (error) {
+      toast({
+        title: t("error") || "Error",
+        description: `Failed to ${showHiddenRequests ? "unhide" : "hide"} requests`,
+        variant: "danger",
+      });
+    }
+  };
 
   useEffect(() => {
     const rfqQuotesDetails = allRfqQuotesQuery.data?.data;
 
-    if (rfqQuotesDetails?.length > 0) {
+    if (rfqQuotesDetails) {
+      // Always update state, even if empty array (to clear hidden items)
       setRfqQuotes(rfqQuotesDetails);
       // Don't auto-select first item - let user click on cards
       // setActiveSellerId(rfqQuotesDetails[0]?.id);
@@ -586,6 +724,13 @@ const SellerChat: React.FC<SellerChatProps> = () => {
   };
 
   const handleRfqProducts = (item: any) => {
+    // Check if there's at least one approved price request from vendor (first vendor approval)
+    const hasFirstVendorApproval = item?.rfqProductPriceRequests?.some(
+      (request: any) => 
+        request?.status === "APPROVED" && 
+        request?.requestedById === item?.sellerID
+    ) || false;
+
     const newData =
       item?.rfqQuotesUser_rfqQuotes?.rfqQuotesProducts.map((i: any) => {
         let priceRequest = null;
@@ -610,6 +755,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
           offerPrice,
           offerPriceFrom: i.offerPriceFrom,
           offerPriceTo: i.offerPriceTo,
+          hasFirstVendorApproval,
           address:
             item?.rfqQuotesUser_rfqQuotes?.rfqQuotes_rfqQuoteAddress?.address,
           deliveryDate:
@@ -871,27 +1017,6 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                 </p>
               </div>
             </div>
-            <button
-              onClick={handleCheckout}
-              disabled={!canCheckout()}
-              className="bg-dark-orange flex items-center gap-2 rounded-lg px-6 py-2.5 text-sm font-semibold text-white shadow-md transition-all hover:bg-orange-600 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50"
-              translate="no"
-            >
-              <svg
-                className="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
-                />
-              </svg>
-              {t("checkout")}
-            </button>
           </div>
 
           {/* Content Section */}
@@ -1025,6 +1150,8 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                         productName={item?.rfqProductDetails?.productName}
                         onRequestPrice={handleRequestPrice}
                         priceRequest={item?.priceRequest}
+                        isBuyer={false}
+                        hasFirstVendorApproval={item?.hasFirstVendorApproval || false}
                       />
                     ),
                   )}
@@ -1261,17 +1388,220 @@ const SellerChat: React.FC<SellerChatProps> = () => {
     <div>
       {/* Header */}
       <div className="mb-6">
-        <h2
-          className="text-2xl font-bold text-gray-900"
-          dir={langDir}
-          translate="no"
-        >
-          {t("request_for_rfq")}
-        </h2>
-        <p className="mt-1 text-sm text-gray-600" dir={langDir} translate="no">
-          {t("select_an_rfq_request_to_view_details") ||
-            "Select an RFQ request to view details and respond"}
-        </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h2
+              className="text-2xl font-bold text-gray-900"
+              dir={langDir}
+              translate="no"
+            >
+              {showHiddenRequests
+                ? "Hidden Requests"
+                : t("request_for_rfq")}
+            </h2>
+            <p className="mt-1 text-sm text-gray-600" dir={langDir} translate="no">
+              {showHiddenRequests
+                ? "View and restore hidden RFQ requests"
+                : t("select_an_rfq_request_to_view_details") ||
+                  "Select an RFQ request to view details and respond"}
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            {isSelectMode && selectedRequests.size > 0 && (
+              <button
+                onClick={handleBulkHide}
+                disabled={hideRfqRequestMutation.isPending}
+                className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                translate="no"
+                type="button"
+              >
+                {hideRfqRequestMutation.isPending ? (
+                  <>
+                    <svg
+                      className="h-4 w-4 animate-spin"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    {showHiddenRequests ? (
+                      <>
+                        <svg
+                          className="h-4 w-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                          />
+                        </svg>
+                        Unhide Selected ({selectedRequests.size})
+                      </>
+                    ) : (
+                      <>
+                        <svg
+                          className="h-4 w-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+                          />
+                        </svg>
+                        Hide Selected ({selectedRequests.size})
+                      </>
+                    )}
+                  </>
+                )}
+              </button>
+            )}
+            <button
+              onClick={() => {
+                setIsSelectMode(!isSelectMode);
+                setSelectedRequests(new Set());
+              }}
+              className={cn(
+                "flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-all",
+                isSelectMode
+                  ? "border-dark-orange bg-orange-50 text-dark-orange hover:bg-orange-100"
+                  : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50",
+              )}
+              translate="no"
+              type="button"
+            >
+              {isSelectMode ? (
+                <>
+                  <svg
+                    className="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                  Cancel Selection
+                </>
+              ) : (
+                <>
+                  <svg
+                    className="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+                    />
+                  </svg>
+                  Select Multiple
+                </>
+              )}
+            </button>
+            <button
+              onClick={() => setShowHiddenRequests(!showHiddenRequests)}
+              className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all hover:bg-gray-50"
+              translate="no"
+              type="button"
+            >
+              {showHiddenRequests ? (
+                <>
+                  <svg
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                    />
+                  </svg>
+                  Show Visible Requests
+                </>
+              ) : (
+                <>
+                  <svg
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+                    />
+                  </svg>
+                  Show Hidden Requests
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+        {isSelectMode && (
+          <div className="mt-4 flex items-center gap-4 rounded-lg border border-gray-200 bg-gray-50 px-4 py-2">
+            <button
+              onClick={handleSelectAll}
+              className="text-sm font-medium text-gray-700 hover:text-gray-900"
+              translate="no"
+              type="button"
+            >
+              {selectedRequests.size === groupedRfqQuotes.length
+                ? "Deselect All"
+                : "Select All"}
+            </button>
+            <span className="text-sm text-gray-600" translate="no">
+              {selectedRequests.size} of {groupedRfqQuotes.length} selected
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Loading State */}
@@ -1287,26 +1617,44 @@ const SellerChat: React.FC<SellerChatProps> = () => {
       {!allRfqQuotesQuery?.isLoading && groupedRfqQuotes.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16">
           <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gray-100">
-            <svg
-              className="h-10 w-10 text-gray-400"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              />
-            </svg>
+            {showHiddenRequests ? (
+              <svg
+                className="h-10 w-10 text-gray-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+                />
+              </svg>
+            ) : (
+              <svg
+                className="h-10 w-10 text-gray-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+            )}
           </div>
           <p
             className="text-center text-lg font-medium text-gray-500"
             dir={langDir}
             translate="no"
           >
-            {t("no_data_found")}
+            {showHiddenRequests
+              ? "No hidden requests found"
+              : t("no_data_found")}
           </p>
         </div>
       ) : null}
@@ -1319,13 +1667,28 @@ const SellerChat: React.FC<SellerChatProps> = () => {
             const mainQuote = rfqGroup[0];
             const rfqId = mainQuote.rfqQuotesId;
 
-            // Get all product images from all quotes in this group
+            // Get all product images and details from all quotes in this group
             const allProductImages = rfqGroup
               .flatMap(
                 (quote) =>
                   quote.rfqQuotesUser_rfqQuotes?.rfqQuotesProducts?.map(
                     (product: any) =>
                       product?.rfqProductDetails?.productImages?.[0],
+                  ) || [],
+              )
+              .filter(Boolean);
+
+            // Get product details (name, quantity) from all quotes in this group
+            const allProductDetails = rfqGroup
+              .flatMap(
+                (quote) =>
+                  quote.rfqQuotesUser_rfqQuotes?.rfqQuotesProducts?.map(
+                    (product: any) => ({
+                      productName:
+                        product?.rfqProductDetails?.productName || "Product",
+                      quantity: product?.quantity || 1,
+                      productType: product?.productType || "SAME",
+                    }),
                   ) || [],
               )
               .filter(Boolean);
@@ -1353,21 +1716,60 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                   new Date(a?.createdAt || 0).getTime(),
               )[0];
 
+            const isSelected = selectedRequests.has(mainQuote.id);
+
             return (
               <div
                 key={rfqId}
                 onClick={() => {
-                  // Select the first quote in the group
-                  setSelectedRfqQuote(mainQuote);
-                  setActiveSellerId(mainQuote.id);
-                  handleRfqProducts(mainQuote);
-                  setShowDetailView(true);
+                  if (isSelectMode) {
+                    handleToggleSelect(mainQuote.id);
+                  } else {
+                    // Select the first quote in the group
+                    setSelectedRfqQuote(mainQuote);
+                    setActiveSellerId(mainQuote.id);
+                    handleRfqProducts(mainQuote);
+                    setShowDetailView(true);
+                  }
                 }}
-                className="group hover:border-dark-orange cursor-pointer overflow-hidden rounded-xl border-2 border-gray-200 bg-white shadow-sm transition-all hover:shadow-md"
+                className={cn(
+                  "group overflow-hidden rounded-xl border-2 bg-white shadow-sm transition-all",
+                  isSelectMode
+                    ? "cursor-default"
+                    : "hover:border-dark-orange cursor-pointer hover:shadow-md",
+                  isSelected
+                    ? "border-dark-orange bg-orange-50"
+                    : "border-gray-200",
+                )}
               >
                 {/* Card Header */}
                 <div className="flex items-center justify-between border-b border-gray-200 bg-gray-50 px-4 py-3">
                   <div className="flex items-center gap-2">
+                    {isSelectMode && (
+                      <div
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleToggleSelect(mainQuote.id);
+                        }}
+                        className="flex h-5 w-5 cursor-pointer items-center justify-center rounded border-2 border-gray-300 transition-all hover:border-dark-orange"
+                      >
+                        {isSelected && (
+                          <svg
+                            className="h-4 w-4 text-dark-orange"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={3}
+                              d="M5 13l4 4L19 7"
+                            />
+                          </svg>
+                        )}
+                      </div>
+                    )}
                     <div className="bg-dark-orange flex h-10 w-10 items-center justify-center rounded-lg shadow-sm">
                       <svg
                         className="h-5 w-5 text-white"
@@ -1398,14 +1800,115 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                       </p>
                     </div>
                   </div>
-                  {totalUnreadMessages > 0 && (
-                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white shadow-md">
-                      {totalUnreadMessages > 9 ? "9+" : totalUnreadMessages}
-                    </div>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {totalUnreadMessages > 0 && !showHiddenRequests && (
+                      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white shadow-md">
+                        {totalUnreadMessages > 9 ? "9+" : totalUnreadMessages}
+                      </div>
+                    )}
+                    {!isSelectMode && (
+                      <>
+                        {showHiddenRequests ? (
+                          <button
+                            onClick={(e) => handleUnhideRequest(e, mainQuote.id)}
+                            disabled={hideRfqRequestMutation.isPending}
+                            className="flex h-8 w-8 items-center justify-center rounded-lg border border-green-300 bg-green-50 text-green-600 transition-all hover:bg-green-100 hover:text-green-700 disabled:cursor-not-allowed disabled:opacity-50"
+                            title="Unhide Request"
+                            type="button"
+                          >
+                            {hideRfqRequestMutation.isPending ? (
+                              <svg
+                                className="h-4 w-4 animate-spin"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                              >
+                                <circle
+                                  className="opacity-25"
+                                  cx="12"
+                                  cy="12"
+                                  r="10"
+                                  stroke="currentColor"
+                                  strokeWidth="4"
+                                />
+                                <path
+                                  className="opacity-75"
+                                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                  fill="currentColor"
+                                />
+                              </svg>
+                            ) : (
+                              <svg
+                                className="h-4 w-4"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                                />
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                                />
+                              </svg>
+                            )}
+                          </button>
+                        ) : (
+                          <button
+                            onClick={(e) => handleHideRequest(e, mainQuote.id)}
+                            disabled={hideRfqRequestMutation.isPending}
+                            className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-600 transition-all hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50"
+                            title="Hide Request"
+                            type="button"
+                          >
+                            {hideRfqRequestMutation.isPending ? (
+                              <svg
+                                className="h-4 w-4 animate-spin"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                              >
+                                <circle
+                                  className="opacity-25"
+                                  cx="12"
+                                  cy="12"
+                                  r="10"
+                                  stroke="currentColor"
+                                  strokeWidth="4"
+                                />
+                                <path
+                                  className="opacity-75"
+                                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                  fill="currentColor"
+                                />
+                              </svg>
+                            ) : (
+                              <svg
+                                className="h-4 w-4"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+                                />
+                              </svg>
+                            )}
+                          </button>
+                        )}
+                      </>
+                    )}
+                  </div>
                 </div>
 
-                {/* Product Images */}
+                {/* Product Images and Details */}
                 <div className="p-4">
                   <div className="mb-3 flex gap-2">
                     {allProductImages
@@ -1435,6 +1938,33 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                       </div>
                     )}
                   </div>
+
+                  {/* Product Details */}
+                  {allProductDetails.length > 0 && (
+                    <div className="mb-3 space-y-1.5">
+                      {allProductDetails
+                        .slice(0, 2)
+                        .map((product: any, idx: number) => (
+                          <div
+                            key={idx}
+                            className="flex items-center justify-between rounded-md bg-gray-50 px-2 py-1.5 text-xs"
+                          >
+                            <span className="flex-1 truncate font-medium text-gray-700">
+                              {product.productName}
+                            </span>
+                            <span className="ml-2 flex-shrink-0 text-gray-500">
+                              Qty: {product.quantity}
+                            </span>
+                          </div>
+                        ))}
+                      {allProductDetails.length > 2 && (
+                        <div className="text-center text-xs text-gray-500">
+                          +{allProductDetails.length - 2} more product
+                          {allProductDetails.length - 2 > 1 ? "s" : ""}
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                   {/* Buyer Info */}
                   <div className="mb-3 flex items-center gap-2">

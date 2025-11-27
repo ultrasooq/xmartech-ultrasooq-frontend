@@ -417,8 +417,10 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
                                   </div>
                                   
                                   {/* Action Buttons for Pending Status - Only show if current user is NOT the one who requested */}
+                                  {/* First vendor price is auto-approved, so it won't show as PENDING */}
                                   {chat.rfqProductPriceRequest?.status ===
                                     "PENDING" &&
+                                    chat.rfqProductPriceRequest?.requestedById &&
                                     chat.rfqProductPriceRequest?.requestedById !== user?.id ? (
                                     <div className="flex gap-2">
                                       <button

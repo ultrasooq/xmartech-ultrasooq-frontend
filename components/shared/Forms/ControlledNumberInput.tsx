@@ -24,6 +24,9 @@ const ControlledNumberInput: React.FC<ControlledNumberInputProps> = ({
 }) => {
     const formContext = useFormContext();
 
+    // Destructure value and defaultValue from props to prevent conflicts with field
+    const { value: _value, defaultValue: _defaultValue, onChange: propsOnChange, ...restProps } = props;
+
     return (
         <FormField
             control={formContext.control}
@@ -36,7 +39,7 @@ const ControlledNumberInput: React.FC<ControlledNumberInputProps> = ({
                     {showLabel ? <FormLabel>{label}</FormLabel> : null}
                     <FormControl>
                         <Input
-                            {...props}
+                            {...restProps}
                             className="theme-form-control-s1"
                             {...field}
                             onChange={(e) => {
@@ -49,7 +52,7 @@ const ControlledNumberInput: React.FC<ControlledNumberInputProps> = ({
                                 }
 
                                 // Call your custom onChange if provided
-                                props.onChange?.({
+                                propsOnChange?.({
                                     ...e,
                                     target: {
                                         ...e.target,

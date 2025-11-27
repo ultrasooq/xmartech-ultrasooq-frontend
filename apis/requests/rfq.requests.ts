@@ -302,6 +302,7 @@ export const fetchOneRfqQuotesUsersByBuyerID = (payload: {
 export const fetchAllRfqQuotesUsersBySellerId = (payload: {
   page: number;
   limit: number;
+  showHidden?: boolean;
 }) => {
   return axios({
     method: "GET",
@@ -360,6 +361,22 @@ export const deleteRfqQuote = (payload: { rfqQuotesId: number }) => {
   return axios({
     method: "DELETE",
     url: urlcat(`${getApiUrl()}/product/deleteOneRfqQuote`, payload),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+export const hideRfqRequest = (payload: {
+  rfqQuotesUserId: number;
+  isHidden: boolean;
+}) => {
+  return axios({
+    method: "PATCH",
+    url: `${getApiUrl()}/product/hideRfqRequest`,
+    data: payload,
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",

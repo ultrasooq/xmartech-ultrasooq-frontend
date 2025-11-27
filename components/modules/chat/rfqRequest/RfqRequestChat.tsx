@@ -52,6 +52,9 @@ interface RfqRequestVendorDetailsProps {
     createdAt: string;
   };
   unreadMsgCount: number;
+  rfqQuotesUser_rfqQuotes?: any;
+  rfqProductPriceRequests?: any[];
+  rfqQuotesProducts?: any[];
 }
 
 const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
@@ -613,6 +616,14 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
   };
 
   const handleRfqProducts = (item: any) => {
+    // Check if there's at least one approved price request from vendor (first vendor approval)
+    const hasFirstVendorApproval =
+      item?.rfqProductPriceRequests?.some(
+        (request: any) =>
+          request?.status === "APPROVED" &&
+          request?.requestedById === item?.sellerID,
+      ) || false;
+
     const newData =
       item?.rfqQuotesUser_rfqQuotes?.rfqQuotesProducts.map((i: any) => {
         let priceRequest = null;
@@ -640,6 +651,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
           offerPrice,
           offerPriceFrom: i.offerPriceFrom,
           offerPriceTo: i.offerPriceTo,
+          hasFirstVendorApproval,
           address:
             item?.rfqQuotesUser_rfqQuotes?.rfqQuotes_rfqQuoteAddress?.address,
           deliveryDate:
@@ -655,41 +667,53 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
 
   // Check if checkout is allowed (all products must have approved prices)
   const canCheckout = () => {
-    if (!selectedVendor || !selectedVendor?.rfqQuotesProducts || selectedVendor.rfqQuotesProducts.length === 0) {
+    if (
+      !selectedVendor ||
+      !selectedVendor?.rfqQuotesProducts ||
+      selectedVendor.rfqQuotesProducts.length === 0
+    ) {
       return false;
     }
 
     // Check if all products have approved price requests
-    const allApproved = selectedVendor.rfqQuotesProducts.every((product: any) => {
-      return (
-        product?.priceRequest &&
-        product?.priceRequest?.status === "APPROVED" &&
-        product?.offerPrice &&
-        parseFloat(product.offerPrice) > 0
-      );
-    });
+    const allApproved = selectedVendor.rfqQuotesProducts.every(
+      (product: any) => {
+        return (
+          product?.priceRequest &&
+          product?.priceRequest?.status === "APPROVED" &&
+          product?.offerPrice &&
+          parseFloat(product.offerPrice) > 0
+        );
+      },
+    );
 
     return allApproved;
   };
 
   // Calculate total price from approved product prices
   const calculateTotalPrice = () => {
-    if (!selectedVendor?.rfqQuotesProducts || selectedVendor.rfqQuotesProducts.length === 0) {
+    if (
+      !selectedVendor?.rfqQuotesProducts ||
+      selectedVendor.rfqQuotesProducts.length === 0
+    ) {
       return 0;
     }
 
-    return selectedVendor.rfqQuotesProducts.reduce((total: number, product: any) => {
-      if (
-        product?.priceRequest &&
-        product?.priceRequest?.status === "APPROVED" &&
-        product?.offerPrice
-      ) {
-        const price = parseFloat(product.offerPrice || "0");
-        const quantity = product.quantity || 1;
-        return total + price * quantity;
-      }
-      return total;
-    }, 0);
+    return selectedVendor.rfqQuotesProducts.reduce(
+      (total: number, product: any) => {
+        if (
+          product?.priceRequest &&
+          product?.priceRequest?.status === "APPROVED" &&
+          product?.offerPrice
+        ) {
+          const price = parseFloat(product.offerPrice || "0");
+          const quantity = product.quantity || 1;
+          return total + price * quantity;
+        }
+        return total;
+      },
+      0,
+    );
   };
 
   // Handle checkout - redirect to checkout page with RFQ quote data
@@ -698,7 +722,8 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
       toast({
         title: t("checkout_not_available") || "Checkout Not Available",
         description:
-          t("all_prices_must_be_approved") || "All product prices must be approved before checkout",
+          t("all_prices_must_be_approved") ||
+          "All product prices must be approved before checkout",
         variant: "danger",
       });
       return;
@@ -777,14 +802,14 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
   };
 
   return (
-    <div className="rounded-xl bg-white shadow-lg">
-      <div className="flex w-full flex-wrap overflow-hidden rounded-xl border border-gray-200 bg-white">
-        {/* Product Section */}
-        <div className="w-full border-b border-gray-200 bg-white lg:w-[15%] lg:border-r lg:border-b-0">
-          <div className="bg-dark-orange flex min-h-[60px] w-full items-center border-b border-gray-200 px-4 py-3">
-            <div className="flex items-center gap-2">
+    <div className="space-y-6">
+      {/* Request Info Section - Top */}
+      <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-lg shadow-gray-200/50">
+        <div className="bg-dark-orange flex min-h-[70px] w-full items-center px-6 py-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/20 backdrop-blur-sm">
               <svg
-                className="h-5 w-5 text-white"
+                className="h-6 w-6 text-white"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -796,31 +821,38 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
                   d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                 />
               </svg>
-              <span
-                className="text-sm font-bold text-white"
+            </div>
+            <div>
+              <h2
+                className="text-lg font-bold text-white"
                 dir={langDir}
                 translate="no"
               >
                 {t("request_for_rfq")}
-              </span>
+              </h2>
+              <p className="mt-0.5 text-xs text-white/90">
+                {t("view_request_details") || "View your request details"}
+              </p>
             </div>
           </div>
-          <div className="p-4">
-            <RequestProductCard
-              rfqId={rfqQuoteId}
-              productImages={selectedVendor?.rfqQuotesProducts
-                ?.map((item: any) => item?.rfqProductDetails?.productImages)
-                ?.map((item: any) => item?.[0])}
-            />
-          </div>
         </div>
+        <div className="p-6">
+          <RequestProductCard
+            rfqId={rfqQuoteId}
+            productImages={selectedVendor?.rfqQuotesProducts
+              ?.map((item: any) => item?.rfqProductDetails?.productImages)
+              ?.map((item: any) => item?.[0])}
+          />
+        </div>
+      </div>
 
-        {/* Vendor List Section */}
-        <div className="w-full border-b border-gray-200 bg-white lg:w-[18%] lg:border-r lg:border-b-0">
-          <div className="flex min-h-[60px] w-full items-center justify-between border-b border-gray-200 bg-white px-4 py-3">
-            <div className="flex items-center gap-2">
+      {/* Vendor List Section - Middle */}
+      <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-lg shadow-gray-200/50">
+        <div className="flex min-h-[70px] w-full items-center justify-between border-b border-gray-100 bg-white px-6 py-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-orange-100">
               <svg
-                className="h-5 w-5 text-gray-600"
+                className="h-6 w-6 text-orange-600"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -832,165 +864,43 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
                   d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
                 />
               </svg>
-              <span
-                className="text-sm font-bold text-gray-800"
+            </div>
+            <div>
+              <h2
+                className="text-lg font-bold text-gray-800"
                 dir={langDir}
                 translate="no"
               >
                 {t("vendor_lists")}
-              </span>
+              </h2>
+              <p className="mt-0.5 text-xs text-gray-500">
+                {t("select_vendor_to_chat") ||
+                  "Select a vendor to view details and chat"}
+              </p>
             </div>
-            {vendorList?.length > 0 && (
-              <span className="bg-dark-orange flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold text-white">
+          </div>
+          {vendorList?.length > 0 && (
+            <div className="flex items-center gap-2">
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-500 text-sm font-bold text-white shadow-md">
                 {vendorList.length}
               </span>
-            )}
-          </div>
-          <div className="h-auto w-full overflow-y-auto p-4 lg:h-[calc(100vh-200px)]">
-            {allRfqQuotesQuery?.isLoading ? (
-              <div className="space-y-3">
-                {Array.from({ length: 3 }).map((_, i) => (
-                  <Skeleton key={i} className="h-32 w-full rounded-xl" />
-                ))}
-              </div>
-            ) : null}
-
-            {!allRfqQuotesQuery?.isLoading && !vendorList?.length ? (
-              <div className="flex flex-col items-center justify-center py-12">
-                <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
-                  <svg
-                    className="h-8 w-8 text-gray-400"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                    />
-                  </svg>
-                </div>
-                <p
-                  className="text-center text-sm font-medium text-gray-500"
-                  dir={langDir}
-                  translate="no"
-                >
-                  {t("no_data_found")}
-                </p>
-              </div>
-            ) : null}
-
-            {!allRfqQuotesQuery?.isLoading && vendorList?.length > 0 && (
-              <div className="space-y-3">
-                {vendorList?.map((item: RfqRequestVendorDetailsProps) => {
-                  // Get vendor name with priority: accountName > firstName+lastName > firstName > email > fallback
-                  const getVendorName = () => {
-                    const seller = item?.sellerIDDetail;
-                    if (seller?.accountName) {
-                      return seller.accountName;
-                    }
-                    if (seller?.firstName && seller?.lastName) {
-                      return `${seller.firstName} ${seller.lastName}`;
-                    }
-                    if (seller?.firstName) {
-                      return seller.firstName;
-                    }
-                    if (seller?.email) {
-                      return seller.email;
-                    }
-                    if (item?.sellerID) {
-                      return `Vendor ${item.sellerID}`;
-                    }
-                    return "Unknown Vendor";
-                  };
-
-                  // Calculate actual vendor offer price from price requests
-                  const getVendorOfferPrice = () => {
-                    const products = item?.rfqQuotesUser_rfqQuotes?.rfqQuotesProducts || [];
-                    
-                    // Check if vendor has provided any price requests
-                    const hasPriceRequests = item?.rfqProductPriceRequests && item.rfqProductPriceRequests.length > 0;
-                    
-                    if (hasPriceRequests && products.length > 0) {
-                      // Vendor has provided price requests - calculate total from those
-                      const calculatedTotal = products.reduce((total: number, product: any) => {
-                        const priceRequest = item.rfqProductPriceRequests?.find(
-                          (request: any) => request.rfqQuoteProductId === product.id
-                        );
-                        
-                        if (priceRequest) {
-                          // Use the price from the price request (vendor's actual offer)
-                          const price = parseFloat(priceRequest.requestedPrice || "0");
-                          const quantity = product.quantity || 1;
-                          return total + price * quantity;
-                        }
-                        
-                        return total;
-                      }, 0);
-
-                      return calculatedTotal > 0 ? calculatedTotal.toString() : "-";
-                    }
-                    
-                    // No price requests from vendor - check if offerPrice is from customer's budget range
-                    if (products.length > 0) {
-                      // Check if all products have budget range
-                      const allHaveBudgetRange = products.every((product: any) => 
-                        product.offerPriceFrom && product.offerPriceTo && product.offerPriceFrom > 0 && product.offerPriceTo > 0
-                      );
-                      
-                      if (allHaveBudgetRange) {
-                        // Calculate total budget range maximum
-                        const budgetMaxTotal = products.reduce((total: number, product: any) => {
-                          const maxPrice = parseFloat(product.offerPriceTo || "0");
-                          const quantity = product.quantity || 1;
-                          return total + maxPrice * quantity;
-                        }, 0);
-                        
-                        // If offerPrice matches the budget range maximum, it's not a vendor offer
-                        const currentOfferPrice = parseFloat(item?.offerPrice || "0");
-                        if (Math.abs(currentOfferPrice - budgetMaxTotal) < 0.01) {
-                          // This is the customer's budget range, not vendor's offer
-                          return "-";
-                        }
-                      }
-                    }
-                    
-                    // Return original offerPrice if it exists and is not from budget range
-                    return item?.offerPrice || "-";
-                  };
-
-                  return (
-                    <RfqRequestVendorCard
-                      key={item?.id}
-                      name={getVendorName()}
-                      profilePicture={item?.sellerIDDetail?.profilePicture}
-                      offerPrice={getVendorOfferPrice()}
-                      onClick={() => {
-                        setActiveSellerId(item?.sellerID);
-                        setRfqQuotesUserId(item.id);
-                        handleRfqProducts(item);
-                      }}
-                      seller={item.sellerIDDetail}
-                      isSelected={activeSellerId === item?.sellerID}
-                      vendor={item}
-                    />
-                  );
-                })}
-              </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
+        <div className="p-6">
+          {allRfqQuotesQuery?.isLoading ? (
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <Skeleton key={i} className="h-40 w-full rounded-xl" />
+              ))}
+            </div>
+          ) : null}
 
-        {/* Main Chat & Product Details Section */}
-        <div className="flex w-full flex-col bg-white lg:w-[67%]">
-          {/* Header with Price and Checkout */}
-          <div className="flex min-h-[60px] w-full items-center justify-between border-b border-gray-200 bg-white px-6 py-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-600 shadow-md">
+          {!allRfqQuotesQuery?.isLoading && !vendorList?.length ? (
+            <div className="flex flex-col items-center justify-center py-16">
+              <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gray-100">
                 <svg
-                  className="h-5 w-5 text-white"
+                  className="h-10 w-10 text-gray-400"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -999,92 +909,293 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
                   />
                 </svg>
               </div>
-              <div className="flex flex-col">
-                <span
-                  className="text-xs font-medium text-gray-500"
-                  dir={langDir}
-                  translate="no"
-                >
-                  {t("offering_price")}
-                </span>
-                <span className="text-lg font-bold text-gray-900">
-                  {(() => {
-                    // Calculate total from approved product prices
-                    if (!selectedVendor?.rfqQuotesProducts || selectedVendor.rfqQuotesProducts.length === 0) {
-                      return selectedVendor?.offerPrice
-                        ? `${currency.symbol}${selectedVendor?.offerPrice}`
-                        : "-";
-                    }
-                    const calculatedTotal = selectedVendor.rfqQuotesProducts.reduce((total: number, product: any) => {
-                      if (
-                        product?.priceRequest &&
-                        product?.priceRequest?.status === "APPROVED" &&
-                        product?.offerPrice
-                      ) {
-                        const price = parseFloat(product.offerPrice || "0");
-                        const quantity = product.quantity || 1;
-                        return total + price * quantity;
-                      }
-                      return total;
-                    }, 0);
-                    // If we have approved prices, show calculated total, otherwise show original offer price
-                    const hasApprovedPrices = selectedVendor.rfqQuotesProducts.some(
-                      (product: any) =>
-                        product?.priceRequest && product?.priceRequest?.status === "APPROVED"
-                    );
-                    return hasApprovedPrices && calculatedTotal > 0
-                      ? `${currency.symbol}${calculatedTotal}`
-                      : selectedVendor?.offerPrice
-                      ? `${currency.symbol}${selectedVendor?.offerPrice}`
-                      : "-";
-                  })()}
-                </span>
-              </div>
-            </div>
-            {(() => {
-              // Show checkout button if there are approved prices or original offer price exists
-              if (!selectedVendor?.rfqQuotesProducts || selectedVendor.rfqQuotesProducts.length === 0) {
-                return selectedVendor?.offerPrice ? true : false;
-              }
-              const hasApprovedPrices = selectedVendor.rfqQuotesProducts.some(
-                (product: any) =>
-                  product?.priceRequest && product?.priceRequest?.status === "APPROVED"
-              );
-              return hasApprovedPrices || selectedVendor?.offerPrice;
-            })() && (
-              <button
-                onClick={handleCheckout}
-                disabled={!canCheckout()}
-                className="bg-dark-orange inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-orange-500/30 transition-all duration-200 hover:scale-105 hover:shadow-xl hover:shadow-orange-500/40 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100"
+              <p
+                className="text-center text-base font-medium text-gray-500"
                 dir={langDir}
                 translate="no"
               >
-                <svg
-                  className="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                {t("no_data_found")}
+              </p>
+            </div>
+          ) : null}
+
+          {!allRfqQuotesQuery?.isLoading && vendorList?.length > 0 && (
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {vendorList?.map((item: RfqRequestVendorDetailsProps) => {
+                // Get vendor name with priority: accountName > firstName+lastName > firstName > email > fallback
+                const getVendorName = () => {
+                  const seller = item?.sellerIDDetail;
+                  if (seller?.accountName) {
+                    return seller.accountName;
+                  }
+                  if (seller?.firstName && seller?.lastName) {
+                    return `${seller.firstName} ${seller.lastName}`;
+                  }
+                  if (seller?.firstName) {
+                    return seller.firstName;
+                  }
+                  if (seller?.email) {
+                    return seller.email;
+                  }
+                  if (item?.sellerID) {
+                    return `Vendor ${item.sellerID}`;
+                  }
+                  return "Unknown Vendor";
+                };
+
+                // Calculate actual vendor offer price from price requests
+                const getVendorOfferPrice = () => {
+                  const products =
+                    item?.rfqQuotesUser_rfqQuotes?.rfqQuotesProducts || [];
+
+                  // Check if vendor has provided any price requests
+                  const hasPriceRequests =
+                    item?.rfqProductPriceRequests &&
+                    item.rfqProductPriceRequests.length > 0;
+
+                  if (hasPriceRequests && products.length > 0) {
+                    // Vendor has provided price requests - calculate total from those
+                    const calculatedTotal = products.reduce(
+                      (total: number, product: any) => {
+                        const priceRequest = item.rfqProductPriceRequests?.find(
+                          (request: any) =>
+                            request.rfqQuoteProductId === product.id,
+                        );
+
+                        if (priceRequest) {
+                          // Use the price from the price request (vendor's actual offer)
+                          const price = parseFloat(
+                            priceRequest.requestedPrice || "0",
+                          );
+                          const quantity = product.quantity || 1;
+                          return total + price * quantity;
+                        }
+
+                        return total;
+                      },
+                      0,
+                    );
+
+                    return calculatedTotal > 0
+                      ? calculatedTotal.toString()
+                      : "-";
+                  }
+
+                  // No price requests from vendor - check if offerPrice is from customer's budget range
+                  if (products.length > 0) {
+                    // Check if all products have budget range
+                    const allHaveBudgetRange = products.every(
+                      (product: any) =>
+                        product.offerPriceFrom &&
+                        product.offerPriceTo &&
+                        product.offerPriceFrom > 0 &&
+                        product.offerPriceTo > 0,
+                    );
+
+                    if (allHaveBudgetRange) {
+                      // Calculate total budget range maximum
+                      const budgetMaxTotal = products.reduce(
+                        (total: number, product: any) => {
+                          const maxPrice = parseFloat(
+                            product.offerPriceTo || "0",
+                          );
+                          const quantity = product.quantity || 1;
+                          return total + maxPrice * quantity;
+                        },
+                        0,
+                      );
+
+                      // If offerPrice matches the budget range maximum, it's not a vendor offer
+                      const currentOfferPrice = parseFloat(
+                        item?.offerPrice || "0",
+                      );
+                      if (Math.abs(currentOfferPrice - budgetMaxTotal) < 0.01) {
+                        // This is the customer's budget range, not vendor's offer
+                        return "-";
+                      }
+                    }
+                  }
+
+                  // Return original offerPrice if it exists and is not from budget range
+                  return item?.offerPrice || "-";
+                };
+
+                return (
+                  <RfqRequestVendorCard
+                    key={item?.id}
+                    name={getVendorName()}
+                    profilePicture={item?.sellerIDDetail?.profilePicture}
+                    offerPrice={getVendorOfferPrice()}
+                    onClick={() => {
+                      setActiveSellerId(item?.sellerID);
+                      setRfqQuotesUserId(item.id);
+                      handleRfqProducts(item);
+                    }}
+                    seller={item.sellerIDDetail}
+                    isSelected={activeSellerId === item?.sellerID}
+                    vendor={item}
                   />
-                </svg>
-                {t("checkout")}
-              </button>
-            )}
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Main Chat & Product Details Section - Bottom */}
+      {selectedVendor && (
+        <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-lg shadow-gray-200/50">
+          {/* Header with Vendor Info, Price and Checkout */}
+          <div className="border-b border-gray-100 bg-white px-6 py-5">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              {/* Vendor Info */}
+              <div className="flex items-center gap-4">
+                {selectedVendor?.sellerIDDetail?.profilePicture && (
+                  <div className="relative h-14 w-14 overflow-hidden rounded-full border-2 border-orange-200 shadow-md">
+                    <Image
+                      src={selectedVendor.sellerIDDetail.profilePicture}
+                      alt="Vendor"
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                )}
+                <div>
+                  <h3 className="text-lg font-bold text-gray-900">
+                    {selectedVendor?.sellerIDDetail?.accountName ||
+                      `${selectedVendor?.sellerIDDetail?.firstName || ""} ${selectedVendor?.sellerIDDetail?.lastName || ""}`.trim() ||
+                      selectedVendor?.sellerIDDetail?.email ||
+                      `Vendor ${selectedVendor?.sellerID}`}
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    {t("vendor_details") || "Vendor Details"}
+                  </p>
+                </div>
+              </div>
+
+              {/* Price and Checkout */}
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                <div className="flex items-center gap-3 rounded-xl border border-green-100 bg-green-50 px-5 py-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-500 shadow-md">
+                    <svg
+                      className="h-5 w-5 text-white"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                  </div>
+                  <div className="flex flex-col">
+                    <span
+                      className="text-xs font-medium text-gray-600"
+                      dir={langDir}
+                      translate="no"
+                    >
+                      {t("offering_price")}
+                    </span>
+                    <span className="text-xl font-bold text-gray-900">
+                      {(() => {
+                        // Calculate total from approved product prices
+                        if (
+                          !selectedVendor?.rfqQuotesProducts ||
+                          selectedVendor.rfqQuotesProducts.length === 0
+                        ) {
+                          return selectedVendor?.offerPrice
+                            ? `${currency.symbol}${selectedVendor?.offerPrice}`
+                            : "-";
+                        }
+                        const calculatedTotal =
+                          selectedVendor.rfqQuotesProducts.reduce(
+                            (total: number, product: any) => {
+                              if (
+                                product?.priceRequest &&
+                                product?.priceRequest?.status === "APPROVED" &&
+                                product?.offerPrice
+                              ) {
+                                const price = parseFloat(
+                                  product.offerPrice || "0",
+                                );
+                                const quantity = product.quantity || 1;
+                                return total + price * quantity;
+                              }
+                              return total;
+                            },
+                            0,
+                          );
+                        // If we have approved prices, show calculated total, otherwise show original offer price
+                        const hasApprovedPrices =
+                          selectedVendor.rfqQuotesProducts.some(
+                            (product: any) =>
+                              product?.priceRequest &&
+                              product?.priceRequest?.status === "APPROVED",
+                          );
+                        return hasApprovedPrices && calculatedTotal > 0
+                          ? `${currency.symbol}${calculatedTotal}`
+                          : selectedVendor?.offerPrice
+                            ? `${currency.symbol}${selectedVendor?.offerPrice}`
+                            : "-";
+                      })()}
+                    </span>
+                  </div>
+                </div>
+                {(() => {
+                  // Show checkout button if there are approved prices or original offer price exists
+                  if (
+                    !selectedVendor?.rfqQuotesProducts ||
+                    selectedVendor.rfqQuotesProducts.length === 0
+                  ) {
+                    return selectedVendor?.offerPrice ? true : false;
+                  }
+                  const hasApprovedPrices =
+                    selectedVendor.rfqQuotesProducts.some(
+                      (product: any) =>
+                        product?.priceRequest &&
+                        product?.priceRequest?.status === "APPROVED",
+                    );
+                  return hasApprovedPrices || selectedVendor?.offerPrice;
+                })() && (
+                  <button
+                    onClick={handleCheckout}
+                    disabled={!canCheckout()}
+                    className="bg-dark-orange inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-orange-500/30 transition-all duration-200 hover:scale-105 hover:shadow-xl hover:shadow-orange-500/40 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100"
+                    dir={langDir}
+                    translate="no"
+                  >
+                    <svg
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                      />
+                    </svg>
+                    {t("checkout")}
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
+
           {/* Product Details Table */}
-          <div className="flex-1 overflow-y-auto px-6 py-4">
+          <div className="flex-1 overflow-y-auto px-6 py-6">
             {selectedVendor?.rfqQuotesProducts?.length > 0 ? (
-              <div className="mb-6 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-                <div className="sticky top-0 z-10 grid grid-cols-6 gap-4 border-b border-gray-200 bg-white px-4 py-3">
+              <div className="mb-6 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-md">
+                <div className="sticky top-0 z-10 grid grid-cols-6 gap-4 border-b border-gray-200 bg-white px-4 py-4">
                   <div
                     className="text-xs font-bold text-gray-700 md:text-sm"
                     dir={langDir}
@@ -1146,6 +1257,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
                         offerPriceFrom?: number;
                         offerPriceTo?: number;
                         productType?: string;
+                        hasFirstVendorApproval?: boolean;
                         rfqProductDetails: {
                           productName: string;
                           productImages: {
@@ -1177,6 +1289,10 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
                           productName={item?.rfqProductDetails?.productName}
                           onRequestPrice={handleRequestPrice}
                           priceRequest={item?.priceRequest}
+                          isBuyer={true}
+                          hasFirstVendorApproval={
+                            item?.hasFirstVendorApproval || false
+                          }
                         />
                       ),
                     )
@@ -1212,7 +1328,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
             ) : null}
 
             {/* Chat History */}
-            <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
+            <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-md">
               <RfqRequestChatHistory
                 roomId={selectedRoom}
                 selectedChatHistory={selectedChatHistory}
@@ -1226,7 +1342,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
           </div>
 
           {/* Message Input Area */}
-          <div className="border-t border-gray-200 bg-white px-6 py-4">
+          <div className="border-t border-gray-100 bg-white px-6 py-5">
             {/* Attachment Preview */}
             {!isAttachmentUploading && attachments.length > 0 && (
               <div className="mb-3 flex flex-wrap gap-2">
@@ -1329,7 +1445,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
                 type="button"
                 disabled={!message.trim() && attachments.length === 0}
                 className={cn(
-                  "flex h-10 w-10 items-center justify-center rounded-lg text-white shadow-md transition-all hover:scale-105 hover:shadow-lg disabled:cursor-not-allowed disabled:from-gray-300 disabled:to-gray-400 disabled:hover:scale-100",
+                  "bg-dark-orange flex h-10 w-10 items-center justify-center rounded-lg text-white shadow-md transition-all hover:scale-105 hover:shadow-lg disabled:cursor-not-allowed disabled:bg-gray-400 disabled:hover:scale-100",
                 )}
               >
                 <Image src={SendIcon} alt="send-icon" className="h-5 w-5" />
@@ -1337,7 +1453,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

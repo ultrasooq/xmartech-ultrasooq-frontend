@@ -336,6 +336,102 @@ const MyOrderDetailsPage = () => {
             </div>
           )}
 
+          {/* Order Summary Section */}
+          {orderDetails?.orderProduct_order && (
+            <Card className="mb-8 shadow-md">
+              <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50">
+                <CardTitle className="flex items-center gap-2">
+                  <FileText className="h-5 w-5 text-blue-600" />
+                  Order Summary
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-600">
+                      Order Number
+                    </label>
+                    <p className="text-lg font-semibold text-gray-900">
+                      {orderDetails.orderProduct_order.orderNo || "N/A"}
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-600">
+                      Order Status
+                    </label>
+                    <p className="text-lg font-semibold text-gray-900">
+                      {orderDetails.orderProduct_order.orderStatus || "N/A"}
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-600">
+                      Date & Time
+                    </label>
+                    <p className="text-lg font-semibold text-gray-900">
+                      {orderDetails.orderProduct_order.orderDate
+                        ? formatDate(orderDetails.orderProduct_order.orderDate)
+                        : orderDetails.orderProduct_order.createdAt
+                          ? formatDate(orderDetails.orderProduct_order.createdAt)
+                          : "N/A"}
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-600">
+                      Subtotal
+                    </label>
+                    <p className="text-lg font-semibold text-gray-900">
+                      {currency.symbol}
+                      {orderDetails.orderProduct_order.totalPrice || 0}
+                    </p>
+                  </div>
+                  {orderDetails.orderProduct_order.totalDiscount > 0 && (
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-gray-600">
+                        Discount
+                      </label>
+                      <p className="text-lg font-semibold text-green-600">
+                        -{currency.symbol}
+                        {orderDetails.orderProduct_order.totalDiscount || 0}
+                      </p>
+                    </div>
+                  )}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-600">
+                      Total Amount
+                    </label>
+                    <p className="text-xl font-bold text-blue-600">
+                      {currency.symbol}
+                      {orderDetails.orderProduct_order.totalCustomerPay || 0}
+                    </p>
+                  </div>
+                  {orderDetails.orderProduct_order.paymentType !== 'DIRECT' && 
+                   orderDetails.orderProduct_order.dueAmount > 0 && (
+                    <>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-600">
+                          Advance Paid
+                        </label>
+                        <p className="text-lg font-semibold text-gray-900">
+                          {currency.symbol}
+                          {orderDetails.orderProduct_order.advanceAmount || 0}
+                        </p>
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-600">
+                          Remaining Due
+                        </label>
+                        <p className="text-lg font-semibold text-orange-600">
+                          {currency.symbol}
+                          {orderDetails.orderProduct_order.dueAmount || 0}
+                        </p>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Shipping & Product Details Row */}
           <div className="mb-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
             {/* Shipping Details */}
@@ -613,7 +709,15 @@ const MyOrderDetailsPage = () => {
                             {t("placed")}
                           </h4>
                           <p className="text-sm text-gray-600">
-                            {formatDate(orderDetails?.orderProductDate)}
+                            {orderDetails?.orderProductDate
+                              ? formatDate(orderDetails.orderProductDate)
+                              : orderDetails?.orderProduct_order?.orderDate
+                                ? formatDate(orderDetails.orderProduct_order.orderDate)
+                                : orderDetails?.orderProduct_order?.createdAt
+                                  ? formatDate(orderDetails.orderProduct_order.createdAt)
+                                  : orderDetails?.createdAt
+                                    ? formatDate(orderDetails.createdAt)
+                                    : "N/A"}
                           </p>
                         </div>
                       </div>
@@ -658,7 +762,15 @@ const MyOrderDetailsPage = () => {
                               "SHIPPED",
                               "CONFIRMED",
                             ].includes(orderDetails?.orderProductStatus || "")
-                              ? formatDate(orderDetails?.orderProductDate)
+                              ? (orderDetails?.orderProductDate
+                                  ? formatDate(orderDetails.orderProductDate)
+                                  : orderDetails?.orderProduct_order?.orderDate
+                                    ? formatDate(orderDetails.orderProduct_order.orderDate)
+                                    : orderDetails?.orderProduct_order?.createdAt
+                                      ? formatDate(orderDetails.orderProduct_order.createdAt)
+                                      : orderDetails?.createdAt
+                                        ? formatDate(orderDetails.createdAt)
+                                        : "N/A")
                               : "Pending"}
                           </p>
                         </div>

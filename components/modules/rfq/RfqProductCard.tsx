@@ -195,8 +195,12 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
               size="sm"
               className="h-6 w-6 sm:h-8 sm:w-8 rounded-full border-gray-300 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 p-0"
               onClick={() => {
-                setQuantity(quantity - 1);
-                onAdd(quantity - 1, id, "remove", offerPriceFrom, offerPriceTo, productNote || "");
+                const newQuantity = Math.max(quantity - 1, 0);
+                setQuantity(newQuantity);
+                // If quantity becomes 0 and item is in cart, remove it
+                if (newQuantity === 0 && isAddedToCart) {
+                  onAdd(0, id, "remove", offerPriceFrom, offerPriceTo, productNote || "");
+                }
               }}
               disabled={quantity === 0}
             >
@@ -214,7 +218,21 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
               className="h-6 w-12 sm:h-8 sm:w-16 text-center text-xs sm:text-sm font-medium border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               onChange={(e) => {
                 const value = Number(e.target.value);
-                setQuantity(isNaN(value) ? productQuantity : value);
+                const newQuantity = isNaN(value) || value < 0 ? 0 : value;
+                setQuantity(newQuantity);
+                // If quantity becomes 0 and item is in cart, remove it
+                if (newQuantity === 0 && isAddedToCart) {
+                  onAdd(0, id, "remove", offerPriceFrom, offerPriceTo, productNote || "");
+                }
+              }}
+              onBlur={(e) => {
+                // Handle empty input - treat as 0
+                if (e.target.value === "" || Number(e.target.value) === 0) {
+                  setQuantity(0);
+                  if (isAddedToCart) {
+                    onAdd(0, id, "remove", offerPriceFrom, offerPriceTo, productNote || "");
+                  }
+                }
               }}
             />
             <Button
@@ -224,7 +242,6 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
               className="h-6 w-6 sm:h-8 sm:w-8 rounded-full border-gray-300 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 p-0"
               onClick={() => {
                 setQuantity(quantity + 1);
-                onAdd(quantity + 1, id, "add", offerPriceFrom, offerPriceTo, productNote || "");
               }}
             >
               <Image
@@ -273,7 +290,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
             <button
               type="button"
               className="w-full bg-linear-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold py-1.5 sm:py-2 px-2 sm:px-4 rounded-lg transition-all duration-200 transform hover:scale-105 shadow-md disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none text-xs sm:text-sm"
-              onClick={() => onAdd(quantity + 1, id, "add", offerPriceFrom, offerPriceTo, productNote || "")}
+              onClick={() => onAdd(quantity || 1, id, "add", offerPriceFrom, offerPriceTo, productNote || "")}
               disabled={quantity == 0}
               dir={langDir}
               translate="no"

@@ -60,7 +60,7 @@ import { IBrands, ISelectOptions } from "@/utils/types/common.types";
 import { useCategoryStore } from "@/lib/categoryStore";
 import CategoryFilter from "@/components/modules/manageProducts/CategoryFilter";
 // @ts-ignore
-import  { startDebugger }  from "remove-child-node-error-debugger";
+import { startDebugger } from "remove-child-node-error-debugger";
 import {
   Sheet,
   SheetContent,
@@ -125,7 +125,10 @@ const RfqPage = (props: RfqPageProps) => {
     page,
     limit,
     term: searchRfqTerm,
-    adminId: me?.data?.data?.tradeRole == "MEMBER" ? me?.data?.data?.addedBy : me?.data?.data?.id,
+    adminId:
+      me?.data?.data?.tradeRole == "MEMBER"
+        ? me?.data?.data?.addedBy
+        : me?.data?.data?.id,
     sortType: sortBy,
     brandIds: selectedBrandIds.join(","),
     isOwner: displayMyProducts == "1" ? "me" : "",
@@ -209,8 +212,9 @@ const RfqPage = (props: RfqPageProps) => {
     offerPriceTo?: number,
     note?: string,
   ) => {
-    if (action == "remove" && quantity == 0) {
-      handleAddToCart(quantity, productId, "remove", 0, 0, "");
+    // If quantity is 0 or action is "remove", remove from cart
+    if (action === "remove" || quantity === 0 || !quantity) {
+      handleAddToCart(0, productId, "remove", 0, 0, "");
     } else {
       handleToggleAddModal();
       setSelectedProductId(productId);
@@ -379,209 +383,211 @@ const RfqPage = (props: RfqPageProps) => {
 
   return (
     <>
-      <title dir={langDir} translate="no">{t("rfq")} | Ultrasooq</title>
+      <title dir={langDir} translate="no">
+        {t("rfq")} | Ultrasooq
+      </title>
       <div className="body-content-s1">
         {/* Full Width Three Column Layout */}
-        <div className="w-full min-h-screen bg-white px-2 sm:px-4 lg:px-8">
-          <div className="flex flex-col lg:flex-row h-full gap-4">
+        <div className="min-h-screen w-full bg-white px-2 sm:px-4 lg:px-8">
+          <div className="flex h-full flex-col gap-4 lg:flex-row">
             {/* Left Column - Filters (Desktop) */}
-            <div className="hidden lg:block w-64 flex-shrink-0 overflow-y-auto p-4 bg-white">
-                <div className="bg-white rounded-lg shadow-lg p-6">
-                  <div className="mb-4">
-                    <div className="flex gap-2 mb-4">
-                      <button 
-                        type="button" 
-                        onClick={selectAll}
-                        className="px-3 py-2 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors text-sm"
-                      >
-                    {t("select_all")}
-                  </button>
-                      <button 
-                        type="button" 
-                        onClick={clearFilter}
-                        className="px-3 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors text-sm"
-                      >
-                    {t("clean_select")}
-                  </button>
+            <div className="hidden w-64 flex-shrink-0 overflow-y-auto bg-white p-4 lg:block">
+              <div className="rounded-lg bg-white p-6 shadow-lg">
+                <div className="mb-4">
+                  <div className="mb-4 flex gap-2">
+                    <button
+                      type="button"
+                      onClick={selectAll}
+                      className="rounded bg-blue-100 px-3 py-2 text-sm text-blue-700 transition-colors hover:bg-blue-200"
+                    >
+                      {t("select_all")}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={clearFilter}
+                      className="rounded bg-gray-100 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-200"
+                    >
+                      {t("clean_select")}
+                    </button>
+                  </div>
                 </div>
-                  </div>
 
-                  {/* Category Filter */}
-                  <Accordion
-                    type="multiple"
-                    defaultValue={["category_filter"]}
-                    className="mb-4"
-                  >
-                    <AccordionItem value="category_filter">
-                      <AccordionTrigger className="text-base hover:no-underline!">
-                        {t("by_category")}
-                      </AccordionTrigger>
-                      <AccordionContent>
-                        <CategoryFilter
-                          selectedCategoryIds={selectedCategoryIds}
-                          onCategoryChange={handleCategoryChange}
-                          onClear={handleCategoryClear}
-                        />
-                      </AccordionContent>
-                    </AccordionItem>
-                  </Accordion>
+                {/* Category Filter */}
+                <Accordion
+                  type="multiple"
+                  defaultValue={["category_filter"]}
+                  className="mb-4"
+                >
+                  <AccordionItem value="category_filter">
+                    <AccordionTrigger className="text-base hover:no-underline!">
+                      {t("by_category")}
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <CategoryFilter
+                        selectedCategoryIds={selectedCategoryIds}
+                        onCategoryChange={handleCategoryChange}
+                        onClear={handleCategoryClear}
+                      />
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
 
-                  {/* Brand Filter */}
-                  <Accordion
-                    type="multiple"
-                    defaultValue={["brand"]}
-                    className="mb-4"
-                  >
-                    <AccordionItem value="brand">
-                      <AccordionTrigger className="text-base hover:no-underline!">
-                        {t("by_brand")}
-                      </AccordionTrigger>
-                      <AccordionContent>
-                        <div className="mb-3">
-                          <div className="flex gap-2">
-                            <Input
-                              type="text"
-                              placeholder={t("search_brand")}
-                              className="flex-1 h-8 text-sm"
-                              onChange={handleBrandSearchChange}
-                              dir={langDir}
-                              translate="no"
-                            />
-                            <Button
-                              type="button"
-                              onClick={handleBrandSearch}
-                              disabled={!searchTermBrand.trim()}
-                              size="sm"
-                              className="h-8 px-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-xs"
-                            >
-                              {t("search")}
-                            </Button>
-                          </div>
+                {/* Brand Filter */}
+                <Accordion
+                  type="multiple"
+                  defaultValue={["brand"]}
+                  className="mb-4"
+                >
+                  <AccordionItem value="brand">
+                    <AccordionTrigger className="text-base hover:no-underline!">
+                      {t("by_brand")}
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <div className="mb-3">
+                        <div className="flex gap-2">
+                          <Input
+                            type="text"
+                            placeholder={t("search_brand")}
+                            className="h-8 flex-1 text-sm"
+                            onChange={handleBrandSearchChange}
+                            dir={langDir}
+                            translate="no"
+                          />
+                          <Button
+                            type="button"
+                            onClick={handleBrandSearch}
+                            disabled={!searchTermBrand.trim()}
+                            size="sm"
+                            className="h-8 bg-blue-600 px-3 text-xs hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-400"
+                          >
+                            {t("search")}
+                          </Button>
                         </div>
-                        <div className="space-y-2 max-h-40 overflow-y-auto">
-                          {!memoizedBrands.length ? (
-                            <p className="text-center text-sm text-gray-500">
-                              {t("no_data_found")}
-                            </p>
-                          ) : null}
-                          {memoizedBrands.map((item: ISelectOptions) => (
-                            <div key={item.value} className="flex items-center space-x-2">
-                              <Checkbox
-                                id={item.label}
-                                className="border border-gray-300 data-[state=checked]:bg-blue-600!"
-                                onCheckedChange={(checked) =>
-                                  handleBrandChange(checked, item)
-                                }
-                                checked={selectedBrandIds.includes(item.value)}
-                              />
-                              <label
-                                htmlFor={item.label}
-                                className="text-sm font-medium leading-none cursor-pointer"
-                              >
-                                {item.label}
-                              </label>
-                            </div>
-                          ))}
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
-                  </Accordion>
-
-                  {/* Price Filter */}
-                  <Accordion
-                    type="multiple"
-                    defaultValue={["price"]}
-                  >
-                    <AccordionItem value="price">
-                      <AccordionTrigger className="text-base hover:no-underline!">
-                        {t("price")}
-                      </AccordionTrigger>
-                      <AccordionContent>
-                        <div className="px-4">
-                          <div className="px-2">
-                            <ReactSlider
-                              className="horizontal-slider"
-                              thumbClassName="example-thumb"
-                              trackClassName="example-track"
-                              defaultValue={[0, 500]}
-                              ariaLabel={["Lower thumb", "Upper thumb"]}
-                              ariaValuetext={(state) =>
-                                `Thumb value ${state.valueNow}`
+                      </div>
+                      <div className="max-h-40 space-y-2 overflow-y-auto">
+                        {!memoizedBrands.length ? (
+                          <p className="text-center text-sm text-gray-500">
+                            {t("no_data_found")}
+                          </p>
+                        ) : null}
+                        {memoizedBrands.map((item: ISelectOptions) => (
+                          <div
+                            key={item.value}
+                            className="flex items-center space-x-2"
+                          >
+                            <Checkbox
+                              id={item.label}
+                              className="border border-gray-300 data-[state=checked]:bg-blue-600!"
+                              onCheckedChange={(checked) =>
+                                handleBrandChange(checked, item)
                               }
-                              renderThumb={(props, state) => (
-                                <div {...props} key={props.key}>
-                                  {state.valueNow}
-                                </div>
-                              )}
-                              pearling
-                              minDistance={10}
-                              onChange={(value) => handlePriceDebounce(value)}
-                              max={500}
-                              min={0}
-                />
-              </div>
-                          <div className="flex justify-center">
-                            <Button
-                              variant="outline"
-                              className="mb-4"
-                              onClick={() => setPriceRange([])}
-                  dir={langDir}
-                              translate="no"
+                              checked={selectedBrandIds.includes(item.value)}
+                            />
+                            <label
+                              htmlFor={item.label}
+                              className="cursor-pointer text-sm leading-none font-medium"
                             >
-                              {t("clear")}
-                            </Button>
+                              {item.label}
+                            </label>
                           </div>
-                          <div className="range-price-left-right-info">
-                            <Input
-                              type="number"
-                              placeholder={`${currency.symbol}0`}
-                              className="custom-form-control-s1 rounded-none"
-                              onChange={handleMinPriceChange}
-                              onWheel={(e) => e.currentTarget.blur()}
-                              ref={minPriceInputRef}
-                            />
-                            <div className="center-divider"></div>
-                            <Input
-                              type="number"
-                              placeholder={`${currency.symbol}500`}
-                              className="custom-form-control-s1 rounded-none"
-                              onChange={handleMaxPriceChange}
-                              onWheel={(e) => e.currentTarget.blur()}
-                              ref={maxPriceInputRef}
-                            />
-                          </div>
+                        ))}
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+
+                {/* Price Filter */}
+                <Accordion type="multiple" defaultValue={["price"]}>
+                  <AccordionItem value="price">
+                    <AccordionTrigger className="text-base hover:no-underline!">
+                      {t("price")}
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <div className="px-4">
+                        <div className="px-2">
+                          <ReactSlider
+                            className="horizontal-slider"
+                            thumbClassName="example-thumb"
+                            trackClassName="example-track"
+                            defaultValue={[0, 500]}
+                            ariaLabel={["Lower thumb", "Upper thumb"]}
+                            ariaValuetext={(state) =>
+                              `Thumb value ${state.valueNow}`
+                            }
+                            renderThumb={(props, state) => (
+                              <div {...props} key={props.key}>
+                                {state.valueNow}
+                              </div>
+                            )}
+                            pearling
+                            minDistance={10}
+                            onChange={(value) => handlePriceDebounce(value)}
+                            max={500}
+                            min={0}
+                          />
                         </div>
-                      </AccordionContent>
-                    </AccordionItem>
-                  </Accordion>
-                  </div>
-                  </div>
-            
+                        <div className="flex justify-center">
+                          <Button
+                            variant="outline"
+                            className="mb-4"
+                            onClick={() => setPriceRange([])}
+                            dir={langDir}
+                            translate="no"
+                          >
+                            {t("clear")}
+                          </Button>
+                        </div>
+                        <div className="range-price-left-right-info">
+                          <Input
+                            type="number"
+                            placeholder={`${currency.symbol}0`}
+                            className="custom-form-control-s1 rounded-none"
+                            onChange={handleMinPriceChange}
+                            onWheel={(e) => e.currentTarget.blur()}
+                            ref={minPriceInputRef}
+                          />
+                          <div className="center-divider"></div>
+                          <Input
+                            type="number"
+                            placeholder={`${currency.symbol}500`}
+                            className="custom-form-control-s1 rounded-none"
+                            onChange={handleMaxPriceChange}
+                            onWheel={(e) => e.currentTarget.blur()}
+                            ref={maxPriceInputRef}
+                          />
+                        </div>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              </div>
+            </div>
+
             {/* Middle Column - Products (MAIN CONTENT - PRIORITIZED) */}
-            <div className="flex-1 bg-white overflow-y-auto w-full lg:w-auto">
+            <div className="w-full flex-1 overflow-y-auto bg-white lg:w-auto">
               <div className="p-2 sm:p-4 lg:p-6">
                 {/* Product Header Filter Section */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="mb-6 flex flex-col items-start justify-between gap-4 rounded-lg border border-gray-200 bg-gray-50 p-4 sm:flex-row sm:items-center">
                   {/* Left Section - Mobile Buttons & Title */}
-                  <div className="flex items-center gap-3 w-full sm:w-auto">
+                  <div className="flex w-full items-center gap-3 sm:w-auto">
                     {/* Mobile Filter Button */}
                     <button
                       type="button"
-                      className="lg:hidden p-2.5 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors"
+                      className="rounded-lg border border-gray-300 bg-white p-2.5 transition-colors hover:bg-gray-100 lg:hidden"
                       onClick={() => setProductFilter(true)}
                     >
                       <FilterMenuIcon />
                     </button>
-                    
+
                     {/* Mobile Cart Button */}
                     <button
                       type="button"
-                      className="lg:hidden p-2.5 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors relative"
+                      className="relative rounded-lg border border-gray-300 bg-white p-2.5 transition-colors hover:bg-gray-100 lg:hidden"
                       onClick={() => setShowCartDrawer(true)}
                     >
                       <ShoppingCart className="h-5 w-5" />
                       {cartList.length > 0 && (
-                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                        <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
                           {cartList.length}
                         </span>
                       )}
@@ -589,17 +595,24 @@ const RfqPage = (props: RfqPageProps) => {
 
                     {/* Title */}
                     <div className="flex-1 sm:flex-none">
-                      <h2 className="text-base sm:text-xl font-semibold text-gray-900" dir={langDir} translate="no">
+                      <h2
+                        className="text-base font-semibold text-gray-900 sm:text-xl"
+                        dir={langDir}
+                        translate="no"
+                      >
                         {t("rfq_products")}
                       </h2>
                     </div>
                   </div>
 
                   {/* Right Section - Sort & View Controls */}
-                  <div className="flex items-center gap-3 w-full sm:w-auto">
+                  <div className="flex w-full items-center gap-3 sm:w-auto">
                     {/* Sort Dropdown */}
-                    <Select onValueChange={(e: any) => setSortBy(e)} value={sortBy}>
-                      <SelectTrigger className="w-full sm:w-[180px] h-10 bg-white border-gray-300">
+                    <Select
+                      onValueChange={(e: any) => setSortBy(e)}
+                      value={sortBy}
+                    >
+                      <SelectTrigger className="h-10 w-full border-gray-300 bg-white sm:w-[180px]">
                         <SelectValue
                           placeholder={t("sort_by")}
                           dir={langDir}
@@ -608,10 +621,18 @@ const RfqPage = (props: RfqPageProps) => {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
-                          <SelectItem value="newest" dir={langDir} translate="no">
+                          <SelectItem
+                            value="newest"
+                            dir={langDir}
+                            translate="no"
+                          >
                             {t("sort_by_latest")}
                           </SelectItem>
-                          <SelectItem value="oldest" dir={langDir} translate="no">
+                          <SelectItem
+                            value="oldest"
+                            dir={langDir}
+                            translate="no"
+                          >
                             {t("sort_by_oldest")}
                           </SelectItem>
                         </SelectGroup>
@@ -619,12 +640,12 @@ const RfqPage = (props: RfqPageProps) => {
                     </Select>
 
                     {/* View Type Buttons */}
-                    <div className="hidden sm:flex items-center gap-2 bg-white border border-gray-300 rounded-lg p-1">
+                    <div className="hidden items-center gap-2 rounded-lg border border-gray-300 bg-white p-1 sm:flex">
                       <button
                         type="button"
-                        className={`p-2 rounded transition-colors ${
-                          viewType === "grid" 
-                            ? "bg-blue-600 text-white" 
+                        className={`rounded p-2 transition-colors ${
+                          viewType === "grid"
+                            ? "bg-blue-600 text-white"
                             : "text-gray-600 hover:bg-gray-100"
                         }`}
                         onClick={() => setViewType("grid")}
@@ -633,9 +654,9 @@ const RfqPage = (props: RfqPageProps) => {
                       </button>
                       <button
                         type="button"
-                        className={`p-2 rounded transition-colors ${
-                          viewType === "list" 
-                            ? "bg-blue-600 text-white" 
+                        className={`rounded p-2 transition-colors ${
+                          viewType === "list"
+                            ? "bg-blue-600 text-white"
                             : "text-gray-600 hover:bg-gray-100"
                         }`}
                         onClick={() => setViewType("list")}
@@ -648,12 +669,12 @@ const RfqPage = (props: RfqPageProps) => {
 
                 {/* Search and Add Product Section */}
                 <div className="mb-6">
-                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center">
+                  <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:gap-4">
                     <div className="flex-1">
                       <div className="relative">
                         <input
                           type="search"
-                          className="w-full px-4 py-2 sm:py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
+                          className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-transparent focus:ring-2 focus:ring-blue-500 sm:py-2.5 sm:text-base"
                           placeholder={t("search_product")}
                           onChange={handleRfqDebounce}
                           ref={searchInputRef}
@@ -662,16 +683,26 @@ const RfqPage = (props: RfqPageProps) => {
                           translate="no"
                         />
                         <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-                          <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                          <svg
+                            className="h-4 w-4 text-gray-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                            />
                           </svg>
                         </div>
                       </div>
                     </div>
-                    {haveAccessToken && me?.data?.data?.tradeRole != 'BUYER' ? (
+                    {haveAccessToken && me?.data?.data?.tradeRole != "BUYER" ? (
                       <Link
                         href="/product?productType=R"
-                        className="flex items-center justify-center gap-x-2 bg-orange-500 hover:bg-orange-600 px-4 py-2 sm:py-2.5 text-white rounded-lg transition-colors text-sm sm:text-base whitespace-nowrap"
+                        className="flex items-center justify-center gap-x-2 rounded-lg bg-orange-500 px-4 py-2 text-sm whitespace-nowrap text-white transition-colors hover:bg-orange-600 sm:py-2.5 sm:text-base"
                         dir={langDir}
                         translate="no"
                       >
@@ -684,7 +715,7 @@ const RfqPage = (props: RfqPageProps) => {
 
                 {/* Loading State */}
                 {rfqProductsQuery.isLoading && viewType === "grid" ? (
-                  <div className="flex flex-col gap-3 sm:grid sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4 lg:gap-5 sm:items-stretch">
+                  <div className="flex flex-col gap-3 sm:grid sm:grid-cols-2 sm:items-stretch sm:gap-4 lg:grid-cols-3 lg:gap-5 xl:grid-cols-4">
                     {Array.from({ length: 10 }).map((_, index) => (
                       <SkeletonProductCardLoader key={index} />
                     ))}
@@ -694,8 +725,12 @@ const RfqPage = (props: RfqPageProps) => {
                 {/* No Data State */}
                 {!rfqProductsQuery?.data?.data?.length &&
                 !rfqProductsQuery.isLoading ? (
-                  <div className="text-center py-12">
-                    <p className="text-gray-500 text-lg" dir={langDir} translate="no">
+                  <div className="py-12 text-center">
+                    <p
+                      className="text-lg text-gray-500"
+                      dir={langDir}
+                      translate="no"
+                    >
                       {t("no_data_found")}
                     </p>
                   </div>
@@ -703,66 +738,60 @@ const RfqPage = (props: RfqPageProps) => {
 
                 {/* Grid View */}
                 {viewType === "grid" && !rfqProductsQuery.isLoading ? (
-                  <div className="flex flex-col gap-3 sm:grid sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4 lg:gap-5 sm:items-stretch">
-                          {memoizedRfqProducts.map((item: any) => (
-                            <RfqProductCard
-                              key={item.id}
-                              id={item.id}
-                              productType={item?.productType || "-"}
-                              productName={item?.productName || "-"}
-                              productNote={
-                                cartList?.find(
-                                  (el: any) => el.productId == item.id,
-                                )?.note || ""
-                              }
-                              productStatus={item?.status}
-                              productImages={item?.productImages}
-                              productQuantity={item?.quantity || 0}
-                              productPrice={item?.product_productPrice}
-                              offerPriceFrom={
-                                cartList?.find(
-                                  (el: any) => el.productId == item.id,
-                                )?.offerPriceFrom
-                              }
-                              offerPriceTo={
-                                cartList?.find(
-                                  (el: any) => el.productId == item.id,
-                                )?.offerPriceTo
-                              }
-                              onAdd={handleRFQCart}
-                              onToCart={handleCartPage}
-                              onEdit={() => {
-                                handleToggleAddModal();
-                                setSelectedProductId(item?.id);
-                              }}
-                              onWishlist={() =>
-                                handleAddToWishlist(
-                                  item.id,
-                                  item?.product_wishlist,
-                                )
-                              }
-                              isCreatedByMe={item?.userId === me.data?.data?.id}
-                              isAddedToCart={item?.isAddedToCart}
-                              inWishlist={item?.product_wishlist?.find(
-                                (el: any) => el?.userId === me.data?.data?.id,
-                              )}
-                              haveAccessToken={haveAccessToken}
-                          productReview={item?.productReview || []}
-                          shortDescription={item?.product_productShortDescription?.[0]?.shortDescription || ""}
-                            />
-                          ))}
-                        </div>
-                      ) : null}
+                  <div className="flex flex-col gap-3 sm:grid sm:grid-cols-2 sm:items-stretch sm:gap-4 lg:grid-cols-3 lg:gap-5 xl:grid-cols-4">
+                    {memoizedRfqProducts.map((item: any) => (
+                      <RfqProductCard
+                        key={item.id}
+                        id={item.id}
+                        productType={item?.productType || "-"}
+                        productName={item?.productName || "-"}
+                        productNote={
+                          cartList?.find((el: any) => el.productId == item.id)
+                            ?.note || ""
+                        }
+                        productStatus={item?.status}
+                        productImages={item?.productImages}
+                        productQuantity={item?.quantity || 0}
+                        productPrice={item?.product_productPrice}
+                        offerPriceFrom={
+                          cartList?.find((el: any) => el.productId == item.id)
+                            ?.offerPriceFrom
+                        }
+                        offerPriceTo={
+                          cartList?.find((el: any) => el.productId == item.id)
+                            ?.offerPriceTo
+                        }
+                        onAdd={handleRFQCart}
+                        onToCart={handleCartPage}
+                        onEdit={() => {
+                          handleToggleAddModal();
+                          setSelectedProductId(item?.id);
+                        }}
+                        onWishlist={() =>
+                          handleAddToWishlist(item.id, item?.product_wishlist)
+                        }
+                        isCreatedByMe={item?.userId === me.data?.data?.id}
+                        isAddedToCart={item?.isAddedToCart}
+                        inWishlist={item?.product_wishlist?.find(
+                          (el: any) => el?.userId === me.data?.data?.id,
+                        )}
+                        haveAccessToken={haveAccessToken}
+                        productReview={item?.productReview || []}
+                        shortDescription={
+                          item?.product_productShortDescription?.[0]
+                            ?.shortDescription || ""
+                        }
+                      />
+                    ))}
+                  </div>
+                ) : null}
 
-                  {/* List View */}
-                      {viewType === "list" &&
-                      rfqProductsQuery?.data?.data?.length ? (
-                    <div className="bg-white rounded-lg shadow">
-                          <RfqProductTable
-                            list={rfqProductsQuery?.data?.data}
-                          />
-                        </div>
-                      ) : null}
+                {/* List View */}
+                {viewType === "list" && rfqProductsQuery?.data?.data?.length ? (
+                  <div className="rounded-lg bg-white shadow">
+                    <RfqProductTable list={rfqProductsQuery?.data?.data} />
+                  </div>
+                ) : null}
 
                 {/* Pagination */}
                 {rfqProductsQuery.data?.totalCount > 10 ? (
@@ -777,100 +806,141 @@ const RfqPage = (props: RfqPageProps) => {
                 ) : null}
               </div>
             </div>
-            
+
             {/* Right Column - RFQ Cart (Desktop) */}
-            <div className="hidden lg:block w-72 flex-shrink-0 bg-white rounded-lg shadow-sm">
+            <div className="hidden w-72 flex-shrink-0 rounded-lg bg-white shadow-sm lg:block">
               <div className="sticky top-0 h-screen overflow-y-auto">
-                <div className="bg-white rounded-lg shadow-lg m-4 p-6">
+                <div className="m-4 rounded-lg bg-white p-6 shadow-lg">
                   <div className="cart_sidebar">
-                    <div className="border-b border-gray-200 pb-4 mb-4">
+                    <div className="mb-4 border-b border-gray-200 pb-4">
                       <div className="flex items-center justify-between">
-                        <h3 className="text-lg font-semibold text-gray-900">{t("my_cart")}</h3>
-                        <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
-                          {cartList.length} {cartList.length === 1 ? t("item") : t("items")}
+                        <h3 className="text-lg font-semibold text-gray-900">
+                          {t("my_cart")}
+                        </h3>
+                        <span className="rounded-full bg-gray-100 px-2 py-1 text-sm text-gray-500">
+                          {cartList.length}{" "}
+                          {cartList.length === 1 ? t("item") : t("items")}
                         </span>
                       </div>
                     </div>
-                    
+
                     <div className="max-h-64 overflow-y-auto">
                       {cartList.length === 0 ? (
-                        <div className="text-center py-6">
-                          <svg className="h-12 w-12 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                        <div className="py-6 text-center">
+                          <svg
+                            className="mx-auto mb-3 h-12 w-12 text-gray-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                            />
                           </svg>
-                          <p className="text-gray-500 text-sm">{t("your_cart_is_empty")}</p>
-                          <p className="text-gray-400 text-xs mt-1">{t("add_some_products_to_get_started")}</p>
+                          <p className="text-sm text-gray-500">
+                            {t("your_cart_is_empty")}
+                          </p>
+                          <p className="mt-1 text-xs text-gray-400">
+                            {t("add_some_products_to_get_started")}
+                          </p>
                         </div>
                       ) : (
                         <div className="space-y-3">
                           {cartList.slice(0, 3).map((cartItem: any) => {
                             // Find the product data from our memoized product list
-                            const productData = memoizedRfqProducts.find((product: any) => product.id === cartItem.productId);
-                            
+                            const productData = memoizedRfqProducts.find(
+                              (product: any) =>
+                                product.id === cartItem.productId,
+                            );
+
                             return (
-                              <div key={cartItem.id} className="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded-lg transition-colors">
+                              <div
+                                key={cartItem.id}
+                                className="flex items-center space-x-3 rounded-lg p-2 transition-colors hover:bg-gray-50"
+                              >
                                 {/* Product Image */}
-                                <div className="w-12 h-12 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
+                                <div className="h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100">
                                   {productData?.productImages?.[0]?.image ? (
                                     <img
                                       src={productData.productImages[0].image}
-                                      alt={productData.productName || 'Product'}
-                                      className="w-full h-full object-cover"
+                                      alt={productData.productName || "Product"}
+                                      className="h-full w-full object-cover"
                                     />
                                   ) : (
-                                    <div className="w-full h-full flex items-center justify-center">
-                                      <svg className="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                                    <div className="flex h-full w-full items-center justify-center">
+                                      <svg
+                                        className="h-6 w-6 text-gray-400"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                          strokeWidth={2}
+                                          d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                                        />
                                       </svg>
                                     </div>
                                   )}
                                 </div>
-                                
+
                                 {/* Product Info */}
-                                <div className="flex-1 min-w-0">
-                                  <h4 className="text-sm font-medium text-gray-900 truncate">
+                                <div className="min-w-0 flex-1">
+                                  <h4 className="truncate text-sm font-medium text-gray-900">
                                     {productData?.productName || t("product")}
                                   </h4>
-                                  <div className="flex items-center justify-between mt-1">
+                                  <div className="mt-1 flex items-center justify-between">
                                     <p className="text-xs text-gray-500">
                                       Qty: {cartItem.quantity || 1}
-                                    </p>
-                                    <p className="text-sm font-semibold text-green-600">
-                                      {currency.symbol}{Number(cartItem.offerPriceFrom || 0).toFixed(2)}
                                     </p>
                                   </div>
                                 </div>
                               </div>
                             );
                           })}
-                          
+
                           {/* Show "and X more" if there are more than 3 items */}
                           {cartList.length > 3 && (
-                            <div className="text-center py-2">
+                            <div className="py-2 text-center">
                               <p className="text-xs text-gray-500">
-                                {t("and_n_more_items", { n: cartList.length - 3 })}
+                                {t("and_n_more_items", {
+                                  n: cartList.length - 3,
+                                })}
                               </p>
                             </div>
                           )}
                         </div>
                       )}
                     </div>
-                    
+
                     {/* Go to Cart Button */}
                     {cartList.length > 0 && (
-                      <div className="p-4 border-t border-gray-200 bg-gray-50">
+                      <div className="border-t border-gray-200 bg-gray-50 p-4">
                         <button
                           onClick={handleCartPage}
-                          className="w-full bg-orange-600 hover:bg-orange-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2"
+                          className="flex w-full items-center justify-center space-x-2 rounded-lg bg-orange-600 px-4 py-2 font-medium text-white transition-colors duration-200 hover:bg-orange-700"
                         >
-                          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                          <svg
+                            className="h-4 w-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                            />
                           </svg>
                           <span>{t("go_to_rfq_cart")}</span>
                         </button>
                       </div>
                     )}
-                    
                   </div>
                 </div>
               </div>
@@ -880,24 +950,27 @@ const RfqPage = (props: RfqPageProps) => {
 
         {/* Mobile Filter Drawer */}
         <Sheet open={productFilter} onOpenChange={setProductFilter}>
-          <SheetContent side="left" className="w-[300px] sm:w-[400px] overflow-y-auto">
+          <SheetContent
+            side="left"
+            className="w-[300px] overflow-y-auto sm:w-[400px]"
+          >
             <SheetHeader>
               <SheetTitle>{t("filters")}</SheetTitle>
             </SheetHeader>
             <div className="mt-6">
               <div className="mb-4">
-                <div className="flex gap-2 mb-4">
-                  <button 
-                    type="button" 
+                <div className="mb-4 flex gap-2">
+                  <button
+                    type="button"
                     onClick={selectAll}
-                    className="px-3 py-2 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors text-sm"
+                    className="rounded bg-blue-100 px-3 py-2 text-sm text-blue-700 transition-colors hover:bg-blue-200"
                   >
                     {t("select_all")}
                   </button>
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     onClick={clearFilter}
-                    className="px-3 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors text-sm"
+                    className="rounded bg-gray-100 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-200"
                   >
                     {t("clean_select")}
                   </button>
@@ -940,7 +1013,7 @@ const RfqPage = (props: RfqPageProps) => {
                         <Input
                           type="text"
                           placeholder={t("search_brand")}
-                          className="flex-1 h-8 text-sm"
+                          className="h-8 flex-1 text-sm"
                           onChange={handleBrandSearchChange}
                           dir={langDir}
                           translate="no"
@@ -950,20 +1023,23 @@ const RfqPage = (props: RfqPageProps) => {
                           onClick={handleBrandSearch}
                           disabled={!searchTermBrand.trim()}
                           size="sm"
-                          className="h-8 px-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-xs"
+                          className="h-8 bg-blue-600 px-3 text-xs hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-400"
                         >
                           {t("search")}
                         </Button>
                       </div>
                     </div>
-                    <div className="space-y-2 max-h-40 overflow-y-auto">
+                    <div className="max-h-40 space-y-2 overflow-y-auto">
                       {!memoizedBrands.length ? (
                         <p className="text-center text-sm text-gray-500">
                           {t("no_data_found")}
                         </p>
                       ) : null}
                       {memoizedBrands.map((item: ISelectOptions) => (
-                        <div key={item.value} className="flex items-center space-x-2">
+                        <div
+                          key={item.value}
+                          className="flex items-center space-x-2"
+                        >
                           <Checkbox
                             id={`mobile-${item.label}`}
                             className="border border-gray-300 data-[state=checked]:bg-blue-600!"
@@ -974,7 +1050,7 @@ const RfqPage = (props: RfqPageProps) => {
                           />
                           <label
                             htmlFor={`mobile-${item.label}`}
-                            className="text-sm font-medium leading-none cursor-pointer"
+                            className="cursor-pointer text-sm leading-none font-medium"
                           >
                             {item.label}
                           </label>
@@ -986,10 +1062,7 @@ const RfqPage = (props: RfqPageProps) => {
               </Accordion>
 
               {/* Price Filter */}
-              <Accordion
-                type="multiple"
-                defaultValue={["price"]}
-              >
+              <Accordion type="multiple" defaultValue={["price"]}>
                 <AccordionItem value="price">
                   <AccordionTrigger className="text-base hover:no-underline!">
                     {t("price")}
@@ -1056,7 +1129,10 @@ const RfqPage = (props: RfqPageProps) => {
 
         {/* Mobile Cart Drawer */}
         <Sheet open={showCartDrawer} onOpenChange={setShowCartDrawer}>
-          <SheetContent side="right" className="w-[300px] sm:w-[400px] overflow-y-auto">
+          <SheetContent
+            side="right"
+            className="w-[300px] overflow-y-auto sm:w-[400px]"
+          >
             <SheetHeader>
               <SheetTitle className="flex items-center gap-2">
                 <ShoppingCart className="h-5 w-5" />
@@ -1064,59 +1140,66 @@ const RfqPage = (props: RfqPageProps) => {
               </SheetTitle>
             </SheetHeader>
             <div className="mt-6">
-              <div className="border-b border-gray-200 pb-4 mb-4">
-                <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
-                  {cartList.length} {cartList.length === 1 ? t("item") : t("items")}
+              <div className="mb-4 border-b border-gray-200 pb-4">
+                <span className="rounded-full bg-gray-100 px-2 py-1 text-sm text-gray-500">
+                  {cartList.length}{" "}
+                  {cartList.length === 1 ? t("item") : t("items")}
                 </span>
               </div>
-              
+
               <div className="max-h-[calc(100vh-250px)] overflow-y-auto">
                 {cartList.length === 0 ? (
-                  <div className="text-center py-6">
-                    <Package className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-                    <p className="text-gray-500 text-sm">{t("your_cart_is_empty")}</p>
-                    <p className="text-gray-400 text-xs mt-1">{t("add_some_products_to_get_started")}</p>
+                  <div className="py-6 text-center">
+                    <Package className="mx-auto mb-3 h-12 w-12 text-gray-400" />
+                    <p className="text-sm text-gray-500">
+                      {t("your_cart_is_empty")}
+                    </p>
+                    <p className="mt-1 text-xs text-gray-400">
+                      {t("add_some_products_to_get_started")}
+                    </p>
                   </div>
                 ) : (
                   <div className="space-y-3">
                     {cartList.slice(0, 10).map((cartItem: any) => {
-                      const productData = memoizedRfqProducts.find((product: any) => product.id === cartItem.productId);
-                      
+                      const productData = memoizedRfqProducts.find(
+                        (product: any) => product.id === cartItem.productId,
+                      );
+
                       return (
-                        <div key={cartItem.id} className="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded-lg transition-colors">
-                          <div className="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
+                        <div
+                          key={cartItem.id}
+                          className="flex items-center space-x-3 rounded-lg p-2 transition-colors hover:bg-gray-50"
+                        >
+                          <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100">
                             {productData?.productImages?.[0]?.image ? (
                               <img
                                 src={productData.productImages[0].image}
-                                alt={productData.productName || 'Product'}
-                                className="w-full h-full object-cover"
+                                alt={productData.productName || "Product"}
+                                className="h-full w-full object-cover"
                               />
                             ) : (
-                              <div className="w-full h-full flex items-center justify-center">
+                              <div className="flex h-full w-full items-center justify-center">
                                 <Package className="h-8 w-8 text-gray-400" />
                               </div>
                             )}
                           </div>
-                          
-                          <div className="flex-1 min-w-0">
-                            <h4 className="text-sm font-medium text-gray-900 truncate">
+
+                          <div className="min-w-0 flex-1">
+                            <h4 className="truncate text-sm font-medium text-gray-900">
                               {productData?.productName || t("product")}
                             </h4>
-                            <div className="flex items-center justify-between mt-1">
+                            <div className="mt-1 flex items-center justify-between">
                               <p className="text-xs text-gray-500">
                                 Qty: {cartItem.quantity || 1}
-                              </p>
-                              <p className="text-sm font-semibold text-green-600">
-                                {currency.symbol}{Number(cartItem.offerPriceFrom || 0).toFixed(2)}
                               </p>
                             </div>
                           </div>
                         </div>
                       );
                     })}
-                    
+
                     {cartList.length > 10 && (
-                      <div className="text-center py-2">
+                      <div className="py-2 text-center">
                         <p className="text-xs text-gray-500">
                           {t("and_n_more_items", { n: cartList.length - 10 })}
                         </p>
@@ -1125,13 +1208,13 @@ const RfqPage = (props: RfqPageProps) => {
                   </div>
                 )}
               </div>
-              
+
               {/* Go to Cart Button */}
               {cartList.length > 0 && (
-                <div className="p-4 border-t border-gray-200 bg-gray-50">
+                <div className="border-t border-gray-200 bg-gray-50 p-4">
                   <button
                     onClick={handleCartPage}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2"
+                    className="flex w-full items-center justify-center space-x-2 rounded-lg bg-blue-600 px-4 py-2 font-medium text-white transition-colors duration-200 hover:bg-blue-700"
                   >
                     <Package className="h-4 w-4" />
                     <span>{t("go_to_rfq_cart")}</span>

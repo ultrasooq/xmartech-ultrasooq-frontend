@@ -31,7 +31,7 @@ import Pagination from "@/components/shared/Pagination";
 
 const MyOrdersPage = () => {
   const t = useTranslations();
-  const { langDir } = useAuth();
+  const { langDir, currency } = useAuth();
   const [page, setPage] = useState<number>(1);
   const [limit] = useState<number>(40);
   const searchRef = useRef<HTMLInputElement>(null);
@@ -463,28 +463,41 @@ const MyOrdersPage = () => {
                                 </h3>
                                 <div className="mb-3 flex items-center gap-4 text-sm text-gray-600">
                                   <span>
-                                    Order #{item.orderProduct_order?.orderNo}
+                                    Order #{item.orderProduct_order?.orderNo || "N/A"}
                                   </span>
-                                  <span>Qty: {item.orderQuantity}</span>
-                                  <span>${item.purchasePrice}</span>
+                                  <span>Qty: {item.orderQuantity || 0}</span>
+                                  <span className="font-semibold">
+                                    {currency?.symbol || "$"}
+                                    {item.orderProduct_order?.totalCustomerPay || 
+                                     item.purchasePrice || 
+                                     0}
+                                  </span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                   <Badge
                                     className={`${getStatusColor(item.orderProductStatus)} flex items-center gap-1`}
                                   >
                                     {getStatusIcon(item.orderProductStatus)}
-                                    {item.orderProductStatus}
+                                    {item.orderProductStatus || "PENDING"}
                                   </Badge>
                                   <span className="text-sm text-gray-500">
                                     {item.orderProductDate
                                       ? new Date(
                                           item.orderProductDate,
                                         ).toLocaleDateString()
-                                      : item.createdAt
+                                      : item.orderProduct_order?.orderDate
                                         ? new Date(
-                                            item.createdAt,
+                                            item.orderProduct_order.orderDate,
                                           ).toLocaleDateString()
-                                        : "-"}
+                                        : item.orderProduct_order?.createdAt
+                                          ? new Date(
+                                              item.orderProduct_order.createdAt,
+                                            ).toLocaleDateString()
+                                          : item.createdAt
+                                            ? new Date(
+                                                item.createdAt,
+                                              ).toLocaleDateString()
+                                            : "N/A"}
                                   </span>
                                 </div>
                               </div>

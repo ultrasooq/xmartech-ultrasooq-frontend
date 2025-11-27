@@ -13,8 +13,9 @@ import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
 import { Button } from "@/components/ui/button";
 import { DialogTitle } from "@/components/ui/dialog";
-import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/context/AuthContext";
 import { imageExtensions, videoExtensions } from "@/utils/constants";
@@ -113,7 +114,7 @@ const editFormSchema = (t: any) => {
 
 const addDefaultValues = {
   quantity: 1,
-  productType: "SAME" as "SAME" | "SIMILAR",
+  productType: "SIMILAR" as "SAME" | "SIMILAR",
   note: "",
   productImagesList: undefined,
   productImages: [] as { path: File; id: string }[],
@@ -148,7 +149,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
     defaultValues: (isAddToCartMode
       ? {
           quantity: selectedQuantity || 1,
-          productType: "SAME" as "SAME" | "SIMILAR",
+          productType: "SIMILAR" as "SAME" | "SIMILAR",
           offerPriceFrom: offerPriceFrom,
           offerPriceTo: offerPriceTo,
           note: note || "",
@@ -317,7 +318,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
       handleAddToCart(
         formData?.quantity || selectedQuantity || 1,
         selectedProductId,
-        formData?.productType || "SAME",
+        formData?.productType || "SIMILAR",
         formData?.offerPriceFrom,
         formData?.offerPriceTo,
         formData?.note,
@@ -467,7 +468,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
     if (isAddToCartMode) {
       form.reset({
         quantity: selectedQuantity || 1,
-        productType: "SAME",
+        productType: "SIMILAR",
         offerPriceFrom: offerPriceFrom,
         offerPriceTo: offerPriceTo,
         note: note || "",
@@ -525,7 +526,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
       // If in add mode, include quantity and productType
       if (isAddToCartMode) {
         resetData.quantity = selectedQuantity || 1;
-        resetData.productType = "SAME";
+        resetData.productType = "SIMILAR";
         resetData.offerPriceFrom = offerPriceFrom;
         resetData.offerPriceTo = offerPriceTo;
       }
@@ -775,42 +776,128 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
           {selectedProductId !== undefined && selectedProductId !== null && (
             <>
               <div className="mb-4">
-                <ControlledTextInput
-                  label={t("quantity") + " *"}
+                <FormField
+                  control={form.control}
                   name="quantity"
-                  placeholder={t("enter_quantity")}
-                  type="number"
-                  defaultValue={selectedQuantity || 1}
-                  dir={langDir}
-                  translate="no"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel
+                        className="text-color-dark mb-2 block text-sm leading-none font-medium"
+                        dir={langDir}
+                        translate="no"
+                      >
+                        {t("quantity")} *
+                      </FormLabel>
+                      <FormControl>
+                        <div className="flex items-center gap-3">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="h-10 w-10 rounded-lg border-gray-300 hover:bg-gray-50 disabled:opacity-50"
+                            onClick={() => {
+                              const currentValue = Number(field.value) || 1;
+                              const newValue = Math.max(currentValue - 1, 1);
+                              field.onChange(newValue);
+                            }}
+                            disabled={(Number(field.value) || 1) <= 1}
+                          >
+                            <Image
+                              src="/images/upDownBtn-minus.svg"
+                              alt="minus-icon"
+                              width={16}
+                              height={16}
+                            />
+                          </Button>
+                          <Input
+                            type="number"
+                            min="1"
+                            value={field.value || 1}
+                            onChange={(e) => {
+                              const value = Number(e.target.value);
+                              field.onChange(isNaN(value) || value < 1 ? 1 : value);
+                            }}
+                            className="h-10 w-20 text-center border-gray-300 focus:border-dark-orange focus:ring-1 focus:ring-dark-orange"
+                            dir={langDir}
+                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="h-10 w-10 rounded-lg border-gray-300 hover:bg-gray-50"
+                            onClick={() => {
+                              const currentValue = Number(field.value) || 1;
+                              field.onChange(currentValue + 1);
+                            }}
+                          >
+                            <Image
+                              src="/images/upDownBtn-plus.svg"
+                              alt="plus-icon"
+                              width={16}
+                              height={16}
+                            />
+                          </Button>
+                        </div>
+                      </FormControl>
+                      {(form.formState.errors as any).quantity && (
+                        <p
+                          className="mt-1 text-[13px] text-red-500!"
+                          dir={langDir}
+                        >
+                          {String(
+                            (form.formState.errors as any).quantity?.message ||
+                              "",
+                          )}
+                        </p>
+                      )}
+                    </FormItem>
+                  )}
                 />
               </div>
 
               <div className="mb-4">
-                <label
-                  className="text-color-dark mb-2 block text-sm leading-none font-medium"
-                  dir={langDir}
-                  translate="no"
-                >
-                  {t("product_type")} *
-                </label>
                 <FormField
                   control={form.control}
                   name={"productType" as any}
                   render={({ field }) => (
                     <FormItem>
+                      <FormLabel
+                        className="text-color-dark mb-2 block text-sm leading-none font-medium"
+                        dir={langDir}
+                        translate="no"
+                      >
+                        {t("product_type")} *
+                      </FormLabel>
                       <FormControl>
-                        <select
-                          {...field}
-                          value={field.value || "SAME"}
-                          className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-12 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                        <RadioGroup
+                          value={field.value || "SIMILAR"}
+                          onValueChange={field.onChange}
+                          className="flex flex-row gap-6"
                           dir={langDir}
                         >
-                          <option value="SAME">{t("same_product")}</option>
-                          <option value="SIMILAR">
-                            {t("similar_product")}
-                          </option>
-                        </select>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="SAME" id="same-product" />
+                            <label
+                              htmlFor="same-product"
+                              className="text-sm font-medium leading-none cursor-pointer"
+                              dir={langDir}
+                              translate="no"
+                            >
+                              {t("same_product")}
+                            </label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="SIMILAR" id="similar-product" />
+                            <label
+                              htmlFor="similar-product"
+                              className="text-sm font-medium leading-none cursor-pointer"
+                              dir={langDir}
+                              translate="no"
+                            >
+                              {t("similar_product")}
+                            </label>
+                          </div>
+                        </RadioGroup>
                       </FormControl>
                       {(form.formState.errors as any).productType && (
                         <p
@@ -824,7 +911,7 @@ const AddToRfqForm: React.FC<AddToRfqFormProps> = ({
                         </p>
                       )}
                       <div className="mt-2 text-xs text-gray-600" dir={langDir}>
-                        {(field.value || "SAME") === "SAME" ? (
+                        {(field.value || "SIMILAR") === "SAME" ? (
                           <p>{t("you_must_quote_exact_product_only")}</p>
                         ) : (
                           <p>

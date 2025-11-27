@@ -12,9 +12,11 @@ const RfqRequestPage = () => {
   }, []);
 
   return (
-    <section className="m-auto w-full max-w-[1400px] px-4 py-8">
-      <RfqRequestChat rfqQuoteId={rfqQuotesId} />
-    </section>
+    <div className="min-h-screen bg-gray-50">
+      <section className="m-auto w-full max-w-[1600px] px-4 py-6 md:px-6 md:py-8">
+        <RfqRequestChat rfqQuoteId={rfqQuotesId} />
+      </section>
+    </div>
   );
 };
 

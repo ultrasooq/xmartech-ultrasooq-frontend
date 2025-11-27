@@ -20,6 +20,7 @@ import {
   fetchRfqCartByUserId,
   fetchRfqProductById,
   fetchRfqProducts,
+  hideRfqRequest,
   updateFactoriesCartWithLogin,
   updateRfqCartWithLogin,
   updateRfqProduct,
@@ -407,6 +408,7 @@ export const useAllRfqQuotesUsersBySellerId = (
   payload: {
     page: number;
     limit: number;
+    showHidden?: boolean;
   },
   enabled = true,
 ) =>
@@ -499,6 +501,37 @@ export const useDeleteRfqQuote = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["rfq-quotes-request"],
+      });
+    },
+    onError: (err: APIResponseError) => {
+    },
+  });
+};
+
+export const useHideRfqRequest = () => {
+  const queryClient = useQueryClient();
+  return useMutation<
+    { data: any; message: string; status: boolean },
+    APIResponseError,
+    { rfqQuotesUserId: number; isHidden: boolean }
+  >({
+    mutationFn: async (payload) => {
+      const res = await hideRfqRequest(payload);
+      return res.data;
+    },
+    onSuccess: () => {
+      // Invalidate all queries that start with "rfq-quotes-by-seller-id"
+      // This includes both visible (showHidden: false) and hidden (showHidden: true) queries
+      queryClient.invalidateQueries({
+        predicate: (query) => {
+          return query.queryKey[0] === "rfq-quotes-by-seller-id";
+        },
+      });
+      // Force refetch to ensure data is updated immediately
+      queryClient.refetchQueries({
+        predicate: (query) => {
+          return query.queryKey[0] === "rfq-quotes-by-seller-id";
+        },
       });
     },
     onError: (err: APIResponseError) => {
