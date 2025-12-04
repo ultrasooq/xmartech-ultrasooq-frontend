@@ -1,6 +1,6 @@
 // API Configuration
 export const API_CONFIG = {
-  BASE_URL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000", // Backend API URL
+  BASE_URL: process.env.NEXT_PUBLIC_API_URL || "http://44.210.19.47", // Backend API URL
   TIMEOUT: 10000,
 };
 
