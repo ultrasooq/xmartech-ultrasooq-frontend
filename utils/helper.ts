@@ -41,11 +41,11 @@ export const getCurrentDay = () => {
   return WEEKDAYS_LIST[day];
 };
 
-export const countryObjs = countryCodes.customList(
+export const countryObjs = countryCodes?.customList?.(
   // @ts-ignore
   "countryNameEn" as CountryProperty.countryNameEn,
   "+{countryCallingCode}",
-);
+) || {};
 
 export const getCurrentTime = new Date().toLocaleTimeString("en-US", {
   hour: "numeric",
