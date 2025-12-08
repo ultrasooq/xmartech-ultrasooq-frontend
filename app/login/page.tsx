@@ -16,7 +16,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import { useUpdateUserCartByDeviceId } from "@/apis/queries/cart.queries";
 import { getLoginType, getOrCreateDeviceId } from "@/utils/helper";
-import BackgroundImage from "@/public/images/before-login-bg.png";
 import FacebookIcon from "@/public/images/facebook-icon.png";
 import GoogleIcon from "@/public/images/google-icon.png";
 import LoaderPrimaryIcon from "@/public/images/load-primary.png";
@@ -197,110 +196,146 @@ export default function LoginPage() {
       <title dir={langDir} translate="no">
         {t("login")} | Ultrasooq
       </title>
-      <section className="relative w-full py-7">
-        <div className="absolute top-0 left-0 -z-10 h-full w-full">
-          <Image
-            src={BackgroundImage}
-            className="h-full w-full object-cover object-center"
-            alt="background"
-            fill
-            priority
-          />
-        </div>
-        <div className="relative z-10 container m-auto">
-          <div className="flex">
-            <div className="m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-7 shadow-xs sm:p-12 md:w-9/12 lg:w-7/12">
-              <div className="text-normal text-light-gray m-auto mb-7 w-full text-center text-sm leading-6">
+      <section className="relative flex min-h-screen w-full items-center justify-center bg-white px-4 py-4 sm:py-6">
+        {/* Main Content */}
+        <div className="relative z-10 mx-auto w-full max-w-md">
+          {/* Login Card */}
+          <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-xl">
+            {/* Decorative Header */}
+            <div className="from-dark-orange via-dark-orange h-1.5 bg-gradient-to-r to-orange-600"></div>
+
+            <div className="p-6 sm:p-8">
+              {/* Header Section */}
+              <div className="mb-6 text-center">
+                <div className="from-dark-orange mb-3 inline-flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br to-orange-600 shadow-md">
+                  <svg
+                    className="h-6 w-6 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
+                  </svg>
+                </div>
                 <h2
-                  className="text-color-dark mb-3 text-center text-3xl leading-8 font-semibold sm:text-4xl sm:leading-10"
+                  className="mb-1 text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl"
                   dir={langDir}
                   translate="no"
                 >
                   {t("login")}
                 </h2>
-                <p dir={langDir} translate="no">
+                <p
+                  className="text-xs text-gray-600 sm:text-sm"
+                  dir={langDir}
+                  translate="no"
+                >
                   {t("login_to_your_account")}
                 </p>
               </div>
+
+              {/* Form Section */}
               <div className="w-full">
                 <Form {...form}>
                   <form
-                    className="flex flex-wrap"
+                    className="space-y-3.5"
                     onSubmit={form.handleSubmit(onSubmit)}
                   >
-                    <ControlledTextInput
-                      label={t("email_phone_id")}
-                      name="email"
-                      placeholder={t("enter_email_phone_id")}
-                      dir={langDir}
-                      translate="no"
-                    />
-
-                    <ControlledTextInput
-                      label={t("password")}
-                      name="password"
-                      placeholder="**********"
-                      type="password"
-                      dir={langDir}
-                      translate="no"
-                    />
-
-                    <div className="mb-4 w-full">
-                      <div className="flex w-auto items-center justify-between p-0 lg:w-full">
-                        <div className="flex items-center space-x-2">
-                          <Checkbox
-                            id="remember"
-                            className="data-[state=checked]:bg-dark-orange! border border-solid border-gray-300"
-                            onCheckedChange={(val) => setRememberMe(val)}
-                          />
-                          <label
-                            htmlFor="remember"
-                            className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                            dir={langDir}
-                            translate="no"
-                          >
-                            {t("remember_me")}
-                          </label>
-                        </div>
-                        <div className="w-auto">
-                          <Link
-                            className="text-dark-orange cursor-pointer text-sm leading-8 font-medium"
-                            href="/forget-password"
-                            dir={langDir}
-                            translate="no"
-                          >
-                            {t("forgot_password")}
-                          </Link>
-                        </div>
-                      </div>
+                    <div className="space-y-1">
+                      <ControlledTextInput
+                        label={t("email_phone_id")}
+                        name="email"
+                        placeholder={t("enter_email_phone_id")}
+                        dir={langDir}
+                        translate="no"
+                      />
                     </div>
-                    <div className="mb-4 w-full">
-                      <Button
-                        disabled={login.isPending}
-                        type="submit"
-                        className="theme-primary-btn bg-dark-orange h-12 w-full rounded text-center text-lg leading-6 font-bold"
+
+                    <div className="space-y-1">
+                      <ControlledTextInput
+                        label={t("password")}
+                        name="password"
+                        placeholder="**********"
+                        type="password"
+                        dir={langDir}
+                        translate="no"
+                      />
+                    </div>
+
+                    {/* Remember Me & Forgot Password */}
+                    <div className="flex items-center justify-between pt-0.5">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="remember"
+                          className="data-[state=checked]:bg-dark-orange data-[state=checked]:border-dark-orange h-3.5 w-3.5 rounded border-gray-300 transition-all"
+                          onCheckedChange={(val) => setRememberMe(val)}
+                        />
+                        <label
+                          htmlFor="remember"
+                          className="cursor-pointer text-xs font-medium text-gray-700 transition-colors select-none hover:text-gray-900 sm:text-sm"
+                          dir={langDir}
+                          translate="no"
+                        >
+                          {t("remember_me")}
+                        </label>
+                      </div>
+                      <Link
+                        className="text-dark-orange text-xs font-semibold underline-offset-2 transition-colors duration-200 hover:text-orange-700 hover:underline sm:text-sm"
+                        href="/forget-password"
                         dir={langDir}
                         translate="no"
                       >
-                        {login.isPending ? (
-                          <LoaderWithMessage message={t("please_wait")} />
-                        ) : (
-                          t("login")
-                        )}
-                      </Button>
+                        {t("forgot_password")}
+                      </Link>
                     </div>
+
+                    {/* Login Button */}
+                    <Button
+                      disabled={login.isPending}
+                      type="submit"
+                      className="from-dark-orange hover:to-dark-orange h-11 w-full transform rounded-lg bg-gradient-to-r to-orange-600 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:scale-[1.02] hover:from-orange-700 hover:shadow-xl active:scale-[0.98] disabled:transform-none disabled:cursor-not-allowed disabled:opacity-70 sm:h-12 sm:text-base"
+                      dir={langDir}
+                      translate="no"
+                    >
+                      {login.isPending ? (
+                        <LoaderWithMessage message={t("please_wait")} />
+                      ) : (
+                        <span className="flex items-center justify-center gap-2">
+                          {t("login")}
+                          <svg
+                            className="h-4 w-4 sm:h-5 sm:w-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M13 7l5 5m0 0l-5 5m5-5H6"
+                            />
+                          </svg>
+                        </span>
+                      )}
+                    </Button>
                   </form>
                 </Form>
-                <div className="mb-4 w-full text-center">
+
+                {/* Sign Up Link */}
+                <div className="mt-4 text-center">
                   <span
-                    className="text-light-gray text-sm leading-4 font-medium"
+                    className="text-xs font-medium text-gray-600 sm:text-sm"
                     dir={langDir}
                     translate="no"
                   >
                     {t("dont_have_an_account")}{" "}
                     <Link
                       href="/register"
-                      className="text-dark-orange cursor-pointer font-medium"
+                      className="text-dark-orange font-semibold underline-offset-2 transition-colors duration-200 hover:text-orange-700 hover:underline"
                       dir={langDir}
                     >
                       {t("signup")}
@@ -308,89 +343,96 @@ export default function LoginPage() {
                   </span>
                 </div>
               </div>
-              <div className="relative w-full py-5 text-center before:absolute before:top-0 before:right-0 before:bottom-0 before:left-0 before:m-auto before:block before:h-px before:w-full before:bg-gray-200 before:content-['']">
-                <span className="relative z-10 bg-white p-2.5 text-sm leading-8 font-normal text-gray-400">
-                  Or
-                </span>
+
+              {/* Divider */}
+              <div className="relative my-5">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-200"></div>
+                </div>
+                <div className="relative flex justify-center text-xs sm:text-sm">
+                  <span
+                    className="bg-white px-3 font-medium text-gray-500"
+                    dir={langDir}
+                    translate="no"
+                  >
+                    {t("or")}
+                  </span>
+                </div>
               </div>
-              <div className="w-full">
-                <ul className="flex w-full flex-wrap items-center justify-between">
-                  <li className="mb-3 w-full p-0 sm:mb-0 sm:w-6/12 sm:pr-3">
-                    <Button
-                      variant="outline"
-                      className="text-light-gray inline-flex w-full items-center justify-center rounded-md border border-solid border-gray-300 px-5 py-6 text-sm leading-4 font-normal"
-                      onClick={() => {
-                        localStorage.setItem("loginType", "FACEBOOK");
-                        signIn("facebook");
-                      }}
-                      disabled={socialLogin.isPending}
-                      dir={langDir}
-                      translate="no"
-                    >
-                      {socialLogin.isPending &&
-                      getLoginType() === "FACEBOOK" ? (
-                        <>
-                          <Image
-                            src={LoaderPrimaryIcon}
-                            alt="fb-icon"
-                            width={20}
-                            height={20}
-                            className="mr-2 animate-spin"
-                          />
-                          <span>{t("please_wait")}</span>
-                        </>
-                      ) : (
-                        <>
-                          <Image
-                            src={FacebookIcon}
-                            className="mr-1.5"
-                            alt="fb-icon"
-                            height={26}
-                            width={26}
-                          />
-                          <span>{t("facebook_sign_in")}</span>
-                        </>
-                      )}
-                    </Button>
-                  </li>
-                  <li className="w-full p-0 sm:w-6/12 sm:pl-3">
-                    <Button
-                      variant="outline"
-                      className="text-light-gray inline-flex w-full items-center justify-center rounded-md border border-solid border-gray-300 px-5 py-6 text-sm leading-4 font-normal"
-                      onClick={() => {
-                        localStorage.setItem("loginType", "GOOGLE");
-                        signIn("google");
-                      }}
-                      disabled={socialLogin.isPending}
-                      dir={langDir}
-                      translate="no"
-                    >
-                      {socialLogin.isPending && getLoginType() === "GOOGLE" ? (
-                        <>
-                          <Image
-                            src={LoaderPrimaryIcon}
-                            alt="google-icon"
-                            width={20}
-                            height={20}
-                            className="mr-2 animate-spin"
-                          />
-                          <span>{t("please_wait")}</span>
-                        </>
-                      ) : (
-                        <>
-                          <Image
-                            src={GoogleIcon}
-                            className="mr-1.5"
-                            alt="google-icon"
-                            height={26}
-                            width={26}
-                          />
-                          <span>{t("google_sign_in")}</span>
-                        </>
-                      )}
-                    </Button>
-                  </li>
-                </ul>
+
+              {/* Social Login Buttons */}
+              <div className="space-y-2.5">
+                <Button
+                  variant="outline"
+                  className="h-10 w-full rounded-lg border-2 border-gray-200 text-xs font-semibold text-gray-700 shadow-sm transition-all duration-200 hover:border-blue-500 hover:bg-blue-50 hover:text-blue-700 hover:shadow-md sm:h-11 sm:text-sm"
+                  onClick={() => {
+                    localStorage.setItem("loginType", "FACEBOOK");
+                    signIn("facebook");
+                  }}
+                  disabled={socialLogin.isPending}
+                  dir={langDir}
+                  translate="no"
+                >
+                  {socialLogin.isPending && getLoginType() === "FACEBOOK" ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <Image
+                        src={LoaderPrimaryIcon}
+                        alt="loading"
+                        width={18}
+                        height={18}
+                        className="animate-spin"
+                      />
+                      <span>{t("please_wait")}</span>
+                    </span>
+                  ) : (
+                    <span className="flex items-center justify-center gap-2.5">
+                      <Image
+                        src={FacebookIcon}
+                        alt="facebook"
+                        height={20}
+                        width={20}
+                        className="object-contain sm:h-6 sm:w-6"
+                      />
+                      <span>{t("facebook_sign_in")}</span>
+                    </span>
+                  )}
+                </Button>
+
+                <Button
+                  variant="outline"
+                  className="h-10 w-full rounded-lg border-2 border-gray-200 text-xs font-semibold text-gray-700 shadow-sm transition-all duration-200 hover:border-red-500 hover:bg-red-50 hover:text-red-700 hover:shadow-md sm:h-11 sm:text-sm"
+                  onClick={() => {
+                    localStorage.setItem("loginType", "GOOGLE");
+                    signIn("google");
+                  }}
+                  disabled={socialLogin.isPending}
+                  dir={langDir}
+                  translate="no"
+                >
+                  {socialLogin.isPending && getLoginType() === "GOOGLE" ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <Image
+                        src={LoaderPrimaryIcon}
+                        alt="loading"
+                        width={18}
+                        height={18}
+                        className="animate-spin"
+                      />
+                      <span>{t("please_wait")}</span>
+                    </span>
+                  ) : (
+                    <span className="flex items-center justify-center gap-2.5">
+                      <Image
+                        src={GoogleIcon}
+                        alt="google"
+                        height={20}
+                        width={20}
+                        className="object-contain sm:h-6 sm:w-6"
+                      />
+                      <span>{t("google_sign_in")}</span>
+                    </span>
+                  )}
+                </Button>
               </div>
             </div>
           </div>

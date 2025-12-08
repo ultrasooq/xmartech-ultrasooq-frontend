@@ -111,11 +111,31 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
   const permissions: string[] = getPermissions();
   const { toast } = useToast();
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
+  const { isHovered, isOpen, openSidebar, closeSidebar } = useSidebar();
+  const [mounted, setMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Ensure hydration matches - only calculate sidebar width after mount
+  useEffect(() => {
+    setMounted(true);
+    // Check if mobile on mount
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  // Calculate sidebar width for header padding
+  // Mobile: no padding (sidebar slides in/out)
+  // Desktop: Always 64px (collapsed width) - sidebar expands over content on hover
+  // Use 0 during SSR to match initial client render
+  const sidebarWidth = mounted && accessToken && !isMobile ? 64 : 0;
 
   const homeButtonClasses =
     pathname === "/home" ? "active-nav-item" : "inactive-nav-item";
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const { openSidebar } = useSidebar();
   const [menuId, setMenuId] = useState<string | number>();
   const [categoryId, setCategoryId] = useState();
   const [assignedToId, setAssignedToId] = useState();
@@ -375,7 +395,9 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                 languages.find((language) => language.locale == localeKey)
                   ?.locale || "en";
               window.localStorage.setItem("locale", localeKey);
-              applyTranslation(localeKey);
+              applyTranslation(localeKey).then(() => {
+                router.refresh();
+              });
 
               setSelectedCurrency(response.data.currency || "USD");
               window.localStorage.setItem(
@@ -598,7 +620,11 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
 
       {/* Mobile Header - Only visible on mobile screens */}
       <header
-        className={`bg-dark-cyan sticky top-0 z-50 block w-full shadow-md transition-transform duration-300 md:hidden ${showHeader ? "translate-y-0" : "-translate-y-full"}`}
+        className={`bg-dark-cyan sticky top-0 z-50 block w-full shadow-md transition-all duration-300 md:hidden ${showHeader ? "translate-y-0" : "-translate-y-full"}`}
+        style={{
+          [langDir === "rtl" ? "paddingRight" : "paddingLeft"]:
+            `${sidebarWidth}px`,
+        }}
       >
         <div className="w-full px-3 py-2 sm:px-4 sm:py-2.5">
           {/* Mobile Top Row */}
@@ -1029,13 +1055,17 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
 
       {/* Desktop/Tablet Header - Hidden on mobile */}
       <header
-        className={`bg-dark-cyan relative sticky top-0 z-50 hidden w-full shadow-lg transition-transform duration-300 md:block ${showHeader ? "translate-y-0" : "-translate-y-full"}`}
+        className={`bg-dark-cyan relative sticky top-0 z-50 hidden w-full shadow-lg transition-all duration-300 md:block ${showHeader ? "translate-y-0" : "-translate-y-full"}`}
         key={`header-${currentTradeRole}-${currentAccount?.data?.data?.account?.id}`}
+        style={{
+          [langDir === "rtl" ? "paddingRight" : "paddingLeft"]:
+            `${sidebarWidth}px`,
+        }}
       >
         <div className="bg-dark-cyan w-full">
-          <div className="w-full px-6 pt-2 md:px-8 md:pt-2.5 lg:px-12 lg:pt-3">
+          <div className="w-full px-6 pt-1.5 md:px-8 md:pt-2 lg:px-12 lg:pt-2.5">
             <div className="hidden md:flex md:gap-x-2.5">
-              <div className="py-1.5 text-xs font-normal text-white/90 md:w-4/12 md:py-2 md:text-sm lg:w-4/12 lg:py-2.5">
+              <div className="py-1 text-xs font-normal text-white/90 md:w-4/12 md:py-1.5 md:text-sm lg:w-4/12 lg:py-2">
                 <p
                   dir={langDir}
                   translate="no"
@@ -1044,7 +1074,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                   {t("welcome")}
                 </p>
               </div>
-              <div className="flex justify-end py-1.5 text-xs font-normal text-white/90 md:w-8/12 md:py-2 md:text-sm lg:w-8/12 lg:py-2.5">
+              <div className="flex justify-end py-1 text-xs font-normal text-white/90 md:w-8/12 md:py-1.5 md:text-sm lg:w-8/12 lg:py-2">
                 <ul className="flex items-center justify-end gap-1">
                   {currentTradeRole != "BUYER" ? (
                     <li className="border-r border-solid border-white/30 px-3 text-xs font-normal text-white/90 md:text-sm">
@@ -1101,13 +1131,16 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                       dir={langDir}
                       className="cursor-pointer rounded border-0 bg-transparent px-1 py-1 text-white/90 transition-colors hover:text-white focus:outline-none"
                       value={selectedLocale}
-                      onChange={(e) => {
-                        setSelectedLocale(e.target.value);
-                        applyTranslation(e.target.value);
+                      onChange={async (e) => {
+                        const newLocale = e.target.value;
+                        setSelectedLocale(newLocale);
+                        await applyTranslation(newLocale);
+                        // Refresh router to reload server components with new locale
+                        router.refresh();
                         let elem = document.querySelector(".goog-te-combo");
                         if (elem) {
                           // @ts-ignore
-                          elem.value = e.target.value;
+                          elem.value = newLocale;
                           elem.dispatchEvent(new Event("change"));
                           setTimeout(() => {
                             let elem = document.querySelector(".goog-te-combo");
@@ -1161,17 +1194,8 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
             </div>
 
             <div className="flex flex-wrap items-center">
-              <div className="order-1 flex w-5/12 flex-1 items-center py-2 md:w-2/12 md:py-2.5 lg:w-1/6">
+              <div className="order-1 flex w-5/12 flex-1 items-center py-1.5 md:w-2/12 md:py-2 lg:w-1/6">
                 <div className="flex items-center gap-2">
-                  {isLoggedIn && (
-                    <button
-                      onClick={openSidebar}
-                      className="flex h-8 w-8 items-center justify-center rounded-lg transition-all hover:bg-white/10 active:scale-95 lg:h-9 lg:w-9"
-                      title="Open Menu"
-                    >
-                      <MenuIcon className="h-4 w-4 text-white lg:h-5 lg:w-5" />
-                    </button>
-                  )}
                   <Link
                     href="/home"
                     className="flex items-center transition-opacity hover:opacity-90"
@@ -1185,7 +1209,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                   </Link>
                 </div>
               </div>
-              <div className="order-3 flex w-[80%] items-center gap-2 py-2 md:order-2 md:w-7/12 md:px-3 md:py-2.5 lg:w-4/6">
+              <div className="order-3 flex w-[80%] items-center gap-2 py-1.5 md:order-2 md:w-7/12 md:px-3 md:py-2 lg:w-4/6">
                 <div className="relative flex-1">
                   <input
                     type="text"
@@ -1221,7 +1245,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                   {t("search")}
                 </button>
               </div>
-              <div className="order-2 flex w-7/12 justify-end sm:order-2 sm:w-7/12 md:order-3 md:w-3/12 md:py-2 lg:w-1/6 lg:py-2.5">
+              <div className="order-2 flex w-7/12 justify-end sm:order-2 sm:w-7/12 md:order-3 md:w-3/12 md:py-1.5 lg:w-1/6 lg:py-2">
                 <ul className="flex items-center justify-end gap-x-3 md:gap-x-4">
                   {isLoggedIn && (
                     <li className="relative flex">
@@ -1281,7 +1305,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                       )}
                     </Link>
                   </li>
-                  <li className="relative flex">
+                  <li className="relative flex items-center">
                     {isLoggedIn ? (
                       <div className="flex items-center gap-2">
                         <DropdownMenu>
@@ -1564,7 +1588,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                       <div dir={langDir} className="flex items-center gap-2">
                         <Link
                           href="/login"
-                          className="flex items-center gap-2 rounded-lg bg-white/10 px-4 py-2 transition-all hover:bg-white/20 active:scale-95"
+                          className="flex items-center justify-center gap-2 rounded-lg bg-white/10 px-4 py-2 transition-all hover:bg-white/20 active:scale-95"
                           translate="no"
                         >
                           <Image
@@ -1572,18 +1596,18 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                             height={20}
                             width={20}
                             alt="login-icon"
-                            className="h-5 w-5"
+                            className="h-5 w-5 flex-shrink-0"
                           />
-                          <span className="text-sm font-semibold text-white">
+                          <span className="text-sm leading-none font-semibold text-white">
                             {t("login")}
                           </span>
                         </Link>
                         <Link
                           href="/register"
-                          className="flex items-center rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-2 shadow-lg transition-all hover:from-blue-600 hover:to-blue-700 active:scale-95"
+                          className="flex items-center justify-center rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-2 shadow-lg transition-all hover:from-blue-600 hover:to-blue-700 active:scale-95"
                           translate="no"
                         >
-                          <span className="text-sm font-semibold text-white">
+                          <span className="text-sm leading-none font-semibold text-white">
                             {t("register")}
                           </span>
                         </Link>

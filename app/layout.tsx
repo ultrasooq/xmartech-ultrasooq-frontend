@@ -7,9 +7,9 @@ import { AuthProvider } from "@/context/AuthContext";
 import { SidebarProvider } from "@/context/SidebarContext";
 import { SocketProvider } from "@/context/SocketContext";
 import { NotificationProvider } from "@/context/NotificationContext";
-import Header from "@/layout/MainLayout/Header";
-import Sidebar from "@/layout/MainLayout/Sidebar";
 import ReactQueryProvider from "@/providers/ReactQueryProvider";
+import LocaleProvider from "@/components/LocaleProvider";
+import ConditionalLayout from "@/components/ConditionalLayout";
 import { getUserLocale } from "@/src/services/locale";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import axios from "axios";
@@ -116,15 +116,15 @@ export default async function RootLayout({
               <SocketProvider>
                 <SidebarProvider>
                   <main className="overflow-x-visible">
-                    <NextIntlClientProvider messages={messages}>
+                    <LocaleProvider messages={messages} initialLocale={locale}>
                       <NotificationProvider>
-                        <Sidebar />
-                        <Header locale={locale} />
                         <NextTopLoader color="#DB2302" showSpinner={false} />
-                        {children}
+                        <ConditionalLayout locale={locale}>
+                          {children}
+                        </ConditionalLayout>
                         <Toaster />
                       </NotificationProvider>
-                    </NextIntlClientProvider>
+                    </LocaleProvider>
                   </main>
                 </SidebarProvider>
               </SocketProvider>

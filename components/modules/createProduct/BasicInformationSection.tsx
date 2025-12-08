@@ -417,7 +417,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                       ? catList
                         .filter((item) => item.children?.length)
                         .map((item, index) => (
-                <div key={item?.id} className="space-y-3">
+                <div key={`category-level-${index}-${item?.id}`} className="space-y-3">
                   <Label className="text-sm font-medium text-gray-700 flex items-center gap-2" dir={langDir} translate="no">
                     <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />

@@ -246,9 +246,36 @@ const DropshipProductForm: React.FC<DropshipProductFormProps> = () => {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           {/* Step 1: Select Original Product */}
           <div className="rounded-lg border border-gray-300 bg-white p-6 shadow-sm">
-            <h3 className="mb-4 text-lg font-semibold text-gray-900">
-              {t("step_1_select_product_to_dropship")}
-            </h3>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">
+                {t("step_1_select_product_to_dropship")}
+              </h3>
+              {/* Submit Button - Moved Up */}
+              <Button 
+                type="submit" 
+                className="px-8 py-3"
+                disabled={!selectedOriginalProduct || createDropshipProduct.isPending}
+                onClick={(e) => {
+                  e.preventDefault();
+                  
+                  // Manually trigger form submission
+                  form.handleSubmit(
+                    (data) => {
+                      onSubmit(data);
+                    },
+                    (errors) => {
+                      toast({
+                        title: t("validation_error"),
+                        description: t("please_fill_all_required_fields"),
+                        variant: "destructive",
+                      });
+                    }
+                  )();
+                }}
+              >
+                {createDropshipProduct.isPending ? t("creating") : t("create_dropship_product")}
+              </Button>
+            </div>
             <ProductSearchSelector 
               onProductSelect={handleProductSelect}
               selectedProduct={selectedOriginalProduct}
@@ -348,33 +375,6 @@ const DropshipProductForm: React.FC<DropshipProductFormProps> = () => {
             </div>
           )}
 
-          {/* Submit Button */}
-          <div className="flex justify-end">
-            <Button 
-              type="submit" 
-              className="px-8 py-3"
-              disabled={!selectedOriginalProduct || createDropshipProduct.isPending}
-              onClick={(e) => {
-                e.preventDefault();
-                
-                // Manually trigger form submission
-                form.handleSubmit(
-                  (data) => {
-                    onSubmit(data);
-                  },
-                  (errors) => {
-                    toast({
-                      title: t("validation_error"),
-                      description: t("please_fill_all_required_fields"),
-                      variant: "destructive",
-                    });
-                  }
-                )();
-              }}
-            >
-              {createDropshipProduct.isPending ? t("creating") : t("create_dropship_product")}
-            </Button>
-          </div>
         </form>
       </Form>
     </div>

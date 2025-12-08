@@ -20,7 +20,7 @@ interface AuthContextType {
   clearUser: () => void;
   permissions: any[];
   setPermissions: (permissions: any[]) => void;
-  applyTranslation: (locale: string) => void;
+  applyTranslation: (locale: string) => Promise<void>;
   selectedLocale: string;
   langDir: string;
   currency: typeof CURRENCIES[0];
@@ -70,7 +70,7 @@ export const AuthProvider: React.FC<{
 
   const [selectedLocale, setSelectedLocale] = useState<string>(locale || 'en');
 
-  const applyTranslation = async (locale: string) => {
+  const applyTranslation = async (locale: string): Promise<void> => {
     await setUserLocale(locale);
     window.localStorage.setItem('locale', locale);
     startTransition(() => {

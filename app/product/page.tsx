@@ -903,19 +903,20 @@ const CreateProductPage = () => {
   // Get current account to ensure we use the correct user ID
   const { data: currentAccount } = useCurrentAccount();
 
+  // Query for user's own product (for copy from manage-products or regular view)
   const productQueryById = useProductById(
     {
       productId: productId || ''
     },
-    !!productId && !searchParams?.get('copy'),
+    !!productId && (!searchParams?.get('copy') || searchParams?.get('fromExisting') !== 'true'),
   );
 
-  // Query for existing product when copying or creating from existing
+  // Query for existing product when copying from existing products catalog (admin-added products)
   const existingProductQueryById = useExistingProductById(
     {
       existingProductId: productId || ''
     },
-    !!productId && (searchParams?.get('copy') !== null || searchParams?.get('fromExisting') === 'true'),
+    !!productId && searchParams?.get('fromExisting') === 'true',
   );
 
   const getProductVariant = useProductVariant();
@@ -973,21 +974,20 @@ const CreateProductPage = () => {
   }
 
   useEffect(() => {
-    // Handle regular product data
-    if (productQueryById?.data?.data) {
+    // Handle regular product data (including copy from manage-products)
+    if (productQueryById?.data?.data && !searchParams?.get('fromExisting')) {
       const product = productQueryById?.data?.data;
       populateFormWithProductData(product);
     }
-  }, [productQueryById?.data?.data]);
+  }, [productQueryById?.data?.data, searchParams]);
 
   useEffect(() => {
-    // Handle existing product data when copying or creating from existing
-    
-    if (existingProductQueryById?.data?.data) {
+    // Handle existing product data when copying from existing products catalog
+    if (existingProductQueryById?.data?.data && searchParams?.get('fromExisting') === 'true') {
       const existingProduct = existingProductQueryById?.data?.data;
       populateFormWithExistingProductData(existingProduct);
     }
-  }, [existingProductQueryById?.data?.data]);
+  }, [existingProductQueryById?.data?.data, searchParams]);
 
   const populateFormWithProductData = (product: any) => {
       setActiveProductType(product.productType);
