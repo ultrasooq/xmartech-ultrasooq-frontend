@@ -28,9 +28,13 @@ import {
   UserCheckIcon,
   WalletIcon
 } from "lucide-react";
-import { getCookie } from "cookies-next";
+import { getCookie, deleteCookie } from "cookies-next";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import { useCurrentAccount } from "@/apis/queries/auth.queries";
+import { useMe } from "@/apis/queries/user.queries";
+import { useQueryClient } from "@tanstack/react-query";
+import { signOut } from "next-auth/react";
+import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
 
 type SidebarProps = {
@@ -40,19 +44,23 @@ type SidebarProps = {
 const Sidebar: React.FC<SidebarProps> = ({ notificationCount }) => {
   const { isHovered, setIsHovered, isOpen, closeSidebar } = useSidebar();
   const t = useTranslations();
-  const { langDir } = useAuth();
+  const { langDir, clearUser } = useAuth();
   const router = useRouter();
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
   const { data: currentAccountData } = useCurrentAccount();
+  const me = useMe(!!accessToken);
   const [isClient, setIsClient] = useState(false);
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   // Ensure component only renders on client side
   useEffect(() => {
     setIsClient(true);
   }, []);
 
-  // Get current user's trade role
-  const currentTradeRole = currentAccountData?.data?.data?.account?.tradeRole || 'BUYER';
+  // Get current user's trade role - matching Header's logic
+  const currentTradeRole =
+    currentAccountData?.data?.data?.account?.tradeRole || me?.data?.data?.tradeRole || 'BUYER';
 
   // Role-based menu items
   const getMenuItems = () => {
@@ -196,13 +204,26 @@ const Sidebar: React.FC<SidebarProps> = ({ notificationCount }) => {
         icon: <UserCheckIcon className="h-5 w-5 text-blue-600" />,
         label: "Profile",
         onClick: () => {
-          // Redirect to role-specific profile
-          if (currentTradeRole === 'BUYER') {
+          // Get the current trade role at click time to avoid closure issues
+          // Match Header's logic exactly: currentAccount?.data?.data?.account?.tradeRole || me?.data?.data?.tradeRole
+          const tradeRole = currentAccountData?.data?.data?.account?.tradeRole || me?.data?.data?.tradeRole || 'BUYER';
+          
+          // Debug log (remove in production if needed)
+          if (process.env.NODE_ENV === 'development') {
+            console.log('Sidebar Profile Click - Trade Role:', tradeRole);
+            console.log('Current Account Data:', currentAccountData?.data?.data?.account);
+            console.log('Me Data:', me?.data?.data);
+          }
+          
+          // Redirect to role-specific profile - matching Header's handleProfile function
+          if (tradeRole === 'BUYER') {
             router.push("/buyer-profile-details");
-          } else if (currentTradeRole === 'FREELANCER') {
-            router.push("/freelancer-profile");
-          } else if (currentTradeRole === 'COMPANY') {
-            router.push("/company-profile");
+          } else if (tradeRole === 'FREELANCER') {
+            router.push("/freelancer-profile-details");
+          } else if (tradeRole === 'COMPANY') {
+            router.push("/company-profile-details");
+          } else if (tradeRole === 'MEMBER') {
+            router.push("/member-profile-details");
           } else {
             router.push("/profile");
           }
@@ -226,9 +247,40 @@ const Sidebar: React.FC<SidebarProps> = ({ notificationCount }) => {
         icon: <LogOutIcon className="h-5 w-5 text-red-500" />,
         label: "Logout",
         isLogout: true,
-        onClick: () => {
-          // Add logout functionality here
-          router.push("/logout");
+        onClick: async () => {
+          try {
+            // Delete the token cookie
+            deleteCookie(PUREMOON_TOKEN_KEY);
+            // Clear React Query cache
+            queryClient.clear();
+            // Clear user from AuthContext
+            clearUser();
+            // Sign out from NextAuth
+            await signOut({
+              redirect: false,
+              callbackUrl: "/home",
+            });
+            // Close sidebar on mobile
+            if (typeof window !== 'undefined' && window.innerWidth < 768) {
+              closeSidebar();
+            }
+            // Show success toast
+            toast({
+              title: t("logout_successful"),
+              description: t("you_have_successfully_logged_out"),
+              variant: "success",
+            });
+            // Force a full page reload to ensure all components re-initialize with updated cookie state
+            // This ensures the Header component re-reads the cookie and shows login/register buttons
+            window.location.href = "/home";
+          } catch (error) {
+            console.error("Logout error:", error);
+            toast({
+              title: t("error") || "Error",
+              description: t("logout_failed") || "Failed to logout. Please try again.",
+              variant: "destructive",
+            });
+          }
         }
       }
     );

@@ -4,6 +4,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import io, { Socket } from "socket.io-client";
 import { useAuth } from "./AuthContext";
 import { MessageStatus } from "@/utils/types/chat.types";
+import { getApiUrl } from "@/config/api";
 
 interface newMessageType {
   id?: number;
@@ -112,22 +113,8 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
     const hasValidUserId = userId !== undefined && userId !== null && !isNaN(Number(userId));
     
     if (hasValidUserId) {
-      // Get socket URL dynamically based on current hostname
-      let socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL;
-      
-      if (!socketUrl && typeof window !== "undefined") {
-        // In browser, detect current hostname and use same IP for backend
-        const hostname = window.location.hostname;
-        const protocol = window.location.protocol === "https:" ? "https:" : "http:";
-        // Backend typically runs on port 3000, but use the same hostname
-        socketUrl = `${protocol}//${hostname}:3000`;
-      }
-      
-      // Fallback to localhost if still not set
-      if (!socketUrl) {
-        socketUrl = "http://localhost:3000";
-      }
-      
+      // Use the same backend URL as API calls
+      const socketUrl = getApiUrl();
       const fullSocketUrl = `${socketUrl}/ws`;
       
       const socketIo = io(fullSocketUrl, {
