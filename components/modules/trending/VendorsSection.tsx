@@ -30,12 +30,18 @@ type VendorsSectionProps = {
   vendors: Vendor[];
   isLoading?: boolean;
   products?: any[]; // Add products prop
+  haveAccessToken?: boolean;
+  cartList?: any[];
+  onWishlist?: (productId: number, wishlistArr?: any[]) => void;
 };
 
 const VendorsSection: React.FC<VendorsSectionProps> = ({ 
   vendors, 
   isLoading = false,
-  products = []
+  products = [],
+  haveAccessToken = false,
+  cartList = [],
+  onWishlist
 }) => {
   const t = useTranslations();
   const { langDir } = useAuth();
@@ -186,6 +192,9 @@ const VendorsSection: React.FC<VendorsSectionProps> = ({
                 key={vendor.id}
                 vendor={vendor}
                 products={vendorProducts}
+                haveAccessToken={haveAccessToken}
+                cartList={cartList}
+                onWishlist={onWishlist}
               />
             );
           })}
@@ -309,7 +318,10 @@ const VendorsSection: React.FC<VendorsSectionProps> = ({
 const VendorWithProducts: React.FC<{
   vendor: Vendor;
   products: any[];
-}> = ({ vendor, products }) => {
+  haveAccessToken?: boolean;
+  cartList?: any[];
+  onWishlist?: (productId: number, wishlistArr?: any[]) => void;
+}> = ({ vendor, products, haveAccessToken = false, cartList = [], onWishlist }) => {
   const t = useTranslations();
   const [scrollPosition, setScrollPosition] = useState(0);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -393,52 +405,70 @@ const VendorWithProducts: React.FC<{
               msOverflowStyle: 'none'
             }}
           >
-            {products.map((product) => (
-              <div key={product.id} className="shrink-0 w-48 sm:w-64">
-                <div className="vendor-product-card">
-                  <style jsx global>{`
-                    .vendor-product-card > div {
-                      flex-direction: column !important;
-                    }
-                    .vendor-product-card > div > a {
-                      width: 100% !important;
-                    }
-                    .vendor-product-card > div > a > div.relative {
-                      height: 160px !important;
-                    }
-                    @media (min-width: 640px) {
+            {products.map((product) => {
+              const cartItem = cartList?.find(
+                (el: any) => el.productId == product.id,
+              );
+              let relatedCart: any = null;
+              if (cartItem) {
+                relatedCart = cartList
+                  ?.filter(
+                    (c: any) =>
+                      c.serviceId && c.cartProductServices?.length,
+                  )
+                  ?.find((c: any) => {
+                    return !!c.cartProductServices
+                      .find((r: any) => r.relatedCartType == 'PRODUCT' && r.productId == product.id);
+                  });
+              }
+              
+              return (
+                <div key={product.id} className="shrink-0 w-48 sm:w-64">
+                  <div className="vendor-product-card">
+                    <style jsx global>{`
+                      .vendor-product-card > div {
+                        flex-direction: column !important;
+                      }
+                      .vendor-product-card > div > a {
+                        width: 100% !important;
+                      }
                       .vendor-product-card > div > a > div.relative {
-                        height: 192px !important;
+                        height: 160px !important;
                       }
-                    }
-                    .vendor-product-card div.absolute.z-20.rounded-full {
-                      left: auto !important;
-                      right: 4px !important;
-                      top: 4px !important;
-                    }
-                    @media (min-width: 640px) {
+                      @media (min-width: 640px) {
+                        .vendor-product-card > div > a > div.relative {
+                          height: 192px !important;
+                        }
+                      }
                       .vendor-product-card div.absolute.z-20.rounded-full {
-                        right: 12px !important;
-                        top: 12px !important;
+                        left: auto !important;
+                        right: 4px !important;
+                        top: 4px !important;
                       }
-                    }
-                  `}</style>
-                  <ProductCard
-                    productVariants={[]}
-                    item={product}
-                    onWishlist={() => {}}
-                    inWishlist={false}
-                    haveAccessToken={false}
-                    isInteractive={false}
-                    productQuantity={0}
-                    productVariant={null}
-                    cartId=""
-                    relatedCart={null}
-                    isAddedToCart={false}
-                  />
+                      @media (min-width: 640px) {
+                        .vendor-product-card div.absolute.z-20.rounded-full {
+                          right: 12px !important;
+                          top: 12px !important;
+                        }
+                      }
+                    `}</style>
+                    <ProductCard
+                      productVariants={[]}
+                      item={product}
+                      onWishlist={() => onWishlist?.(product.id, product?.productWishlist)}
+                      inWishlist={product?.inWishlist || false}
+                      haveAccessToken={haveAccessToken}
+                      isInteractive={true}
+                      productQuantity={cartItem?.quantity || 0}
+                      productVariant={cartItem?.object}
+                      cartId={cartItem?.id}
+                      relatedCart={relatedCart}
+                      isAddedToCart={cartItem ? true : false}
+                    />
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
           
           {/* Scroll Buttons */}

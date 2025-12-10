@@ -29,6 +29,7 @@ import { useVendorBusinessCategories } from "@/hooks/useVendorBusinessCategories
 import { checkCategoryConnection } from "@/utils/categoryConnection";
 import { useCategory } from "@/apis/queries/category.queries";
 import { useCurrentAccount } from "@/apis/queries/auth.queries";
+import { useMe } from "@/apis/queries/user.queries";
 
 type ProductDescriptionCardProps = {
   productId: string;
@@ -149,9 +150,28 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   const { user, langDir, currency } = useAuth();
   const currentAccount = useCurrentAccount();
   const vendorBusinessCategoryIds = useVendorBusinessCategories();
+  const me = useMe();
 
   // Get the current account's trade role (for multi-account system)
   const currentTradeRole = currentAccount?.data?.data?.account?.tradeRole || user?.tradeRole;
+
+  // Check if this product belongs to the current user
+  // For subaccounts (MEMBER), check against their adminId (addedBy)
+  // For regular accounts, check against their userId
+  const isOwnProduct = useMemo(() => {
+    if (!me?.data?.data?.id) return false;
+    
+    const currentUserId = me.data.data.id;
+    const currentAdminId = me.data.data.tradeRole === 'MEMBER' 
+      ? me.data.data.addedBy 
+      : currentUserId;
+    
+    // Check product's seller/adminId from props
+    const productAdminId = adminId || sellerId;
+    
+    // Product belongs to user if adminId or sellerId matches current user's ID or adminId
+    return productAdminId === currentUserId || productAdminId === currentAdminId;
+  }, [me?.data?.data, adminId, sellerId]);
   
   // Fetch product category data to get connections (only if vendor and categoryId exists)
   const productCategoryQuery = useCategory(
@@ -673,8 +693,8 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
         );
       })}
 
-      {/* Quantity Selector - Hide for RFQ products */}
-      {productType !== "RFQ" && (
+      {/* Quantity Selector - Hide for RFQ products and own products */}
+      {!isOwnProduct && productType !== "RFQ" && (
         <div className="space-y-2">
           <label className="text-sm font-medium text-gray-700" dir={langDir} translate="no">
             {t("quantity")}
@@ -735,39 +755,41 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
             </div>
           )}
 
-          {/* Add to Cart / Remove from Cart Button */}
-          <Button
-            onClick={() => {
-              if (isAddedToCart && quantity === 0) {
-                onAdd(0, "remove");
-              } else {
-                onAdd(quantity || 1, "add");
-              }
-            }}
-            disabled={(!isAddedToCart && quantity === 0) || saleNotStarted || saleExpired}
-            className={`w-full rounded-lg py-3 text-base font-medium shadow-lg transition-all hover:shadow-xl active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed ${
-              isAddedToCart && quantity === 0
-                ? "bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700"
-                : saleNotStarted || saleExpired
-                ? "bg-gray-400 text-white"
-                : "bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-900 hover:from-yellow-500 hover:to-yellow-600"
-            }`}
-            dir={langDir}
-            translate="no"
-          >
-            {saleNotStarted
-              ? t("coming_soon")
-              : saleExpired
-              ? t("sale_ended")
-              : isAddedToCart && quantity === 0
-              ? t("remove_from_cart")
-              : isAddedToCart
-              ? t("added_to_cart")
-              : t("add_to_cart")}
-          </Button>
+          {/* Add to Cart / Remove from Cart Button - Hide for own products */}
+          {!isOwnProduct && (
+            <Button
+              onClick={() => {
+                if (isAddedToCart && quantity === 0) {
+                  onAdd(0, "remove");
+                } else {
+                  onAdd(quantity || 1, "add");
+                }
+              }}
+              disabled={(!isAddedToCart && quantity === 0) || saleNotStarted || saleExpired}
+              className={`w-full rounded-lg py-3 text-base font-medium shadow-lg transition-all hover:shadow-xl active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed ${
+                isAddedToCart && quantity === 0
+                  ? "bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700"
+                  : saleNotStarted || saleExpired
+                  ? "bg-gray-400 text-white"
+                  : "bg-gradient-to-r from-yellow-400 to-yellow-500 text-gray-900 hover:from-yellow-500 hover:to-yellow-600"
+              }`}
+              dir={langDir}
+              translate="no"
+            >
+              {saleNotStarted
+                ? t("coming_soon")
+                : saleExpired
+                ? t("sale_ended")
+                : isAddedToCart && quantity === 0
+                ? t("remove_from_cart")
+                : isAddedToCart
+                ? t("added_to_cart")
+                : t("add_to_cart")}
+            </Button>
+          )}
 
-          {/* Buy Now Button - Hide when sale not started, expired, or factory product */}
-          {!saleNotStarted && !saleExpired && productType !== "F" && (
+          {/* Buy Now Button - Hide when sale not started, expired, factory product, or own product */}
+          {!isOwnProduct && !saleNotStarted && !saleExpired && productType !== "F" && (
             <Button
               onClick={onBuyNow || (() => onAdd(quantity || 1, "add"))}
               disabled={quantity === 0}

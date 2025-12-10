@@ -28,6 +28,7 @@ import { useVendorBusinessCategories } from "@/hooks/useVendorBusinessCategories
 import { checkCategoryConnection } from "@/utils/categoryConnection";
 import { useCategory } from "@/apis/queries/category.queries";
 import { useCurrentAccount } from "@/apis/queries/auth.queries";
+import { useMe } from "@/apis/queries/user.queries";
 
 type ProductCardProps = {
   item: TrendingProduct;
@@ -73,6 +74,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const language = useLocale(); // Get the current locale (e.g., "en" or "ar")
   const currentAccount = useCurrentAccount();
   const vendorBusinessCategoryIds = useVendorBusinessCategories();
+  const me = useMe();
 
   const [timeLeft, setTimeLeft] = useState<string | null>(null);
 
@@ -80,6 +82,29 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
   // Get the current account's trade role (for multi-account system)
   const currentTradeRole = currentAccount?.data?.data?.account?.tradeRole || user?.tradeRole;
+
+  // Check if this product belongs to the current user
+  // For subaccounts (MEMBER), check against their adminId (addedBy)
+  // For regular accounts, check against their userId
+  const isOwnProduct = useMemo(() => {
+    if (!me?.data?.data?.id) return false;
+    
+    const currentUserId = me.data.data.id;
+    const currentAdminId = me.data.data.tradeRole === 'MEMBER' 
+      ? me.data.data.addedBy 
+      : currentUserId;
+    
+    // Check product's seller/adminId from productPrices
+    const productAdminId = item?.productPrices?.[0]?.adminId;
+    // Also check vendorId if available (from trending page mapping)
+    const productVendorId = (item as any)?.vendorId;
+    
+    // Product belongs to user if adminId or vendorId matches current user's ID or adminId
+    return productAdminId === currentUserId || 
+           productAdminId === currentAdminId ||
+           productVendorId === currentUserId ||
+           productVendorId === currentAdminId;
+  }, [me?.data?.data, item?.productPrices, (item as any)?.vendorId]);
 
   // Fetch product category data to get connections (only if vendor and categoryId exists)
   const productCategoryQuery = useCategory(
@@ -691,7 +716,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       {/* Action Buttons */}
       {isInteractive ? (
         <div className="absolute top-1.5 sm:top-3 left-1/2 transform -translate-x-1/2 opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300 flex gap-1 sm:gap-2">
-          {item?.askForPrice !== "true" && !saleNotStarted && !saleExpired && !outOfStockActive ? (
+          {!isOwnProduct && item?.askForPrice !== "true" && !saleNotStarted && !saleExpired && !outOfStockActive ? (
             <Button
               variant="secondary"
               size="sm"
@@ -824,7 +849,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         ) : null}
         {/* Quantity Section */}
-        {!saleNotStarted && (
+        {!isOwnProduct && !saleNotStarted && (
           <div className="space-y-1 sm:space-y-2 mb-1 sm:mb-3">
             <label className="block text-xs sm:text-sm font-medium text-gray-700" dir={langDir} translate="no">
               {t("quantity")}
@@ -899,7 +924,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               <FaCircleCheck color="#10b981" size={12} className="sm:w-4 sm:h-4" />
               <span>{t("added_to_cart")}</span>
             </button>
-          ) : (
+          ) : !isOwnProduct ? (
             <button
               type="button"
               className={`w-full text-white font-semibold py-1.5 sm:py-2 px-2 sm:px-4 rounded-md sm:rounded-lg transition-all duration-200 shadow-sm sm:shadow-md disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none text-xs sm:text-sm ${saleNotStarted ? "bg-yellow-500" : saleExpired || outOfStockActive ? "bg-gray-500" : "bg-blue-600 sm:bg-linear-to-r sm:from-blue-600 sm:to-blue-700 hover:bg-blue-700 sm:hover:from-blue-700 sm:hover:to-blue-800 sm:transform sm:hover:scale-105"}`}
@@ -910,7 +935,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             >
               {saleNotStarted ? t("coming_soon") : saleExpired ? t("expired") : outOfStockActive ? t("out_of_stock") : t("add_to_cart")}
             </button>
-          )}
+          ) : null}
         </div>
 
         {/* Sold Progress Bar */}

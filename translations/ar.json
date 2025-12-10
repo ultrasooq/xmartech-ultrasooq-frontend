@@ -1241,6 +1241,7 @@
   "last": "الأخيرة",
   "edit": "تعديل",
   "edit_product": "تعديل المنتج",
+  "edit_and_add_as_my_rfq": "تعديل وإضافة كطلب عرض سعر خاص بي",
   "basic_information": "المعلومات الأساسية",
   "pricing_information": "معلومات التسعير",
   "inventory_information": "معلومات المخزون",
@@ -1576,5 +1577,8 @@
   "withdrawal": "سحب",
   "sale_not_started_yet": "البيع لم يبدأ بعد",
   "sale_has_ended": "انتهى البيع",
-  "sale_ended": "انتهى البيع"
+  "sale_ended": "انتهى البيع",
+  "recommended_products": "منتجات موصى بها لك",
+  "based_on_your_cart": "بناءً على العناصر في سلة التسوق الخاصة بك",
+  "no_recommended_products": "لم يتم العثور على منتجات موصى بها"
 }

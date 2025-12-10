@@ -255,8 +255,8 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
           </div>
         </div>
 
-        {/* Edit Button */}
-        {isCreatedByMe && haveAccessToken ? (
+        {/* Edit Button - Show for all authenticated users */}
+        {haveAccessToken ? (
           <div className="mb-2 sm:mb-3">
             <Button
               type="button"
@@ -267,7 +267,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
               dir={langDir}
               translate="no"
             >
-              {t("edit")}
+              {isCreatedByMe ? t("edit") : t("edit_and_add_as_my_rfq")}
             </Button>
           </div>
         ) : null}

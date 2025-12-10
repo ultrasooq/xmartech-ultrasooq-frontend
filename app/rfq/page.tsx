@@ -5,6 +5,7 @@ import {
   useRfqCartListByUserId,
   useRfqProducts,
   useUpdateRfqCartWithLogin,
+  useDeleteRfqCartItem,
 } from "@/apis/queries/rfq.queries";
 import RfqProductCard from "@/components/modules/rfq/RfqProductCard";
 import Pagination from "@/components/shared/Pagination";
@@ -67,7 +68,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { ShoppingCart, Package } from "lucide-react";
+import { ShoppingCart, Package, X } from "lucide-react";
 import FilterMenuIcon from "@/components/icons/FilterMenuIcon";
 
 interface RfqPageProps {
@@ -156,6 +157,7 @@ const RfqPage = (props: RfqPageProps) => {
   );
 
   const updateRfqCartWithLogin = useUpdateRfqCartWithLogin();
+  const deleteRfqCartItem = useDeleteRfqCartItem();
 
   const handleRfqDebounce = debounce((event: any) => {
     setSearchRfqTerm(event.target.value);
@@ -253,6 +255,31 @@ const RfqPage = (props: RfqPageProps) => {
   };
 
   const handleCartPage = () => router.push("/rfq-cart");
+
+  const handleRemoveItemFromCart = async (rfqCartId: number) => {
+    try {
+      const response = await deleteRfqCartItem.mutateAsync({ rfqCartId });
+      if (response.status) {
+        toast({
+          title: t("item_removed_from_cart"),
+          description: t("check_your_cart_for_more_details"),
+          variant: "success",
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["rfq-cart-by-user"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["rfq-products"],
+        });
+      }
+    } catch (error) {
+      toast({
+        title: t("error"),
+        description: t("failed_to_remove_item"),
+        variant: "danger",
+      });
+    }
+  };
 
   const memoizedRfqProducts = useMemo(() => {
     if (rfqProductsQuery.data?.data) {
@@ -391,8 +418,8 @@ const RfqPage = (props: RfqPageProps) => {
         <div className="min-h-screen w-full bg-white px-2 sm:px-4 lg:px-8">
           <div className="flex h-full flex-col gap-4 lg:flex-row">
             {/* Left Column - Filters (Desktop) */}
-            <div className="hidden w-64 flex-shrink-0 overflow-y-auto bg-white p-4 lg:block">
-              <div className="rounded-lg bg-white p-6 shadow-lg">
+            <div className="hidden flex-shrink-0 overflow-y-auto bg-white p-4 lg:block lg:w-1/4">
+              <div className="sticky top-4 rounded-xl bg-white p-6 shadow-lg">
                 <div className="mb-4">
                   <div className="mb-4 flex gap-2">
                     <button
@@ -579,20 +606,6 @@ const RfqPage = (props: RfqPageProps) => {
                       <FilterMenuIcon />
                     </button>
 
-                    {/* Mobile Cart Button */}
-                    <button
-                      type="button"
-                      className="relative rounded-lg border border-gray-300 bg-white p-2.5 transition-colors hover:bg-gray-100 lg:hidden"
-                      onClick={() => setShowCartDrawer(true)}
-                    >
-                      <ShoppingCart className="h-5 w-5" />
-                      {cartList.length > 0 && (
-                        <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
-                          {cartList.length}
-                        </span>
-                      )}
-                    </button>
-
                     {/* Title */}
                     <div className="flex-1 sm:flex-none">
                       <h2
@@ -699,7 +712,7 @@ const RfqPage = (props: RfqPageProps) => {
                         </div>
                       </div>
                     </div>
-                    {haveAccessToken && me?.data?.data?.tradeRole != "BUYER" ? (
+                    {haveAccessToken ? (
                       <Link
                         href="/product?productType=R"
                         className="flex items-center justify-center gap-x-2 rounded-lg bg-orange-500 px-4 py-2 text-sm whitespace-nowrap text-white transition-colors hover:bg-orange-600 sm:py-2.5 sm:text-base"
@@ -763,9 +776,11 @@ const RfqPage = (props: RfqPageProps) => {
                         }
                         onAdd={handleRFQCart}
                         onToCart={handleCartPage}
-                        onEdit={() => {
-                          handleToggleAddModal();
-                          setSelectedProductId(item?.id);
+                        onEdit={(productId) => {
+                          // Navigate to product page to edit and add as user's own RFQ product
+                          router.push(
+                            `/product?productType=R&copy=${productId}`,
+                          );
                         }}
                         onWishlist={() =>
                           handleAddToWishlist(item.id, item?.product_wishlist)
@@ -804,145 +819,6 @@ const RfqPage = (props: RfqPageProps) => {
                     />
                   </div>
                 ) : null}
-              </div>
-            </div>
-
-            {/* Right Column - RFQ Cart (Desktop) */}
-            <div className="hidden w-72 flex-shrink-0 rounded-lg bg-white shadow-sm lg:block">
-              <div className="sticky top-0 h-screen overflow-y-auto">
-                <div className="m-4 rounded-lg bg-white p-6 shadow-lg">
-                  <div className="cart_sidebar">
-                    <div className="mb-4 border-b border-gray-200 pb-4">
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-lg font-semibold text-gray-900">
-                          {t("my_cart")}
-                        </h3>
-                        <span className="rounded-full bg-gray-100 px-2 py-1 text-sm text-gray-500">
-                          {cartList.length}{" "}
-                          {cartList.length === 1 ? t("item") : t("items")}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="max-h-64 overflow-y-auto">
-                      {cartList.length === 0 ? (
-                        <div className="py-6 text-center">
-                          <svg
-                            className="mx-auto mb-3 h-12 w-12 text-gray-400"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-                            />
-                          </svg>
-                          <p className="text-sm text-gray-500">
-                            {t("your_cart_is_empty")}
-                          </p>
-                          <p className="mt-1 text-xs text-gray-400">
-                            {t("add_some_products_to_get_started")}
-                          </p>
-                        </div>
-                      ) : (
-                        <div className="space-y-3">
-                          {cartList.slice(0, 3).map((cartItem: any) => {
-                            // Find the product data from our memoized product list
-                            const productData = memoizedRfqProducts.find(
-                              (product: any) =>
-                                product.id === cartItem.productId,
-                            );
-
-                            return (
-                              <div
-                                key={cartItem.id}
-                                className="flex items-center space-x-3 rounded-lg p-2 transition-colors hover:bg-gray-50"
-                              >
-                                {/* Product Image */}
-                                <div className="h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100">
-                                  {productData?.productImages?.[0]?.image ? (
-                                    <img
-                                      src={productData.productImages[0].image}
-                                      alt={productData.productName || "Product"}
-                                      className="h-full w-full object-cover"
-                                    />
-                                  ) : (
-                                    <div className="flex h-full w-full items-center justify-center">
-                                      <svg
-                                        className="h-6 w-6 text-gray-400"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                      >
-                                        <path
-                                          strokeLinecap="round"
-                                          strokeLinejoin="round"
-                                          strokeWidth={2}
-                                          d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-                                        />
-                                      </svg>
-                                    </div>
-                                  )}
-                                </div>
-
-                                {/* Product Info */}
-                                <div className="min-w-0 flex-1">
-                                  <h4 className="truncate text-sm font-medium text-gray-900">
-                                    {productData?.productName || t("product")}
-                                  </h4>
-                                  <div className="mt-1 flex items-center justify-between">
-                                    <p className="text-xs text-gray-500">
-                                      Qty: {cartItem.quantity || 1}
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-                            );
-                          })}
-
-                          {/* Show "and X more" if there are more than 3 items */}
-                          {cartList.length > 3 && (
-                            <div className="py-2 text-center">
-                              <p className="text-xs text-gray-500">
-                                {t("and_n_more_items", {
-                                  n: cartList.length - 3,
-                                })}
-                              </p>
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Go to Cart Button */}
-                    {cartList.length > 0 && (
-                      <div className="border-t border-gray-200 bg-gray-50 p-4">
-                        <button
-                          onClick={handleCartPage}
-                          className="flex w-full items-center justify-center space-x-2 rounded-lg bg-orange-600 px-4 py-2 font-medium text-white transition-colors duration-200 hover:bg-orange-700"
-                        >
-                          <svg
-                            className="h-4 w-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-                            />
-                          </svg>
-                          <span>{t("go_to_rfq_cart")}</span>
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -1127,101 +1003,124 @@ const RfqPage = (props: RfqPageProps) => {
           </SheetContent>
         </Sheet>
 
-        {/* Mobile Cart Drawer */}
+        {/* Floating Cart Button - Only show when cart has items */}
+        {cartList.length > 0 && (
+          <button
+            onClick={() => setShowCartDrawer(true)}
+            className="group fixed right-6 bottom-6 z-50 flex h-11 w-11 items-center justify-center rounded-full bg-blue-600 text-white shadow-2xl transition-all duration-300 hover:scale-110 hover:bg-blue-700 lg:h-12 lg:w-12"
+            aria-label={t("my_cart")}
+          >
+            <ShoppingCart className="h-4 w-4 lg:h-5 lg:w-5" />
+            <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full border-2 border-white bg-red-500 text-xs font-bold text-white shadow-lg lg:h-5 lg:w-5">
+              {cartList.length > 99 ? "99+" : cartList.length}
+            </span>
+          </button>
+        )}
+
+        {/* Desktop & Mobile Cart Drawer - Enhanced */}
         <Sheet open={showCartDrawer} onOpenChange={setShowCartDrawer}>
           <SheetContent
             side="right"
-            className="w-[300px] overflow-y-auto sm:w-[400px]"
+            className="w-full overflow-y-auto sm:w-[400px] lg:w-[450px]"
           >
-            <SheetHeader>
-              <SheetTitle className="flex items-center gap-2">
-                <ShoppingCart className="h-5 w-5" />
-                <span>{t("my_cart")}</span>
-              </SheetTitle>
-            </SheetHeader>
-            <div className="mt-6">
-              <div className="mb-4 border-b border-gray-200 pb-4">
-                <span className="rounded-full bg-gray-100 px-2 py-1 text-sm text-gray-500">
+            <SheetHeader className="mb-4 border-b border-gray-200 pb-4">
+              <SheetTitle className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <ShoppingCart className="h-5 w-5" />
+                  <span className="text-lg font-bold">{t("my_cart")}</span>
+                </div>
+                <span className="rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-500">
                   {cartList.length}{" "}
                   {cartList.length === 1 ? t("item") : t("items")}
                 </span>
-              </div>
+              </SheetTitle>
+            </SheetHeader>
 
-              <div className="max-h-[calc(100vh-250px)] overflow-y-auto">
-                {cartList.length === 0 ? (
-                  <div className="py-6 text-center">
-                    <Package className="mx-auto mb-3 h-12 w-12 text-gray-400" />
-                    <p className="text-sm text-gray-500">
-                      {t("your_cart_is_empty")}
-                    </p>
-                    <p className="mt-1 text-xs text-gray-400">
-                      {t("add_some_products_to_get_started")}
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {cartList.slice(0, 10).map((cartItem: any) => {
-                      const productData = memoizedRfqProducts.find(
-                        (product: any) => product.id === cartItem.productId,
-                      );
+            <div className="mt-6">
+              {cartList.length === 0 ? (
+                <div className="py-12 text-center">
+                  <Package className="mx-auto mb-4 h-16 w-16 text-gray-400" />
+                  <p className="text-base font-medium text-gray-500">
+                    {t("your_cart_is_empty")}
+                  </p>
+                  <p className="mt-2 text-sm text-gray-400">
+                    {t("add_some_products_to_get_started")}
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {cartList.map((cartItem: any) => {
+                    const productData = memoizedRfqProducts.find(
+                      (product: any) => product.id === cartItem.productId,
+                    );
 
-                      return (
-                        <div
-                          key={cartItem.id}
-                          className="flex items-center space-x-3 rounded-lg p-2 transition-colors hover:bg-gray-50"
-                        >
-                          <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100">
-                            {productData?.productImages?.[0]?.image ? (
-                              <img
-                                src={productData.productImages[0].image}
-                                alt={productData.productName || "Product"}
-                                className="h-full w-full object-cover"
-                              />
-                            ) : (
-                              <div className="flex h-full w-full items-center justify-center">
-                                <Package className="h-8 w-8 text-gray-400" />
-                              </div>
+                    return (
+                      <div
+                        key={cartItem.id}
+                        className="group flex items-center space-x-4 rounded-lg border border-gray-100 p-3 transition-colors hover:bg-gray-50"
+                      >
+                        <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100">
+                          {productData?.productImages?.[0]?.image ? (
+                            <img
+                              src={productData.productImages[0].image}
+                              alt={productData.productName || "Product"}
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center">
+                              <Package className="h-8 w-8 text-gray-400" />
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="min-w-0 flex-1">
+                          <h4 className="mb-1 truncate text-sm font-semibold text-gray-900">
+                            {productData?.productName || t("product")}
+                          </h4>
+                          <div className="flex items-center justify-between">
+                            <p className="text-xs text-gray-500">
+                              {t("quantity")}: {cartItem.quantity || 1}
+                            </p>
+                            {cartItem.note && (
+                              <p className="max-w-[150px] truncate text-xs text-gray-400">
+                                {cartItem.note}
+                              </p>
                             )}
                           </div>
-
-                          <div className="min-w-0 flex-1">
-                            <h4 className="truncate text-sm font-medium text-gray-900">
-                              {productData?.productName || t("product")}
-                            </h4>
-                            <div className="mt-1 flex items-center justify-between">
-                              <p className="text-xs text-gray-500">
-                                Qty: {cartItem.quantity || 1}
-                              </p>
-                            </div>
-                          </div>
                         </div>
-                      );
-                    })}
 
-                    {cartList.length > 10 && (
-                      <div className="py-2 text-center">
-                        <p className="text-xs text-gray-500">
-                          {t("and_n_more_items", { n: cartList.length - 10 })}
-                        </p>
+                        {/* Remove Button */}
+                        <button
+                          onClick={() => handleRemoveItemFromCart(cartItem.id)}
+                          disabled={deleteRfqCartItem.isPending}
+                          className="flex-shrink-0 rounded-lg p-2 text-gray-400 opacity-0 transition-all duration-200 group-hover:opacity-100 hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50"
+                          aria-label={t("remove_from_cart")}
+                          title={t("remove_from_cart")}
+                        >
+                          <X className="h-5 w-5" />
+                        </button>
                       </div>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {/* Go to Cart Button */}
-              {cartList.length > 0 && (
-                <div className="border-t border-gray-200 bg-gray-50 p-4">
-                  <button
-                    onClick={handleCartPage}
-                    className="flex w-full items-center justify-center space-x-2 rounded-lg bg-blue-600 px-4 py-2 font-medium text-white transition-colors duration-200 hover:bg-blue-700"
-                  >
-                    <Package className="h-4 w-4" />
-                    <span>{t("go_to_rfq_cart")}</span>
-                  </button>
+                    );
+                  })}
                 </div>
               )}
             </div>
+
+            {/* Go to Cart Button */}
+            {cartList.length > 0 && (
+              <div className="sticky bottom-0 mt-6 border-t border-gray-200 bg-white pt-4">
+                <button
+                  onClick={() => {
+                    setShowCartDrawer(false);
+                    window.location.href = "/rfq-cart";
+                  }}
+                  className="flex w-full items-center justify-center space-x-2 rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white shadow-lg transition-colors duration-200 hover:bg-blue-700"
+                >
+                  <Package className="h-5 w-5" />
+                  <span>{t("go_to_rfq_cart")}</span>
+                </button>
+              </div>
+            )}
           </SheetContent>
         </Sheet>
 

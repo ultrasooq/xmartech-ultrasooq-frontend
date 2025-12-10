@@ -39,7 +39,7 @@ import { useCategoryStore } from "@/lib/categoryStore";
 import { cn } from "@/lib/utils";
 import CartIcon from "@/public/images/cart.svg";
 import UnAuthUserIcon from "@/public/images/login.svg";
-import LogoIcon from "@/public/images/logo-v2.png";
+import LogoIcon from "@/public/images/logo1.png";
 import WishlistIcon from "@/public/images/wishlist.svg";
 import NotificationBell from "@/components/shared/NotificationBell";
 import {
@@ -495,7 +495,8 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
       case "FREELANCER":
         return (
           <>
-            <li className="py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
+            {/* Service Button - Commented out */}
+            {/* <li className="py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
               <Link
                 href="/manage-services"
                 className={getActiveClass("/manage-services")}
@@ -503,7 +504,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
               >
                 {t("my_services")}
               </Link>
-            </li>
+            </li> */}
             <li className="py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
               <Link
                 href="/rfq-quotes"
@@ -810,13 +811,14 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                                     </DropdownMenuItem>
                                   </Link>
                                 )}
-                                {hideMenu(PERMISSION_SERVICES) && (
+                                {/* Service Button - Commented out */}
+                                {/* {hideMenu(PERMISSION_SERVICES) && (
                                   <Link href="/manage-services">
                                     <DropdownMenuItem translate="no">
                                       {t("services")}
                                     </DropdownMenuItem>
                                   </Link>
-                                )}
+                                )} */}
                                 {hideMenu(PERMISSION_ORDERS) && (
                                   <Link href="/seller-orders">
                                     <DropdownMenuItem translate="no">
@@ -982,72 +984,82 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                   {t("home")}
                 </span>
               </Link>
-              {memoizedMenu.map((item: any) => {
-                const getHref = () => {
-                  if (item.name.toLowerCase().includes("store"))
+              {memoizedMenu
+                .filter(
+                  (item: any) => !item.name.toLowerCase().includes("service"),
+                )
+                .map((item: any) => {
+                  const getHref = () => {
+                    if (item.name.toLowerCase().includes("store"))
+                      return "/trending";
+                    if (item.name.toLowerCase().includes("buy group"))
+                      return "/buygroup";
+                    if (item.name.toLowerCase().includes("rfq")) return "/rfq";
+                    if (item.name.toLowerCase().includes("factories"))
+                      return "/factories";
+                    // Service button - Commented out
+                    // if (item.name.toLowerCase().includes("service"))
+                    //   return "/services";
                     return "/trending";
-                  if (item.name.toLowerCase().includes("buy group"))
-                    return "/buygroup";
-                  if (item.name.toLowerCase().includes("rfq")) return "/rfq";
-                  if (item.name.toLowerCase().includes("factories"))
-                    return "/factories";
-                  if (item.name.toLowerCase().includes("service"))
-                    return "/services";
-                  return "/trending";
-                };
+                  };
 
-                const href = getHref();
-                const isActiveNav =
-                  pathname === href ||
-                  (pathname?.startsWith("/trending") && href === "/trending") ||
-                  (pathname?.startsWith("/buygroup") && href === "/buygroup") ||
-                  (pathname?.startsWith("/rfq") && href === "/rfq") ||
-                  (pathname?.startsWith("/factories") &&
-                    href === "/factories") ||
-                  (pathname?.startsWith("/services") && href === "/services");
+                  const href = getHref();
+                  const isActiveNav =
+                    pathname === href ||
+                    (pathname?.startsWith("/trending") &&
+                      href === "/trending") ||
+                    (pathname?.startsWith("/buygroup") &&
+                      href === "/buygroup") ||
+                    (pathname?.startsWith("/rfq") && href === "/rfq") ||
+                    (pathname?.startsWith("/factories") &&
+                      href === "/factories");
+                  // Service button - Commented out
+                  // (pathname?.startsWith("/services") && href === "/services");
 
-                return (
-                  <Link
-                    key={item.id}
-                    href={href}
-                    onClick={() => {
-                      setMenuId(item.id);
-                      if (item.name.toLowerCase().includes("store")) {
-                        router.push("/trending");
-                      } else if (
-                        item.name.toLowerCase().includes("buy group")
-                      ) {
-                        router.push("/buygroup");
-                      } else if (item.name.toLowerCase().includes("rfq")) {
-                        router.push("/rfq");
-                      } else if (
-                        item.name.toLowerCase().includes("factories")
-                      ) {
-                        router.push("/factories");
-                      } else if (item.name.toLowerCase().includes("service")) {
-                        router.push("/services");
-                      }
-                    }}
-                    className={`flex items-center gap-1.5 rounded-lg px-3 py-2 whitespace-nowrap transition-all sm:gap-2 sm:px-4 sm:py-2.5 ${isActiveNav ? "bg-white font-semibold text-blue-600 shadow-md" : "bg-white/10 text-white hover:bg-white/20 active:scale-95"}`}
-                  >
-                    <Image
-                      src={item.icon}
-                      alt={item?.name}
-                      height={18}
-                      width={18}
-                      className="h-4 w-4 sm:h-5 sm:w-5"
-                      style={{
-                        filter: isActiveNav
-                          ? "brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)"
-                          : "none",
+                  return (
+                    <Link
+                      key={item.id}
+                      href={href}
+                      onClick={() => {
+                        setMenuId(item.id);
+                        if (item.name.toLowerCase().includes("store")) {
+                          router.push("/trending");
+                        } else if (
+                          item.name.toLowerCase().includes("buy group")
+                        ) {
+                          router.push("/buygroup");
+                        } else if (item.name.toLowerCase().includes("rfq")) {
+                          router.push("/rfq");
+                        } else if (
+                          item.name.toLowerCase().includes("factories")
+                        ) {
+                          router.push("/factories");
+                        }
+                        // Service button - Commented out
+                        // else if (item.name.toLowerCase().includes("service")) {
+                        //   router.push("/services");
+                        // }
                       }}
-                    />
-                    <span className="text-xs font-medium sm:text-sm">
-                      {item?.name}
-                    </span>
-                  </Link>
-                );
-              })}
+                      className={`flex items-center gap-1.5 rounded-lg px-3 py-2 whitespace-nowrap transition-all sm:gap-2 sm:px-4 sm:py-2.5 ${isActiveNav ? "bg-white font-semibold text-blue-600 shadow-md" : "bg-white/10 text-white hover:bg-white/20 active:scale-95"}`}
+                    >
+                      <Image
+                        src={item.icon}
+                        alt={item?.name}
+                        height={18}
+                        width={18}
+                        className="h-4 w-4 sm:h-5 sm:w-5"
+                        style={{
+                          filter: isActiveNav
+                            ? "brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)"
+                            : "none",
+                        }}
+                      />
+                      <span className="text-xs font-medium sm:text-sm">
+                        {item?.name}
+                      </span>
+                    </Link>
+                  );
+                })}
             </div>
           </div>
         </div>
@@ -1441,7 +1453,8 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                                       </Link>
                                     ) : null}
 
-                                    {hideMenu(PERMISSION_SERVICES) ? (
+                                    {/* Service Button - Commented out */}
+                                    {/* {hideMenu(PERMISSION_SERVICES) ? (
                                       <Link href="/manage-services">
                                         <DropdownMenuItem
                                           dir={langDir}
@@ -1450,7 +1463,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                                           {t("services")}
                                         </DropdownMenuItem>
                                       </Link>
-                                    ) : null}
+                                    ) : null} */}
 
                                     {hideMenu(PERMISSION_ORDERS) ? (
                                       <Link href="/seller-orders">
@@ -1662,83 +1675,91 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                     {t("home")}
                   </div>
                 </ButtonLink>
-                {memoizedMenu.map((item: any) => {
-                  // Determine the href for this menu item
-                  const getHref = () => {
-                    if (item.name.toLowerCase().includes("home"))
-                      return "/home";
-                    if (item.name.toLowerCase().includes("store"))
+                {memoizedMenu
+                  .filter(
+                    (item: any) => !item.name.toLowerCase().includes("service"),
+                  )
+                  .map((item: any) => {
+                    // Determine the href for this menu item
+                    const getHref = () => {
+                      if (item.name.toLowerCase().includes("home"))
+                        return "/home";
+                      if (item.name.toLowerCase().includes("store"))
+                        return "/trending";
+                      if (item.name.toLowerCase().includes("buy group"))
+                        return "/buygroup";
+                      if (item.name.toLowerCase().includes("rfq"))
+                        return "/rfq";
+                      if (item.name.toLowerCase().includes("factories"))
+                        return "/factories";
+                      // Service button - Commented out
+                      // if (item.name.toLowerCase().includes("service"))
+                      //   return "/services";
                       return "/trending";
-                    if (item.name.toLowerCase().includes("buy group"))
-                      return "/buygroup";
-                    if (item.name.toLowerCase().includes("rfq")) return "/rfq";
-                    if (item.name.toLowerCase().includes("factories"))
-                      return "/factories";
-                    if (item.name.toLowerCase().includes("service"))
-                      return "/services";
-                    return "/trending";
-                  };
+                    };
 
-                  const href = getHref();
-                  const isActive =
-                    pathname === href ||
-                    (pathname?.startsWith("/trending") &&
-                      href === "/trending") ||
-                    (pathname?.startsWith("/buygroup") &&
-                      href === "/buygroup") ||
-                    (pathname?.startsWith("/rfq") && href === "/rfq") ||
-                    (pathname?.startsWith("/factories") &&
-                      href === "/factories") ||
-                    (pathname?.startsWith("/services") && href === "/services");
+                    const href = getHref();
+                    const isActive =
+                      pathname === href ||
+                      (pathname?.startsWith("/trending") &&
+                        href === "/trending") ||
+                      (pathname?.startsWith("/buygroup") &&
+                        href === "/buygroup") ||
+                      (pathname?.startsWith("/rfq") && href === "/rfq") ||
+                      (pathname?.startsWith("/factories") &&
+                        href === "/factories");
+                    // Service button - Commented out
+                    // (pathname?.startsWith("/services") && href === "/services");
 
-                  return (
-                    <ButtonLink
-                      key={item.id}
-                      onClick={() => {
-                        setMenuId(item.id);
-                        if (item.name.toLowerCase().includes("home")) {
-                          router.push("/home");
-                        }
+                    return (
+                      <ButtonLink
+                        key={item.id}
+                        onClick={() => {
+                          setMenuId(item.id);
+                          if (item.name.toLowerCase().includes("home")) {
+                            router.push("/home");
+                          }
 
-                        if (item.name.toLowerCase().includes("store")) {
-                          router.push("/trending");
-                        }
+                          if (item.name.toLowerCase().includes("store")) {
+                            router.push("/trending");
+                          }
 
-                        if (item.name.toLowerCase().includes("buy group")) {
-                          router.push("/buygroup");
-                        }
+                          if (item.name.toLowerCase().includes("buy group")) {
+                            router.push("/buygroup");
+                          }
 
-                        if (item.name.toLowerCase().includes("rfq")) {
-                          router.push("/rfq");
-                        }
-                        if (item.name.toLowerCase().includes("factories")) {
-                          router.push("/factories");
-                        }
-                        if (item.name.toLowerCase().includes("service")) {
-                          router.push("/services");
-                        }
-                      }}
-                      href={href}
-                      className={`transition-colors ${isActive ? "active-nav-item" : "inactive-nav-item"}`}
-                    >
-                      <div className="flex gap-x-3" onClick={handleClick}>
-                        <Image
-                          src={item.icon}
-                          alt={item?.name}
-                          height={0}
-                          width={0}
-                          className={`h-7 w-7 ${isActive ? "brightness-0 saturate-100" : ""}`}
-                          style={{
-                            filter: isActive
-                              ? "brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)"
-                              : "none",
-                          }}
-                        />{" "}
-                        <p>{item?.name}</p>
-                      </div>
-                    </ButtonLink>
-                  );
-                })}
+                          if (item.name.toLowerCase().includes("rfq")) {
+                            router.push("/rfq");
+                          }
+                          if (item.name.toLowerCase().includes("factories")) {
+                            router.push("/factories");
+                          }
+                          // Service button - Commented out
+                          // if (item.name.toLowerCase().includes("service")) {
+                          //   router.push("/services");
+                          // }
+                        }}
+                        href={href}
+                        className={`transition-colors ${isActive ? "active-nav-item" : "inactive-nav-item"}`}
+                      >
+                        <div className="flex gap-x-3" onClick={handleClick}>
+                          <Image
+                            src={item.icon}
+                            alt={item?.name}
+                            height={0}
+                            width={0}
+                            className={`h-7 w-7 ${isActive ? "brightness-0 saturate-100" : ""}`}
+                            style={{
+                              filter: isActive
+                                ? "brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)"
+                                : "none",
+                            }}
+                          />{" "}
+                          <p>{item?.name}</p>
+                        </div>
+                      </ButtonLink>
+                    );
+                  })}
               </div>
             </div>
             {/* <p

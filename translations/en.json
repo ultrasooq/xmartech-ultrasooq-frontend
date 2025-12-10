@@ -1245,6 +1245,7 @@
   "last": "Last",
   "edit": "Edit",
   "edit_product": "Edit Product",
+  "edit_and_add_as_my_rfq": "Edit & Add as My RFQ",
   "basic_information": "Basic Information",
   "pricing_information": "Pricing Information",
   "inventory_information": "Inventory Information",
@@ -1805,5 +1806,8 @@
   "no_vendors_found_for_location": "No vendors found for the selected location",
   "rfq_submitted_successfully": "RFQ submitted successfully",
   "vendors_will_respond_via_messages": "Vendors will respond to your request via messages",
-  "product_type_indicator": "Product Type"
+  "product_type_indicator": "Product Type",
+  "recommended_products": "Recommended for You",
+  "based_on_your_cart": "Based on items in your cart",
+  "no_recommended_products": "No recommended products found"
 }

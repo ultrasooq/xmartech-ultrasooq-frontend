@@ -208,6 +208,10 @@ export interface ICreateAccountRequest {
   companyPhone?: string;
   companyWebsite?: string;
   companyTaxId?: string;
+
+  // Identity card fields (mandatory for COMPANY and FREELANCER)
+  identityProof?: string; // Front side image URL
+  identityProofBack?: string; // Back side image URL
 }
 
 export interface ICreateAccount {

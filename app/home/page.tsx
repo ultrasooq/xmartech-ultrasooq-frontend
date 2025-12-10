@@ -18,9 +18,7 @@ import {
 import Image from "next/image";
 import { v4 as uuidv4 } from "uuid";
 import HeadphoneImage from "@/public/images/big-headphone.png";
-import AdBannerOne from "@/public/images/hs-1.png";
-import AdBannerTwo from "@/public/images/hs-2.png";
-import AdBannerThree from "@/public/images/hs-3.png";
+import HeroBanner from "@/components/modules/home/HeroBanner";
 import { useAuth } from "@/context/AuthContext";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
@@ -91,43 +89,46 @@ function HomePage() {
   }, [categoryQuery?.data?.data]);
 
   // Helper function to transform product data
-  const transformProductData = useCallback((item: any, includeSold = false) => {
-    let sold = 0;
-    if (includeSold && item.orderProducts?.length) {
-      item.orderProducts.forEach((product: any) => {
-        sold += product?.orderQuantity || 0;
-      });
-    }
+  const transformProductData = useCallback(
+    (item: any, includeSold = false) => {
+      let sold = 0;
+      if (includeSold && item.orderProducts?.length) {
+        item.orderProducts.forEach((product: any) => {
+          sold += product?.orderQuantity || 0;
+        });
+      }
 
-    return {
-      id: item.id,
-      productName: item?.productName || "-",
-      productPrice: item?.productPrice || 0,
-      offerPrice: item?.offerPrice || 0,
-      productImage: item?.product_productPrice?.[0]
-        ?.productPrice_productSellerImage?.length
-        ? item?.product_productPrice?.[0]
-          ?.productPrice_productSellerImage?.[0]?.image
-        : item?.productImages?.[0]?.image,
-      categoryName: item?.category?.name || "-",
-      skuNo: item?.skuNo,
-      brandName: item?.brand?.brandName || "-",
-      productReview: item?.productReview || [],
-      productWishlist: item?.product_wishlist || [],
-      inWishlist: item?.product_wishlist?.find(
-        (ele: any) => ele?.userId === me.data?.data?.id,
-      ),
-      shortDescription: item?.product_productShortDescription?.length
-        ? item?.product_productShortDescription?.[0]?.shortDescription
-        : "-",
-      productProductPriceId: item?.product_productPrice?.[0]?.id,
-      productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
-      consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
-      askForPrice: item?.product_productPrice?.[0]?.askForPrice,
-      productPrices: item?.product_productPrice,
-      sold: includeSold ? sold : undefined,
-    };
-  }, [me.data?.data?.id]);
+      return {
+        id: item.id,
+        productName: item?.productName || "-",
+        productPrice: item?.productPrice || 0,
+        offerPrice: item?.offerPrice || 0,
+        productImage: item?.product_productPrice?.[0]
+          ?.productPrice_productSellerImage?.length
+          ? item?.product_productPrice?.[0]
+              ?.productPrice_productSellerImage?.[0]?.image
+          : item?.productImages?.[0]?.image,
+        categoryName: item?.category?.name || "-",
+        skuNo: item?.skuNo,
+        brandName: item?.brand?.brandName || "-",
+        productReview: item?.productReview || [],
+        productWishlist: item?.product_wishlist || [],
+        inWishlist: item?.product_wishlist?.find(
+          (ele: any) => ele?.userId === me.data?.data?.id,
+        ),
+        shortDescription: item?.product_productShortDescription?.length
+          ? item?.product_productShortDescription?.[0]?.shortDescription
+          : "-",
+        productProductPriceId: item?.product_productPrice?.[0]?.id,
+        productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
+        consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
+        askForPrice: item?.product_productPrice?.[0]?.askForPrice,
+        productPrices: item?.product_productPrice,
+        sold: includeSold ? sold : undefined,
+      };
+    },
+    [me.data?.data?.id],
+  );
 
   const buyGroupProductsQuery = useAllBuyGroupProducts({
     page: 1,
@@ -137,7 +138,9 @@ function HomePage() {
 
   const memoizedBuyGroupProducts = useMemo(() => {
     return (
-      buyGroupProductsQuery?.data?.data?.map((item: any) => transformProductData(item, true)) || []
+      buyGroupProductsQuery?.data?.data?.map((item: any) =>
+        transformProductData(item, true),
+      ) || []
     );
   }, [buyGroupProductsQuery?.data?.data, transformProductData]);
 
@@ -150,7 +153,9 @@ function HomePage() {
 
   const memoizedHomeDecorProducts = useMemo(() => {
     return (
-      homeDecorProductsQuery?.data?.data?.map((item: any) => transformProductData(item)) || []
+      homeDecorProductsQuery?.data?.data?.map((item: any) =>
+        transformProductData(item),
+      ) || []
     );
   }, [homeDecorProductsQuery?.data?.data, transformProductData]);
 
@@ -163,7 +168,9 @@ function HomePage() {
 
   const memoizedFashionBeautyProducts = useMemo(() => {
     return (
-      fashionBeautyProductsQuery?.data?.data?.map((item: any) => transformProductData(item)) || []
+      fashionBeautyProductsQuery?.data?.data?.map((item: any) =>
+        transformProductData(item),
+      ) || []
     );
   }, [fashionBeautyProductsQuery?.data?.data, transformProductData]);
 
@@ -176,7 +183,9 @@ function HomePage() {
 
   const memoizedConsumerElectronicsProducts = useMemo(() => {
     return (
-      consumerElectronicsProductsQuery?.data?.data?.map((item: any) => transformProductData(item)) || []
+      consumerElectronicsProductsQuery?.data?.data?.map((item: any) =>
+        transformProductData(item),
+      ) || []
     );
   }, [consumerElectronicsProductsQuery?.data?.data, transformProductData]);
 
@@ -193,9 +202,13 @@ function HomePage() {
     const products = allProductsForSectionsQuery.data.data
       .map((item: any) => ({
         ...transformProductData(item),
-        averageRating: item.productReview?.length > 0
-          ? item.productReview.reduce((acc: number, review: any) => acc + (review.rating || 0), 0) / item.productReview.length
-          : 0,
+        averageRating:
+          item.productReview?.length > 0
+            ? item.productReview.reduce(
+                (acc: number, review: any) => acc + (review.rating || 0),
+                0,
+              ) / item.productReview.length
+            : 0,
         reviewCount: item.productReview?.length || 0,
       }))
       .filter((item: any) => item.reviewCount >= 3 && item.averageRating >= 4)
@@ -235,7 +248,10 @@ function HomePage() {
     const products = allProductsForSectionsQuery.data.data
       .map((item: any) => transformProductData(item))
       .filter((item: any) => item.consumerDiscount && item.consumerDiscount > 0)
-      .sort((a: any, b: any) => (b.consumerDiscount || 0) - (a.consumerDiscount || 0));
+      .sort(
+        (a: any, b: any) =>
+          (b.consumerDiscount || 0) - (a.consumerDiscount || 0),
+      );
     return products.slice(0, 10);
   }, [allProductsForSectionsQuery?.data?.data, transformProductData]);
 
@@ -246,9 +262,13 @@ function HomePage() {
       .map((item: any) => ({
         ...transformProductData(item),
         reviewCount: item.productReview?.length || 0,
-        averageRating: item.productReview?.length > 0
-          ? item.productReview.reduce((acc: number, review: any) => acc + (review.rating || 0), 0) / item.productReview.length
-          : 0,
+        averageRating:
+          item.productReview?.length > 0
+            ? item.productReview.reduce(
+                (acc: number, review: any) => acc + (review.rating || 0),
+                0,
+              ) / item.productReview.length
+            : 0,
       }))
       .filter((item: any) => item.reviewCount > 10)
       .sort((a: any, b: any) => b.reviewCount - a.reviewCount);
@@ -347,121 +367,30 @@ function HomePage() {
   startDebugger();
   return (
     <>
-      {/* Hero Banner Section */}
-      <section className="w-full py-6 sm:py-10 lg:py-12 px-4 sm:px-8 lg:px-12 bg-gray-50">
-        <div className="w-full max-w-[1400px] mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6 lg:gap-8">
-            {/* Main Banner */}
-            <div className="lg:col-span-1 order-1">
-              <div className="group relative h-72 sm:h-80 lg:h-[420px] w-full overflow-hidden rounded-3xl border border-gray-200">
-                <Image
-                  src={AdBannerOne}
-                  className="absolute inset-0 h-full w-full object-cover"
-                  alt="hs-1"
-                  fill
-                />
-                <div className="absolute inset-0 bg-black/50" />
-                <div className="relative h-full flex items-center p-8 sm:p-10 lg:p-12">
-                  <div className="max-w-lg">
-                    <span className="inline-block px-4 py-1.5 bg-white text-gray-900 text-xs sm:text-sm font-bold rounded-full mb-4 tracking-wide">
-                      SAMSUNG
-                    </span>
-                    <h3 className="text-2xl sm:text-3xl lg:text-5xl font-bold text-white mb-4 sm:mb-5 leading-tight">
-                      Sed Do Eiusmod Tempor Incididunt
-                    </h3>
-                    <div className="mb-6 sm:mb-8">
-                      <p className="text-white/80 text-sm sm:text-base mb-2 font-medium">Only 2 days:</p>
-                      <h5 className="text-xl sm:text-2xl font-bold text-white bg-white/10 backdrop-blur-sm inline-block px-4 py-2 rounded-lg">
-                        21/10 &amp; 22/10
-                      </h5>
-                    </div>
-                    <a
-                      href="#"
-                      className="inline-flex items-center gap-2 bg-white text-gray-900 px-8 sm:px-10 py-3.5 sm:py-4 rounded-full font-bold text-sm sm:text-base"
-                    >
-                      Shop Now
-                      <ArrowRight className="h-5 w-5" />
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Side Banners */}
-            <div className="lg:col-span-1 order-2 flex flex-col gap-5 sm:gap-6 lg:gap-8">
-              {/* Speaker Banner */}
-              <div className="group relative h-48 sm:h-44 lg:h-[200px] w-full overflow-hidden rounded-3xl border border-gray-200">
-                <Image
-                  src={AdBannerTwo}
-                  className="absolute inset-0 h-full w-full object-cover"
-                  alt="hs-2"
-                  fill
-                />
-                <div className="absolute inset-0 bg-blue-900/60" />
-                <div className="relative h-full flex items-center p-6 sm:p-8">
-                  <div className="max-w-sm">
-                    <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-3">
-                      <span className="text-yellow-300">Fluence</span> Minimal Speaker
-                    </h3>
-                    <p className="text-white/70 text-sm sm:text-base mb-2 font-medium">Just Price</p>
-                    <h5 className="text-3xl sm:text-4xl font-bold text-white" translate="no">
-                      {currency.symbol}159.99
-                    </h5>
-                  </div>
-                </div>
-              </div>
-
-              {/* Camera Banner */}
-              <div className="group relative h-48 sm:h-44 lg:h-[200px] w-full overflow-hidden rounded-3xl border border-gray-200">
-                <Image
-                  src={AdBannerThree}
-                  className="absolute inset-0 h-full w-full object-cover"
-                  alt="hs-3"
-                  fill
-                />
-                <div className="absolute inset-0 bg-purple-900/60" />
-                <div className="relative h-full flex items-center p-6 sm:p-8">
-                  <div className="max-w-sm">
-                    <span className="inline-block px-3 py-1 bg-white text-gray-900 text-xs sm:text-sm font-bold rounded-full mb-3 tracking-wide">
-                      CAMERA
-                    </span>
-                    <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-3">
-                      <span className="text-yellow-300">Camera</span> Sale
-                    </h3>
-                    <span className="inline-block px-4 py-2 bg-red-600 text-white text-lg sm:text-2xl font-bold rounded-xl mb-3">
-                      20% OFF
-                    </span>
-                    <p className="text-white/70 text-sm sm:text-base mb-2 font-medium">Just Price</p>
-                    <h5 className="text-2xl sm:text-3xl font-bold text-white" translate="no">
-                      {currency.symbol}159.99
-                    </h5>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Hero Banner Section - Dynamic */}
+      <HeroBanner />
 
       {/* Categories Section */}
-      <section className="w-full py-12 sm:py-16 lg:py-20 px-4 sm:px-8 lg:px-12 bg-white">
-        <div className="w-full max-w-[1400px] mx-auto">
+      <section className="w-full bg-white px-4 py-12 sm:px-8 sm:py-16 lg:px-12 lg:py-20">
+        <div className="mx-auto w-full max-w-[1400px]">
           <div className="mb-8 sm:mb-12" dir={langDir}>
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6">
+            <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center sm:gap-6">
               <div className="flex-1">
-                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3">
+                <h2 className="mb-3 text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl">
                   {t("explore_categories")}
                 </h2>
-                <p className="text-sm sm:text-base text-gray-600 max-w-2xl">
+                <p className="max-w-2xl text-sm text-gray-600 sm:text-base">
                   {t("browse_categories_to_find_trending_products")}
                 </p>
               </div>
               <Link
                 href="/trending"
-                className="group inline-flex items-center gap-2 bg-gray-900 text-white px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-semibold text-sm sm:text-base border border-gray-900"
+                className="group inline-flex items-center gap-2 rounded-xl border border-gray-900 bg-gray-900 px-6 py-3.5 text-sm font-semibold text-white sm:px-8 sm:py-4 sm:text-base"
               >
                 <TrendingUp className="h-5 w-5" />
-                <span className="hidden sm:inline">{t("view_trending_products")}</span>
+                <span className="hidden sm:inline">
+                  {t("view_trending_products")}
+                </span>
                 <span className="sm:hidden">{t("trending")}</span>
                 <ArrowRight className="h-5 w-5" />
               </Link>
@@ -474,21 +403,27 @@ function HomePage() {
       </section>
 
       {memoizedBuyGroupProducts?.length > 0 ? (
-        <section className="w-full py-12 sm:py-16 lg:py-20 px-4 sm:px-8 lg:px-12 bg-gradient-to-b from-orange-50 to-white">
-          <div className="w-full max-w-[1400px] mx-auto">
+        <section className="w-full bg-gradient-to-b from-orange-50 to-white px-4 py-12 sm:px-8 sm:py-16 lg:px-12 lg:py-20">
+          <div className="mx-auto w-full max-w-[1400px]">
             <div className="mb-8 sm:mb-12">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6">
+              <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center sm:gap-6">
                 <div className="flex-1">
-                  <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3" translate="no">
+                  <h2
+                    className="mb-3 text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl"
+                    translate="no"
+                  >
                     {t("deal_of_the_day")}
                   </h2>
-                  <p className="text-sm sm:text-base text-gray-600 max-w-2xl" translate="no">
+                  <p
+                    className="max-w-2xl text-sm text-gray-600 sm:text-base"
+                    translate="no"
+                  >
                     {t("explore_all_best_deals_for_limited_time")}
                   </p>
                 </div>
                 <Link
                   href="/buygroup"
-                  className="group inline-flex items-center gap-2 bg-orange-600 text-white px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-semibold text-sm sm:text-base border border-orange-600"
+                  className="group inline-flex items-center gap-2 rounded-xl border border-orange-600 bg-orange-600 px-6 py-3.5 text-sm font-semibold text-white sm:px-8 sm:py-4 sm:text-base"
                   translate="no"
                 >
                   {t("view_all")}
@@ -496,37 +431,44 @@ function HomePage() {
                 </Link>
               </div>
             </div>
-            <div className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-4 items-stretch">
-                {memoizedBuyGroupProducts.map((item: TrendingProduct) => {
-                  const cartItem =  cartList?.find((el: any) => el.productId == item.id);
-                  let relatedCart: any = null;
-                  if (cartItem) {
-                    relatedCart = cartList
-                      ?.filter((c: any) => c.serviceId && c.cartProductServices?.length)
-                      .find((c: any) => {
-                          return !!c.cartProductServices
-                              .find((r: any) => r.relatedCartType == 'PRODUCT' && r.productId == item.id);
-                      });
-                  }
-                  return (
-                    <ProductCard
-                      key={item.id}
-                      item={item}
-                      onWishlist={() =>
-                        handleAddToWishlist(item.id, item?.productWishlist)
-                      }
-                      inWishlist={item?.inWishlist}
-                      haveAccessToken={haveAccessToken}
-                      isInteractive
-                      cartId={cartItem?.id}
-                      productQuantity={cartItem?.quantity}
-                      productVariant={cartItem?.object}
-                      isAddedToCart={cartItem ? true : false}
-                      relatedCart={relatedCart}
-                      sold={item.sold}
-                    />
-                  );
-                })}
+            <div className="grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
+              {memoizedBuyGroupProducts.map((item: TrendingProduct) => {
+                const cartItem = cartList?.find(
+                  (el: any) => el.productId == item.id,
+                );
+                let relatedCart: any = null;
+                if (cartItem) {
+                  relatedCart = cartList
+                    ?.filter(
+                      (c: any) => c.serviceId && c.cartProductServices?.length,
+                    )
+                    .find((c: any) => {
+                      return !!c.cartProductServices.find(
+                        (r: any) =>
+                          r.relatedCartType == "PRODUCT" &&
+                          r.productId == item.id,
+                      );
+                    });
+                }
+                return (
+                  <ProductCard
+                    key={item.id}
+                    item={item}
+                    onWishlist={() =>
+                      handleAddToWishlist(item.id, item?.productWishlist)
+                    }
+                    inWishlist={item?.inWishlist}
+                    haveAccessToken={haveAccessToken}
+                    isInteractive
+                    cartId={cartItem?.id}
+                    productQuantity={cartItem?.quantity}
+                    productVariant={cartItem?.object}
+                    isAddedToCart={cartItem ? true : false}
+                    relatedCart={relatedCart}
+                    sold={item.sold}
+                  />
+                );
+              })}
             </div>
           </div>
         </section>
@@ -578,50 +520,69 @@ function HomePage() {
       </section> */}
 
       {/* Promotional Section */}
-      <section className="w-full py-12 sm:py-16 lg:py-20 px-4 sm:px-8 lg:px-12 bg-gray-50">
-        <div className="w-full max-w-[1400px] mx-auto">
-          <div className="relative overflow-hidden rounded-3xl bg-indigo-600 border border-indigo-700">
+      <section className="w-full bg-gray-50 px-4 py-12 sm:px-8 sm:py-16 lg:px-12 lg:py-20">
+        <div className="mx-auto w-full max-w-[1400px]">
+          <div className="relative overflow-hidden rounded-3xl border border-indigo-700 bg-indigo-600">
             <div className="absolute inset-0 bg-black/5" />
-            
-            <div className="relative grid grid-cols-1 md:grid-cols-12 gap-8 p-8 sm:p-12 lg:p-16 items-center">
+
+            <div className="relative grid grid-cols-1 items-center gap-8 p-8 sm:p-12 md:grid-cols-12 lg:p-16">
               {/* Text Content */}
-              <div className="md:col-span-6 lg:col-span-6 z-10">
+              <div className="z-10 md:col-span-6 lg:col-span-6">
                 <div className="space-y-5 sm:space-y-7" dir={langDir}>
-                  <span className="inline-block px-5 py-2 bg-white text-indigo-600 text-xs sm:text-sm font-bold rounded-full tracking-wide">
+                  <span className="inline-block rounded-full bg-white px-5 py-2 text-xs font-bold tracking-wide text-indigo-600 sm:text-sm">
                     SPECIAL OFFER
                   </span>
-                  <h3 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight">
+                  <h3 className="text-3xl leading-tight font-bold text-white sm:text-4xl lg:text-5xl xl:text-6xl">
                     Contrary To Popular Belief, Lorem Ipsum Is Not..
                   </h3>
-                  <p className="text-lg sm:text-xl text-white/80 max-w-lg leading-relaxed">
-                    Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+                  <p className="max-w-lg text-lg leading-relaxed text-white/80 sm:text-xl">
+                    Lorem Ipsum is simply dummy text of the printing and
+                    typesetting industry.
                   </p>
                 </div>
               </div>
 
               {/* Price & CTA Section */}
-              <div className="md:col-span-6 lg:col-span-6 z-10" dir={langDir}>
-                <div className="bg-white rounded-3xl p-8 sm:p-10">
+              <div className="z-10 md:col-span-6 lg:col-span-6" dir={langDir}>
+                <div className="rounded-3xl bg-white p-8 sm:p-10">
                   <div className="mb-6">
-                    <p className="text-gray-600 text-sm mb-2 font-medium">Original Price</p>
-                    <p className="text-gray-400 text-2xl font-semibold line-through mb-4" translate="no">
+                    <p className="mb-2 text-sm font-medium text-gray-600">
+                      Original Price
+                    </p>
+                    <p
+                      className="mb-4 text-2xl font-semibold text-gray-400 line-through"
+                      translate="no"
+                    >
                       {currency.symbol}332.38
                     </p>
-                    <p className="text-gray-900 text-base mb-2 font-bold">Special Price</p>
-                    <h4 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-indigo-600 mb-8" translate="no">
+                    <p className="mb-2 text-base font-bold text-gray-900">
+                      Special Price
+                    </p>
+                    <h4
+                      className="mb-8 text-5xl font-bold text-indigo-600 sm:text-6xl lg:text-7xl"
+                      translate="no"
+                    >
                       {currency.symbol}219.05
                     </h4>
                   </div>
                   <a
                     href="#"
-                    className="inline-flex items-center gap-3 w-full justify-center bg-indigo-600 text-white px-8 py-5 rounded-2xl font-bold text-base sm:text-lg"
+                    className="inline-flex w-full items-center justify-center gap-3 rounded-2xl bg-indigo-600 px-8 py-5 text-base font-bold text-white sm:text-lg"
                   >
                     Shop Now
                     <ArrowRight className="h-5 w-5" />
                   </a>
                   <div className="mt-6 flex items-center justify-center gap-2 text-sm text-gray-600">
-                    <svg className="h-5 w-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    <svg
+                      className="h-5 w-5 text-green-600"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                     Limited time offer - Hurry up!
                   </div>
@@ -633,12 +594,15 @@ function HomePage() {
       </section>
 
       {memoizedHomeDecorProducts?.length > 0 ? (
-        <section className="w-full py-12 sm:py-16 lg:py-20 px-4 sm:px-8 lg:px-12 bg-white">
-          <div className="w-full max-w-[1400px] mx-auto">
+        <section className="w-full bg-white px-4 py-12 sm:px-8 sm:py-16 lg:px-12 lg:py-20">
+          <div className="mx-auto w-full max-w-[1400px]">
             <div className="mb-8 sm:mb-12">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6">
+              <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center sm:gap-6">
                 <div className="flex-1">
-                  <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900" translate="no">
+                  <h2
+                    className="text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl"
+                    translate="no"
+                  >
                     {t("home_decor")}
                   </h2>
                 </div>
@@ -706,7 +670,7 @@ function HomePage() {
                       categoryStore.setCategoryIds(categoryId.toString());
                       router.push("/trending");
                     }}
-                    className="group inline-flex items-center gap-2 bg-green-600 text-white px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-semibold text-sm sm:text-base border border-green-600 cursor-pointer"
+                    className="group inline-flex cursor-pointer items-center gap-2 rounded-xl border border-green-600 bg-green-600 px-6 py-3.5 text-sm font-semibold text-white sm:px-8 sm:py-4 sm:text-base"
                     translate="no"
                   >
                     {t("view_all")}
@@ -715,48 +679,58 @@ function HomePage() {
                 </div>
               </div>
             </div>
-            <div className="grid grid-cols-1 gap-5 sm:gap-6 lg:gap-7 sm:grid-cols-2 lg:grid-cols-4 items-stretch">
-                {memoizedHomeDecorProducts.map((item: TrendingProduct) => {
-                  const cartItem = cartList?.find((el: any) => el.productId == item.id);
-                  let relatedCart: any = null;
-                  if (cartItem) {
-                    relatedCart = cartList
-                      ?.filter((c: any) => c.serviceId && c.cartProductServices?.length)
-                      .find((c: any) => {
-                        return !!c.cartProductServices
-                          .find((r: any) => r.relatedCartType == 'PRODUCT' && r.productId == item.id);
-                      });
-                  }
-                  return (
-                    <ProductCard
-                      key={item.id}
-                      item={item}
-                      onWishlist={() =>
-                        handleAddToWishlist(item.id, item?.productWishlist)
-                      }
-                      inWishlist={item?.inWishlist}
-                      haveAccessToken={haveAccessToken}
-                      isInteractive
-                      cartId={cartItem?.id}
-                      productQuantity={cartItem?.quantity}
-                      productVariant={cartItem?.object}
-                      isAddedToCart={cartItem ? true : false}
-                      relatedCart={relatedCart}
-                    />
-                  );
-                })}
+            <div className="grid grid-cols-1 items-stretch gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4 lg:gap-7">
+              {memoizedHomeDecorProducts.map((item: TrendingProduct) => {
+                const cartItem = cartList?.find(
+                  (el: any) => el.productId == item.id,
+                );
+                let relatedCart: any = null;
+                if (cartItem) {
+                  relatedCart = cartList
+                    ?.filter(
+                      (c: any) => c.serviceId && c.cartProductServices?.length,
+                    )
+                    .find((c: any) => {
+                      return !!c.cartProductServices.find(
+                        (r: any) =>
+                          r.relatedCartType == "PRODUCT" &&
+                          r.productId == item.id,
+                      );
+                    });
+                }
+                return (
+                  <ProductCard
+                    key={item.id}
+                    item={item}
+                    onWishlist={() =>
+                      handleAddToWishlist(item.id, item?.productWishlist)
+                    }
+                    inWishlist={item?.inWishlist}
+                    haveAccessToken={haveAccessToken}
+                    isInteractive
+                    cartId={cartItem?.id}
+                    productQuantity={cartItem?.quantity}
+                    productVariant={cartItem?.object}
+                    isAddedToCart={cartItem ? true : false}
+                    relatedCart={relatedCart}
+                  />
+                );
+              })}
             </div>
           </div>
         </section>
       ) : null}
 
       {memoizedFashionBeautyProducts?.length > 0 ? (
-        <section className="w-full py-12 sm:py-16 lg:py-20 px-4 sm:px-8 lg:px-12 bg-gradient-to-b from-pink-50 to-white">
-          <div className="w-full max-w-[1400px] mx-auto">
+        <section className="w-full bg-gradient-to-b from-pink-50 to-white px-4 py-12 sm:px-8 sm:py-16 lg:px-12 lg:py-20">
+          <div className="mx-auto w-full max-w-[1400px]">
             <div className="mb-8 sm:mb-12">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6">
+              <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center sm:gap-6">
                 <div className="flex-1">
-                  <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900" translate="no">
+                  <h2
+                    className="text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl"
+                    translate="no"
+                  >
                     {t("fashion_n_beauty")}
                   </h2>
                 </div>
@@ -818,7 +792,7 @@ function HomePage() {
                       categoryStore.setCategoryIds(categoryId.toString());
                       router.push("/trending");
                     }}
-                    className="group inline-flex items-center gap-2 bg-pink-600 text-white px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-semibold text-sm sm:text-base border border-pink-600 cursor-pointer"
+                    className="group inline-flex cursor-pointer items-center gap-2 rounded-xl border border-pink-600 bg-pink-600 px-6 py-3.5 text-sm font-semibold text-white sm:px-8 sm:py-4 sm:text-base"
                     translate="no"
                   >
                     {t("view_all")}
@@ -827,48 +801,58 @@ function HomePage() {
                 </div>
               </div>
             </div>
-            <div className="grid grid-cols-1 gap-5 sm:gap-6 lg:gap-7 sm:grid-cols-2 lg:grid-cols-4 items-stretch">
-                {memoizedFashionBeautyProducts.map((item: TrendingProduct) => {
-                  const cartItem = cartList?.find((el: any) => el.productId == item.id);
-                  let relatedCart: any = null;
-                  if (cartItem) {
-                    relatedCart = cartList
-                      ?.filter((c: any) => c.serviceId && c.cartProductServices?.length)
-                      .find((c: any) => {
-                        return !!c.cartProductServices
-                          .find((r: any) => r.relatedCartType == 'PRODUCT' && r.productId == item.id);
-                      });
-                  }
-                  return (
-                    <ProductCard
-                      key={item.id}
-                      item={item}
-                      onWishlist={() =>
-                        handleAddToWishlist(item.id, item?.productWishlist)
-                      }
-                      inWishlist={item?.inWishlist}
-                      haveAccessToken={haveAccessToken}
-                      isInteractive
-                      cartId={cartItem?.id}
-                      productQuantity={cartItem?.quantity}
-                      productVariant={cartItem?.object}
-                      isAddedToCart={cartItem ? true : false}
-                      relatedCart={relatedCart}
-                    />
-                  );
-                })}
+            <div className="grid grid-cols-1 items-stretch gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4 lg:gap-7">
+              {memoizedFashionBeautyProducts.map((item: TrendingProduct) => {
+                const cartItem = cartList?.find(
+                  (el: any) => el.productId == item.id,
+                );
+                let relatedCart: any = null;
+                if (cartItem) {
+                  relatedCart = cartList
+                    ?.filter(
+                      (c: any) => c.serviceId && c.cartProductServices?.length,
+                    )
+                    .find((c: any) => {
+                      return !!c.cartProductServices.find(
+                        (r: any) =>
+                          r.relatedCartType == "PRODUCT" &&
+                          r.productId == item.id,
+                      );
+                    });
+                }
+                return (
+                  <ProductCard
+                    key={item.id}
+                    item={item}
+                    onWishlist={() =>
+                      handleAddToWishlist(item.id, item?.productWishlist)
+                    }
+                    inWishlist={item?.inWishlist}
+                    haveAccessToken={haveAccessToken}
+                    isInteractive
+                    cartId={cartItem?.id}
+                    productQuantity={cartItem?.quantity}
+                    productVariant={cartItem?.object}
+                    isAddedToCart={cartItem ? true : false}
+                    relatedCart={relatedCart}
+                  />
+                );
+              })}
             </div>
           </div>
         </section>
       ) : null}
 
       {memoizedConsumerElectronicsProducts.length > 0 ? (
-        <section className="w-full py-12 sm:py-16 lg:py-20 px-4 sm:px-8 lg:px-12 bg-white">
-          <div className="w-full max-w-[1400px] mx-auto">
+        <section className="w-full bg-white px-4 py-12 sm:px-8 sm:py-16 lg:px-12 lg:py-20">
+          <div className="mx-auto w-full max-w-[1400px]">
             <div className="mb-8 sm:mb-12">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6">
+              <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center sm:gap-6">
                 <div className="flex-1">
-                  <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900" translate="no">
+                  <h2
+                    className="text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl"
+                    translate="no"
+                  >
                     {t("consumer_electronics")}
                   </h2>
                 </div>
@@ -937,7 +921,7 @@ function HomePage() {
                       categoryStore.setCategoryIds(categoryIds);
                       router.push("/trending");
                     }}
-                    className="group inline-flex items-center gap-2 bg-blue-600 text-white px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-semibold text-sm sm:text-base border border-blue-600 cursor-pointer"
+                    className="group inline-flex cursor-pointer items-center gap-2 rounded-xl border border-blue-600 bg-blue-600 px-6 py-3.5 text-sm font-semibold text-white sm:px-8 sm:py-4 sm:text-base"
                     translate="no"
                   >
                     {t("view_all")}
@@ -946,38 +930,46 @@ function HomePage() {
                 </div>
               </div>
             </div>
-            <div className="grid grid-cols-1 gap-5 sm:gap-6 lg:gap-7 sm:grid-cols-2 lg:grid-cols-4 items-stretch">
-                {memoizedConsumerElectronicsProducts.map(
-                  (item: TrendingProduct) => {
-                    const cartItem = cartList?.find((el: any) => el.productId == item.id);
-                    let relatedCart: any = null;
-                    if (cartItem) {
-                      relatedCart = cartList
-                        ?.filter((c: any) => c.serviceId && c.cartProductServices?.length)
-                        .find((c: any) => {
-                          return !!c.cartProductServices
-                            .find((r: any) => r.relatedCartType == 'PRODUCT' && r.productId == item.id);
-                        });
-                    }
-                    return (
-                      <ProductCard
-                        key={item.id}
-                        item={item}
-                        onWishlist={() =>
-                          handleAddToWishlist(item.id, item?.productWishlist)
-                        }
-                        inWishlist={item?.inWishlist}
-                        haveAccessToken={haveAccessToken}
-                        isInteractive
-                        cartId={cartItem?.id}
-                        productQuantity={cartItem?.quantity}
-                        productVariant={cartItem?.object}
-                        isAddedToCart={cartItem ? true : false}
-                        relatedCart={relatedCart}
-                      />
-                    );
-                  },
-                )}
+            <div className="grid grid-cols-1 items-stretch gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4 lg:gap-7">
+              {memoizedConsumerElectronicsProducts.map(
+                (item: TrendingProduct) => {
+                  const cartItem = cartList?.find(
+                    (el: any) => el.productId == item.id,
+                  );
+                  let relatedCart: any = null;
+                  if (cartItem) {
+                    relatedCart = cartList
+                      ?.filter(
+                        (c: any) =>
+                          c.serviceId && c.cartProductServices?.length,
+                      )
+                      .find((c: any) => {
+                        return !!c.cartProductServices.find(
+                          (r: any) =>
+                            r.relatedCartType == "PRODUCT" &&
+                            r.productId == item.id,
+                        );
+                      });
+                  }
+                  return (
+                    <ProductCard
+                      key={item.id}
+                      item={item}
+                      onWishlist={() =>
+                        handleAddToWishlist(item.id, item?.productWishlist)
+                      }
+                      inWishlist={item?.inWishlist}
+                      haveAccessToken={haveAccessToken}
+                      isInteractive
+                      cartId={cartItem?.id}
+                      productQuantity={cartItem?.quantity}
+                      productVariant={cartItem?.object}
+                      isAddedToCart={cartItem ? true : false}
+                      relatedCart={relatedCart}
+                    />
+                  );
+                },
+              )}
             </div>
           </div>
         </section>
@@ -985,30 +977,43 @@ function HomePage() {
 
       {/* Top Rated Products Section */}
       {memoizedTopRatedProducts?.length > 0 ? (
-        <section className="w-full py-12 sm:py-16 lg:py-20 px-4 sm:px-8 lg:px-12 bg-gradient-to-b from-yellow-50 to-white">
-          <div className="w-full max-w-[1400px] mx-auto">
+        <section className="w-full bg-gradient-to-b from-yellow-50 to-white px-4 py-12 sm:px-8 sm:py-16 lg:px-12 lg:py-20">
+          <div className="mx-auto w-full max-w-[1400px]">
             <div className="mb-8 sm:mb-12">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6">
+              <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center sm:gap-6">
                 <div className="flex-1">
-                  <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3" translate="no">
+                  <h2
+                    className="mb-3 text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl"
+                    translate="no"
+                  >
                     Top Rated Products
                   </h2>
-                  <p className="text-sm sm:text-base text-gray-600 max-w-2xl" translate="no">
+                  <p
+                    className="max-w-2xl text-sm text-gray-600 sm:text-base"
+                    translate="no"
+                  >
                     Products with the highest customer ratings
                   </p>
                 </div>
               </div>
             </div>
-            <div className="grid grid-cols-1 gap-5 sm:gap-6 lg:gap-7 sm:grid-cols-2 lg:grid-cols-4 items-stretch">
+            <div className="grid grid-cols-1 items-stretch gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4 lg:gap-7">
               {memoizedTopRatedProducts.slice(0, 8).map((item: any) => {
-                const cartItem = cartList?.find((el: any) => el.productId == item.id);
+                const cartItem = cartList?.find(
+                  (el: any) => el.productId == item.id,
+                );
                 let relatedCart: any = null;
                 if (cartItem) {
                   relatedCart = cartList
-                    ?.filter((c: any) => c.serviceId && c.cartProductServices?.length)
+                    ?.filter(
+                      (c: any) => c.serviceId && c.cartProductServices?.length,
+                    )
                     .find((c: any) => {
-                      return !!c.cartProductServices
-                        .find((r: any) => r.relatedCartType == 'PRODUCT' && r.productId == item.id);
+                      return !!c.cartProductServices.find(
+                        (r: any) =>
+                          r.relatedCartType == "PRODUCT" &&
+                          r.productId == item.id,
+                      );
                     });
                 }
                 return (
@@ -1036,30 +1041,43 @@ function HomePage() {
 
       {/* Best Sellers Section */}
       {memoizedBestSellers?.length > 0 ? (
-        <section className="w-full py-12 sm:py-16 lg:py-20 px-4 sm:px-8 lg:px-12 bg-white">
-          <div className="w-full max-w-[1400px] mx-auto">
+        <section className="w-full bg-white px-4 py-12 sm:px-8 sm:py-16 lg:px-12 lg:py-20">
+          <div className="mx-auto w-full max-w-[1400px]">
             <div className="mb-8 sm:mb-12">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6">
+              <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center sm:gap-6">
                 <div className="flex-1">
-                  <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3" translate="no">
+                  <h2
+                    className="mb-3 text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl"
+                    translate="no"
+                  >
                     Best Sellers
                   </h2>
-                  <p className="text-sm sm:text-base text-gray-600 max-w-2xl" translate="no">
+                  <p
+                    className="max-w-2xl text-sm text-gray-600 sm:text-base"
+                    translate="no"
+                  >
                     Most popular products purchased by customers
                   </p>
                 </div>
               </div>
             </div>
-            <div className="grid grid-cols-1 gap-5 sm:gap-6 lg:gap-7 sm:grid-cols-2 lg:grid-cols-4 items-stretch">
+            <div className="grid grid-cols-1 items-stretch gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4 lg:gap-7">
               {memoizedBestSellers.slice(0, 8).map((item: any) => {
-                const cartItem = cartList?.find((el: any) => el.productId == item.id);
+                const cartItem = cartList?.find(
+                  (el: any) => el.productId == item.id,
+                );
                 let relatedCart: any = null;
                 if (cartItem) {
                   relatedCart = cartList
-                    ?.filter((c: any) => c.serviceId && c.cartProductServices?.length)
+                    ?.filter(
+                      (c: any) => c.serviceId && c.cartProductServices?.length,
+                    )
                     .find((c: any) => {
-                      return !!c.cartProductServices
-                        .find((r: any) => r.relatedCartType == 'PRODUCT' && r.productId == item.id);
+                      return !!c.cartProductServices.find(
+                        (r: any) =>
+                          r.relatedCartType == "PRODUCT" &&
+                          r.productId == item.id,
+                      );
                     });
                 }
                 return (
@@ -1088,30 +1106,43 @@ function HomePage() {
 
       {/* New Arrivals Section */}
       {memoizedNewArrivals?.length > 0 ? (
-        <section className="w-full py-12 sm:py-16 lg:py-20 px-4 sm:px-8 lg:px-12 bg-gradient-to-b from-green-50 to-white">
-          <div className="w-full max-w-[1400px] mx-auto">
+        <section className="w-full bg-gradient-to-b from-green-50 to-white px-4 py-12 sm:px-8 sm:py-16 lg:px-12 lg:py-20">
+          <div className="mx-auto w-full max-w-[1400px]">
             <div className="mb-8 sm:mb-12">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6">
+              <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center sm:gap-6">
                 <div className="flex-1">
-                  <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3" translate="no">
+                  <h2
+                    className="mb-3 text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl"
+                    translate="no"
+                  >
                     New Arrivals
                   </h2>
-                  <p className="text-sm sm:text-base text-gray-600 max-w-2xl" translate="no">
+                  <p
+                    className="max-w-2xl text-sm text-gray-600 sm:text-base"
+                    translate="no"
+                  >
                     Latest products added to our collection
                   </p>
                 </div>
               </div>
             </div>
-            <div className="grid grid-cols-1 gap-5 sm:gap-6 lg:gap-7 sm:grid-cols-2 lg:grid-cols-4 items-stretch">
+            <div className="grid grid-cols-1 items-stretch gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4 lg:gap-7">
               {memoizedNewArrivals.slice(0, 8).map((item: any) => {
-                const cartItem = cartList?.find((el: any) => el.productId == item.id);
+                const cartItem = cartList?.find(
+                  (el: any) => el.productId == item.id,
+                );
                 let relatedCart: any = null;
                 if (cartItem) {
                   relatedCart = cartList
-                    ?.filter((c: any) => c.serviceId && c.cartProductServices?.length)
+                    ?.filter(
+                      (c: any) => c.serviceId && c.cartProductServices?.length,
+                    )
                     .find((c: any) => {
-                      return !!c.cartProductServices
-                        .find((r: any) => r.relatedCartType == 'PRODUCT' && r.productId == item.id);
+                      return !!c.cartProductServices.find(
+                        (r: any) =>
+                          r.relatedCartType == "PRODUCT" &&
+                          r.productId == item.id,
+                      );
                     });
                 }
                 return (
@@ -1139,30 +1170,43 @@ function HomePage() {
 
       {/* Hot Deals Section */}
       {memoizedHotDeals?.length > 0 ? (
-        <section className="w-full py-12 sm:py-16 lg:py-20 px-4 sm:px-8 lg:px-12 bg-white">
-          <div className="w-full max-w-[1400px] mx-auto">
+        <section className="w-full bg-white px-4 py-12 sm:px-8 sm:py-16 lg:px-12 lg:py-20">
+          <div className="mx-auto w-full max-w-[1400px]">
             <div className="mb-8 sm:mb-12">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6">
+              <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center sm:gap-6">
                 <div className="flex-1">
-                  <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3" translate="no">
+                  <h2
+                    className="mb-3 text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl"
+                    translate="no"
+                  >
                     Hot Deals
                   </h2>
-                  <p className="text-sm sm:text-base text-gray-600 max-w-2xl" translate="no">
+                  <p
+                    className="max-w-2xl text-sm text-gray-600 sm:text-base"
+                    translate="no"
+                  >
                     Best discounts and special offers
                   </p>
                 </div>
               </div>
             </div>
-            <div className="grid grid-cols-1 gap-5 sm:gap-6 lg:gap-7 sm:grid-cols-2 lg:grid-cols-4 items-stretch">
+            <div className="grid grid-cols-1 items-stretch gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4 lg:gap-7">
               {memoizedHotDeals.slice(0, 8).map((item: any) => {
-                const cartItem = cartList?.find((el: any) => el.productId == item.id);
+                const cartItem = cartList?.find(
+                  (el: any) => el.productId == item.id,
+                );
                 let relatedCart: any = null;
                 if (cartItem) {
                   relatedCart = cartList
-                    ?.filter((c: any) => c.serviceId && c.cartProductServices?.length)
+                    ?.filter(
+                      (c: any) => c.serviceId && c.cartProductServices?.length,
+                    )
                     .find((c: any) => {
-                      return !!c.cartProductServices
-                        .find((r: any) => r.relatedCartType == 'PRODUCT' && r.productId == item.id);
+                      return !!c.cartProductServices.find(
+                        (r: any) =>
+                          r.relatedCartType == "PRODUCT" &&
+                          r.productId == item.id,
+                      );
                     });
                 }
                 return (
@@ -1190,30 +1234,43 @@ function HomePage() {
 
       {/* Highly Reviewed Products Section */}
       {memoizedHighlyReviewed?.length > 0 ? (
-        <section className="w-full py-12 sm:py-16 lg:py-20 px-4 sm:px-8 lg:px-12 bg-gradient-to-b from-purple-50 to-white">
-          <div className="w-full max-w-[1400px] mx-auto">
+        <section className="w-full bg-gradient-to-b from-purple-50 to-white px-4 py-12 sm:px-8 sm:py-16 lg:px-12 lg:py-20">
+          <div className="mx-auto w-full max-w-[1400px]">
             <div className="mb-8 sm:mb-12">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6">
+              <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center sm:gap-6">
                 <div className="flex-1">
-                  <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3" translate="no">
+                  <h2
+                    className="mb-3 text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl"
+                    translate="no"
+                  >
                     Highly Reviewed
                   </h2>
-                  <p className="text-sm sm:text-base text-gray-600 max-w-2xl" translate="no">
+                  <p
+                    className="max-w-2xl text-sm text-gray-600 sm:text-base"
+                    translate="no"
+                  >
                     Products with most customer reviews
                   </p>
                 </div>
               </div>
             </div>
-            <div className="grid grid-cols-1 gap-5 sm:gap-6 lg:gap-7 sm:grid-cols-2 lg:grid-cols-4 items-stretch">
+            <div className="grid grid-cols-1 items-stretch gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4 lg:gap-7">
               {memoizedHighlyReviewed.slice(0, 8).map((item: any) => {
-                const cartItem = cartList?.find((el: any) => el.productId == item.id);
+                const cartItem = cartList?.find(
+                  (el: any) => el.productId == item.id,
+                );
                 let relatedCart: any = null;
                 if (cartItem) {
                   relatedCart = cartList
-                    ?.filter((c: any) => c.serviceId && c.cartProductServices?.length)
+                    ?.filter(
+                      (c: any) => c.serviceId && c.cartProductServices?.length,
+                    )
                     .find((c: any) => {
-                      return !!c.cartProductServices
-                        .find((r: any) => r.relatedCartType == 'PRODUCT' && r.productId == item.id);
+                      return !!c.cartProductServices.find(
+                        (r: any) =>
+                          r.relatedCartType == "PRODUCT" &&
+                          r.productId == item.id,
+                      );
                     });
                 }
                 return (

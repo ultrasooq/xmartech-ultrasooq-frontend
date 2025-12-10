@@ -55,6 +55,7 @@ import { useUserAccounts } from "@/hooks/useUserAccounts";
 import {
   useCartListByDevice,
   useCartListByUserId,
+  useDeleteCartItem,
 } from "@/apis/queries/cart.queries";
 import { getOrCreateDeviceId } from "@/utils/helper";
 import { getCookie } from "cookies-next";
@@ -94,7 +95,8 @@ const TrendingPage = (props0: TrendingPageProps) => {
   const t = useTranslations();
   const { langDir, currency, user } = useAuth();
   const currentAccount = useCurrentAccount();
-  const currentTradeRole = currentAccount?.data?.data?.account?.tradeRole || user?.tradeRole;
+  const currentTradeRole =
+    currentAccount?.data?.data?.account?.tradeRole || user?.tradeRole;
   const queryClient = useQueryClient();
   const categoryStore = useCategoryStore();
   const vendorBusinessCategoryIds = useVendorBusinessCategories();
@@ -116,7 +118,9 @@ const TrendingPage = (props0: TrendingPageProps) => {
   const [limit] = useState(10);
   const [productVariants, setProductVariants] = useState<any[]>([]);
   const [haveAccessToken, setHaveAccessToken] = useState(false);
-  const [activeTab, setActiveTab] = useState<"products" | "vendors">("products");
+  const [activeTab, setActiveTab] = useState<"products" | "vendors">(
+    "products",
+  );
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>([]);
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
   const category = useCategoryStore();
@@ -130,6 +134,7 @@ const TrendingPage = (props0: TrendingPageProps) => {
   const me = useMe();
   const addToWishlist = useAddToWishList();
   const deleteFromWishlist = useDeleteFromWishList();
+  const deleteCartItem = useDeleteCartItem();
 
   const allProductsQuery = useAllProducts({
     page,
@@ -143,54 +148,67 @@ const TrendingPage = (props0: TrendingPageProps) => {
     priceMax: priceRange[1] || Number(maxPriceInput) || undefined,
     brandIds:
       selectedBrandIds.map((item) => item.toString()).join(",") || undefined,
-    userId: me?.data?.data?.tradeRole == "BUYER"
-      ? undefined
-      : me?.data?.data?.tradeRole == "MEMBER"
-        ? me?.data?.data?.addedBy
-        : me?.data?.data?.id,
-    categoryIds: selectedCategoryIds.length > 0 
-      ? selectedCategoryIds.join(",") 
-      : category.categoryIds ? category.categoryIds : undefined,
+    userId:
+      me?.data?.data?.tradeRole == "BUYER"
+        ? undefined
+        : me?.data?.data?.tradeRole == "MEMBER"
+          ? me?.data?.data?.addedBy
+          : me?.data?.data?.id,
+    categoryIds:
+      selectedCategoryIds.length > 0
+        ? selectedCategoryIds.join(",")
+        : category.categoryIds
+          ? category.categoryIds
+          : undefined,
     isOwner: displayMyProducts == "1" ? "me" : "",
-    userType: me?.data?.data?.tradeRole == "BUYER" ? "BUYER" : ""
+    userType: me?.data?.data?.tradeRole == "BUYER" ? "BUYER" : "",
   });
 
   // Fetch dropship products
   const dropshipProductsQuery = useDropshipProducts({
     page,
     limit,
-    status: "ACTIVE"
+    status: "ACTIVE",
   });
 
   // Combine regular products and dropship products
   const combinedProducts = useMemo(() => {
     const regularProducts = allProductsQuery?.data?.data || [];
     const dropshipProducts = dropshipProductsQuery?.data?.data || [];
-    
-    
+
     // Transform dropship products to match regular product format
-    const transformedDropshipProducts = dropshipProducts.map((dropshipProduct: any) => ({
-      ...dropshipProduct,
-      // Ensure dropship products have the same structure as regular products
-      productType: 'D', // Mark as dropship product
-      isDropshipped: true,
-      // Preserve marketing content and images
-      customMarketingContent: dropshipProduct.customMarketingContent || {},
-      productImages: dropshipProduct.productImages || [],
-      additionalMarketingImages: dropshipProduct.additionalMarketingImages || [],
-      // Use the original product's data for display
-      originalProductName: dropshipProduct.originalProduct?.productName || dropshipProduct.productName,
-      originalProductDescription: dropshipProduct.originalProduct?.productDescription || dropshipProduct.productDescription,
-    }));
-    
+    const transformedDropshipProducts = dropshipProducts.map(
+      (dropshipProduct: any) => ({
+        ...dropshipProduct,
+        // Ensure dropship products have the same structure as regular products
+        productType: "D", // Mark as dropship product
+        isDropshipped: true,
+        // Preserve marketing content and images
+        customMarketingContent: dropshipProduct.customMarketingContent || {},
+        productImages: dropshipProduct.productImages || [],
+        additionalMarketingImages:
+          dropshipProduct.additionalMarketingImages || [],
+        // Use the original product's data for display
+        originalProductName:
+          dropshipProduct.originalProduct?.productName ||
+          dropshipProduct.productName,
+        originalProductDescription:
+          dropshipProduct.originalProduct?.productDescription ||
+          dropshipProduct.productDescription,
+      }),
+    );
+
     return [...regularProducts, ...transformedDropshipProducts];
   }, [allProductsQuery?.data?.data, dropshipProductsQuery?.data?.data]);
 
   // Combined loading state
-  const isLoading = allProductsQuery.isLoading || dropshipProductsQuery.isLoading;
+  const isLoading =
+    allProductsQuery.isLoading || dropshipProductsQuery.isLoading;
 
   // Combined total count
-  const totalCount = (allProductsQuery?.data?.totalCount || 0) + (dropshipProductsQuery?.data?.totalCount || 0);
+  const totalCount =
+    (allProductsQuery?.data?.totalCount || 0) +
+    (dropshipProductsQuery?.data?.totalCount || 0);
 
   // Get unique user IDs from products
   const uniqueUserIds = useMemo(() => {
@@ -270,77 +288,90 @@ const TrendingPage = (props0: TrendingPageProps) => {
       combinedProducts?.map((item: any) => {
         // Find the active product price entry (status: "ACTIVE")
         // If no active entry, fall back to the first one
-        const activePriceEntry = item?.product_productPrice?.find(
-          (pp: any) => pp?.status === "ACTIVE"
-        ) || item?.product_productPrice?.[0];
-        
+        const activePriceEntry =
+          item?.product_productPrice?.find(
+            (pp: any) => pp?.status === "ACTIVE",
+          ) || item?.product_productPrice?.[0];
+
         return {
-        id: item.id,
-        productName: (() => {
-          // For dropship products, use the customized name
-          if (item?.isDropshipped && item?.customMarketingContent?.customName) {
-            return item.customMarketingContent.customName;
-          }
-          
-          // For regular products, use the original product name
-          return item?.productName || "-";
-        })(),
-        productPrice: item?.productPrice || 0,
+          id: item.id,
+          productName: (() => {
+            // For dropship products, use the customized name
+            if (
+              item?.isDropshipped &&
+              item?.customMarketingContent?.customName
+            ) {
+              return item.customMarketingContent.customName;
+            }
+
+            // For regular products, use the original product name
+            return item?.productName || "-";
+          })(),
+          productPrice: item?.productPrice || 0,
           offerPrice: activePriceEntry?.offerPrice || item?.offerPrice || 0,
-        productImage: (() => {
-          // For dropship products, prioritize marketing images
-          if (item?.isDropshipped) {
-            // First priority: additionalMarketingImages (base64 marketing images)
-            if (item?.additionalMarketingImages && Array.isArray(item.additionalMarketingImages) && item.additionalMarketingImages.length > 0) {
-              return item.additionalMarketingImages[0];
-            }
-            
-            // Second priority: marketing images in productImages array
-            if (item?.productImages && Array.isArray(item.productImages)) {
-              const marketingImage = item.productImages.find((img: any) => 
-                img.variant?.type === 'marketing'
-              );
-              if (marketingImage) {
-                return marketingImage.image;
+          productImage: (() => {
+            // For dropship products, prioritize marketing images
+            if (item?.isDropshipped) {
+              // First priority: additionalMarketingImages (base64 marketing images)
+              if (
+                item?.additionalMarketingImages &&
+                Array.isArray(item.additionalMarketingImages) &&
+                item.additionalMarketingImages.length > 0
+              ) {
+                return item.additionalMarketingImages[0];
               }
-              // Fallback to first image in productImages
-              if (item.productImages[0]?.image) {
-                return item.productImages[0].image;
+
+              // Second priority: marketing images in productImages array
+              if (item?.productImages && Array.isArray(item.productImages)) {
+                const marketingImage = item.productImages.find(
+                  (img: any) => img.variant?.type === "marketing",
+                );
+                if (marketingImage) {
+                  return marketingImage.image;
+                }
+                // Fallback to first image in productImages
+                if (item.productImages[0]?.image) {
+                  return item.productImages[0].image;
+                }
+              }
+
+              // Third priority: original product images
+              if (
+                item?.originalProduct?.productImages &&
+                Array.isArray(item.originalProduct.productImages) &&
+                item.originalProduct.productImages.length > 0
+              ) {
+                return item.originalProduct.productImages[0]?.image;
               }
             }
-            
-            // Third priority: original product images
-            if (item?.originalProduct?.productImages && Array.isArray(item.originalProduct.productImages) && item.originalProduct.productImages.length > 0) {
-              return item.originalProduct.productImages[0]?.image;
+
+            // For regular products, use existing logic
+            return activePriceEntry?.productPrice_productSellerImage?.length
+              ? activePriceEntry?.productPrice_productSellerImage?.[0]?.image
+              : item?.productImages?.[0]?.image;
+          })(),
+          categoryName: item?.category?.name || "-",
+          skuNo: item?.skuNo,
+          brandName: item?.brand?.brandName || "-",
+          productReview: item?.productReview || [],
+          productWishlist: item?.product_wishlist || [],
+          inWishlist: item?.product_wishlist?.find(
+            (ele: any) => ele?.userId === me.data?.data?.id,
+          ),
+          shortDescription: (() => {
+            // For dropship products, prioritize marketing text
+            if (
+              item?.isDropshipped &&
+              item?.customMarketingContent?.marketingText
+            ) {
+              return item.customMarketingContent.marketingText;
             }
-          }
-          
-          // For regular products, use existing logic
-            return activePriceEntry
-            ?.productPrice_productSellerImage?.length
-              ? activePriceEntry
-              ?.productPrice_productSellerImage?.[0]?.image
-            : item?.productImages?.[0]?.image;
-        })(),
-        categoryName: item?.category?.name || "-",
-        skuNo: item?.skuNo,
-        brandName: item?.brand?.brandName || "-",
-        productReview: item?.productReview || [],
-        productWishlist: item?.product_wishlist || [],
-        inWishlist: item?.product_wishlist?.find(
-          (ele: any) => ele?.userId === me.data?.data?.id,
-        ),
-        shortDescription: (() => {
-          // For dropship products, prioritize marketing text
-          if (item?.isDropshipped && item?.customMarketingContent?.marketingText) {
-            return item.customMarketingContent.marketingText;
-          }
-          
-          // For regular products, use existing logic
-          return item?.product_productShortDescription?.length
-            ? item?.product_productShortDescription?.[0]?.shortDescription
-            : "-";
-        })(),
+
+            // For regular products, use existing logic
+            return item?.product_productShortDescription?.length
+              ? item?.product_productShortDescription?.[0]?.shortDescription
+              : "-";
+          })(),
           productProductPriceId: activePriceEntry?.id,
           productProductPrice: activePriceEntry?.offerPrice,
           consumerDiscount: activePriceEntry?.consumerDiscount,
@@ -348,53 +379,57 @@ const TrendingPage = (props0: TrendingPageProps) => {
           vendorDiscount: activePriceEntry?.vendorDiscount,
           vendorDiscountType: activePriceEntry?.vendorDiscountType,
           askForPrice: activePriceEntry?.askForPrice,
-        productPrices: item?.product_productPrice,
+          productPrices: item?.product_productPrice,
           categoryId: item?.categoryId,
           categoryLocation: item?.categoryLocation,
           categoryConnections: item?.category?.category_categoryIdDetail || [],
           consumerType: activePriceEntry?.consumerType,
-          
-         // Add vendor information
-         vendorId: item?.addedBy || item?.userId,
-         vendorName: (() => {
-           const userId = item?.userId;
-           const user = usersMap.get(userId);
-           
-           
-           // Priority order for vendor name:
-           // 1. Account name (sub-account name)
-           // 2. First name + Last name
-           // 3. First name only
-           // 4. Email
-           // 5. Fallback to vendor ID
-           
-           if (user?.accountName) {
-             return user.accountName;
-           }
-           if (user?.firstName && user?.lastName) {
-             return `${user.firstName} ${user.lastName}`;
-           }
-           if (user?.firstName) {
-             return user.firstName;
-           }
-           if (user?.email) {
-             return user.email;
-           }
-           // Fallback to vendor ID if no user data
-           if (userId) {
-             return `Vendor ${userId}`;
-           }
-           if (item?.addedBy) {
-             return `Vendor ${item.addedBy}`;
-           }
-           return "Unknown Vendor";
-         })(),
-         vendorEmail: usersMap.get(item?.userId)?.email || item?.user?.email,
-         vendorPhone: usersMap.get(item?.userId)?.phoneNumber || item?.user?.phoneNumber,
-         vendorProfilePicture: usersMap.get(item?.userId)?.profilePicture || item?.user?.profilePicture,
-         vendorTradeRole: usersMap.get(item?.userId)?.tradeRole || item?.user?.tradeRole,
-         vendorUserProfile: usersMap.get(item?.userId)?.userProfile || item?.user?.userProfile,
-         status: item?.status || 'ACTIVE',
+
+          // Add vendor information
+          vendorId: item?.addedBy || item?.userId,
+          vendorName: (() => {
+            const userId = item?.userId;
+            const user = usersMap.get(userId);
+
+            // Priority order for vendor name:
+            // 1. Account name (sub-account name)
+            // 2. First name + Last name
+            // 3. First name only
+            // 4. Email
+            // 5. Fallback to vendor ID
+
+            if (user?.accountName) {
+              return user.accountName;
+            }
+            if (user?.firstName && user?.lastName) {
+              return `${user.firstName} ${user.lastName}`;
+            }
+            if (user?.firstName) {
+              return user.firstName;
+            }
+            if (user?.email) {
+              return user.email;
+            }
+            // Fallback to vendor ID if no user data
+            if (userId) {
+              return `Vendor ${userId}`;
+            }
+            if (item?.addedBy) {
+              return `Vendor ${item.addedBy}`;
+            }
+            return "Unknown Vendor";
+          })(),
+          vendorEmail: usersMap.get(item?.userId)?.email || item?.user?.email,
+          vendorPhone:
+            usersMap.get(item?.userId)?.phoneNumber || item?.user?.phoneNumber,
+          vendorProfilePicture:
+            usersMap.get(item?.userId)?.profilePicture ||
+            item?.user?.profilePicture,
+          vendorTradeRole:
+            usersMap.get(item?.userId)?.tradeRole || item?.user?.tradeRole,
+          vendorUserProfile:
+            usersMap.get(item?.userId)?.userProfile || item?.user?.userProfile,
+          status: item?.status || "ACTIVE",
         };
       }) || []
     );
@@ -419,26 +454,26 @@ const TrendingPage = (props0: TrendingPageProps) => {
   // Extract unique vendors from products
   const memoizedVendors = useMemo(() => {
     const vendorMap = new Map();
-    
+
     memoizedProductList.forEach((product: any) => {
       if (product.vendorId) {
         if (!vendorMap.has(product.vendorId)) {
           vendorMap.set(product.vendorId, {
             id: product.vendorId,
-            firstName: product.vendorName.split(' ')[0] || '',
-            lastName: product.vendorName.split(' ').slice(1).join(' ') || '',
-            email: product.vendorEmail || '',
-            phoneNumber: product.vendorPhone || '',
+            firstName: product.vendorName.split(" ")[0] || "",
+            lastName: product.vendorName.split(" ").slice(1).join(" ") || "",
+            email: product.vendorEmail || "",
+            phoneNumber: product.vendorPhone || "",
             profilePicture: product.vendorProfilePicture,
-            tradeRole: product.vendorTradeRole || 'VENDOR',
+            tradeRole: product.vendorTradeRole || "VENDOR",
             userProfile: product.vendorUserProfile || [],
             productCount: 0,
             averageRating: 0,
-            location: '', // Will be populated from user profile if available
+            location: "", // Will be populated from user profile if available
             businessTypes: [],
           });
         }
-        
+
         // Increment product count
         const vendor = vendorMap.get(product.vendorId);
         vendor.productCount += 1;
@@ -446,19 +481,26 @@ const TrendingPage = (props0: TrendingPageProps) => {
     });
 
     // Calculate average ratings and extract business types
-    return Array.from(vendorMap.values()).map(vendor => {
+    return Array.from(vendorMap.values()).map((vendor) => {
       // Calculate average rating from products
-      const vendorProducts = memoizedProductList.filter((p: any) => p.vendorId === vendor.id);
+      const vendorProducts = memoizedProductList.filter(
+        (p: any) => p.vendorId === vendor.id,
+      );
       const totalRating = vendorProducts.reduce((sum: number, product: any) => {
         const reviews = product.productReview || [];
-        const avgRating = reviews.length > 0 
-          ? reviews.reduce((rSum: number, review: any) => rSum + (review.rating || 0), 0) / reviews.length
-          : 0;
+        const avgRating =
+          reviews.length > 0
+            ? reviews.reduce(
+                (rSum: number, review: any) => rSum + (review.rating || 0),
+                0,
+              ) / reviews.length
+            : 0;
         return sum + avgRating;
       }, 0);
-      
-      vendor.averageRating = vendorProducts.length > 0 ? totalRating / vendorProducts.length : 0;
-      
+
+      vendor.averageRating =
+        vendorProducts.length > 0 ? totalRating / vendorProducts.length : 0;
+
       // Extract business types
       if (vendor.userProfile?.length) {
         vendor.businessTypes = vendor.userProfile
@@ -467,7 +509,7 @@ const TrendingPage = (props0: TrendingPageProps) => {
           .map((item: any) => item?.userProfileBusinessTypeTag?.tagName)
           .filter(Boolean);
       }
-      
+
       return vendor;
     });
   }, [memoizedProductList]);
@@ -501,11 +543,31 @@ const TrendingPage = (props0: TrendingPageProps) => {
     }
   }, [cartListByUser.data?.data, cartListByDeviceQuery.data?.data]);
 
+  // Handle remove item from cart
+  const handleRemoveItemFromCart = async (cartId: number) => {
+    const response = await deleteCartItem.mutateAsync({ cartId });
+    if (response.status) {
+      toast({
+        title: t("item_removed_from_cart"),
+        description: t("check_your_cart_for_more_details"),
+        variant: "success",
+      });
+    } else {
+      toast({
+        title: t("item_not_removed_from_cart"),
+        description: response.message || t("check_your_cart_for_more_details"),
+        variant: "danger",
+      });
+    }
+  };
+
   // Get unique category IDs from cart items for fresh category data
   const uniqueCartCategoryIds = useMemo(() => {
     const categoryIds = new Set<number>();
     cartList.forEach((cartItem: any) => {
-      const productData = memoizedProductList.find((product: any) => product.id === cartItem.productId);
+      const productData = memoizedProductList.find(
+        (product: any) => product.id === cartItem.productId,
+      );
       if (productData?.categoryId) {
         categoryIds.add(productData.categoryId);
       }
@@ -515,17 +577,24 @@ const TrendingPage = (props0: TrendingPageProps) => {
 
   // Fetch category data for the first category in cart (if vendor)
   // This ensures we have fresh category connection data
-  const firstCartCategoryId = uniqueCartCategoryIds.length > 0 ? uniqueCartCategoryIds[0] : undefined;
+  const firstCartCategoryId =
+    uniqueCartCategoryIds.length > 0 ? uniqueCartCategoryIds[0] : undefined;
   const firstCartCategoryQuery = useCategory(
     firstCartCategoryId?.toString(),
-    !!(currentTradeRole && currentTradeRole !== "BUYER" && firstCartCategoryId)
+    !!(currentTradeRole && currentTradeRole !== "BUYER" && firstCartCategoryId),
   );
 
   // Create a map of categoryId -> fresh category connections
   const freshCategoryConnectionsMap = useMemo(() => {
     const map = new Map<number, any[]>();
-    if (firstCartCategoryId && firstCartCategoryQuery?.data?.data?.category_categoryIdDetail) {
-      map.set(firstCartCategoryId, firstCartCategoryQuery.data.data.category_categoryIdDetail);
+    if (
+      firstCartCategoryId &&
+      firstCartCategoryQuery?.data?.data?.category_categoryIdDetail
+    ) {
+      map.set(
+        firstCartCategoryId,
+        firstCartCategoryQuery.data.data.category_categoryIdDetail,
+      );
     }
     return map;
   }, [firstCartCategoryId, firstCartCategoryQuery?.data?.data]);
@@ -569,7 +638,11 @@ const TrendingPage = (props0: TrendingPageProps) => {
         );
         const cartConsumerDiscountType = cartPriceDetails?.consumerDiscountType;
 
-        if (cartOfferPrice > 0 && cartConsumerDiscount > 0 && cartConsumerDiscountType) {
+        if (
+          cartOfferPrice > 0 &&
+          cartConsumerDiscount > 0 &&
+          cartConsumerDiscountType
+        ) {
           const normalizedDiscountType = cartConsumerDiscountType
             ?.toString()
             .toUpperCase()
@@ -592,22 +665,28 @@ const TrendingPage = (props0: TrendingPageProps) => {
       }
 
       const rawConsumerType =
-        productData?.consumerType || cartItem?.productPriceDetails?.consumerType || "CONSUMER";
+        productData?.consumerType ||
+        cartItem?.productPriceDetails?.consumerType ||
+        "CONSUMER";
       const consumerType =
         typeof rawConsumerType === "string"
           ? rawConsumerType.toUpperCase().trim()
           : "CONSUMER";
 
-      const isVendorType = consumerType === "VENDOR" || consumerType === "VENDORS";
+      const isVendorType =
+        consumerType === "VENDOR" || consumerType === "VENDORS";
       const isConsumerType = consumerType === "CONSUMER";
       const isEveryoneType = consumerType === "EVERYONE";
 
       const categoryId = Number(productData?.categoryId || 0);
       const categoryLocation = productData?.categoryLocation;
-      
+
       // Get fresh category connections - prioritize from category query if available
       let categoryConnections = productData?.categoryConnections || [];
-      if (categoryId === firstCartCategoryId && freshCategoryConnectionsMap.has(categoryId)) {
+      if (
+        categoryId === firstCartCategoryId &&
+        freshCategoryConnectionsMap.has(categoryId)
+      ) {
         categoryConnections = freshCategoryConnectionsMap.get(categoryId) || [];
       }
 
@@ -619,16 +698,22 @@ const TrendingPage = (props0: TrendingPageProps) => {
       );
 
       const vendorDiscountValue = Number(
-        productData?.vendorDiscount ?? cartItem?.productPriceDetails?.vendorDiscount ?? 0,
+        productData?.vendorDiscount ??
+          cartItem?.productPriceDetails?.vendorDiscount ??
+          0,
       );
       const vendorDiscountType =
-        productData?.vendorDiscountType || cartItem?.productPriceDetails?.vendorDiscountType;
+        productData?.vendorDiscountType ||
+        cartItem?.productPriceDetails?.vendorDiscountType;
 
       const consumerDiscountValue = Number(
-        productData?.consumerDiscount ?? cartItem?.productPriceDetails?.consumerDiscount ?? 0,
+        productData?.consumerDiscount ??
+          cartItem?.productPriceDetails?.consumerDiscount ??
+          0,
       );
       const consumerDiscountType =
-        productData?.consumerDiscountType || cartItem?.productPriceDetails?.consumerDiscountType;
+        productData?.consumerDiscountType ||
+        cartItem?.productPriceDetails?.consumerDiscountType;
 
       let discount = 0;
       let discountType: string | undefined;
@@ -677,7 +762,10 @@ const TrendingPage = (props0: TrendingPageProps) => {
 
       let finalPrice = originalPrice;
       if (discount > 0 && discountType) {
-        const normalizedDiscountType = discountType.toString().toUpperCase().trim();
+        const normalizedDiscountType = discountType
+          .toString()
+          .toUpperCase()
+          .trim();
         if (normalizedDiscountType === "PERCENTAGE") {
           finalPrice = originalPrice * (1 - discount / 100);
         } else if (
@@ -694,11 +782,17 @@ const TrendingPage = (props0: TrendingPageProps) => {
       );
 
       if (backendOfferPrice > 0) {
-        finalPrice = finalPrice > 0 ? Math.min(finalPrice, backendOfferPrice) : backendOfferPrice;
+        finalPrice =
+          finalPrice > 0
+            ? Math.min(finalPrice, backendOfferPrice)
+            : backendOfferPrice;
       }
 
       if (backendOriginalPrice > 0) {
-        originalPrice = originalPrice > 0 ? Math.max(originalPrice, backendOriginalPrice) : backendOriginalPrice;
+        originalPrice =
+          originalPrice > 0
+            ? Math.max(originalPrice, backendOriginalPrice)
+            : backendOriginalPrice;
       }
 
       if (!Number.isFinite(finalPrice) || finalPrice < 0) {
@@ -712,8 +806,9 @@ const TrendingPage = (props0: TrendingPageProps) => {
       const unitPrice = Number(finalPrice.toFixed(2));
       const originalUnitPrice = Number(originalPrice.toFixed(2));
       const totalPrice = Number((unitPrice * quantity).toFixed(2));
-      const originalTotalPrice = Number((originalUnitPrice * quantity).toFixed(2));
-
+      const originalTotalPrice = Number(
+        (originalUnitPrice * quantity).toFixed(2),
+      );
 
       return {
         unitPrice,
@@ -722,7 +817,12 @@ const TrendingPage = (props0: TrendingPageProps) => {
         originalTotalPrice,
       };
     },
-    [currentTradeRole, vendorBusinessCategoryIds, freshCategoryConnectionsMap, firstCartCategoryId],
+    [
+      currentTradeRole,
+      vendorBusinessCategoryIds,
+      freshCategoryConnectionsMap,
+      firstCartCategoryId,
+    ],
   );
 
   const getProductVariants = async () => {
@@ -853,523 +953,480 @@ const TrendingPage = (props0: TrendingPageProps) => {
       <title dir={langDir} translate="no">
         {t("store")} | Ultrasooq
       </title>
-      <div className="body-content-s1">
+      <div className="body-content-s1 bg-white">
         <TrendingCategories />
 
         <BannerSection />
 
-        {/* Full Width Three Column Layout */}
-        <div className="w-full min-h-screen bg-white px-2 sm:px-4 lg:px-8">
-          <div className="flex flex-col lg:flex-row h-full gap-4">
-            
-            {/* Left Column - Filters (Desktop) */}
-            <div className="hidden lg:block w-64 flex-shrink-0 overflow-y-auto p-4 bg-white">
-              <div className="bg-white rounded-lg shadow-lg p-6">
-               <div className="mb-4">
-                 <div className="flex gap-2 mb-4">
-                   <button 
-                     type="button" 
-                     onClick={selectAll}
-                     className="px-3 py-2 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors text-sm"
-                   >
-                     {t("select_all")}
-                   </button>
-                   <button 
-                     type="button" 
-                     onClick={clearFilter}
-                     className="px-3 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors text-sm"
-                   >
-                     {t("clean_select")}
-                   </button>
-                 </div>
-               </div>
-
-               {/* Category Filter */}
-               <Accordion
-                 type="multiple"
-                 defaultValue={["category_filter"]}
-                 className="mb-4"
-               >
-                 <AccordionItem value="category_filter">
-                   <AccordionTrigger className="text-base hover:no-underline!">
-                     {t("by_category")}
-                   </AccordionTrigger>
-                   <AccordionContent>
-                     <CategoryFilter
-                       selectedCategoryIds={selectedCategoryIds}
-                       onCategoryChange={handleCategoryChange}
-                       onClear={handleCategoryClear}
-                     />
-                   </AccordionContent>
-                 </AccordionItem>
-               </Accordion>
-
-               {/* Brand Filter */}
-               <Accordion
-                 type="multiple"
-                 defaultValue={["brand"]}
-                 className="mb-4"
-               >
-                 <AccordionItem value="brand">
-                   <AccordionTrigger className="text-base hover:no-underline!">
-                     {t("by_brand")}
-                   </AccordionTrigger>
-                   <AccordionContent>
-                     <div className="mb-3">
-                       <div className="flex gap-2">
-                         <Input
-                           type="text"
-                           placeholder={t("search_brand")}
-                           className="flex-1 h-8 text-sm"
-                           onChange={handleBrandSearchChange}
-                           dir={langDir}
-                           translate="no"
-                         />
-                         <Button
-                           type="button"
-                           onClick={handleBrandSearch}
-                           disabled={!searchTermBrand.trim()}
-                           size="sm"
-                           className="h-8 px-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-xs"
-                         >
-                           {t("search")}
-                         </Button>
-                       </div>
-                     </div>
-                     <div className="space-y-2 max-h-40 overflow-y-auto">
-                       {!memoizedBrands.length ? (
-                         <p className="text-center text-sm text-gray-500">
-                           {t("no_data_found")}
-                         </p>
-                       ) : null}
-                       {memoizedBrands.map((item: ISelectOptions) => (
-                         <div key={item.value} className="flex items-center space-x-2">
-                           <Checkbox
-                             id={item.label}
-                             className="border border-gray-300 data-[state=checked]:bg-blue-600!"
-                             onCheckedChange={(checked) =>
-                               handleBrandChange(checked, item)
-                             }
-                             checked={selectedBrandIds.includes(item.value)}
-                           />
-                           <label
-                             htmlFor={item.label}
-                             className="text-sm font-medium leading-none cursor-pointer"
-                           >
-                             {item.label}
-                           </label>
-                         </div>
-                       ))}
-                     </div>
-                   </AccordionContent>
-                 </AccordionItem>
-               </Accordion>
-
-               {/* Price Filter */}
-               <Accordion
-                 type="multiple"
-                 defaultValue={["price"]}
-               >
-                 <AccordionItem value="price">
-                   <AccordionTrigger className="text-base hover:no-underline!">
-                     {t("price")}
-                   </AccordionTrigger>
-                   <AccordionContent>
-                     <div className="px-4">
-                       <div className="px-2">
-                         <ReactSlider
-                           className="horizontal-slider"
-                           thumbClassName="example-thumb"
-                           trackClassName="example-track"
-                           defaultValue={[0, 500]}
-                           ariaLabel={["Lower thumb", "Upper thumb"]}
-                           ariaValuetext={(state) =>
-                             `Thumb value ${state.valueNow}`
-                           }
-                           renderThumb={(props, state) => (
-                             <div {...props} key={props.key}>
-                               {state.valueNow}
-                             </div>
-                           )}
-                           pearling
-                           minDistance={10}
-                           onChange={(value) => handlePriceDebounce(value)}
-                           max={500}
-                           min={0}
-                         />
-                       </div>
-                       <div className="flex justify-center">
-                         <Button
-                           variant="outline"
-                           className="mb-4"
-                           onClick={() => setPriceRange([])}
-                           dir={langDir}
-                           translate="no"
-                         >
-                           {t("clear")}
-                         </Button>
-                       </div>
-                       <div className="range-price-left-right-info">
-                         <Input
-                           type="number"
-                           placeholder={`${currency.symbol}0`}
-                           className="custom-form-control-s1 rounded-none"
-                           onChange={handleMinPriceChange}
-                           onWheel={(e) => e.currentTarget.blur()}
-                           ref={minPriceInputRef}
-                         />
-                         <div className="center-divider"></div>
-                         <Input
-                           type="number"
-                           placeholder={`${currency.symbol}500`}
-                           className="custom-form-control-s1 rounded-none"
-                           onChange={handleMaxPriceChange}
-                           onWheel={(e) => e.currentTarget.blur()}
-                           ref={maxPriceInputRef}
-                         />
-                       </div>
-                     </div>
-                   </AccordionContent>
-                 </AccordionItem>
-               </Accordion>
-              </div>
-            </div>
-            
-            {/* Middle Column - Products (MAIN CONTENT - PRIORITIZED) */}
-            <div className="flex-1 bg-white overflow-y-auto w-full lg:w-auto">
-              <div className="p-2 sm:p-4 lg:p-6">
-                <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "products" | "vendors")} className="w-full">
-                <TabsList className="grid w-full grid-cols-2 mb-4 sm:mb-6">
-                  <TabsTrigger value="products" className="flex items-center justify-center space-x-1 sm:space-x-2 text-xs sm:text-sm">
-                    <Package className="h-3 w-3 sm:h-4 sm:w-4" />
-                    <span>{t("products")}</span>
-                    <span className="ml-1 sm:ml-2 text-xs bg-gray-100 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">
-                      {totalCount}
-                    </span>
-                  </TabsTrigger>
-                  <TabsTrigger value="vendors" className="flex items-center justify-center space-x-1 sm:space-x-2 text-xs sm:text-sm">
-                    <Building2 className="h-3 w-3 sm:h-4 sm:w-4" />
-                    <span>{t("vendors")}</span>
-                    <span className="ml-1 sm:ml-2 text-xs bg-gray-100 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">
-                      {memoizedVendors.length}
-                    </span>
-                  </TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="products" className="space-y-6">
-                  
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                {/* Left Section - Mobile Buttons & Product Count */}
-                <div className="flex items-center gap-3 w-full sm:w-auto">
-                  {/* Mobile Filter Button */}
-                  <button
-                    type="button"
-                    className="lg:hidden p-2.5 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors"
-                    onClick={() => setProductFilter(true)}
-                  >
-                    <FilterMenuIcon />
-                  </button>
-                  
-                  {/* Mobile Cart Button */}
-                  <button
-                    type="button"
-                    className="lg:hidden p-2.5 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors relative"
-                    onClick={() => setShowCartDrawer(true)}
-                  >
-                    <ShoppingCart className="h-5 w-5" />
-                    {cartList.length > 0 && (
-                      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                        {cartList.length}
-                      </span>
-                    )}
-                  </button>
-
-                  {/* Product Count */}
-                  <div className="flex-1 sm:flex-none">
-                    <p className="text-base sm:text-lg font-semibold text-gray-800" dir={langDir} translate="no">
-                    {t("n_products_found", {
-                      n: totalCount,
-                    })}
-                  </p>
+        {/* Full Width Two Column Layout */}
+        <div className="min-h-screen w-full bg-white px-2 sm:px-4 lg:px-8">
+          <div className="flex h-full flex-col gap-4 lg:flex-row">
+            {/* Left Column - Filters (Desktop) - Improved UI */}
+            <div className="hidden flex-shrink-0 overflow-y-auto bg-white p-4 lg:block lg:w-1/4">
+              <div className="sticky top-4 rounded-xl bg-white p-6 shadow-lg">
+                {/* Filter Header */}
+                <div className="mb-6 border-b border-gray-200 pb-4">
+                  <h3 className="mb-3 text-lg font-bold text-gray-900">
+                    {t("filters")}
+                  </h3>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={selectAll}
+                      className="flex-1 rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+                    >
+                      {t("select_all")}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={clearFilter}
+                      className="flex-1 rounded-lg bg-gray-200 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-300"
+                    >
+                      {t("clean_select")}
+                    </button>
                   </div>
                 </div>
 
-                {/* Right Section - Sort & View Controls */}
-                <div className="flex items-center gap-3 w-full sm:w-auto">
-                  {/* Sort Dropdown */}
-                  <Select onValueChange={(e) => setSortBy(e)} value={sortBy}>
-                    <SelectTrigger className="w-full sm:w-[180px] h-10 bg-white border-gray-300">
-                          <SelectValue
-                            placeholder={t("sort_by")}
-                            dir={langDir}
-                            translate="no"
-                          />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            <SelectItem
-                              value="desc"
-                              dir={langDir}
-                              translate="no"
-                            >
-                              {t("sort_by_latest")}
-                            </SelectItem>
-                            <SelectItem
-                              value="asc"
-                              dir={langDir}
-                              translate="no"
-                            >
-                              {t("sort_by_oldest")}
-                            </SelectItem>
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-
-                  {/* View Type Buttons */}
-                  <div className="hidden sm:flex items-center gap-2 bg-white border border-gray-300 rounded-lg p-1">
-                      <button
-                        type="button"
-                      className={`p-2 rounded transition-colors ${
-                        viewType === "grid" 
-                          ? "bg-blue-600 text-white" 
-                          : "text-gray-600 hover:bg-gray-100"
-                      }`}
-                        onClick={() => setViewType("grid")}
-                      >
-                        <GridIcon active={viewType === "grid"} />
-                      </button>
-                      <button
-                        type="button"
-                      className={`p-2 rounded transition-colors ${
-                        viewType === "list" 
-                          ? "bg-blue-600 text-white" 
-                          : "text-gray-600 hover:bg-gray-100"
-                      }`}
-                        onClick={() => setViewType("list")}
-                      >
-                        <ListIcon active={viewType === "list"} />
-                      </button>
-                  </div>
-                </div>
-              </div>
-
-              {isLoading && viewType === "grid" ? (
-                <div className="flex flex-col gap-3 sm:grid sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4 lg:gap-5">
-                  {Array.from({ length: 10 }).map((_, index: number) => (
-                    <SkeletonProductCardLoader key={index} />
-                  ))}
-                </div>
-              ) : null}
-
-              {!memoizedProductList.length && !isLoading ? (
-                <p
-                  className="text-center text-sm font-medium"
-                  dir={langDir}
-                  translate="no"
-                >
-                  {t("no_data_found")}
-                </p>
-              ) : null}
-
-              {viewType === "grid" ? (
-                <div className="flex flex-col gap-3 sm:grid sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4 lg:gap-5 sm:items-stretch">
-                  {memoizedProductList.map((item: TrendingProduct) => {
-                    const cartItem = cartList?.find(
-                      (el: any) => el.productId == item.id,
-                    );
-                    let relatedCart: any = null;
-                    if (cartItem) {
-                      relatedCart = cartList
-                        ?.filter(
-                          (c: any) =>
-                            c.serviceId && c.cartProductServices?.length,
-                        )
-                        .find((c: any) => {
-                          return !!c.cartProductServices.find(
-                            (r: any) =>
-                              r.relatedCartType == "PRODUCT" &&
-                              r.productId == item.id,
-                          );
-                        });
-                    }
-                    return (
-                      <ProductCard
-                        key={item.id}
-                        productVariants={
-                          productVariants.find(
-                            (variant: any) => variant.productId == item.id,
-                          )?.object || []
-                        }
-                        item={item}
-                        onWishlist={() =>
-                          handleAddToWishlist(item.id, item?.productWishlist)
-                        }
-                        inWishlist={item?.inWishlist}
-                        haveAccessToken={haveAccessToken}
-                        isInteractive
-                        productQuantity={cartItem?.quantity || 0}
-                        productVariant={cartItem?.object}
-                        cartId={cartItem?.id}
-                        relatedCart={relatedCart}
-                        isAddedToCart={cartItem ? true : false}
-                      />
-                    );
-                  })}
-                </div>
-              ) : null}
-
-              {viewType === "list" && memoizedProductList.length ? (
-                <div className="product-list-s1 p-2 sm:p-4 overflow-x-auto">
-                  <ProductTable list={memoizedProductList} />
-                </div>
-              ) : null}
-
-                <Pagination
-                  page={page}
-                  setPage={setPage}
-                  totalCount={totalCount}
-                  limit={limit}
-                />
-                </TabsContent>
-
-                <TabsContent value="vendors" className="space-y-6">
-                  <VendorsSection 
-                    vendors={memoizedVendors}
-                    isLoading={isLoading || usersLoading}
-                    products={memoizedProductList}
-                  />
-                </TabsContent>
-              </Tabs>
-              </div>
-            </div>
-            
-            {/* Right Column - Cart (Desktop Only) */}
-            <div className="hidden lg:block w-64 flex-shrink-0 bg-white">
-              <div className="sticky top-0 h-screen overflow-y-auto">
-                <div className="bg-white rounded-lg shadow-lg m-2 lg:m-4 p-4 lg:p-6">
-                  <div className="cart_sidebar">
-                    <div className="border-b border-gray-200 pb-4 mb-4">
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-lg font-semibold text-gray-900">{t("my_cart")}</h3>
-                        <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
-                          {cartList.length} {cartList.length === 1 ? t("item") : t("items")}
-                        </span>
-                      </div>
-                    </div>
-                    
-                    <div className="max-h-64 overflow-y-auto">
-                      {cartList.length === 0 ? (
-                        <div className="text-center py-6">
-                          <Package className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-                          <p className="text-gray-500 text-sm">{t("your_cart_is_empty")}</p>
-                          <p className="text-gray-400 text-xs mt-1">{t("add_some_products_to_get_started")}</p>
+                {/* Category Filter - Improved */}
+                <div className="mb-6">
+                  <Accordion
+                    type="multiple"
+                    defaultValue={["category_filter"]}
+                    className="overflow-hidden rounded-lg border border-gray-200"
+                  >
+                    <AccordionItem value="category_filter" className="border-0">
+                      <AccordionTrigger className="bg-gray-50 px-4 py-3 font-semibold text-gray-900 hover:bg-gray-100">
+                        <div className="flex items-center gap-2">
+                          <Package className="h-4 w-4" />
+                          <span>{t("by_category")}</span>
                         </div>
-                      ) : (
-                        <div className="space-y-3">
-                    {cartList.slice(0, 3).map((cartItem: any) => {
-                      // Find the product data from our memoized product list
-                      const productData = memoizedProductList.find((product: any) => product.id === cartItem.productId);
-                      
-                      return (
-                        <div key={cartItem.id} className="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded-lg transition-colors">
-                          {/* Product Image */}
-                          <div className="w-12 h-12 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
-                            {productData?.productImage ? (
-                              <img
-                                src={productData.productImage}
-                                alt={productData.productName || 'Product'}
-                                className="w-full h-full object-cover"
+                      </AccordionTrigger>
+                      <AccordionContent className="bg-white px-4 py-4">
+                        <CategoryFilter
+                          selectedCategoryIds={selectedCategoryIds}
+                          onCategoryChange={handleCategoryChange}
+                          onClear={handleCategoryClear}
+                        />
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                </div>
+
+                {/* Brand Filter - Improved */}
+                <div className="mb-6">
+                  <Accordion
+                    type="multiple"
+                    defaultValue={["brand"]}
+                    className="overflow-hidden rounded-lg border border-gray-200"
+                  >
+                    <AccordionItem value="brand" className="border-0">
+                      <AccordionTrigger className="bg-gray-50 px-4 py-3 font-semibold text-gray-900 hover:bg-gray-100">
+                        <div className="flex items-center gap-2">
+                          <Building2 className="h-4 w-4" />
+                          <span>{t("by_brand")}</span>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="bg-white px-4 py-4">
+                        <div className="mb-3">
+                          <div className="flex gap-2">
+                            <Input
+                              type="text"
+                              placeholder={t("search_brand")}
+                              className="h-9 flex-1 border-gray-300 text-sm focus:border-blue-500 focus:ring-blue-500"
+                              onChange={handleBrandSearchChange}
+                              dir={langDir}
+                              translate="no"
+                            />
+                            <Button
+                              type="button"
+                              onClick={handleBrandSearch}
+                              disabled={!searchTermBrand.trim()}
+                              size="sm"
+                              className="h-9 bg-blue-600 px-4 text-xs font-medium hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-400"
+                            >
+                              {t("search")}
+                            </Button>
+                          </div>
+                        </div>
+                        <div className="max-h-48 space-y-2 overflow-y-auto">
+                          {!memoizedBrands.length ? (
+                            <p className="py-4 text-center text-sm text-gray-500">
+                              {t("no_data_found")}
+                            </p>
+                          ) : null}
+                          {memoizedBrands.map((item: ISelectOptions) => (
+                            <div
+                              key={item.value}
+                              className="flex items-center space-x-2 rounded px-2 py-1 transition-colors hover:bg-gray-50"
+                            >
+                              <Checkbox
+                                id={item.label}
+                                className="border border-gray-300 data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600"
+                                onCheckedChange={(checked) =>
+                                  handleBrandChange(checked, item)
+                                }
+                                checked={selectedBrandIds.includes(item.value)}
                               />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center">
-                                <Package className="h-6 w-6 text-gray-400" />
+                              <label
+                                htmlFor={item.label}
+                                className="flex-1 cursor-pointer text-sm leading-none font-medium"
+                              >
+                                {item.label}
+                              </label>
+                            </div>
+                          ))}
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                </div>
+
+                {/* Price Filter - Improved */}
+                <div>
+                  <Accordion
+                    type="multiple"
+                    defaultValue={["price"]}
+                    className="overflow-hidden rounded-lg border border-gray-200"
+                  >
+                    <AccordionItem value="price" className="border-0">
+                      <AccordionTrigger className="bg-gray-50 px-4 py-3 font-semibold text-gray-900 hover:bg-gray-100">
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg">💰</span>
+                          <span>{t("price")}</span>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="bg-white px-4 py-4">
+                        <div className="mb-4 px-2">
+                          <ReactSlider
+                            className="horizontal-slider"
+                            thumbClassName="example-thumb"
+                            trackClassName="example-track"
+                            defaultValue={[0, 500]}
+                            ariaLabel={["Lower thumb", "Upper thumb"]}
+                            ariaValuetext={(state) =>
+                              `Thumb value ${state.valueNow}`
+                            }
+                            renderThumb={(props, state) => (
+                              <div {...props} key={props.key}>
+                                {state.valueNow}
                               </div>
                             )}
-                          </div>
-                          
-                          {/* Product Info */}
-                          <div className="flex-1 min-w-0">
-                            <h4 className="text-sm font-medium text-gray-900 truncate">
-                              {productData?.productName || t("product")}
-                            </h4>
-                            <div className="flex items-center justify-between mt-1">
-                              <p className="text-xs text-gray-500">
-                                Qty: {cartItem.quantity || 1}
-                              </p>
-                              <div className="text-right">
-                                {(() => {
-                                  const pricing = getCartPricing(productData, cartItem);
-                                  return (
-                                    <>
-                                      <p className="text-sm font-semibold text-green-600">
-                                        {currency.symbol}{pricing.totalPrice.toFixed(2)}
-                                      </p>
-                                      {pricing.originalTotalPrice > pricing.totalPrice && (
-                                        <p className="text-xs text-gray-500 line-through">
-                                          {currency.symbol}{pricing.originalTotalPrice.toFixed(2)}
-                                        </p>
-                                      )}
-                                    </>
-                                  );
-                                })()}
-                              </div>
-                            </div>
-                          </div>
+                            pearling
+                            minDistance={10}
+                            onChange={(value) => handlePriceDebounce(value)}
+                            max={500}
+                            min={0}
+                          />
                         </div>
-                      );
-                    })}
-                    
-                    {/* Show "and X more" if there are more than 3 items */}
-                    {cartList.length > 3 && (
-                      <div className="text-center py-2">
-                        <p className="text-xs text-gray-500">
-                          {t("and_n_more_items", { n: cartList.length - 3 })}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                )}
+                        <div className="mb-4 flex justify-center">
+                          <Button
+                            variant="outline"
+                            className="h-9 px-4 text-sm"
+                            onClick={() => setPriceRange([])}
+                            dir={langDir}
+                            translate="no"
+                          >
+                            {t("clear")}
+                          </Button>
+                        </div>
+                        <div className="range-price-left-right-info">
+                          <Input
+                            type="number"
+                            placeholder={`${currency.symbol}0`}
+                            className="custom-form-control-s1 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                            onChange={handleMinPriceChange}
+                            onWheel={(e) => e.currentTarget.blur()}
+                            ref={minPriceInputRef}
+                          />
+                          <div className="center-divider"></div>
+                          <Input
+                            type="number"
+                            placeholder={`${currency.symbol}500`}
+                            className="custom-form-control-s1 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                            onChange={handleMaxPriceChange}
+                            onWheel={(e) => e.currentTarget.blur()}
+                            ref={maxPriceInputRef}
+                          />
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                </div>
               </div>
-              
-              {/* Go to Cart Button */}
-              {cartList.length > 0 && (
-                <div className="p-4 border-t border-gray-200 bg-gray-50">
-                  <button
-                    onClick={() => window.location.href = '/cart'}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2"
-                  >
-                    <Package className="h-4 w-4" />
-                            <span>{t("go_to_cart")}</span>
-                  </button>
-                </div>
-              )}
-                  </div>
-                </div>
+            </div>
+
+            {/* Main Content Column - Products (FULL WIDTH NOW) */}
+            <div className="w-full flex-1 overflow-y-auto bg-white lg:w-auto">
+              <div className="p-2 sm:p-4 lg:p-6">
+                <Tabs
+                  value={activeTab}
+                  onValueChange={(value) =>
+                    setActiveTab(value as "products" | "vendors")
+                  }
+                  className="w-full"
+                >
+                  <TabsList className="mb-4 grid w-full grid-cols-2 sm:mb-6">
+                    <TabsTrigger
+                      value="products"
+                      className="flex items-center justify-center space-x-1 text-xs sm:space-x-2 sm:text-sm"
+                    >
+                      <Package className="h-3 w-3 sm:h-4 sm:w-4" />
+                      <span>{t("products")}</span>
+                      <span className="ml-1 rounded-full bg-gray-100 px-1.5 py-0.5 text-xs sm:ml-2 sm:px-2 sm:py-1">
+                        {totalCount}
+                      </span>
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="vendors"
+                      className="flex items-center justify-center space-x-1 text-xs sm:space-x-2 sm:text-sm"
+                    >
+                      <Building2 className="h-3 w-3 sm:h-4 sm:w-4" />
+                      <span>{t("vendors")}</span>
+                      <span className="ml-1 rounded-full bg-gray-100 px-1.5 py-0.5 text-xs sm:ml-2 sm:px-2 sm:py-1">
+                        {memoizedVendors.length}
+                      </span>
+                    </TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="products" className="space-y-6">
+                    <div className="mb-6 flex flex-col items-start justify-between gap-4 rounded-lg border border-gray-200 bg-white p-4 sm:flex-row sm:items-center">
+                      {/* Left Section - Mobile Buttons & Product Count */}
+                      <div className="flex w-full items-center gap-3 sm:w-auto">
+                        {/* Mobile Filter Button */}
+                        <button
+                          type="button"
+                          className="rounded-lg border border-gray-300 bg-white p-2.5 transition-colors hover:bg-gray-100 lg:hidden"
+                          onClick={() => setProductFilter(true)}
+                        >
+                          <FilterMenuIcon />
+                        </button>
+
+                        {/* Mobile Cart Button - Hidden on desktop, floating button shows instead */}
+                        <button
+                          type="button"
+                          className="relative rounded-lg border border-gray-300 bg-white p-2.5 transition-colors hover:bg-gray-100 lg:hidden"
+                          onClick={() => setShowCartDrawer(true)}
+                        >
+                          <ShoppingCart className="h-5 w-5" />
+                          {cartList.length > 0 && (
+                            <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
+                              {cartList.length > 99 ? "99+" : cartList.length}
+                            </span>
+                          )}
+                        </button>
+
+                        {/* Product Count */}
+                        <div className="flex-1 sm:flex-none">
+                          <p
+                            className="text-base font-semibold text-gray-800 sm:text-lg"
+                            dir={langDir}
+                            translate="no"
+                          >
+                            {t("n_products_found", {
+                              n: totalCount,
+                            })}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Right Section - Sort & View Controls */}
+                      <div className="flex w-full items-center gap-3 sm:w-auto">
+                        {/* Sort Dropdown */}
+                        <Select
+                          onValueChange={(e) => setSortBy(e)}
+                          value={sortBy}
+                        >
+                          <SelectTrigger className="h-10 w-full border-gray-300 bg-white sm:w-[180px]">
+                            <SelectValue
+                              placeholder={t("sort_by")}
+                              dir={langDir}
+                              translate="no"
+                            />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectItem
+                                value="desc"
+                                dir={langDir}
+                                translate="no"
+                              >
+                                {t("sort_by_latest")}
+                              </SelectItem>
+                              <SelectItem
+                                value="asc"
+                                dir={langDir}
+                                translate="no"
+                              >
+                                {t("sort_by_oldest")}
+                              </SelectItem>
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+
+                        {/* View Type Buttons */}
+                        <div className="hidden items-center gap-2 rounded-lg border border-gray-300 bg-white p-1 sm:flex">
+                          <button
+                            type="button"
+                            className={`rounded p-2 transition-colors ${
+                              viewType === "grid"
+                                ? "bg-blue-600 text-white"
+                                : "text-gray-600 hover:bg-gray-100"
+                            }`}
+                            onClick={() => setViewType("grid")}
+                          >
+                            <GridIcon active={viewType === "grid"} />
+                          </button>
+                          <button
+                            type="button"
+                            className={`rounded p-2 transition-colors ${
+                              viewType === "list"
+                                ? "bg-blue-600 text-white"
+                                : "text-gray-600 hover:bg-gray-100"
+                            }`}
+                            onClick={() => setViewType("list")}
+                          >
+                            <ListIcon active={viewType === "list"} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {isLoading && viewType === "grid" ? (
+                      <div className="flex flex-col gap-3 sm:grid sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 lg:gap-5 xl:grid-cols-4">
+                        {Array.from({ length: 10 }).map((_, index: number) => (
+                          <SkeletonProductCardLoader key={index} />
+                        ))}
+                      </div>
+                    ) : null}
+
+                    {!memoizedProductList.length && !isLoading ? (
+                      <p
+                        className="text-center text-sm font-medium"
+                        dir={langDir}
+                        translate="no"
+                      >
+                        {t("no_data_found")}
+                      </p>
+                    ) : null}
+
+                    {viewType === "grid" ? (
+                      <div className="flex flex-col gap-3 sm:grid sm:grid-cols-2 sm:items-stretch sm:gap-4 lg:grid-cols-3 lg:gap-5 xl:grid-cols-4">
+                        {memoizedProductList.map((item: TrendingProduct) => {
+                          const cartItem = cartList?.find(
+                            (el: any) => el.productId == item.id,
+                          );
+                          let relatedCart: any = null;
+                          if (cartItem) {
+                            relatedCart = cartList
+                              ?.filter(
+                                (c: any) =>
+                                  c.serviceId && c.cartProductServices?.length,
+                              )
+                              .find((c: any) => {
+                                return !!c.cartProductServices.find(
+                                  (r: any) =>
+                                    r.relatedCartType == "PRODUCT" &&
+                                    r.productId == item.id,
+                                );
+                              });
+                          }
+                          return (
+                            <ProductCard
+                              key={item.id}
+                              productVariants={
+                                productVariants.find(
+                                  (variant: any) =>
+                                    variant.productId == item.id,
+                                )?.object || []
+                              }
+                              item={item}
+                              onWishlist={() =>
+                                handleAddToWishlist(
+                                  item.id,
+                                  item?.productWishlist,
+                                )
+                              }
+                              inWishlist={item?.inWishlist}
+                              haveAccessToken={haveAccessToken}
+                              isInteractive
+                              productQuantity={cartItem?.quantity || 0}
+                              productVariant={cartItem?.object}
+                              cartId={cartItem?.id}
+                              relatedCart={relatedCart}
+                              isAddedToCart={cartItem ? true : false}
+                            />
+                          );
+                        })}
+                      </div>
+                    ) : null}
+
+                    {viewType === "list" && memoizedProductList.length ? (
+                      <div className="product-list-s1 overflow-x-auto p-2 sm:p-4">
+                        <ProductTable list={memoizedProductList} />
+                      </div>
+                    ) : null}
+
+                    <Pagination
+                      page={page}
+                      setPage={setPage}
+                      totalCount={totalCount}
+                      limit={limit}
+                    />
+                  </TabsContent>
+
+                  <TabsContent value="vendors" className="space-y-6">
+                    <VendorsSection
+                      vendors={memoizedVendors}
+                      isLoading={isLoading || usersLoading}
+                      products={memoizedProductList}
+                      haveAccessToken={haveAccessToken}
+                      cartList={cartList}
+                      onWishlist={handleAddToWishlist}
+                    />
+                  </TabsContent>
+                </Tabs>
               </div>
             </div>
           </div>
         </div>
 
+        {/* Floating Cart Button - Only show when cart has items */}
+        {cartList.length > 0 && (
+          <button
+            onClick={() => setShowCartDrawer(true)}
+            className="group fixed right-6 bottom-6 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-blue-600 text-white shadow-2xl transition-all duration-300 hover:scale-110 hover:bg-blue-700 lg:h-14 lg:w-14"
+            aria-label={t("my_cart")}
+          >
+            <ShoppingCart className="h-5 w-5 lg:h-6 lg:w-6" />
+            <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full border-2 border-white bg-red-500 text-xs font-bold text-white shadow-lg lg:h-6 lg:w-6">
+              {cartList.length > 99 ? "99+" : cartList.length}
+            </span>
+          </button>
+        )}
+
         {/* Mobile Filter Drawer */}
         <Sheet open={productFilter} onOpenChange={setProductFilter}>
-          <SheetContent side="left" className="w-[300px] sm:w-[400px] overflow-y-auto">
+          <SheetContent
+            side="left"
+            className="w-[300px] overflow-y-auto sm:w-[400px]"
+          >
             <SheetHeader>
               <SheetTitle>{t("filters")}</SheetTitle>
             </SheetHeader>
             <div className="mt-6">
               <div className="mb-4">
-                <div className="flex gap-2 mb-4">
-                  <button 
-                    type="button" 
+                <div className="mb-4 flex gap-2">
+                  <button
+                    type="button"
                     onClick={selectAll}
-                    className="px-3 py-2 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors text-sm"
+                    className="rounded bg-blue-100 px-3 py-2 text-sm text-blue-700 transition-colors hover:bg-blue-200"
                   >
                     {t("select_all")}
                   </button>
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     onClick={clearFilter}
-                    className="px-3 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors text-sm"
+                    className="rounded bg-gray-100 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-200"
                   >
                     {t("clean_select")}
                   </button>
@@ -1412,7 +1469,7 @@ const TrendingPage = (props0: TrendingPageProps) => {
                         <Input
                           type="text"
                           placeholder={t("search_brand")}
-                          className="flex-1 h-8 text-sm"
+                          className="h-8 flex-1 text-sm"
                           onChange={handleBrandSearchChange}
                           dir={langDir}
                           translate="no"
@@ -1422,20 +1479,23 @@ const TrendingPage = (props0: TrendingPageProps) => {
                           onClick={handleBrandSearch}
                           disabled={!searchTermBrand.trim()}
                           size="sm"
-                          className="h-8 px-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-xs"
+                          className="h-8 bg-blue-600 px-3 text-xs hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-400"
                         >
                           {t("search")}
                         </Button>
                       </div>
                     </div>
-                    <div className="space-y-2 max-h-40 overflow-y-auto">
+                    <div className="max-h-40 space-y-2 overflow-y-auto">
                       {!memoizedBrands.length ? (
                         <p className="text-center text-sm text-gray-500">
                           {t("no_data_found")}
                         </p>
                       ) : null}
                       {memoizedBrands.map((item: ISelectOptions) => (
-                        <div key={item.value} className="flex items-center space-x-2">
+                        <div
+                          key={item.value}
+                          className="flex items-center space-x-2"
+                        >
                           <Checkbox
                             id={`mobile-${item.label}`}
                             className="border border-gray-300 data-[state=checked]:bg-blue-600!"
@@ -1446,7 +1506,7 @@ const TrendingPage = (props0: TrendingPageProps) => {
                           />
                           <label
                             htmlFor={`mobile-${item.label}`}
-                            className="text-sm font-medium leading-none cursor-pointer"
+                            className="cursor-pointer text-sm leading-none font-medium"
                           >
                             {item.label}
                           </label>
@@ -1458,10 +1518,7 @@ const TrendingPage = (props0: TrendingPageProps) => {
               </Accordion>
 
               {/* Price Filter */}
-              <Accordion
-                type="multiple"
-                defaultValue={["price"]}
-              >
+              <Accordion type="multiple" defaultValue={["price"]}>
                 <AccordionItem value="price">
                   <AccordionTrigger className="text-base hover:no-underline!">
                     {t("price")}
@@ -1526,99 +1583,128 @@ const TrendingPage = (props0: TrendingPageProps) => {
           </SheetContent>
         </Sheet>
 
-        {/* Mobile Cart Drawer */}
+        {/* Desktop & Mobile Cart Drawer - Enhanced */}
         <Sheet open={showCartDrawer} onOpenChange={setShowCartDrawer}>
-          <SheetContent side="right" className="w-[300px] sm:w-[400px] overflow-y-auto">
-            <SheetHeader>
-              <SheetTitle className="flex items-center gap-2">
-                <ShoppingCart className="h-5 w-5" />
-                <span>{t("my_cart")}</span>
+          <SheetContent
+            side="right"
+            className="w-full overflow-y-auto sm:w-[400px] lg:w-[450px]"
+          >
+            <SheetHeader className="mb-4 border-b border-gray-200 pb-4">
+              <SheetTitle className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <ShoppingCart className="h-5 w-5" />
+                  <span className="text-lg font-bold">{t("my_cart")}</span>
+                </div>
+                <span className="rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-500">
+                  {cartList.length}{" "}
+                  {cartList.length === 1 ? t("item") : t("items")}
+                </span>
               </SheetTitle>
             </SheetHeader>
+
             <div className="mt-6">
-              <div className="border-b border-gray-200 pb-4 mb-4">
-                <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
-                  {cartList.length} {cartList.length === 1 ? t("item") : t("items")}
-                </span>
-              </div>
-              
-              <div className="max-h-[calc(100vh-250px)] overflow-y-auto">
-                {cartList.length === 0 ? (
-                  <div className="text-center py-6">
-                    <Package className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-                    <p className="text-gray-500 text-sm">{t("your_cart_is_empty")}</p>
-                    <p className="text-gray-400 text-xs mt-1">{t("add_some_products_to_get_started")}</p>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {cartList.map((cartItem: any) => {
-                      const productData = memoizedProductList.find((product: any) => product.id === cartItem.productId);
-                      
-                      return (
-                        <div key={cartItem.id} className="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded-lg transition-colors">
-                          <div className="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
-                            {productData?.productImage ? (
-                              <img
-                                src={productData.productImage}
-                                alt={productData.productName || 'Product'}
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center">
-                                <Package className="h-8 w-8 text-gray-400" />
-                              </div>
-                            )}
-                          </div>
-                          
-                          <div className="flex-1 min-w-0">
-                            <h4 className="text-sm font-medium text-gray-900 truncate">
-                              {productData?.productName || t("product")}
-                            </h4>
-                            <div className="flex items-center justify-between mt-1">
-                              <p className="text-xs text-gray-500">
-                                Qty: {cartItem.quantity || 1}
-                              </p>
-                              <div className="text-right">
-                                {(() => {
-                                  const pricing = getCartPricing(productData, cartItem);
-                                  return (
-                                    <>
-                                      <p className="text-sm font-semibold text-green-600">
-                                        {currency.symbol}{pricing.totalPrice.toFixed(2)}
+              {cartList.length === 0 ? (
+                <div className="py-12 text-center">
+                  <Package className="mx-auto mb-4 h-16 w-16 text-gray-400" />
+                  <p className="text-base font-medium text-gray-500">
+                    {t("your_cart_is_empty")}
+                  </p>
+                  <p className="mt-2 text-sm text-gray-400">
+                    {t("add_some_products_to_get_started")}
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {cartList.map((cartItem: any) => {
+                    const productData = memoizedProductList.find(
+                      (product: any) => product.id === cartItem.productId,
+                    );
+
+                    return (
+                      <div
+                        key={cartItem.id}
+                        className="group flex items-center space-x-4 rounded-lg border border-gray-100 p-3 transition-colors hover:bg-gray-50"
+                      >
+                        <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100">
+                          {productData?.productImage ? (
+                            <img
+                              src={productData.productImage}
+                              alt={productData.productName || "Product"}
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center">
+                              <Package className="h-8 w-8 text-gray-400" />
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="min-w-0 flex-1">
+                          <h4 className="mb-1 truncate text-sm font-semibold text-gray-900">
+                            {productData?.productName || t("product")}
+                          </h4>
+                          <div className="flex items-center justify-between">
+                            <p className="text-xs text-gray-500">
+                              {t("quantity")}: {cartItem.quantity || 1}
+                            </p>
+                            <div className="text-right">
+                              {(() => {
+                                const pricing = getCartPricing(
+                                  productData,
+                                  cartItem,
+                                );
+                                return (
+                                  <>
+                                    <p className="text-sm font-bold text-green-600">
+                                      {currency.symbol}
+                                      {pricing.totalPrice.toFixed(2)}
+                                    </p>
+                                    {pricing.originalTotalPrice >
+                                      pricing.totalPrice && (
+                                      <p className="text-xs text-gray-500 line-through">
+                                        {currency.symbol}
+                                        {pricing.originalTotalPrice.toFixed(2)}
                                       </p>
-                                      {pricing.originalTotalPrice > pricing.totalPrice && (
-                                        <p className="text-xs text-gray-500 line-through">
-                                          {currency.symbol}{pricing.originalTotalPrice.toFixed(2)}
-                                        </p>
-                                      )}
-                                    </>
-                                  );
-                                })()}
-                              </div>
+                                    )}
+                                  </>
+                                );
+                              })()}
                             </div>
                           </div>
                         </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-              
-              {cartList.length > 0 && (
-                <div className="p-4 border-t border-gray-200 bg-gray-50 mt-4 -mx-6 -mb-6">
-                  <button
-                    onClick={() => {
-                      setShowCartDrawer(false);
-                      window.location.href = '/cart';
-                    }}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2"
-                  >
-                    <Package className="h-5 w-5" />
-                    <span>{t("go_to_cart")}</span>
-                  </button>
+
+                        {/* Remove Button */}
+                        <button
+                          onClick={() => handleRemoveItemFromCart(cartItem.id)}
+                          disabled={deleteCartItem.isPending}
+                          className="flex-shrink-0 rounded-lg p-2 text-gray-400 opacity-0 transition-all duration-200 group-hover:opacity-100 hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50"
+                          aria-label={t("remove_from_cart")}
+                          title={t("remove_from_cart")}
+                        >
+                          <X className="h-5 w-5" />
+                        </button>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>
+
+            {/* Go to Cart Button */}
+            {cartList.length > 0 && (
+              <div className="sticky bottom-0 mt-6 border-t border-gray-200 bg-white pt-4">
+                <button
+                  onClick={() => {
+                    setShowCartDrawer(false);
+                    window.location.href = "/cart";
+                  }}
+                  className="flex w-full items-center justify-center space-x-2 rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white shadow-lg transition-colors duration-200 hover:bg-blue-700"
+                >
+                  <Package className="h-5 w-5" />
+                  <span>{t("go_to_cart")}</span>
+                </button>
+              </div>
+            )}
           </SheetContent>
         </Sheet>
       </div>

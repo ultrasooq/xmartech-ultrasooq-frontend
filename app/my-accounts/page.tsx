@@ -1,11 +1,12 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import {
   useMyAccounts,
   useCreateAccount,
   useSwitchAccount,
 } from "@/apis/queries/auth.queries";
+import { useUpdateProfile } from "@/apis/queries/user.queries";
 import { useToast } from "@/components/ui/use-toast";
 import { TRADE_ROLE_LIST, DEFAULT_SUB_ACCOUNT_STATUS } from "@/utils/constants";
 import { useTranslations } from "next-intl";
@@ -38,6 +39,10 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import StatusDisplayBadge from "@/components/shared/StatusDisplayBadge";
+import { useUploadFile } from "@/apis/queries/upload.queries";
+import Image from "next/image";
+import AddImageContent from "@/components/modules/profile/AddImageContent";
+import ClostIcon from "@/public/images/close-white.svg";
 
 const createAccountSchema = z.object({
   // Basic account info
@@ -70,6 +75,20 @@ const createAccountSchema = z.object({
   companyPhone: z.string().optional(),
   companyWebsite: z.string().optional(),
   companyTaxId: z.string().optional(),
+
+  // Identity card uploads (mandatory for COMPANY and FREELANCER)
+  uploadIdentityFrontImage: z.any().refine(
+    (files) => files && files.length > 0,
+    {
+      message: "Identity card front side is required",
+    },
+  ),
+  uploadIdentityBackImage: z.any().refine(
+    (files) => files && files.length > 0,
+    {
+      message: "Identity card back side is required",
+    },
+  ),
 });
 
 export default function MyAccountsPage() {
@@ -78,10 +97,19 @@ export default function MyAccountsPage() {
   const { toast } = useToast();
   const router = useRouter();
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [isCreatingAccount, setIsCreatingAccount] = useState(false);
 
   const { data: accountsData, isLoading, refetch, error } = useMyAccounts();
   const createAccount = useCreateAccount();
   const switchAccount = useSwitchAccount();
+  const upload = useUploadFile();
+  const updateProfile = useUpdateProfile();
+  
+  // Identity card upload state
+  const [identityFrontImageFile, setIdentityFrontImageFile] = useState<FileList | null>(null);
+  const [identityBackImageFile, setIdentityBackImageFile] = useState<FileList | null>(null);
+  const frontIdentityRef = useRef<HTMLInputElement>(null);
+  const backIdentityRef = useRef<HTMLInputElement>(null);
 
   // Debug logging (remove in production)
   if (process.env.NODE_ENV === "development") {
@@ -97,6 +125,8 @@ export default function MyAccountsPage() {
       companyPhone: "",
       companyWebsite: "",
       companyTaxId: "",
+      uploadIdentityFrontImage: undefined,
+      uploadIdentityBackImage: undefined,
     },
   });
 
@@ -138,14 +168,43 @@ export default function MyAccountsPage() {
     }
   };
 
+  const handleUploadedFile = async (files: FileList | null) => {
+    if (files && files.length > 0) {
+      const formData = new FormData();
+      formData.append("content", files[0]);
+      const response = await upload.mutateAsync(formData);
+      if (response.status && response.data) {
+        return response.data;
+      }
+    }
+    return null;
+  };
+
   const handleCreateAccount = async (
     formData: z.infer<typeof createAccountSchema>,
   ) => {
+    setIsCreatingAccount(true);
     try {
+      // Upload identity card images first
+      const identityProof = await handleUploadedFile(identityFrontImageFile);
+      const identityProofBack = await handleUploadedFile(identityBackImageFile);
+
+      if (!identityProof || !identityProofBack) {
+        setIsCreatingAccount(false);
+        toast({
+          title: "Upload Failed",
+          description: "Please upload both front and back sides of your identity card",
+          variant: "danger",
+        });
+        return;
+      }
+
       // Send simplified sub-account data (personal info inherited from Master Account)
       const cleanedData = {
         accountName: formData.accountName?.trim() || "New Account",
         tradeRole: formData.tradeRole as "COMPANY" | "FREELANCER",
+        identityProof,
+        identityProofBack,
         // Only include company fields if they have values
         ...(formData.companyName?.trim() && {
           companyName: formData.companyName.trim(),
@@ -170,12 +229,52 @@ export default function MyAccountsPage() {
       }
 
       if (result?.status) {
+        // After account creation, update the profile with identity cards
+        // The backend createAccount might not save identity cards, so we update the profile separately
+        try {
+          const createdAccount = result?.data;
+          const createdAccountId = createdAccount?.id;
+          
+          if (createdAccountId) {
+            // Switch to the newly created account to update its profile
+            await switchAccount.mutateAsync({ userAccountId: createdAccountId });
+            
+            // Wait for the account switch to complete and backend to process
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Update the profile with identity cards for the newly created sub-account
+            await updateProfile.mutateAsync({
+              identityProof,
+              identityProofBack,
+            });
+          } else {
+            // Fallback: try updating current account profile
+            await updateProfile.mutateAsync({
+              identityProof,
+              identityProofBack,
+            });
+          }
+        } catch (profileError: any) {
+          // Log error but don't fail the account creation
+          console.error("Failed to update profile with identity cards:", profileError);
+          toast({
+            title: "Account Created",
+            description: "Account created successfully. However, identity card update failed. Please update your profile manually from the profile page.",
+            variant: "warning",
+          });
+        }
+
         toast({
           title: "Account Created",
-          description: result.message || "Successfully created new account",
+          description: result.message || "Successfully created new account with identity cards",
           variant: "success",
         });
+        setIsCreatingAccount(false);
         form.reset();
+        setIdentityFrontImageFile(null);
+        setIdentityBackImageFile(null);
+        if (frontIdentityRef.current) frontIdentityRef.current.value = "";
+        if (backIdentityRef.current) backIdentityRef.current.value = "";
         setShowCreateForm(false);
         // Force refetch after creation with a small delay to ensure backend transaction is committed
         setTimeout(async () => {
@@ -186,9 +285,11 @@ export default function MyAccountsPage() {
           }
         }, 500);
       } else {
+        setIsCreatingAccount(false);
         throw new Error(result?.message || "Account creation failed");
       }
     } catch (error: any) {
+      setIsCreatingAccount(false);
       let errorMessage = "Failed to create account";
 
       if (error?.response?.data?.message) {
@@ -819,7 +920,39 @@ export default function MyAccountsPage() {
               </DialogDescription>
             </DialogHeader>
 
-            <div className="flex-1 overflow-y-auto pr-2">
+            <div className="flex-1 overflow-y-auto pr-2 relative">
+              {(isCreatingAccount || createAccount.isPending || updateProfile.isPending) && (
+                <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-50 flex items-center justify-center rounded-lg">
+                  <div className="flex flex-col items-center gap-3">
+                    <svg
+                      className="h-8 w-8 animate-spin text-blue-600"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    <p className="text-sm font-medium text-gray-700">
+                      {isCreatingAccount ? "Creating your account..." : "Processing..."}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      Please wait, this may take a few seconds
+                    </p>
+                  </div>
+                </div>
+              )}
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(handleCreateAccount)}
@@ -912,6 +1045,180 @@ export default function MyAccountsPage() {
                           </p>
                         </div>
                       </div>
+                    </div>
+                  </div>
+
+                  {/* Identity Card Upload - Mandatory for COMPANY and FREELANCER */}
+                  <div className="space-y-3 border-t border-gray-200 pt-4">
+                    <h4 className="text-dark-cyan text-sm font-medium">
+                      Identity Card <span className="text-red-500">*</span>
+                    </h4>
+                    <p className="text-xs text-gray-600">
+                      Please upload both front and back sides of your identity card. This is required for account verification.
+                    </p>
+                    
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                      {/* Front Side */}
+                      <FormField
+                        control={form.control}
+                        name="uploadIdentityFrontImage"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-dark-cyan text-xs font-medium">
+                              Front Side <span className="text-red-500">*</span>
+                            </FormLabel>
+                            <FormControl>
+                              <div className="relative w-full border-2 border-dashed border-gray-300 rounded-lg overflow-hidden">
+                                <div className="relative h-48 w-full">
+                                  {identityFrontImageFile ? (
+                                    <>
+                                      <button
+                                        type="button"
+                                        className="absolute top-2 right-2 z-20 h-8 w-8 rounded-full bg-red-500 flex items-center justify-center hover:bg-red-600 transition-colors"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setIdentityFrontImageFile(null);
+                                          form.setValue("uploadIdentityFrontImage", undefined);
+                                          if (frontIdentityRef.current)
+                                            frontIdentityRef.current.value = "";
+                                        }}
+                                      >
+                                        <Image
+                                          src={ClostIcon}
+                                          alt="close-icon"
+                                          width={16}
+                                          height={16}
+                                        />
+                                      </button>
+                                      <Image
+                                        src={
+                                          identityFrontImageFile &&
+                                          typeof identityFrontImageFile === "object"
+                                            ? URL.createObjectURL(identityFrontImageFile[0])
+                                            : "/images/company-logo.png"
+                                        }
+                                        alt="Identity front"
+                                        fill
+                                        className="object-contain z-0"
+                                      />
+                                    </>
+                                  ) : (
+                                    <div className="absolute inset-0 z-0">
+                                      <AddImageContent
+                                        description="Drop your identity card front side"
+                                      />
+                                    </div>
+                                  )}
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    multiple={false}
+                                    className="absolute bottom-0 h-48 w-full opacity-0 cursor-pointer z-10"
+                                    onChange={(event) => {
+                                      if (event.target.files?.[0]) {
+                                        if (event.target.files[0].size > 5242880) {
+                                          toast({
+                                            title: "File too large",
+                                            description: "Image size should be less than 5MB",
+                                            variant: "danger",
+                                          });
+                                          return;
+                                        }
+                                        setIdentityFrontImageFile(event.target.files);
+                                        form.setValue("uploadIdentityFrontImage", event.target.files);
+                                      }
+                                    }}
+                                    id="uploadIdentityFrontImage"
+                                    ref={frontIdentityRef}
+                                  />
+                                </div>
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      {/* Back Side */}
+                      <FormField
+                        control={form.control}
+                        name="uploadIdentityBackImage"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-dark-cyan text-xs font-medium">
+                              Back Side <span className="text-red-500">*</span>
+                            </FormLabel>
+                            <FormControl>
+                              <div className="relative w-full border-2 border-dashed border-gray-300 rounded-lg overflow-hidden">
+                                <div className="relative h-48 w-full">
+                                  {identityBackImageFile ? (
+                                    <>
+                                      <button
+                                        type="button"
+                                        className="absolute top-2 right-2 z-20 h-8 w-8 rounded-full bg-red-500 flex items-center justify-center hover:bg-red-600 transition-colors"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setIdentityBackImageFile(null);
+                                          form.setValue("uploadIdentityBackImage", undefined);
+                                          if (backIdentityRef.current)
+                                            backIdentityRef.current.value = "";
+                                        }}
+                                      >
+                                        <Image
+                                          src={ClostIcon}
+                                          alt="close-icon"
+                                          width={16}
+                                          height={16}
+                                        />
+                                      </button>
+                                      <Image
+                                        src={
+                                          identityBackImageFile &&
+                                          typeof identityBackImageFile === "object"
+                                            ? URL.createObjectURL(identityBackImageFile[0])
+                                            : "/images/company-logo.png"
+                                        }
+                                        alt="Identity back"
+                                        fill
+                                        className="object-contain z-0"
+                                      />
+                                    </>
+                                  ) : (
+                                    <div className="absolute inset-0 z-0">
+                                      <AddImageContent
+                                        description="Drop your identity card back side"
+                                      />
+                                    </div>
+                                  )}
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    multiple={false}
+                                    className="absolute bottom-0 h-48 w-full opacity-0 cursor-pointer z-10"
+                                    onChange={(event) => {
+                                      if (event.target.files?.[0]) {
+                                        if (event.target.files[0].size > 5242880) {
+                                          toast({
+                                            title: "File too large",
+                                            description: "Image size should be less than 5MB",
+                                            variant: "danger",
+                                          });
+                                          return;
+                                        }
+                                        setIdentityBackImageFile(event.target.files);
+                                        form.setValue("uploadIdentityBackImage", event.target.files);
+                                      }
+                                    }}
+                                    id="uploadIdentityBackImage"
+                                    ref={backIdentityRef}
+                                  />
+                                </div>
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                     </div>
                   </div>
 
@@ -1062,16 +1369,23 @@ export default function MyAccountsPage() {
             <div className="flex shrink-0 justify-end space-x-2 border-t border-gray-200 pt-4">
               <Button
                 variant="outline"
-                onClick={() => setShowCreateForm(false)}
+                onClick={() => {
+                  form.reset();
+                  setIdentityFrontImageFile(null);
+                  setIdentityBackImageFile(null);
+                  if (frontIdentityRef.current) frontIdentityRef.current.value = "";
+                  if (backIdentityRef.current) backIdentityRef.current.value = "";
+                  setShowCreateForm(false);
+                }}
               >
                 Cancel
               </Button>
               <Button
                 onClick={form.handleSubmit(handleCreateAccount)}
-                disabled={createAccount.isPending}
-                className="bg-blue-600 hover:bg-blue-700"
+                disabled={isCreatingAccount || createAccount.isPending || updateProfile.isPending}
+                className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {createAccount.isPending ? (
+                {isCreatingAccount || createAccount.isPending || updateProfile.isPending ? (
                   <>
                     <svg
                       className="mr-2 -ml-1 h-4 w-4 animate-spin text-white"
@@ -1093,7 +1407,7 @@ export default function MyAccountsPage() {
                         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                       ></path>
                     </svg>
-                    Creating...
+                    {isCreatingAccount ? "Creating Account..." : "Processing..."}
                   </>
                 ) : (
                   "Create Account"
