@@ -57,7 +57,7 @@ export const DatePicker = ({
                     initialFocus
                     fromYear={new Date().getFullYear()}
                     toYear={new Date().getFullYear() + 100}
-                    captionLayout="dropdown-buttons"
+                    captionLayout="dropdown"
                     classNames={{
                         vhidden: "vhidden hidden",
                         day_selected: "bg-dark-orange text-white",

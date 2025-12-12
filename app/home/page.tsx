@@ -373,19 +373,26 @@ function HomePage() {
       {/* Categories Section */}
       <section className="w-full bg-white px-4 py-12 sm:px-8 sm:py-16 lg:px-12 lg:py-20">
         <div className="mx-auto w-full max-w-[1400px]">
-          <div className="mb-8 sm:mb-12" dir={langDir}>
+          <div className="mb-8 sm:mb-12" dir="ltr">
             <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center sm:gap-6">
               <div className="flex-1">
-                <h2 className="mb-3 text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl">
+                <h2
+                  className="mb-3 text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl"
+                  translate="no"
+                >
                   {t("explore_categories")}
                 </h2>
-                <p className="max-w-2xl text-sm text-gray-600 sm:text-base">
+                <p
+                  className="max-w-2xl text-sm text-gray-600 sm:text-base"
+                  translate="no"
+                >
                   {t("browse_categories_to_find_trending_products")}
                 </p>
               </div>
               <Link
                 href="/trending"
                 className="group inline-flex items-center gap-2 rounded-xl border border-gray-900 bg-gray-900 px-6 py-3.5 text-sm font-semibold text-white sm:px-8 sm:py-4 sm:text-base"
+                translate="no"
               >
                 <TrendingUp className="h-5 w-5" />
                 <span className="hidden sm:inline">
@@ -1050,13 +1057,13 @@ function HomePage() {
                     className="mb-3 text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl"
                     translate="no"
                   >
-                    Best Sellers
+                    {t("best_sellers")}
                   </h2>
                   <p
                     className="max-w-2xl text-sm text-gray-600 sm:text-base"
                     translate="no"
                   >
-                    Most popular products purchased by customers
+                    {t("most_popular_products")}
                   </p>
                 </div>
               </div>
@@ -1115,13 +1122,13 @@ function HomePage() {
                     className="mb-3 text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl"
                     translate="no"
                   >
-                    New Arrivals
+                    {t("new_arrivals")}
                   </h2>
                   <p
                     className="max-w-2xl text-sm text-gray-600 sm:text-base"
                     translate="no"
                   >
-                    Latest products added to our collection
+                    {t("latest_products_added")}
                   </p>
                 </div>
               </div>
@@ -1179,13 +1186,13 @@ function HomePage() {
                     className="mb-3 text-2xl font-bold text-gray-900 sm:text-3xl lg:text-4xl"
                     translate="no"
                   >
-                    Hot Deals
+                    {t("hot_deals")}
                   </h2>
                   <p
                     className="max-w-2xl text-sm text-gray-600 sm:text-base"
                     translate="no"
                   >
-                    Best discounts and special offers
+                    {t("best_discounts")}
                   </p>
                 </div>
               </div>

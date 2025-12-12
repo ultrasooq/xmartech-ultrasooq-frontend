@@ -77,18 +77,16 @@ const createAccountSchema = z.object({
   companyTaxId: z.string().optional(),
 
   // Identity card uploads (mandatory for COMPANY and FREELANCER)
-  uploadIdentityFrontImage: z.any().refine(
-    (files) => files && files.length > 0,
-    {
+  uploadIdentityFrontImage: z
+    .any()
+    .refine((files) => files && files.length > 0, {
       message: "Identity card front side is required",
-    },
-  ),
-  uploadIdentityBackImage: z.any().refine(
-    (files) => files && files.length > 0,
-    {
+    }),
+  uploadIdentityBackImage: z
+    .any()
+    .refine((files) => files && files.length > 0, {
       message: "Identity card back side is required",
-    },
-  ),
+    }),
 });
 
 export default function MyAccountsPage() {
@@ -104,10 +102,12 @@ export default function MyAccountsPage() {
   const switchAccount = useSwitchAccount();
   const upload = useUploadFile();
   const updateProfile = useUpdateProfile();
-  
+
   // Identity card upload state
-  const [identityFrontImageFile, setIdentityFrontImageFile] = useState<FileList | null>(null);
-  const [identityBackImageFile, setIdentityBackImageFile] = useState<FileList | null>(null);
+  const [identityFrontImageFile, setIdentityFrontImageFile] =
+    useState<FileList | null>(null);
+  const [identityBackImageFile, setIdentityBackImageFile] =
+    useState<FileList | null>(null);
   const frontIdentityRef = useRef<HTMLInputElement>(null);
   const backIdentityRef = useRef<HTMLInputElement>(null);
 
@@ -119,7 +119,7 @@ export default function MyAccountsPage() {
     resolver: zodResolver(createAccountSchema),
     defaultValues: {
       accountName: "",
-      tradeRole: "COMPANY", // Default to company since buyer is not an option
+      tradeRole: "FREELANCER", // Default to freelancer
       companyName: "",
       companyAddress: "",
       companyPhone: "",
@@ -193,7 +193,8 @@ export default function MyAccountsPage() {
         setIsCreatingAccount(false);
         toast({
           title: "Upload Failed",
-          description: "Please upload both front and back sides of your identity card",
+          description:
+            "Please upload both front and back sides of your identity card",
           variant: "danger",
         });
         return;
@@ -234,14 +235,16 @@ export default function MyAccountsPage() {
         try {
           const createdAccount = result?.data;
           const createdAccountId = createdAccount?.id;
-          
+
           if (createdAccountId) {
             // Switch to the newly created account to update its profile
-            await switchAccount.mutateAsync({ userAccountId: createdAccountId });
-            
+            await switchAccount.mutateAsync({
+              userAccountId: createdAccountId,
+            });
+
             // Wait for the account switch to complete and backend to process
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+
             // Update the profile with identity cards for the newly created sub-account
             await updateProfile.mutateAsync({
               identityProof,
@@ -256,17 +259,23 @@ export default function MyAccountsPage() {
           }
         } catch (profileError: any) {
           // Log error but don't fail the account creation
-          console.error("Failed to update profile with identity cards:", profileError);
+          console.error(
+            "Failed to update profile with identity cards:",
+            profileError,
+          );
           toast({
             title: "Account Created",
-            description: "Account created successfully. However, identity card update failed. Please update your profile manually from the profile page.",
+            description:
+              "Account created successfully. However, identity card update failed. Please update your profile manually from the profile page.",
             variant: "warning",
           });
         }
 
         toast({
           title: "Account Created",
-          description: result.message || "Successfully created new account with identity cards",
+          description:
+            result.message ||
+            "Successfully created new account with identity cards",
           variant: "success",
         });
         setIsCreatingAccount(false);
@@ -373,13 +382,13 @@ export default function MyAccountsPage() {
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
           <h2 className="mb-2 text-xl font-semibold text-gray-900">
-            Error Loading Accounts
+            {t("error_loading_accounts")}
           </h2>
           <p className="mb-4 text-gray-600">
-            {error?.response?.data?.message || "Failed to load your accounts"}
+            {error?.response?.data?.message || t("failed_to_load_accounts")}
           </p>
           <Button onClick={() => refetch()} variant="outline">
-            Try Again
+            {t("try_again")}
           </Button>
         </div>
       </div>
@@ -389,13 +398,13 @@ export default function MyAccountsPage() {
   const { mainAccount, accountsByType, allAccounts } = accountsData?.data || {};
   let currentAccount =
     allAccounts?.find((acc) => acc.isCurrentAccount) || mainAccount;
-  let accountType = "Main Account";
+  let accountType = t("main_account");
 
   // Find the current sub-account
   const activeSubAccount = allAccounts?.find((acc) => acc.isCurrentAccount);
   if (activeSubAccount) {
     currentAccount = activeSubAccount;
-    accountType = "Sub Account";
+    accountType = t("sub_account");
   }
 
   // Filter out main account from sub-accounts display
@@ -419,10 +428,10 @@ export default function MyAccountsPage() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="mb-2 text-3xl font-bold text-gray-900">My Accounts</h1>
-          <p className="text-gray-600">
-            Manage your business accounts and switch between different roles
-          </p>
+          <h1 className="mb-2 text-3xl font-bold text-gray-900">
+            {t("my_accounts")}
+          </h1>
+          <p className="text-gray-600">{t("manage_your_business_accounts")}</p>
         </div>
 
         {/* Current Account Card */}
@@ -430,7 +439,7 @@ export default function MyAccountsPage() {
           <Card className="mb-8">
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
-                <span>Current Account</span>
+                <span>{t("current_account")}</span>
                 <Badge variant="outline" className="text-sm">
                   {accountType}
                 </Badge>
@@ -440,35 +449,113 @@ export default function MyAccountsPage() {
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <div>
                   <p className="text-sm font-medium text-gray-500">
-                    Account Name
+                    {t("account_name")}
                   </p>
                   <p className="text-lg font-semibold text-gray-900">
                     {currentAccount.accountName ||
-                      `${currentAccount.firstName} ${currentAccount.lastName}`}
+                      ("firstName" in currentAccount &&
+                      "lastName" in currentAccount
+                        ? `${currentAccount.firstName} ${currentAccount.lastName}`
+                        : t("account_name"))}
                   </p>
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-500">
-                    Trade Role
+                    {t("trade_role")}
                   </p>
                   <p className="text-lg font-semibold text-gray-900">
                     {currentAccount.tradeRole}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Status</p>
+                  <p className="text-sm font-medium text-gray-500">
+                    {t("status")}
+                  </p>
                   <StatusDisplayBadge
                     status={getStatusInfo(currentAccount).status}
                     size="sm"
                   />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Email</p>
+                  <p className="text-sm font-medium text-gray-500">
+                    {t("email")}
+                  </p>
                   <p className="text-lg font-semibold text-gray-900">
-                    {currentAccount.email}
+                    {"email" in currentAccount ? currentAccount.email : "N/A"}
                   </p>
                 </div>
               </div>
+
+              {/* Notification Counts for Current Account - Only show if there are notifications */}
+              {(((currentAccount.tradeRole === "COMPANY" ||
+                currentAccount.tradeRole === "FREELANCER") &&
+                (("orders" in currentAccount ? currentAccount.orders : 0) ||
+                  0) > 0) ||
+                (("messages" in currentAccount ? currentAccount.messages : 0) ||
+                  0) > 0) && (
+                <div className="mt-4 rounded-lg border border-gray-200 bg-gray-50 p-3">
+                  <p className="mb-2 text-xs font-semibold tracking-wide text-gray-700 uppercase">
+                    {t("notifications")}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {/* Orders Count - Only for COMPANY and FREELANCER */}
+                    {(currentAccount.tradeRole === "COMPANY" ||
+                      currentAccount.tradeRole === "FREELANCER") &&
+                      (("orders" in currentAccount
+                        ? currentAccount.orders
+                        : 0) || 0) > 0 && (
+                        <div className="flex items-center gap-1.5 rounded-md bg-blue-100 px-2.5 py-1.5">
+                          <svg
+                            className="h-4 w-4 text-blue-600"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                            />
+                          </svg>
+                          <span className="text-xs font-semibold text-blue-700">
+                            {t("new_orders")}:{" "}
+                            {("orders" in currentAccount
+                              ? currentAccount.orders
+                              : 0) || 0}
+                          </span>
+                        </div>
+                      )}
+
+                    {/* Messages Count - For all account types */}
+                    {(("messages" in currentAccount
+                      ? currentAccount.messages
+                      : 0) || 0) > 0 && (
+                      <div className="flex items-center gap-1.5 rounded-md bg-green-100 px-2.5 py-1.5">
+                        <svg
+                          className="h-4 w-4 text-green-600"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                          />
+                        </svg>
+                        <span className="text-xs font-semibold text-green-700">
+                          {t("new_messages")}:{" "}
+                          {("messages" in currentAccount
+                            ? currentAccount.messages
+                            : 0) || 0}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
 
               {/* Status Description */}
               <div className="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-3">
@@ -497,7 +584,7 @@ export default function MyAccountsPage() {
                       </div>
                       <div className="flex-1">
                         <h4 className="text-sm font-medium text-yellow-800">
-                          Admin Note:
+                          {t("admin_note")}:
                         </h4>
                         <p className="mt-1 text-sm text-yellow-700">
                           {getStatusInfo(currentAccount).statusNote}
@@ -515,16 +602,28 @@ export default function MyAccountsPage() {
         <Tabs defaultValue="all" className="space-y-6">
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="all">
-              All Accounts ({allAccounts?.length || 0})
+              {t("all_accounts")} ({subAccounts?.length || 0})
             </TabsTrigger>
             <TabsTrigger value="company">
-              Company ({accountsByType?.company?.length || 0})
+              {t("company")} (
+              {accountsByType?.company?.filter(
+                (acc) => acc.id !== mainAccount?.id,
+              ).length || 0}
+              )
             </TabsTrigger>
             <TabsTrigger value="freelancer">
-              Freelancer ({accountsByType?.freelancer?.length || 0})
+              {t("freelancer")} (
+              {accountsByType?.freelancer?.filter(
+                (acc) => acc.id !== mainAccount?.id,
+              ).length || 0}
+              )
             </TabsTrigger>
             <TabsTrigger value="buyer">
-              Buyer ({accountsByType?.buyer?.length || 0})
+              {t("buyer")} (
+              {accountsByType?.buyer?.filter(
+                (acc) => acc.id !== mainAccount?.id,
+              ).length || 0}
+              )
             </TabsTrigger>
           </TabsList>
 
@@ -535,60 +634,18 @@ export default function MyAccountsPage() {
                 onClick={() => setShowCreateForm(true)}
                 className="bg-blue-600 hover:bg-blue-700"
               >
-                Create New Account
+                {t("create_new_account")}
               </Button>
             </div>
 
             {/* All Accounts Grid */}
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {/* Main Account */}
-              {mainAccount && (
-                <Card className="border-2 border-blue-200 bg-blue-50">
-                  <CardHeader>
-                    <CardTitle className="flex items-center justify-between">
-                      <span>
-                        {mainAccount.accountName ||
-                          `${mainAccount.firstName} ${mainAccount.lastName}`}
-                      </span>
-                      <Badge variant="secondary">Main Account</Badge>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div>
-                      <p className="text-sm font-medium text-gray-500">
-                        Trade Role
-                      </p>
-                      <p className="font-semibold">{mainAccount.tradeRole}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-gray-500">
-                        Status
-                      </p>
-                      <StatusDisplayBadge
-                        status={getStatusInfo(mainAccount).status}
-                        size="sm"
-                      />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-gray-500">Email</p>
-                      <p className="font-semibold">{mainAccount.email}</p>
-                    </div>
-                    {!mainAccount.isCurrentAccount && (
-                      <Button
-                        onClick={() => handleSwitchToMainAccount()}
-                        variant="outline"
-                        className="w-full"
-                      >
-                        Switch to Main Account
-                      </Button>
-                    )}
-                  </CardContent>
-                </Card>
-              )}
-
               {/* Sub Accounts */}
               {subAccounts.map((account) => {
                 const statusInfo = getStatusInfo(account);
+                const isCompanyOrFreelancer =
+                  account.tradeRole === "COMPANY" ||
+                  account.tradeRole === "FREELANCER";
                 return (
                   <Card
                     key={account.id}
@@ -597,25 +654,81 @@ export default function MyAccountsPage() {
                     <CardHeader>
                       <CardTitle className="flex items-center justify-between">
                         <span>{account.accountName}</span>
-                        <Badge variant="outline">Sub Account</Badge>
+                        <Badge variant="outline">{t("sub_account")}</Badge>
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-3">
                       <div>
                         <p className="text-sm font-medium text-gray-500">
-                          Trade Role
+                          {t("trade_role")}
                         </p>
                         <p className="font-semibold">{account.tradeRole}</p>
                       </div>
                       <div>
                         <p className="text-sm font-medium text-gray-500">
-                          Status
+                          {t("status")}
                         </p>
                         <StatusDisplayBadge
                           status={statusInfo.status}
                           size="sm"
                         />
                       </div>
+
+                      {/* Notification Counts - Only show if there are notifications */}
+                      {((isCompanyOrFreelancer && (account.orders || 0) > 0) ||
+                        (account.messages || 0) > 0) && (
+                        <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+                          <p className="mb-2 text-xs font-semibold tracking-wide text-gray-700 uppercase">
+                            {t("notifications")}
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            {/* Orders Count - Only for COMPANY and FREELANCER */}
+                            {isCompanyOrFreelancer &&
+                              (account.orders || 0) > 0 && (
+                                <div className="flex items-center gap-1.5 rounded-md bg-blue-100 px-2.5 py-1.5">
+                                  <svg
+                                    className="h-4 w-4 text-blue-600"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                                    />
+                                  </svg>
+                                  <span className="text-xs font-semibold text-blue-700">
+                                    {t("new_orders")}: {account.orders || 0}
+                                  </span>
+                                </div>
+                              )}
+
+                            {/* Messages Count - For all account types */}
+                            {(account.messages || 0) > 0 && (
+                              <div className="flex items-center gap-1.5 rounded-md bg-green-100 px-2.5 py-1.5">
+                                <svg
+                                  className="h-4 w-4 text-green-600"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                                  />
+                                </svg>
+                                <span className="text-xs font-semibold text-green-700">
+                                  {t("new_messages")}: {account.messages || 0}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
                       {/* Show Status Note prominently for rejected/inactive accounts */}
                       {statusInfo.statusNote &&
                         (statusInfo.status === "REJECT" ||
@@ -637,7 +750,7 @@ export default function MyAccountsPage() {
                               </div>
                               <div className="flex-1">
                                 <h4 className="text-xs font-medium text-red-800">
-                                  Admin Note:
+                                  {t("admin_note")}:
                                 </h4>
                                 <p className="mt-1 text-xs text-red-700">
                                   {statusInfo.statusNote}
@@ -649,7 +762,7 @@ export default function MyAccountsPage() {
                       {account.companyName && (
                         <div>
                           <p className="text-sm font-medium text-gray-500">
-                            Company
+                            {t("company")}
                           </p>
                           <p className="font-semibold">{account.companyName}</p>
                         </div>
@@ -666,7 +779,7 @@ export default function MyAccountsPage() {
                           variant="outline"
                           className="w-full"
                         >
-                          Switch to This Account
+                          {t("switch_to_this_account")}
                         </Button>
                       )}
                     </CardContent>
@@ -678,225 +791,371 @@ export default function MyAccountsPage() {
 
           <TabsContent value="company" className="space-y-4">
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {accountsByType?.company?.map((account) => {
-                const statusInfo = getStatusInfo(account);
-                return (
-                  <Card
-                    key={account.id}
-                    className="transition-shadow hover:shadow-lg"
-                  >
-                    <CardHeader>
-                      <CardTitle className="flex items-center justify-between">
-                        <span>{account.accountName}</span>
-                        <Badge variant="outline">Company</Badge>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      <div>
-                        <p className="text-sm font-medium text-gray-500">
-                          Status
-                        </p>
-                        <StatusDisplayBadge
-                          status={statusInfo.status}
-                          statusNote={statusInfo.statusNote}
-                          size="sm"
-                        />
-                      </div>
-                      {/* Show Status Note prominently for rejected/inactive accounts */}
-                      {statusInfo.statusNote &&
-                        (statusInfo.status === "REJECT" ||
-                          statusInfo.status === "INACTIVE") && (
-                          <div className="rounded-lg border border-red-200 bg-red-50 p-3">
-                            <div className="flex items-start space-x-2">
-                              <div className="shrink-0">
-                                <svg
-                                  className="mt-0.5 h-4 w-4 text-red-600"
-                                  fill="currentColor"
-                                  viewBox="0 0 20 20"
-                                >
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                                    clipRule="evenodd"
-                                  />
-                                </svg>
-                              </div>
-                              <div className="flex-1">
-                                <h4 className="text-xs font-medium text-red-800">
-                                  Admin Note:
-                                </h4>
-                                <p className="mt-1 text-xs text-red-700">
-                                  {statusInfo.statusNote}
-                                </p>
-                              </div>
+              {accountsByType?.company
+                ?.filter((acc) => acc.id !== mainAccount?.id)
+                .map((account) => {
+                  const statusInfo = getStatusInfo(account);
+                  return (
+                    <Card
+                      key={account.id}
+                      className="transition-shadow hover:shadow-lg"
+                    >
+                      <CardHeader>
+                        <CardTitle className="flex items-center justify-between">
+                          <span>{account.accountName}</span>
+                          <Badge variant="outline">{t("company")}</Badge>
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <div>
+                          <p className="text-sm font-medium text-gray-500">
+                            Status
+                          </p>
+                          <StatusDisplayBadge
+                            status={statusInfo.status}
+                            statusNote={statusInfo.statusNote}
+                            size="sm"
+                          />
+                        </div>
+
+                        {/* Notification Counts - Only show if there are notifications */}
+                        {((account.orders || 0) > 0 ||
+                          (account.messages || 0) > 0) && (
+                          <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+                            <p className="mb-2 text-xs font-semibold tracking-wide text-gray-700 uppercase">
+                              {t("notifications")}
+                            </p>
+                            <div className="flex flex-wrap gap-2">
+                              {/* Orders Count */}
+                              {(account.orders || 0) > 0 && (
+                                <div className="flex items-center gap-1.5 rounded-md bg-blue-100 px-2.5 py-1.5">
+                                  <svg
+                                    className="h-4 w-4 text-blue-600"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                                    />
+                                  </svg>
+                                  <span className="text-xs font-semibold text-blue-700">
+                                    {t("new_orders")}: {account.orders || 0}
+                                  </span>
+                                </div>
+                              )}
+
+                              {/* Messages Count */}
+                              {(account.messages || 0) > 0 && (
+                                <div className="flex items-center gap-1.5 rounded-md bg-green-100 px-2.5 py-1.5">
+                                  <svg
+                                    className="h-4 w-4 text-green-600"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                                    />
+                                  </svg>
+                                  <span className="text-xs font-semibold text-green-700">
+                                    {t("new_messages")}: {account.messages || 0}
+                                  </span>
+                                </div>
+                              )}
                             </div>
                           </div>
                         )}
-                      {account.companyName && (
-                        <div>
-                          <p className="text-sm font-medium text-gray-500">
-                            Company Name
-                          </p>
-                          <p className="font-semibold">{account.companyName}</p>
-                        </div>
-                      )}
-                      {!account.isCurrentAccount && (
-                        <Button
-                          onClick={() => handleSwitchAccount(account.id)}
-                          variant="outline"
-                          className="w-full"
-                        >
-                          Switch to This Account
-                        </Button>
-                      )}
-                    </CardContent>
-                  </Card>
-                );
-              })}
+                        {/* Show Status Note prominently for rejected/inactive accounts */}
+                        {statusInfo.statusNote &&
+                          (statusInfo.status === "REJECT" ||
+                            statusInfo.status === "INACTIVE") && (
+                            <div className="rounded-lg border border-red-200 bg-red-50 p-3">
+                              <div className="flex items-start space-x-2">
+                                <div className="shrink-0">
+                                  <svg
+                                    className="mt-0.5 h-4 w-4 text-red-600"
+                                    fill="currentColor"
+                                    viewBox="0 0 20 20"
+                                  >
+                                    <path
+                                      fillRule="evenodd"
+                                      d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                                      clipRule="evenodd"
+                                    />
+                                  </svg>
+                                </div>
+                                <div className="flex-1">
+                                  <h4 className="text-xs font-medium text-red-800">
+                                    {t("admin_note")}:
+                                  </h4>
+                                  <p className="mt-1 text-xs text-red-700">
+                                    {statusInfo.statusNote}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        {account.companyName && (
+                          <div>
+                            <p className="text-sm font-medium text-gray-500">
+                              {t("company_name")}
+                            </p>
+                            <p className="font-semibold">
+                              {account.companyName}
+                            </p>
+                          </div>
+                        )}
+                        {!account.isCurrentAccount && (
+                          <Button
+                            onClick={() => handleSwitchAccount(account.id)}
+                            variant="outline"
+                            className="w-full"
+                          >
+                            {t("switch_to_this_account")}
+                          </Button>
+                        )}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
             </div>
           </TabsContent>
 
           <TabsContent value="freelancer" className="space-y-4">
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {accountsByType?.freelancer?.map((account) => {
-                const statusInfo = getStatusInfo(account);
-                return (
-                  <Card
-                    key={account.id}
-                    className="transition-shadow hover:shadow-lg"
-                  >
-                    <CardHeader>
-                      <CardTitle className="flex items-center justify-between">
-                        <span>{account.accountName}</span>
-                        <Badge variant="outline">Freelancer</Badge>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      <div>
-                        <p className="text-sm font-medium text-gray-500">
-                          Status
-                        </p>
-                        <StatusDisplayBadge
-                          status={statusInfo.status}
-                          statusNote={statusInfo.statusNote}
-                          size="sm"
-                        />
-                      </div>
-                      {/* Show Status Note prominently for rejected/inactive accounts */}
-                      {statusInfo.statusNote &&
-                        (statusInfo.status === "REJECT" ||
-                          statusInfo.status === "INACTIVE") && (
-                          <div className="rounded-lg border border-red-200 bg-red-50 p-3">
-                            <div className="flex items-start space-x-2">
-                              <div className="shrink-0">
-                                <svg
-                                  className="mt-0.5 h-4 w-4 text-red-600"
-                                  fill="currentColor"
-                                  viewBox="0 0 20 20"
-                                >
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                                    clipRule="evenodd"
-                                  />
-                                </svg>
-                              </div>
-                              <div className="flex-1">
-                                <h4 className="text-xs font-medium text-red-800">
-                                  Admin Note:
-                                </h4>
-                                <p className="mt-1 text-xs text-red-700">
-                                  {statusInfo.statusNote}
-                                </p>
-                              </div>
+              {accountsByType?.freelancer
+                ?.filter((acc) => acc.id !== mainAccount?.id)
+                .map((account) => {
+                  const statusInfo = getStatusInfo(account);
+                  return (
+                    <Card
+                      key={account.id}
+                      className="transition-shadow hover:shadow-lg"
+                    >
+                      <CardHeader>
+                        <CardTitle className="flex items-center justify-between">
+                          <span>{account.accountName}</span>
+                          <Badge variant="outline">{t("freelancer")}</Badge>
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <div>
+                          <p className="text-sm font-medium text-gray-500">
+                            Status
+                          </p>
+                          <StatusDisplayBadge
+                            status={statusInfo.status}
+                            statusNote={statusInfo.statusNote}
+                            size="sm"
+                          />
+                        </div>
+
+                        {/* Notification Counts - Only show if there are notifications */}
+                        {((account.orders || 0) > 0 ||
+                          (account.messages || 0) > 0) && (
+                          <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+                            <p className="mb-2 text-xs font-semibold tracking-wide text-gray-700 uppercase">
+                              {t("notifications")}
+                            </p>
+                            <div className="flex flex-wrap gap-2">
+                              {/* Orders Count */}
+                              {(account.orders || 0) > 0 && (
+                                <div className="flex items-center gap-1.5 rounded-md bg-blue-100 px-2.5 py-1.5">
+                                  <svg
+                                    className="h-4 w-4 text-blue-600"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                                    />
+                                  </svg>
+                                  <span className="text-xs font-semibold text-blue-700">
+                                    {t("new_orders")}: {account.orders || 0}
+                                  </span>
+                                </div>
+                              )}
+
+                              {/* Messages Count */}
+                              {(account.messages || 0) > 0 && (
+                                <div className="flex items-center gap-1.5 rounded-md bg-green-100 px-2.5 py-1.5">
+                                  <svg
+                                    className="h-4 w-4 text-green-600"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                                    />
+                                  </svg>
+                                  <span className="text-xs font-semibold text-green-700">
+                                    {t("new_messages")}: {account.messages || 0}
+                                  </span>
+                                </div>
+                              )}
                             </div>
                           </div>
                         )}
-                      {!account.isCurrentAccount && (
-                        <Button
-                          onClick={() => handleSwitchAccount(account.id)}
-                          variant="outline"
-                          className="w-full"
-                        >
-                          Switch to This Account
-                        </Button>
-                      )}
-                    </CardContent>
-                  </Card>
-                );
-              })}
+                        {/* Show Status Note prominently for rejected/inactive accounts */}
+                        {statusInfo.statusNote &&
+                          (statusInfo.status === "REJECT" ||
+                            statusInfo.status === "INACTIVE") && (
+                            <div className="rounded-lg border border-red-200 bg-red-50 p-3">
+                              <div className="flex items-start space-x-2">
+                                <div className="shrink-0">
+                                  <svg
+                                    className="mt-0.5 h-4 w-4 text-red-600"
+                                    fill="currentColor"
+                                    viewBox="0 0 20 20"
+                                  >
+                                    <path
+                                      fillRule="evenodd"
+                                      d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                                      clipRule="evenodd"
+                                    />
+                                  </svg>
+                                </div>
+                                <div className="flex-1">
+                                  <h4 className="text-xs font-medium text-red-800">
+                                    {t("admin_note")}:
+                                  </h4>
+                                  <p className="mt-1 text-xs text-red-700">
+                                    {statusInfo.statusNote}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        {!account.isCurrentAccount && (
+                          <Button
+                            onClick={() => handleSwitchAccount(account.id)}
+                            variant="outline"
+                            className="w-full"
+                          >
+                            {t("switch_to_this_account")}
+                          </Button>
+                        )}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
             </div>
           </TabsContent>
 
           <TabsContent value="buyer" className="space-y-4">
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {accountsByType?.buyer?.map((account) => {
-                const statusInfo = getStatusInfo(account);
-                return (
-                  <Card
-                    key={account.id}
-                    className="transition-shadow hover:shadow-lg"
-                  >
-                    <CardHeader>
-                      <CardTitle className="flex items-center justify-between">
-                        <span>{account.accountName}</span>
-                        <Badge variant="outline">Buyer</Badge>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      <div>
-                        <p className="text-sm font-medium text-gray-500">
-                          Status
-                        </p>
-                        <StatusDisplayBadge
-                          status={statusInfo.status}
-                          statusNote={statusInfo.statusNote}
-                          size="sm"
-                        />
-                      </div>
-                      {/* Show Status Note prominently for rejected/inactive accounts */}
-                      {statusInfo.statusNote &&
-                        (statusInfo.status === "REJECT" ||
-                          statusInfo.status === "INACTIVE") && (
-                          <div className="rounded-lg border border-red-200 bg-red-50 p-3">
-                            <div className="flex items-start space-x-2">
-                              <div className="shrink-0">
-                                <svg
-                                  className="mt-0.5 h-4 w-4 text-red-600"
-                                  fill="currentColor"
-                                  viewBox="0 0 20 20"
-                                >
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                                    clipRule="evenodd"
-                                  />
-                                </svg>
-                              </div>
-                              <div className="flex-1">
-                                <h4 className="text-xs font-medium text-red-800">
-                                  Admin Note:
-                                </h4>
-                                <p className="mt-1 text-xs text-red-700">
-                                  {statusInfo.statusNote}
-                                </p>
-                              </div>
+              {accountsByType?.buyer
+                ?.filter((acc) => acc.id !== mainAccount?.id)
+                .map((account) => {
+                  const statusInfo = getStatusInfo(account);
+                  return (
+                    <Card
+                      key={account.id}
+                      className="transition-shadow hover:shadow-lg"
+                    >
+                      <CardHeader>
+                        <CardTitle className="flex items-center justify-between">
+                          <span>{account.accountName}</span>
+                          <Badge variant="outline">{t("buyer")}</Badge>
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <div>
+                          <p className="text-sm font-medium text-gray-500">
+                            {t("status")}
+                          </p>
+                          <StatusDisplayBadge
+                            status={statusInfo.status}
+                            statusNote={statusInfo.statusNote}
+                            size="sm"
+                          />
+                        </div>
+
+                        {/* Notification Counts - Only Messages for Buyer */}
+                        <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+                          <p className="mb-2 text-xs font-semibold tracking-wide text-gray-700 uppercase">
+                            {t("notifications")}
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            {/* Messages Count */}
+                            <div className="flex items-center gap-1.5 rounded-md bg-green-100 px-2.5 py-1.5">
+                              <svg
+                                className="h-4 w-4 text-green-600"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                                />
+                              </svg>
+                              <span className="text-xs font-semibold text-green-700">
+                                {t("new_messages")}: {account.messages || 0}
+                              </span>
                             </div>
                           </div>
+                        </div>
+                        {/* Show Status Note prominently for rejected/inactive accounts */}
+                        {statusInfo.statusNote &&
+                          (statusInfo.status === "REJECT" ||
+                            statusInfo.status === "INACTIVE") && (
+                            <div className="rounded-lg border border-red-200 bg-red-50 p-3">
+                              <div className="flex items-start space-x-2">
+                                <div className="shrink-0">
+                                  <svg
+                                    className="mt-0.5 h-4 w-4 text-red-600"
+                                    fill="currentColor"
+                                    viewBox="0 0 20 20"
+                                  >
+                                    <path
+                                      fillRule="evenodd"
+                                      d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                                      clipRule="evenodd"
+                                    />
+                                  </svg>
+                                </div>
+                                <div className="flex-1">
+                                  <h4 className="text-xs font-medium text-red-800">
+                                    {t("admin_note")}:
+                                  </h4>
+                                  <p className="mt-1 text-xs text-red-700">
+                                    {statusInfo.statusNote}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        {!account.isCurrentAccount && (
+                          <Button
+                            onClick={() => handleSwitchAccount(account.id)}
+                            variant="outline"
+                            className="w-full"
+                          >
+                            {t("switch_to_this_account")}
+                          </Button>
                         )}
-                      {!account.isCurrentAccount && (
-                        <Button
-                          onClick={() => handleSwitchAccount(account.id)}
-                          variant="outline"
-                          className="w-full"
-                        >
-                          Switch to This Account
-                        </Button>
-                      )}
-                    </CardContent>
-                  </Card>
-                );
-              })}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
             </div>
           </TabsContent>
         </Tabs>
@@ -909,20 +1168,21 @@ export default function MyAccountsPage() {
                 dir={langDir}
                 className="text-dark-cyan text-xl font-semibold"
               >
-                Create New Account
+                {t("create_new_account_title")}
               </DialogTitle>
               <DialogDescription
                 dir={langDir}
                 className="text-light-gray text-sm"
               >
-                Create a new business account with a different role. Personal
-                information will be inherited from your main profile.
+                {t("create_new_account_description")}
               </DialogDescription>
             </DialogHeader>
 
-            <div className="flex-1 overflow-y-auto pr-2 relative">
-              {(isCreatingAccount || createAccount.isPending || updateProfile.isPending) && (
-                <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-50 flex items-center justify-center rounded-lg">
+            <div className="relative flex-1 overflow-y-auto pr-2">
+              {(isCreatingAccount ||
+                createAccount.isPending ||
+                updateProfile.isPending) && (
+                <div className="absolute inset-0 z-50 flex items-center justify-center rounded-lg bg-white/80 backdrop-blur-sm">
                   <div className="flex flex-col items-center gap-3">
                     <svg
                       className="h-8 w-8 animate-spin text-blue-600"
@@ -945,11 +1205,11 @@ export default function MyAccountsPage() {
                       ></path>
                     </svg>
                     <p className="text-sm font-medium text-gray-700">
-                      {isCreatingAccount ? "Creating your account..." : "Processing..."}
+                      {isCreatingAccount
+                        ? t("creating_your_account")
+                        : t("processing")}
                     </p>
-                    <p className="text-xs text-gray-500">
-                      Please wait, this may take a few seconds
-                    </p>
+                    <p className="text-xs text-gray-500">{t("please_wait")}</p>
                   </div>
                 </div>
               )}
@@ -964,13 +1224,14 @@ export default function MyAccountsPage() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-dark-cyan text-sm font-medium">
-                          Account Name
+                          {t("account_name")}
                         </FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="Enter account name"
+                            placeholder={t("enter_account_name")}
                             {...field}
                             className="focus:border-dark-orange focus:ring-dark-orange border-gray-300"
+                            dir={langDir}
                           />
                         </FormControl>
                         <FormMessage />
@@ -984,11 +1245,12 @@ export default function MyAccountsPage() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-dark-cyan text-sm font-medium">
-                          Trade Role
+                          {t("trade_role")}
                         </FormLabel>
                         <FormControl>
                           <RadioGroup
                             onValueChange={field.onChange}
+                            value={field.value}
                             className="flex flex-col space-y-2"
                           >
                             {TRADE_ROLE_LIST.filter(
@@ -1037,11 +1299,10 @@ export default function MyAccountsPage() {
                         </div>
                         <div className="text-sm text-blue-800">
                           <p className="font-medium">
-                            Personal Information Inherited
+                            {t("personal_information_inherited")}
                           </p>
                           <p className="text-blue-600">
-                            Your name, email, phone, and password will be
-                            automatically inherited from your main profile.
+                            {t("personal_information_inherited_description")}
                           </p>
                         </div>
                       </div>
@@ -1051,12 +1312,13 @@ export default function MyAccountsPage() {
                   {/* Identity Card Upload - Mandatory for COMPANY and FREELANCER */}
                   <div className="space-y-3 border-t border-gray-200 pt-4">
                     <h4 className="text-dark-cyan text-sm font-medium">
-                      Identity Card <span className="text-red-500">*</span>
+                      {t("identity_card")}{" "}
+                      <span className="text-red-500">*</span>
                     </h4>
                     <p className="text-xs text-gray-600">
-                      Please upload both front and back sides of your identity card. This is required for account verification.
+                      {t("identity_card_description")}
                     </p>
-                    
+
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                       {/* Front Side */}
                       <FormField
@@ -1065,20 +1327,24 @@ export default function MyAccountsPage() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className="text-dark-cyan text-xs font-medium">
-                              Front Side <span className="text-red-500">*</span>
+                              {t("front_side")}{" "}
+                              <span className="text-red-500">*</span>
                             </FormLabel>
                             <FormControl>
-                              <div className="relative w-full border-2 border-dashed border-gray-300 rounded-lg overflow-hidden">
+                              <div className="relative w-full overflow-hidden rounded-lg border-2 border-dashed border-gray-300">
                                 <div className="relative h-48 w-full">
                                   {identityFrontImageFile ? (
                                     <>
                                       <button
                                         type="button"
-                                        className="absolute top-2 right-2 z-20 h-8 w-8 rounded-full bg-red-500 flex items-center justify-center hover:bg-red-600 transition-colors"
+                                        className="absolute top-2 right-2 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-red-500 transition-colors hover:bg-red-600"
                                         onClick={(e) => {
                                           e.stopPropagation();
                                           setIdentityFrontImageFile(null);
-                                          form.setValue("uploadIdentityFrontImage", undefined);
+                                          form.setValue(
+                                            "uploadIdentityFrontImage",
+                                            undefined,
+                                          );
                                           if (frontIdentityRef.current)
                                             frontIdentityRef.current.value = "";
                                         }}
@@ -1093,19 +1359,24 @@ export default function MyAccountsPage() {
                                       <Image
                                         src={
                                           identityFrontImageFile &&
-                                          typeof identityFrontImageFile === "object"
-                                            ? URL.createObjectURL(identityFrontImageFile[0])
+                                          typeof identityFrontImageFile ===
+                                            "object"
+                                            ? URL.createObjectURL(
+                                                identityFrontImageFile[0],
+                                              )
                                             : "/images/company-logo.png"
                                         }
                                         alt="Identity front"
                                         fill
-                                        className="object-contain z-0"
+                                        className="z-0 object-contain"
                                       />
                                     </>
                                   ) : (
                                     <div className="absolute inset-0 z-0">
                                       <AddImageContent
-                                        description="Drop your identity card front side"
+                                        description={t(
+                                          "drop_identity_card_front",
+                                        )}
                                       />
                                     </div>
                                   )}
@@ -1113,19 +1384,27 @@ export default function MyAccountsPage() {
                                     type="file"
                                     accept="image/*"
                                     multiple={false}
-                                    className="absolute bottom-0 h-48 w-full opacity-0 cursor-pointer z-10"
+                                    className="absolute bottom-0 z-10 h-48 w-full cursor-pointer opacity-0"
                                     onChange={(event) => {
                                       if (event.target.files?.[0]) {
-                                        if (event.target.files[0].size > 5242880) {
+                                        if (
+                                          event.target.files[0].size > 5242880
+                                        ) {
                                           toast({
                                             title: "File too large",
-                                            description: "Image size should be less than 5MB",
+                                            description:
+                                              "Image size should be less than 5MB",
                                             variant: "danger",
                                           });
                                           return;
                                         }
-                                        setIdentityFrontImageFile(event.target.files);
-                                        form.setValue("uploadIdentityFrontImage", event.target.files);
+                                        setIdentityFrontImageFile(
+                                          event.target.files,
+                                        );
+                                        form.setValue(
+                                          "uploadIdentityFrontImage",
+                                          event.target.files,
+                                        );
                                       }
                                     }}
                                     id="uploadIdentityFrontImage"
@@ -1146,20 +1425,24 @@ export default function MyAccountsPage() {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className="text-dark-cyan text-xs font-medium">
-                              Back Side <span className="text-red-500">*</span>
+                              {t("back_side")}{" "}
+                              <span className="text-red-500">*</span>
                             </FormLabel>
                             <FormControl>
-                              <div className="relative w-full border-2 border-dashed border-gray-300 rounded-lg overflow-hidden">
+                              <div className="relative w-full overflow-hidden rounded-lg border-2 border-dashed border-gray-300">
                                 <div className="relative h-48 w-full">
                                   {identityBackImageFile ? (
                                     <>
                                       <button
                                         type="button"
-                                        className="absolute top-2 right-2 z-20 h-8 w-8 rounded-full bg-red-500 flex items-center justify-center hover:bg-red-600 transition-colors"
+                                        className="absolute top-2 right-2 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-red-500 transition-colors hover:bg-red-600"
                                         onClick={(e) => {
                                           e.stopPropagation();
                                           setIdentityBackImageFile(null);
-                                          form.setValue("uploadIdentityBackImage", undefined);
+                                          form.setValue(
+                                            "uploadIdentityBackImage",
+                                            undefined,
+                                          );
                                           if (backIdentityRef.current)
                                             backIdentityRef.current.value = "";
                                         }}
@@ -1174,19 +1457,24 @@ export default function MyAccountsPage() {
                                       <Image
                                         src={
                                           identityBackImageFile &&
-                                          typeof identityBackImageFile === "object"
-                                            ? URL.createObjectURL(identityBackImageFile[0])
+                                          typeof identityBackImageFile ===
+                                            "object"
+                                            ? URL.createObjectURL(
+                                                identityBackImageFile[0],
+                                              )
                                             : "/images/company-logo.png"
                                         }
                                         alt="Identity back"
                                         fill
-                                        className="object-contain z-0"
+                                        className="z-0 object-contain"
                                       />
                                     </>
                                   ) : (
                                     <div className="absolute inset-0 z-0">
                                       <AddImageContent
-                                        description="Drop your identity card back side"
+                                        description={t(
+                                          "drop_identity_card_back",
+                                        )}
                                       />
                                     </div>
                                   )}
@@ -1194,19 +1482,27 @@ export default function MyAccountsPage() {
                                     type="file"
                                     accept="image/*"
                                     multiple={false}
-                                    className="absolute bottom-0 h-48 w-full opacity-0 cursor-pointer z-10"
+                                    className="absolute bottom-0 z-10 h-48 w-full cursor-pointer opacity-0"
                                     onChange={(event) => {
                                       if (event.target.files?.[0]) {
-                                        if (event.target.files[0].size > 5242880) {
+                                        if (
+                                          event.target.files[0].size > 5242880
+                                        ) {
                                           toast({
                                             title: "File too large",
-                                            description: "Image size should be less than 5MB",
+                                            description:
+                                              "Image size should be less than 5MB",
                                             variant: "danger",
                                           });
                                           return;
                                         }
-                                        setIdentityBackImageFile(event.target.files);
-                                        form.setValue("uploadIdentityBackImage", event.target.files);
+                                        setIdentityBackImageFile(
+                                          event.target.files,
+                                        );
+                                        form.setValue(
+                                          "uploadIdentityBackImage",
+                                          event.target.files,
+                                        );
                                       }
                                     }}
                                     id="uploadIdentityBackImage"
@@ -1226,7 +1522,7 @@ export default function MyAccountsPage() {
                   {form.watch("tradeRole") === "COMPANY" && (
                     <div className="space-y-3 border-t border-gray-200 pt-4">
                       <h4 className="text-dark-cyan text-sm font-medium">
-                        Company Details
+                        {t("company_details")}
                       </h4>
 
                       <div className="grid grid-cols-1 gap-3">
@@ -1236,13 +1532,14 @@ export default function MyAccountsPage() {
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel className="text-dark-cyan text-xs font-medium">
-                                Company Name
+                                {t("company_name")}
                               </FormLabel>
                               <FormControl>
                                 <Input
-                                  placeholder="Enter company name"
+                                  placeholder={t("enter_company_name")}
                                   {...field}
                                   className="focus:border-dark-orange focus:ring-dark-orange border-gray-300 text-sm"
+                                  dir={langDir}
                                 />
                               </FormControl>
                               <FormMessage />
@@ -1256,13 +1553,14 @@ export default function MyAccountsPage() {
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel className="text-dark-cyan text-xs font-medium">
-                                Company Address
+                                {t("company_address")}
                               </FormLabel>
                               <FormControl>
                                 <Input
-                                  placeholder="Enter company address"
+                                  placeholder={t("enter_company_address")}
                                   {...field}
                                   className="focus:border-dark-orange focus:ring-dark-orange border-gray-300 text-sm"
+                                  dir={langDir}
                                 />
                               </FormControl>
                               <FormMessage />
@@ -1276,13 +1574,14 @@ export default function MyAccountsPage() {
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel className="text-dark-cyan text-xs font-medium">
-                                Company Phone
+                                {t("company_phone")}
                               </FormLabel>
                               <FormControl>
                                 <Input
-                                  placeholder="Enter company phone"
+                                  placeholder={t("enter_company_phone")}
                                   {...field}
                                   className="focus:border-dark-orange focus:ring-dark-orange border-gray-300 text-sm"
+                                  dir={langDir}
                                 />
                               </FormControl>
                               <FormMessage />
@@ -1296,13 +1595,14 @@ export default function MyAccountsPage() {
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel className="text-dark-cyan text-xs font-medium">
-                                Company Website
+                                {t("company_website")}
                               </FormLabel>
                               <FormControl>
                                 <Input
-                                  placeholder="Enter company website"
+                                  placeholder={t("enter_company_website")}
                                   {...field}
                                   className="focus:border-dark-orange focus:ring-dark-orange border-gray-300 text-sm"
+                                  dir={langDir}
                                 />
                               </FormControl>
                               <FormMessage />
@@ -1316,13 +1616,14 @@ export default function MyAccountsPage() {
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel className="text-dark-cyan text-xs font-medium">
-                                Company Tax ID
+                                {t("company_tax_id")}
                               </FormLabel>
                               <FormControl>
                                 <Input
-                                  placeholder="Enter company tax ID"
+                                  placeholder={t("enter_company_tax_id")}
                                   {...field}
                                   className="focus:border-dark-orange focus:ring-dark-orange border-gray-300 text-sm"
+                                  dir={langDir}
                                 />
                               </FormControl>
                               <FormMessage />
@@ -1353,10 +1654,9 @@ export default function MyAccountsPage() {
                           </svg>
                         </div>
                         <div className="text-sm text-yellow-800">
-                          <p className="font-medium">Account Status</p>
+                          <p className="font-medium">{t("account_status")}</p>
                           <p className="text-yellow-600">
-                            New accounts will be created with a "Waiting" status
-                            and require admin approval before activation.
+                            {t("account_status_description")}
                           </p>
                         </div>
                       </div>
@@ -1373,19 +1673,27 @@ export default function MyAccountsPage() {
                   form.reset();
                   setIdentityFrontImageFile(null);
                   setIdentityBackImageFile(null);
-                  if (frontIdentityRef.current) frontIdentityRef.current.value = "";
-                  if (backIdentityRef.current) backIdentityRef.current.value = "";
+                  if (frontIdentityRef.current)
+                    frontIdentityRef.current.value = "";
+                  if (backIdentityRef.current)
+                    backIdentityRef.current.value = "";
                   setShowCreateForm(false);
                 }}
               >
-                Cancel
+                {t("cancel")}
               </Button>
               <Button
                 onClick={form.handleSubmit(handleCreateAccount)}
-                disabled={isCreatingAccount || createAccount.isPending || updateProfile.isPending}
-                className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={
+                  isCreatingAccount ||
+                  createAccount.isPending ||
+                  updateProfile.isPending
+                }
+                className="bg-blue-600 hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {isCreatingAccount || createAccount.isPending || updateProfile.isPending ? (
+                {isCreatingAccount ||
+                createAccount.isPending ||
+                updateProfile.isPending ? (
                   <>
                     <svg
                       className="mr-2 -ml-1 h-4 w-4 animate-spin text-white"
@@ -1407,10 +1715,12 @@ export default function MyAccountsPage() {
                         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                       ></path>
                     </svg>
-                    {isCreatingAccount ? "Creating Account..." : "Processing..."}
+                    {isCreatingAccount
+                      ? t("creating_account")
+                      : t("processing")}
                   </>
                 ) : (
-                  "Create Account"
+                  t("create_account")
                 )}
               </Button>
             </div>

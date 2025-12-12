@@ -837,20 +837,20 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
                   </h4>
                   <div className="grid grid-cols-4 gap-3">
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-orange-900">{timeLeft.split(":")[0]}</div>
-                      <div className="text-xs text-orange-700">Days</div>
+                      <div className="text-2xl font-bold text-orange-900" translate="no">{timeLeft.split(":")[0]}</div>
+                      <div className="text-xs text-orange-700" translate="no">Days</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-orange-900">{timeLeft.split(":")[1]}</div>
-                      <div className="text-xs text-orange-700">Hours</div>
+                      <div className="text-2xl font-bold text-orange-900" translate="no">{timeLeft.split(":")[1]}</div>
+                      <div className="text-xs text-orange-700" translate="no">Hours</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-orange-900">{timeLeft.split(":")[2]}</div>
-                      <div className="text-xs text-orange-700">Minutes</div>
+                      <div className="text-2xl font-bold text-orange-900" translate="no">{timeLeft.split(":")[2]}</div>
+                      <div className="text-xs text-orange-700" translate="no">Minutes</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-orange-900">{timeLeft.split(":")[3]}</div>
-                      <div className="text-xs text-orange-700">Seconds</div>
+                      <div className="text-2xl font-bold text-orange-900" translate="no">{timeLeft.split(":")[3]}</div>
+                      <div className="text-xs text-orange-700" translate="no">Seconds</div>
                     </div>
                   </div>
                 </div>

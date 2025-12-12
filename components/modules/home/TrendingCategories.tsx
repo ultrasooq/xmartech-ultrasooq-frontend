@@ -171,7 +171,7 @@ const TrendingCategories: React.FC<TrendingCategoriesProps> = ({
 
   if (mainCategoriesQuery.isError || !mainCategories.length) {
     return (
-      <div className="text-center py-8 text-gray-500">
+      <div className="text-center py-8 text-gray-500" translate="no">
         {t("no_categories_available")}
       </div>
     );
@@ -229,10 +229,10 @@ const TrendingCategories: React.FC<TrendingCategoriesProps> = ({
                 
                 {/* Content */}
                 <div className="relative z-10 h-full flex flex-col justify-end p-5 text-white">
-                  <h3 className="text-base font-bold mb-2 drop-shadow-lg text-white group-hover:scale-105 transition-transform duration-300">
+                  <h3 className="text-base font-bold mb-2 drop-shadow-lg text-white group-hover:scale-105 transition-transform duration-300" data-dynamic="true">
                     {category.name}
                   </h3>
-                  <p className="text-xs text-gray-200 mb-3 drop-shadow-sm">
+                  <p className="text-xs text-gray-200 mb-3 drop-shadow-sm" translate="no">
                     {category.children?.length || 0} {t("subcategories")}
                   </p>
                   
@@ -297,10 +297,10 @@ const TrendingCategories: React.FC<TrendingCategoriesProps> = ({
                   
                   {/* Content */}
                   <div className="relative z-10 h-full flex flex-col justify-end p-3 sm:p-4 text-white">
-                    <h3 className="text-xs sm:text-sm font-bold mb-1 sm:mb-2 drop-shadow-lg text-white line-clamp-2">
+                    <h3 className="text-xs sm:text-sm font-bold mb-1 sm:mb-2 drop-shadow-lg text-white line-clamp-2" data-dynamic="true">
                       {category.name}
                     </h3>
-                    <p className="text-[10px] sm:text-xs text-gray-200 mb-2 drop-shadow-sm">
+                    <p className="text-[10px] sm:text-xs text-gray-200 mb-2 drop-shadow-sm" translate="no">
                       {category.children?.length || 0} {t("subcategories")}
                     </p>
                     
@@ -332,7 +332,7 @@ const TrendingCategories: React.FC<TrendingCategoriesProps> = ({
                 <Grid3X3 className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
               </div>
               <div className="text-left">
-                <h4 className="text-sm sm:text-lg font-bold text-gray-900">
+                <h4 className="text-sm sm:text-lg font-bold text-gray-900" data-dynamic="true">
                   {mainCategories.find((cat: any) => cat.id === expandedMainCategory)?.name}
                 </h4>
               </div>
@@ -369,7 +369,7 @@ const TrendingCategories: React.FC<TrendingCategoriesProps> = ({
                   </div>
                   
                   <div className="relative z-10 h-full flex flex-col justify-end p-3 text-white">
-                    <h4 className="text-xs lg:text-sm font-semibold mb-2 drop-shadow-lg text-white line-clamp-2">
+                    <h4 className="text-xs lg:text-sm font-semibold mb-2 drop-shadow-lg text-white line-clamp-2" data-dynamic="true">
                       {subCategory.name}
                     </h4>
                     
@@ -417,9 +417,9 @@ const TrendingCategories: React.FC<TrendingCategoriesProps> = ({
                     </div>
                     
                     <div className="relative z-10 h-full flex flex-col justify-end p-3 text-white">
-                      <h4 className="text-xs font-semibold mb-2 drop-shadow-lg text-white line-clamp-2">
-                        {subCategory.name}
-                      </h4>
+                        <h4 className="text-xs font-semibold mb-2 drop-shadow-lg text-white line-clamp-2" data-dynamic="true">
+                          {subCategory.name}
+                        </h4>
                       
                       {subCategory.children && subCategory.children.length > 0 && (
                         <div className="flex justify-center">
@@ -449,7 +449,7 @@ const TrendingCategories: React.FC<TrendingCategoriesProps> = ({
                 <Layers className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
               </div>
               <div className="text-left">
-                <h4 className="text-sm sm:text-lg font-bold text-gray-900">
+                <h4 className="text-sm sm:text-lg font-bold text-gray-900" data-dynamic="true">
                   {mainCategories
                     .find((cat: any) => cat.id === expandedMainCategory)
                     ?.children?.find((sub: any) => sub.id === expandedSubCategory)?.name}
@@ -490,7 +490,7 @@ const TrendingCategories: React.FC<TrendingCategoriesProps> = ({
                   </div>
                   
                   <div className="relative z-10 h-full flex flex-col justify-end p-2 text-white">
-                    <h5 className="text-[10px] lg:text-xs font-medium text-white drop-shadow-lg line-clamp-2">
+                    <h5 className="text-[10px] lg:text-xs font-medium text-white drop-shadow-lg line-clamp-2" data-dynamic="true">
                       {subSubCategory.name}
                     </h5>
                   </div>
@@ -527,9 +527,9 @@ const TrendingCategories: React.FC<TrendingCategoriesProps> = ({
                     </div>
                     
                     <div className="relative z-10 h-full flex flex-col justify-end p-2 text-white">
-                      <h5 className="text-[10px] font-medium text-white drop-shadow-lg line-clamp-2">
-                        {subSubCategory.name}
-                      </h5>
+                        <h5 className="text-[10px] font-medium text-white drop-shadow-lg line-clamp-2" data-dynamic="true">
+                          {subSubCategory.name}
+                        </h5>
                     </div>
                   </button>
                 ))}

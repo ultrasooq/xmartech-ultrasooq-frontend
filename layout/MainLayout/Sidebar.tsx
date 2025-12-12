@@ -70,8 +70,8 @@ const Sidebar: React.FC<SidebarProps> = ({ notificationCount }) => {
     const baseItems = [
       {
         icon: <UserIcon className="h-5 w-5 text-blue-600" />,
-        label: "Account switch",
-        subLabel: "Dashboard",
+        label: t("account_switch"),
+        subLabel: t("dashboard"),
         onClick: () => {
           router.push("/my-accounts");
         },
@@ -83,28 +83,28 @@ const Sidebar: React.FC<SidebarProps> = ({ notificationCount }) => {
       baseItems.push(
         {
           icon: <ShoppingBagIcon className="h-5 w-5 text-indigo-600" />,
-          label: "My Orders",
+          label: t("my_orders"),
           onClick: () => {
             router.push("/my-orders");
           },
         },
         {
           icon: <FileSearchIcon className="h-5 w-5 text-purple-600" />,
-          label: "RFQ Requests",
+          label: t("rfq_requests"),
           onClick: () => {
             router.push("/rfq-request");
           },
         },
         {
           icon: <ShoppingCartIcon className="h-5 w-5 text-orange-600" />,
-          label: "Cart",
+          label: t("cart"),
           onClick: () => {
             router.push("/cart");
           },
         },
         {
           icon: <StoreIcon className="h-5 w-5 text-pink-600" />,
-          label: "Wishlist",
+          label: t("wishlist"),
           onClick: () => {
             router.push("/wishlist");
           },
@@ -116,29 +116,50 @@ const Sidebar: React.FC<SidebarProps> = ({ notificationCount }) => {
     if (currentTradeRole === "FREELANCER") {
       baseItems.push(
         {
+          icon: <PackageIcon className="h-5 w-5 text-blue-600" />,
+          label: t("my_products"),
+          onClick: () => {
+            router.push("/manage-products");
+          },
+        },
+        {
           icon: <WrenchIcon className="h-5 w-5 text-teal-600" />,
-          label: "My Services",
+          label: t("my_services"),
           onClick: () => {
             router.push("/manage-services");
           },
         },
         {
           icon: <FileSearchIcon className="h-5 w-5 text-purple-600" />,
-          label: "RFQ Quotes",
+          label: t("rfq_quotes"),
           onClick: () => {
             router.push("/rfq-quotes");
           },
         },
         {
+          icon: <ShoppingCartIcon className="h-5 w-5 text-orange-600" />,
+          label: t("orders"),
+          onClick: () => {
+            router.push("/seller-orders");
+          },
+        },
+        {
+          icon: <UsersIcon className="h-5 w-5 text-violet-600" />,
+          label: t("team_members"),
+          onClick: () => {
+            router.push("/team-members");
+          },
+        },
+        {
           icon: <MessageCircleIcon className="h-5 w-5 text-cyan-600" />,
-          label: "Messages",
+          label: t("messages"),
           onClick: () => {
             router.push("/messages");
           },
         },
         {
           icon: <BarChart3Icon className="h-5 w-5 text-green-600" />,
-          label: "Analytics",
+          label: t("analytics"),
           onClick: () => {
             router.push("/analytics");
           },
@@ -151,49 +172,49 @@ const Sidebar: React.FC<SidebarProps> = ({ notificationCount }) => {
       baseItems.push(
         {
           icon: <PackageIcon className="h-5 w-5 text-blue-600" />,
-          label: "My Products",
+          label: t("my_products"),
           onClick: () => {
             router.push("/manage-products");
           },
         },
         {
           icon: <WrenchIcon className="h-5 w-5 text-teal-600" />,
-          label: "My Services",
+          label: t("my_services"),
           onClick: () => {
             router.push("/manage-services");
           },
         },
         {
           icon: <FileSearchIcon className="h-5 w-5 text-purple-600" />,
-          label: "RFQ Quotes",
+          label: t("rfq_quotes"),
           onClick: () => {
             router.push("/rfq-quotes");
           },
         },
         {
           icon: <ShoppingCartIcon className="h-5 w-5 text-orange-600" />,
-          label: "Orders",
+          label: t("orders"),
           onClick: () => {
             router.push("/orders");
           },
         },
         {
           icon: <PackageIcon className="h-5 w-5 text-indigo-600" />,
-          label: "Dropshipping",
+          label: t("dropshipping"),
           onClick: () => {
             router.push("/dropship-products");
           },
         },
         {
           icon: <UsersIcon className="h-5 w-5 text-violet-600" />,
-          label: "Team Members",
+          label: t("team_members"),
           onClick: () => {
             router.push("/team-members");
           },
         },
         {
           icon: <BarChart3Icon className="h-5 w-5 text-green-600" />,
-          label: "Analytics",
+          label: t("analytics"),
           onClick: () => {
             router.push("/analytics");
           },
@@ -205,7 +226,7 @@ const Sidebar: React.FC<SidebarProps> = ({ notificationCount }) => {
     baseItems.push(
       {
         icon: <UserCheckIcon className="h-5 w-5 text-blue-600" />,
-        label: "Profile",
+        label: t("profile"),
         onClick: () => {
           // Get the current trade role at click time to avoid closure issues
           // Match Header's logic exactly: currentAccount?.data?.data?.account?.tradeRole || me?.data?.data?.tradeRole
@@ -240,21 +261,21 @@ const Sidebar: React.FC<SidebarProps> = ({ notificationCount }) => {
       },
       {
         icon: <WalletIcon className="h-5 w-5 text-amber-600" />,
-        label: "My Wallet",
+        label: t("my_wallet"),
         onClick: () => {
           router.push("/wallet");
         },
       },
       {
         icon: <SettingsIcon className="h-5 w-5 text-gray-600" />,
-        label: "Settings",
+        label: t("settings"),
         onClick: () => {
           router.push("/my-settings");
         },
       },
       {
         icon: <LogOutIcon className="h-5 w-5 text-red-500" />,
-        label: "Logout",
+        label: t("logout"),
         isLogout: true,
         onClick: async () => {
           try {
@@ -320,7 +341,7 @@ const Sidebar: React.FC<SidebarProps> = ({ notificationCount }) => {
         <div
           className={cn(
             "fixed top-0 z-[70] h-full bg-white shadow-xl",
-            langDir === "rtl" ? "right-0" : "left-0",
+            "left-0",
             // Mobile: slide in/out based on isOpen, full width when open
             isOpen
               ? "w-64 translate-x-0"
@@ -332,10 +353,8 @@ const Sidebar: React.FC<SidebarProps> = ({ notificationCount }) => {
           style={{
             boxShadow:
               "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)",
-            borderRight:
-              langDir === "rtl" ? "none" : "1px solid rgba(0, 0, 0, 0.05)",
-            borderLeft:
-              langDir === "rtl" ? "1px solid rgba(0, 0, 0, 0.05)" : "none",
+            borderRight: "1px solid rgba(0, 0, 0, 0.05)",
+            borderLeft: "none",
             // Optimize transitions - only transition width for better performance
             transition: "width 200ms cubic-bezier(0.4, 0, 0.2, 1)",
             willChange: "width",

@@ -20,8 +20,63 @@ function Calendar({
   className,
   classNames,
   showOutsideDays = true,
+  components,
   ...props
 }: CalendarProps) {
+  const defaultComponents = {
+    Dropdown: ({ value, onChange, children, name, ...props }: DropdownProps) => {
+      const options = React.Children.toArray(
+        children,
+      ) as React.ReactElement<React.HTMLProps<HTMLOptionElement>>[];
+      
+      if (options.length === 0) {
+        return null;
+      }
+      
+      // Determine width based on whether it's month or year
+      const isYear = name === "year";
+      const widthClass = isYear ? "min-w-[100px]" : "min-w-[140px]";
+      
+      return (
+        <Select
+          value={value?.toString()}
+          onValueChange={(value) => {
+            const changeEvent = {
+              target: { value, name },
+            } as React.ChangeEvent<HTMLSelectElement>;
+            onChange?.(changeEvent);
+          }}
+        >
+          <SelectTrigger 
+            className={cn(
+              "h-10 px-3 py-2 bg-white border-2 border-gray-300 rounded-lg hover:border-orange-400 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all duration-200 font-semibold text-gray-900",
+              widthClass
+            )}
+          >
+            <SelectValue>
+              {options.find((child) => child.props.value === value)?.props?.children || value}
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent position="popper" className="max-h-[300px] z-[100]">
+            <ScrollArea className="h-80">
+              {options.map((option, id: number) => (
+                <SelectItem
+                  key={`${option.props.value}-${id}`}
+                  value={option.props.value?.toString() ?? ""}
+                  className="cursor-pointer hover:bg-orange-50 focus:bg-orange-100"
+                >
+                  {option.props.children}
+                </SelectItem>
+              ))}
+            </ScrollArea>
+          </SelectContent>
+        </Select>
+      );
+    },
+    IconLeft: ({ ...props }) => <ChevronLeft className="h-4 w-4" />,
+    IconRight: ({ ...props }) => <ChevronRight className="h-4 w-4" />,
+  };
+
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
@@ -60,44 +115,8 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        Dropdown: ({ value, onChange, children, ...props }: DropdownProps) => {
-          const options = React.Children.toArray(
-            children,
-          ) as React.ReactElement<React.HTMLProps<HTMLOptionElement>>[];
-          const selected = options.find((child) => child.props.value === value);
-          const handleChange = (value: string) => {
-            const changeEvent = {
-              target: { value },
-            } as React.ChangeEvent<HTMLSelectElement>;
-            onChange?.(changeEvent);
-          };
-          return (
-            <Select
-              value={value?.toString()}
-              onValueChange={(value) => {
-                handleChange(value);
-              }}
-            >
-              <SelectTrigger className="pr-1.5 focus:ring-0">
-                <SelectValue>{selected?.props?.children}</SelectValue>
-              </SelectTrigger>
-              <SelectContent position="popper">
-                <ScrollArea className="h-80">
-                  {options.map((option, id: number) => (
-                    <SelectItem
-                      key={`${option.props.value}-${id}`}
-                      value={option.props.value?.toString() ?? ""}
-                    >
-                      {option.props.children}
-                    </SelectItem>
-                  ))}
-                </ScrollArea>
-              </SelectContent>
-            </Select>
-          );
-        },
-        IconLeft: ({ ...props }) => <ChevronLeft className="h-4 w-4" />,
-        IconRight: ({ ...props }) => <ChevronRight className="h-4 w-4" />,
+        ...defaultComponents,
+        ...components,
       }}
       {...props}
     />

@@ -39,7 +39,7 @@ const ContentWrapper: React.FC<ContentWrapperProps> = ({ children }) => {
     <div
       className="transition-all duration-300 ease-in-out min-h-screen"
       style={{
-        [langDir === "rtl" ? "paddingRight" : "paddingLeft"]: `${sidebarWidth}px`,
+        paddingLeft: `${sidebarWidth}px`,
       }}
     >
       {children}

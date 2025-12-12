@@ -462,7 +462,7 @@ const ServiceCard: React.FC<any> = ({
         ) : null}
         {timeLeft ? (
           <div className="time_left">
-            <span>{timeLeft}</span>
+            <span translate="no">{timeLeft}</span>
           </div>
         ) : null}
         <Link href={manageService ? "#" : `/services/${item.id}`}>

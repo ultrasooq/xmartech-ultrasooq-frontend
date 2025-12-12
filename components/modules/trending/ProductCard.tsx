@@ -637,7 +637,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       {timeLeft ? (
         <div className="absolute right-1.5 sm:right-3 top-1.5 sm:top-3 z-20">
           <div className={`px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium ${saleNotStarted ? "bg-yellow-500" : timeLeft === t("expired") ? "bg-gray-500" : "bg-red-500"} text-white`}>
-            <span dir={language === "ar" ? "rtl" : "ltr"}>{timeLeft}</span>
+            <span dir={language === "ar" ? "rtl" : "ltr"} translate="no">{timeLeft}</span>
           </div>
         </div>
       ) : null}

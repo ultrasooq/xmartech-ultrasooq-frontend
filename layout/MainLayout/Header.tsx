@@ -145,7 +145,13 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
   const [subSubSubCategoryIndex, setSubSubSubCategoryIndex] = useState(0);
   const hasAccessToken = !!getCookie(PUREMOON_TOKEN_KEY);
   const deviceId = getOrCreateDeviceId() || "";
-  const { clearUser, applyTranslation, langDir, changeCurrency } = useAuth();
+  const {
+    clearUser,
+    applyTranslation,
+    langDir,
+    changeCurrency,
+    selectedLocale: currentLocale,
+  } = useAuth();
   const wishlistCount = useWishlistCount(hasAccessToken);
   const cartCountWithLogin = useCartCountWithLogin(hasAccessToken);
   const cartCountWithoutLogin = useCartCountWithoutLogin(
@@ -240,6 +246,31 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
     me.data?.data?.firstName,
     me.data?.data?.lastName,
   ]);
+
+  // Helper function to get translation key for menu item name
+  const getMenuTranslationKey = (itemName: string): string => {
+    if (!itemName) return itemName;
+    // Normalize the name - remove extra spaces and convert to lowercase for comparison
+    const normalized = itemName.trim().replace(/\s+/g, " ").toLowerCase();
+
+    // Check for RFQ - handle all variations (exact match, with spaces, case variations)
+    if (
+      normalized === "rfq" ||
+      normalized === "r f q" ||
+      normalized.includes("rfq") ||
+      itemName.trim().toUpperCase() === "RFQ" ||
+      itemName.trim() === "RFQ"
+    ) {
+      return "rfq";
+    }
+    if (normalized.includes("store")) return "store";
+    if (normalized.includes("buy group") || normalized.includes("buygroup"))
+      return "buy_group";
+    if (normalized.includes("factories") || normalized.includes("factory"))
+      return "factories";
+    if (normalized.includes("home")) return "home";
+    return itemName; // Fallback to original name if no match
+  };
 
   const memoizedMenu = useMemo(() => {
     let tempArr: any = [];
@@ -623,8 +654,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
       <header
         className={`bg-dark-cyan sticky top-0 z-50 block w-full shadow-md transition-all duration-300 md:hidden ${showHeader ? "translate-y-0" : "-translate-y-full"}`}
         style={{
-          [langDir === "rtl" ? "paddingRight" : "paddingLeft"]:
-            `${sidebarWidth}px`,
+          paddingLeft: `${sidebarWidth}px`,
         }}
       >
         <div className="w-full px-3 py-2 sm:px-4 sm:py-2.5">
@@ -926,7 +956,9 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
             <div className="relative flex-1">
               <input
                 type="text"
-                className="h-9 w-full rounded-lg border-2 border-white/20 bg-white/95 pr-10 pl-3 text-sm transition-all placeholder:text-gray-400 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none sm:h-10 sm:text-base"
+                className={`h-9 w-full rounded-lg border-2 border-white/20 bg-white/95 text-sm transition-all placeholder:text-gray-400 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none sm:h-10 sm:text-base ${
+                  currentLocale === "ar" ? "pr-3 pl-10" : "pr-10 pl-3"
+                }`}
                 placeholder={t("global_search_placeholder")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -934,7 +966,9 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                 translate="no"
               />
               <svg
-                className="pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 text-gray-400 sm:h-5 sm:w-5"
+                className={`pointer-events-none absolute top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 sm:h-5 sm:w-5 ${
+                  currentLocale === "ar" ? "left-3" : "right-3"
+                }`}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -967,22 +1001,45 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                 }}
                 className={`flex items-center gap-1.5 rounded-lg px-3 py-2 whitespace-nowrap transition-all sm:gap-2 sm:px-4 sm:py-2.5 ${pathname === "/home" ? "bg-white font-semibold text-blue-600 shadow-md" : "bg-white/10 text-white hover:bg-white/20 active:scale-95"}`}
               >
-                <Image
-                  src={menuBarIconList[0]}
-                  alt={t("home")}
-                  height={18}
-                  width={18}
-                  className="h-4 w-4 sm:h-5 sm:w-5"
-                  style={{
-                    filter:
-                      pathname === "/home"
-                        ? "brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)"
-                        : "none",
-                  }}
-                />
-                <span className="text-xs font-medium sm:text-sm">
-                  {t("home")}
-                </span>
+                {currentLocale === "ar" ? (
+                  <>
+                    <span className="text-xs font-medium sm:text-sm">
+                      {t("home")}
+                    </span>
+                    <Image
+                      src={menuBarIconList[0]}
+                      alt={t("home")}
+                      height={18}
+                      width={18}
+                      className="h-4 w-4 sm:h-5 sm:w-5"
+                      style={{
+                        filter:
+                          pathname === "/home"
+                            ? "brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)"
+                            : "none",
+                      }}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <Image
+                      src={menuBarIconList[0]}
+                      alt={t("home")}
+                      height={18}
+                      width={18}
+                      className="h-4 w-4 sm:h-5 sm:w-5"
+                      style={{
+                        filter:
+                          pathname === "/home"
+                            ? "brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)"
+                            : "none",
+                      }}
+                    />
+                    <span className="text-xs font-medium sm:text-sm">
+                      {t("home")}
+                    </span>
+                  </>
+                )}
               </Link>
               {memoizedMenu
                 .filter(
@@ -1042,21 +1099,43 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                       }}
                       className={`flex items-center gap-1.5 rounded-lg px-3 py-2 whitespace-nowrap transition-all sm:gap-2 sm:px-4 sm:py-2.5 ${isActiveNav ? "bg-white font-semibold text-blue-600 shadow-md" : "bg-white/10 text-white hover:bg-white/20 active:scale-95"}`}
                     >
-                      <Image
-                        src={item.icon}
-                        alt={item?.name}
-                        height={18}
-                        width={18}
-                        className="h-4 w-4 sm:h-5 sm:w-5"
-                        style={{
-                          filter: isActiveNav
-                            ? "brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)"
-                            : "none",
-                        }}
-                      />
-                      <span className="text-xs font-medium sm:text-sm">
-                        {item?.name}
-                      </span>
+                      {currentLocale === "ar" ? (
+                        <>
+                          <span className="text-xs font-medium sm:text-sm">
+                            {t(getMenuTranslationKey(item?.name))}
+                          </span>
+                          <Image
+                            src={item.icon}
+                            alt={item?.name}
+                            height={18}
+                            width={18}
+                            className="h-4 w-4 sm:h-5 sm:w-5"
+                            style={{
+                              filter: isActiveNav
+                                ? "brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)"
+                                : "none",
+                            }}
+                          />
+                        </>
+                      ) : (
+                        <>
+                          <Image
+                            src={item.icon}
+                            alt={item?.name}
+                            height={18}
+                            width={18}
+                            className="h-4 w-4 sm:h-5 sm:w-5"
+                            style={{
+                              filter: isActiveNav
+                                ? "brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)"
+                                : "none",
+                            }}
+                          />
+                          <span className="text-xs font-medium sm:text-sm">
+                            {t(getMenuTranslationKey(item?.name))}
+                          </span>
+                        </>
+                      )}
                     </Link>
                   );
                 })}
@@ -1070,8 +1149,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
         className={`bg-dark-cyan relative sticky top-0 z-50 hidden w-full shadow-lg transition-all duration-300 md:block ${showHeader ? "translate-y-0" : "-translate-y-full"}`}
         key={`header-${currentTradeRole}-${currentAccount?.data?.data?.account?.id}`}
         style={{
-          [langDir === "rtl" ? "paddingRight" : "paddingLeft"]:
-            `${sidebarWidth}px`,
+          paddingLeft: `${sidebarWidth}px`,
         }}
       >
         <div className="bg-dark-cyan w-full">
@@ -1079,11 +1157,17 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
             <div className="hidden md:flex md:gap-x-2.5">
               <div className="py-1 text-xs font-normal text-white/90 md:w-4/12 md:py-1.5 md:text-sm lg:w-4/12 lg:py-2">
                 <p
-                  dir={langDir}
+                  dir="ltr"
                   translate="no"
                   className="transition-colors hover:text-white"
                 >
-                  {t("welcome")}
+                  {currentLocale === "ar" ? (
+                    <>
+                      Ultrasooq <span dir="rtl">مرحبًا بك في</span>
+                    </>
+                  ) : (
+                    t("welcome")
+                  )}
                 </p>
               </div>
               <div className="flex justify-end py-1 text-xs font-normal text-white/90 md:w-8/12 md:py-1.5 md:text-sm lg:w-8/12 lg:py-2">
@@ -1149,21 +1233,360 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                         await applyTranslation(newLocale);
                         // Refresh router to reload server components with new locale
                         router.refresh();
-                        let elem = document.querySelector(".goog-te-combo");
-                        if (elem) {
-                          // @ts-ignore
-                          elem.value = newLocale;
-                          elem.dispatchEvent(new Event("change"));
-                          setTimeout(() => {
-                            let elem = document.querySelector(".goog-te-combo");
-                            // @ts-ignore
-                            if (elem && !elem.value) {
-                              // @ts-ignore
-                              elem.value = "ar";
-                              elem.dispatchEvent(new Event("change"));
+
+                        // Function to trigger Google Translate
+                        const triggerGoogleTranslate = () => {
+                          console.log(
+                            "[Header] triggerGoogleTranslate called, locale:",
+                            newLocale,
+                          );
+                          // Map locale to Google Translate language codes
+                          const langCode = newLocale === "ar" ? "ar" : "en";
+                          console.log(
+                            "[Header] Mapped language code:",
+                            langCode,
+                          );
+
+                          // Use the helper function if available
+                          if ((window as any).triggerGoogleTranslate) {
+                            console.log("[Header] Using helper function...");
+                            const success = (
+                              window as any
+                            ).triggerGoogleTranslate(langCode);
+                            if (success) {
+                              console.log(
+                                "[Header] Google Translate triggered via helper:",
+                                langCode,
+                              );
+                              return;
                             }
-                          }, 1000);
-                        }
+                            console.warn(
+                              "[Header] Helper function returned false",
+                            );
+                          } else {
+                            console.warn(
+                              "[Header] Helper function not available",
+                            );
+                          }
+
+                          // Fallback: Wait for Google Translate to be ready
+                          const checkAndTrigger = (attempt = 0) => {
+                            console.log(
+                              `[Header] checkAndTrigger attempt ${attempt}`,
+                            );
+                            const elem = document.querySelector(
+                              ".goog-te-combo",
+                            ) as HTMLSelectElement;
+
+                            if (elem) {
+                              console.log("[Header] Combo box found!");
+                              console.log(
+                                "[Header] Options count:",
+                                elem.options?.length,
+                              );
+                              console.log(
+                                "[Header] Current value:",
+                                elem.value,
+                              );
+                              console.log(
+                                "[Header] Available options:",
+                                Array.from(elem.options).map((opt) => ({
+                                  value: opt.value,
+                                  text: opt.text,
+                                })),
+                              );
+                            } else {
+                              console.warn(
+                                `[Header] Combo box not found (attempt ${attempt})`,
+                              );
+                            }
+
+                            if (
+                              elem &&
+                              elem.options &&
+                              elem.options.length > 0
+                            ) {
+                              // Check if the language code exists in options
+                              const optionExists = Array.from(
+                                elem.options,
+                              ).some((opt) => opt.value === langCode);
+
+                              let targetValue = langCode;
+                              if (!optionExists) {
+                                console.warn(
+                                  `[Header] Language code "${langCode}" not found in options. Available:`,
+                                  Array.from(elem.options).map(
+                                    (opt) => opt.value,
+                                  ),
+                                );
+                                // Try to find a matching option
+                                const arabicOption = Array.from(
+                                  elem.options,
+                                ).find(
+                                  (opt) =>
+                                    opt.value.includes("ar") ||
+                                    opt.text.toLowerCase().includes("arabic"),
+                                );
+                                const englishOption = Array.from(
+                                  elem.options,
+                                ).find(
+                                  (opt) =>
+                                    opt.value.includes("en") ||
+                                    opt.text.toLowerCase().includes("english"),
+                                );
+                                const targetOption =
+                                  langCode === "ar"
+                                    ? arabicOption
+                                    : englishOption;
+                                if (targetOption) {
+                                  console.log(
+                                    "[Header] Using alternative option:",
+                                    targetOption.value,
+                                  );
+                                  targetValue = targetOption.value;
+                                } else {
+                                  console.error(
+                                    "[Header] No matching option found!",
+                                  );
+                                  return false;
+                                }
+                              }
+
+                              // IMPORTANT: If the value is already set to the target, reset it first to force a change
+                              if (elem.value === targetValue) {
+                                console.log(
+                                  "[Header] Value already set, resetting first to force change...",
+                                );
+                                // Reset to the opposite language first
+                                const oppositeValue =
+                                  langCode === "ar" ? "en" : "ar";
+                                const oppositeOption = Array.from(
+                                  elem.options,
+                                ).find(
+                                  (opt) =>
+                                    opt.value === oppositeValue ||
+                                    (langCode === "ar"
+                                      ? opt.value.includes("en") ||
+                                        opt.text
+                                          .toLowerCase()
+                                          .includes("english")
+                                      : opt.value.includes("ar") ||
+                                        opt.text
+                                          .toLowerCase()
+                                          .includes("arabic")),
+                                );
+
+                                if (oppositeOption) {
+                                  console.log(
+                                    "[Header] Resetting to opposite value:",
+                                    oppositeOption.value,
+                                  );
+                                  elem.value = oppositeOption.value;
+                                  // Trigger change to reset
+                                  const resetEvent = new Event("change", {
+                                    bubbles: true,
+                                    cancelable: true,
+                                  });
+                                  elem.dispatchEvent(resetEvent);
+
+                                  // Also trigger input event for reset
+                                  const resetInputEvent = new Event("input", {
+                                    bubbles: true,
+                                    cancelable: true,
+                                  });
+                                  elem.dispatchEvent(resetInputEvent);
+
+                                  // Wait a bit for the reset to take effect, then set to target
+                                  setTimeout(() => {
+                                    // Get a fresh reference to the element (it might have been recreated)
+                                    let freshElem = document.querySelector(
+                                      ".goog-te-combo",
+                                    ) as HTMLSelectElement;
+
+                                    if (!freshElem) {
+                                      // Try to find it in the container
+                                      const container = document.getElementById(
+                                        "google_translate_element",
+                                      );
+                                      freshElem = container?.querySelector(
+                                        ".goog-te-combo",
+                                      ) as HTMLSelectElement;
+                                    }
+
+                                    if (!freshElem) {
+                                      console.error(
+                                        "[Header] Could not find combo box element after reset!",
+                                      );
+                                      return;
+                                    }
+
+                                    console.log(
+                                      "[Header] Now setting to target value:",
+                                      targetValue,
+                                    );
+                                    console.log(
+                                      "[Header] Current value before setting:",
+                                      freshElem.value,
+                                    );
+
+                                    // Set the value
+                                    freshElem.value = targetValue;
+
+                                    // Verify the value was set
+                                    if (freshElem.value !== targetValue) {
+                                      console.warn(
+                                        "[Header] Value was not set correctly! Attempting alternative method...",
+                                      );
+                                      // Try setting selectedIndex instead
+                                      const targetIndex = Array.from(
+                                        freshElem.options,
+                                      ).findIndex(
+                                        (opt) => opt.value === targetValue,
+                                      );
+                                      if (targetIndex >= 0) {
+                                        freshElem.selectedIndex = targetIndex;
+                                        console.log(
+                                          "[Header] Set value using selectedIndex:",
+                                          targetIndex,
+                                        );
+                                      }
+                                    }
+
+                                    console.log(
+                                      "[Header] Value after setting:",
+                                      freshElem.value,
+                                    );
+
+                                    // Create and dispatch change event
+                                    const changeEvent = new Event("change", {
+                                      bubbles: true,
+                                      cancelable: true,
+                                    });
+                                    freshElem.dispatchEvent(changeEvent);
+
+                                    // Also try input event
+                                    const inputEvent = new Event("input", {
+                                      bubbles: true,
+                                      cancelable: true,
+                                    });
+                                    freshElem.dispatchEvent(inputEvent);
+
+                                    // Try click event as well
+                                    freshElem.click();
+
+                                    // Force focus and blur
+                                    freshElem.focus();
+                                    setTimeout(() => {
+                                      freshElem.blur();
+                                    }, 50);
+
+                                    console.log(
+                                      "[Header] Google Translate triggered after reset:",
+                                      langCode,
+                                      "New value:",
+                                      freshElem.value,
+                                    );
+                                  }, 300); // Increased delay to ensure reset takes effect
+
+                                  // Return true immediately since we've initiated the change
+                                  return true;
+                                } else {
+                                  // If we can't find opposite, just force the change anyway
+                                  elem.value = targetValue;
+                                  const changeEvent = new Event("change", {
+                                    bubbles: true,
+                                    cancelable: true,
+                                  });
+                                  elem.dispatchEvent(changeEvent);
+                                }
+                              } else {
+                                // Value is different, just set it normally
+                                elem.value = targetValue;
+                                const changeEvent = new Event("change", {
+                                  bubbles: true,
+                                  cancelable: true,
+                                });
+                                elem.dispatchEvent(changeEvent);
+                              }
+
+                              // Also trigger input event
+                              const inputEvent = new Event("input", {
+                                bubbles: true,
+                                cancelable: true,
+                              });
+                              elem.dispatchEvent(inputEvent);
+
+                              // Try mouse events as well
+                              elem.focus();
+                              elem.blur();
+
+                              console.log(
+                                "[Header] Google Translate triggered:",
+                                langCode,
+                                "New value:",
+                                elem.value,
+                              );
+                              return true;
+                            }
+
+                            // If not found and we haven't tried too many times, try again
+                            if (attempt < 20) {
+                              setTimeout(
+                                () => checkAndTrigger(attempt + 1),
+                                300,
+                              );
+                            } else {
+                              console.error(
+                                "[Header] Google Translate combo box not found after multiple attempts",
+                              );
+                            }
+                            return false;
+                          };
+
+                          // If Google Translate is already ready, try immediately
+                          if ((window as any).googleTranslateReady) {
+                            console.log(
+                              "[Header] Google Translate ready, triggering immediately...",
+                            );
+                            setTimeout(() => checkAndTrigger(), 200);
+                          } else {
+                            console.log(
+                              "[Header] Google Translate not ready, waiting for event...",
+                            );
+                            // Wait for the ready event
+                            const handleReady = () => {
+                              console.log(
+                                "[Header] googleTranslateReady event received",
+                              );
+                              setTimeout(() => checkAndTrigger(), 200);
+                              window.removeEventListener(
+                                "googleTranslateReady",
+                                handleReady,
+                              );
+                            };
+                            window.addEventListener(
+                              "googleTranslateReady",
+                              handleReady,
+                            );
+
+                            // Also try with delays as fallback
+                            setTimeout(() => {
+                              console.log("[Header] Fallback attempt 1");
+                              checkAndTrigger();
+                            }, 1000);
+                            setTimeout(() => {
+                              console.log("[Header] Fallback attempt 2");
+                              checkAndTrigger();
+                            }, 2000);
+                            setTimeout(() => {
+                              console.log("[Header] Fallback attempt 3");
+                              checkAndTrigger();
+                            }, 3000);
+                          }
+                        };
+
+                        // Trigger Google Translate after a short delay to ensure DOM is updated
+                        setTimeout(triggerGoogleTranslate, 500);
                       }}
                       // onChange={(e) => {
                       //   const newLocale = e.target.value;
@@ -1225,7 +1648,9 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                 <div className="relative flex-1">
                   <input
                     type="text"
-                    className="form-control h-9 w-full rounded-lg border-2 border-white/20 pr-12 pl-4 text-sm text-black transition-all placeholder:text-gray-400 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none md:h-10 md:text-base"
+                    className={`form-control h-9 w-full rounded-lg border-2 border-white/20 text-sm text-black transition-all placeholder:text-gray-400 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none md:h-10 md:text-base ${
+                      currentLocale === "ar" ? "pr-4 pl-12" : "pr-12 pl-4"
+                    }`}
                     placeholder={t("global_search_placeholder")}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
@@ -1234,7 +1659,9 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                     translate="no"
                   />
                   <svg
-                    className="pointer-events-none absolute top-1/2 right-4 h-5 w-5 -translate-y-1/2 text-gray-400"
+                    className={`pointer-events-none absolute top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400 ${
+                      currentLocale === "ar" ? "left-4" : "right-4"
+                    }`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -1639,7 +2066,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
               </div>
               <div
                 className="flex w-full flex-col flex-wrap items-start justify-start gap-x-1 py-1 md:flex-row md:justify-between"
-                dir={langDir}
+                dir="ltr"
               >
                 <ButtonLink
                   key={0}
@@ -1659,20 +2086,41 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                     onClick={handleClick}
                     translate="no"
                   >
-                    <Image
-                      src={menuBarIconList[0]}
-                      alt={t("home")}
-                      height={0}
-                      width={0}
-                      className={`h-7 w-7 ${pathname === "/home" ? "brightness-0 saturate-100" : ""}`}
-                      style={{
-                        filter:
-                          pathname === "/home"
-                            ? "brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)"
-                            : "none",
-                      }}
-                    />{" "}
-                    {t("home")}
+                    {currentLocale === "ar" ? (
+                      <>
+                        {t("home")}
+                        <Image
+                          src={menuBarIconList[0]}
+                          alt={t("home")}
+                          height={0}
+                          width={0}
+                          className={`h-7 w-7 ${pathname === "/home" ? "brightness-0 saturate-100" : ""}`}
+                          style={{
+                            filter:
+                              pathname === "/home"
+                                ? "brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)"
+                                : "none",
+                          }}
+                        />
+                      </>
+                    ) : (
+                      <>
+                        <Image
+                          src={menuBarIconList[0]}
+                          alt={t("home")}
+                          height={0}
+                          width={0}
+                          className={`h-7 w-7 ${pathname === "/home" ? "brightness-0 saturate-100" : ""}`}
+                          style={{
+                            filter:
+                              pathname === "/home"
+                                ? "brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)"
+                                : "none",
+                          }}
+                        />{" "}
+                        {t("home")}
+                      </>
+                    )}
                   </div>
                 </ButtonLink>
                 {memoizedMenu
@@ -1743,19 +2191,39 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                         className={`transition-colors ${isActive ? "active-nav-item" : "inactive-nav-item"}`}
                       >
                         <div className="flex gap-x-3" onClick={handleClick}>
-                          <Image
-                            src={item.icon}
-                            alt={item?.name}
-                            height={0}
-                            width={0}
-                            className={`h-7 w-7 ${isActive ? "brightness-0 saturate-100" : ""}`}
-                            style={{
-                              filter: isActive
-                                ? "brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)"
-                                : "none",
-                            }}
-                          />{" "}
-                          <p>{item?.name}</p>
+                          {currentLocale === "ar" ? (
+                            <>
+                              <p>{t(getMenuTranslationKey(item?.name))}</p>
+                              <Image
+                                src={item.icon}
+                                alt={item?.name}
+                                height={0}
+                                width={0}
+                                className={`h-7 w-7 ${isActive ? "brightness-0 saturate-100" : ""}`}
+                                style={{
+                                  filter: isActive
+                                    ? "brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)"
+                                    : "none",
+                                }}
+                              />
+                            </>
+                          ) : (
+                            <>
+                              <Image
+                                src={item.icon}
+                                alt={item?.name}
+                                height={0}
+                                width={0}
+                                className={`h-7 w-7 ${isActive ? "brightness-0 saturate-100" : ""}`}
+                                style={{
+                                  filter: isActive
+                                    ? "brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%)"
+                                    : "none",
+                                }}
+                              />{" "}
+                              <p>{t(getMenuTranslationKey(item?.name))}</p>
+                            </>
+                          )}
                         </div>
                       </ButtonLink>
                     );

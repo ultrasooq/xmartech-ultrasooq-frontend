@@ -68,7 +68,7 @@ const CheckoutPage = () => {
   const [selectedAddressId, setSelectedAddressId] = useState<
     number | undefined
   >();
-  const [sameAsShipping, setSameAsShipping] = useState(false);
+  // Removed sameAsShipping - billing is now read-only from profile
   const [selectedOrderDetails, setSelectedOrderDetails] =
     useState<OrderDetails>();
   const [addressType, setAddressType] = useState<"shipping" | "billing">();
@@ -747,22 +747,8 @@ const CheckoutPage = () => {
         shippingCountry: item.countryDetail?.name,
         shippingPostCode: item.postCode,
       }));
-    } else if (addresszType === "billing") {
-      setSelectedOrderDetails((prevState) => ({
-        ...prevState,
-        firstName: item.firstName || me.data?.data?.firstName,
-        lastName: item.lastName || me.data?.data?.lastName,
-        email: me.data?.data?.email,
-        cc: item.cc,
-        phone: item.phoneNumber,
-        billingAddress: item.address,
-        // billingTown: item.town,
-        billingCity: item.cityDetail?.name,
-        billingProvince: item.stateDetail?.name,
-        billingCountry: item.countryDetail?.name,
-        billingPostCode: item.postCode,
-      }));
     }
+    // Billing is read-only from profile, so we don't update it here
   };
 
   // State for selected addresses
@@ -777,13 +763,42 @@ const CheckoutPage = () => {
   useEffect(() => {
     if (memoziedAddressList.length > 0) {
       setSelectedShippingAddressId(memoziedAddressList[0].id.toString());
-      setSelectedBillingAddressId(memoziedAddressList[0].id.toString());
-
-      // Call handleOrderDetails for both shipping and billing
+      // Only set shipping address, billing comes from profile
       handleOrderDetails(memoziedAddressList[0], "shipping");
-      handleOrderDetails(memoziedAddressList[0], "billing");
     }
   }, [memoziedAddressList]);
+
+  // Initialize billing address from profile information (read-only)
+  useEffect(() => {
+    if (me.data?.data) {
+      const profileData = me.data.data;
+      const primaryPhone = profileData.userPhone?.[0] || {
+        cc: profileData.cc || "",
+        phoneNumber: profileData.phoneNumber || "",
+      };
+      
+      // Use first address for billing address fields, or empty if no addresses
+      const billingAddressData = memoziedAddressList.length > 0 
+        ? memoziedAddressList[0] 
+        : null;
+
+      setSelectedOrderDetails((prevState) => ({
+        ...prevState,
+        // Billing name and contact from profile
+        firstName: profileData.firstName || "",
+        lastName: profileData.lastName || "",
+        email: profileData.email || "",
+        cc: primaryPhone.cc || "",
+        phone: primaryPhone.phoneNumber || "",
+        // Billing address from first address or empty
+        billingAddress: billingAddressData?.address || "",
+        billingCity: billingAddressData?.cityDetail?.name || "",
+        billingProvince: billingAddressData?.stateDetail?.name || "",
+        billingCountry: billingAddressData?.countryDetail?.name || "",
+        billingPostCode: billingAddressData?.postCode || "",
+      }));
+    }
+  }, [me.data, memoziedAddressList]);
 
   const [invalidProducts, setInvalidProducts] = useState<number[]>([]);
   const [notAvailableProducts, setNotAvailableProducts] = useState<number[]>(
@@ -797,12 +812,11 @@ const CheckoutPage = () => {
       userAddressId: Number(selectedShippingAddressId),
     });
 
-    setInvalidProducts(
-      response?.invalidProducts?.map((productId: number) => productId) || [],
-    );
-    setNotAvailableProducts(
-      response?.productCannotBuy?.map((item: any) => item.productId) || [],
-    );
+    const invalidProductIds = response?.invalidProducts?.map((productId: number) => productId) || [];
+    const notAvailableProductIds = response?.productCannotBuy?.map((item: any) => item.productId) || [];
+
+    setInvalidProducts(invalidProductIds);
+    setNotAvailableProducts(notAvailableProductIds);
 
     let chargedFee = 0;
     if (response?.data?.length) {
@@ -1053,17 +1067,18 @@ const CheckoutPage = () => {
         } : {}),
       };
 
-      if (sameAsShipping) {
-        data.billingAddress = data.shippingAddress;
-        data.billingCity = data.shippingCity;
-        data.billingProvince = data.shippingProvince;
-        data.billingCountry = data.shippingCountry;
-        data.billingPostCode = data.shippingPostCode;
+      // Billing address comes from profile, so we use selectedOrderDetails billing info
+      if (!data.billingAddress && selectedOrderDetails?.billingAddress) {
+        data.billingAddress = selectedOrderDetails.billingAddress;
+        data.billingCity = selectedOrderDetails.billingCity;
+        data.billingProvince = selectedOrderDetails.billingProvince;
+        data.billingCountry = selectedOrderDetails.billingCountry;
+        data.billingPostCode = selectedOrderDetails.billingPostCode;
       }
 
       if (!data.billingAddress) {
         toast({
-          title: t("please_select_a_billing_address"),
+          title: t("billing_address_required_from_profile"),
           variant: "danger",
         });
         return;
@@ -1650,144 +1665,110 @@ const CheckoutPage = () => {
               )}
             </div>
 
-            {/* Billing Address */}
+            {/* Billing Address - Read-only from Profile */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
               <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-semibold text-gray-900" dir={langDir} translate="no">
-                    {me?.data
-                      ? t("select_billing_address")
-                      : t("billing_address")}
-                  </h2>
-                  
-                  {selectedOrderDetails?.shippingAddress && (
-                    <div className="flex items-center space-x-2">
-                      <Checkbox
-                        id="same_as_shipping"
-                        className="border border-solid border-gray-300 bg-white data-[state=checked]:bg-blue-600"
-                        onCheckedChange={() => {
-                          setSameAsShipping(!sameAsShipping);
-
-                          // since state is not updated immediately, making inverted checking
-                          if (sameAsShipping) {
-                            setSelectedOrderDetails({
-                              ...selectedOrderDetails,
-                              billingAddress: "",
-                              billingCity: "",
-                              billingProvince: "",
-                              billingCountry: "",
-                              billingPostCode: "",
-                            });
-                          }
-                        }}
-                        checked={sameAsShipping}
-                      />
-                      <Label
-                        htmlFor="same_as_shipping"
-                        className="text-sm font-medium text-gray-600"
-                        dir={langDir}
-                        translate="no"
-                      >
-                        {t("same_as_shipping_address")}
-                      </Label>
-                    </div>
-                  )}
-                </div>
+                <h2 className="text-xl font-semibold text-gray-900" dir={langDir} translate="no">
+                  {t("billing_address")}
+                </h2>
               </div>
 
               <div className="p-6">
-                {!sameAsShipping ? (
-                  <RadioGroup
-                    value={selectedBillingAddressId?.toString()}
-                    onValueChange={(value) =>
-                      setSelectedBillingAddressId(value)
-                    }
-                    className="space-y-4"
-                  >
-                    {memoziedAddressList?.map((item: AddressItem) => (
-                      <AddressCard
-                        key={item.id}
-                        id={item.id}
-                        firstName={item.firstName}
-                        lastName={item.lastName}
-                        cc={item.cc}
-                        phoneNumber={item.phoneNumber}
-                        address={item.address}
-                        town={item.town}
-                        city={item.cityDetail}
-                        country={item.countryDetail}
-                        state={item.stateDetail}
-                        postCode={item.postCode}
-                        onEdit={() => {
-                          setSelectedAddressId(item.id);
-                          handleToggleAddModal();
-                        }}
-                        onDelete={() => handleDeleteAddress(item.id)}
-                        onSelectAddress={() =>
-                          handleOrderDetails(item, "billing")
-                        }
-                      />
-                    ))}
-                  </RadioGroup>
-                ) : (
-                  <div className="text-center py-8">
-                    <div className="inline-flex items-center px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg">
-                      <div className="w-2 h-2 bg-blue-600 rounded-full mr-3"></div>
-                      <p className="text-blue-800 font-medium" dir={langDir} translate="no">
-                        {t("same_as_shipping_address")}
+                {me.data ? (
+                  // Logged-in user: Show billing from profile (read-only)
+                  selectedOrderDetails?.billingAddress ? (
+                    <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-2 mb-2">
+                            <svg
+                              className="w-5 h-5 text-gray-400"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                              />
+                            </svg>
+                            <p className="font-semibold text-gray-900" dir={langDir}>
+                              {selectedOrderDetails.firstName} {selectedOrderDetails.lastName}
+                            </p>
+                          </div>
+                          <p className="text-sm text-gray-600 mb-1" dir={langDir}>
+                            {selectedOrderDetails.cc} {selectedOrderDetails.phone}
+                          </p>
+                          <p className="text-sm text-gray-600 mb-1" dir={langDir}>
+                            {selectedOrderDetails.email}
+                          </p>
+                          <p className="text-sm text-gray-600 mt-2" dir={langDir}>
+                            {selectedOrderDetails.billingAddress}
+                          </p>
+                          <p className="text-sm text-gray-600" dir={langDir}>
+                            {selectedOrderDetails.billingCity}, {selectedOrderDetails.billingProvince}, {selectedOrderDetails.billingCountry} {selectedOrderDetails.billingPostCode}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <p className="text-gray-500" dir={langDir} translate="no">
+                        {t("no_billing_address_available")}
                       </p>
                     </div>
-                  </div>
-                )}
-
-                {guestBillingAddress && (
-                  <div className="mt-4">
-                    <GuestAddressCard
-                      firstName={guestBillingAddress?.firstName}
-                      lastName={guestBillingAddress?.lastName}
-                      cc={guestBillingAddress?.cc}
-                      phoneNumber={guestBillingAddress?.phoneNumber}
-                      address={guestBillingAddress?.address}
-                      city={guestBillingAddress?.city}
-                      town={guestBillingAddress?.town}
-                      state={guestBillingAddress?.state}
-                      country={guestBillingAddress?.country}
-                      postCode={guestBillingAddress?.postCode}
-                      onEdit={() => {
-                        setAddressType("billing");
-                        handleToggleAddModal();
-                      }}
-                    />
-                  </div>
+                  )
+                ) : (
+                  // Guest user: Show guest billing address
+                  guestBillingAddress ? (
+                    <div className="mt-4">
+                      <GuestAddressCard
+                        firstName={guestBillingAddress?.firstName}
+                        lastName={guestBillingAddress?.lastName}
+                        cc={guestBillingAddress?.cc}
+                        phoneNumber={guestBillingAddress?.phoneNumber}
+                        address={guestBillingAddress?.address}
+                        city={guestBillingAddress?.city}
+                        town={guestBillingAddress?.town}
+                        state={guestBillingAddress?.state}
+                        country={guestBillingAddress?.country}
+                        postCode={guestBillingAddress?.postCode}
+                        onEdit={() => {
+                          setAddressType("billing");
+                          handleToggleAddModal();
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <div className="px-6 pb-6">
+                      <Button
+                        variant="outline"
+                        type="button"
+                        className="w-full border-dashed border-2 border-gray-300 hover:border-gray-400 bg-transparent hover:bg-gray-50"
+                        onClick={() => {
+                          setAddressType("billing");
+                          handleToggleAddModal();
+                        }}
+                        translate="no"
+                      >
+                        <Image
+                          src={AddIcon}
+                          alt="add-icon"
+                          height={16}
+                          width={16}
+                          className="mr-2"
+                        />
+                        {t("add_new_billing_address")}
+                      </Button>
+                    </div>
+                  )
                 )}
               </div>
-
-              {!me.data && !guestBillingAddress && (
-                <div className="px-6 pb-6">
-                  <Button
-                    variant="outline"
-                    type="button"
-                    className="w-full border-dashed border-2 border-gray-300 hover:border-gray-400 bg-transparent hover:bg-gray-50"
-                    onClick={() => {
-                      setAddressType("billing");
-                      handleToggleAddModal();
-                    }}
-                    translate="no"
-                  >
-                    <Image
-                      src={AddIcon}
-                      alt="add-icon"
-                      height={16}
-                      width={16}
-                      className="mr-2"
-                    />
-                    {t("add_new_billing_address")}
-                  </Button>
-                </div>
-              )}
             </div>
 
-            {/* Add New Address Button for logged-in users */}
+            {/* Add New Address Button for logged-in users - Only for Shipping */}
             {me.data && (
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <div className="p-6">
@@ -1795,7 +1776,10 @@ const CheckoutPage = () => {
                     variant="outline"
                     type="button"
                     className="w-full border-dashed border-2 border-gray-300 hover:border-gray-400 bg-transparent hover:bg-gray-50"
-                    onClick={handleToggleAddModal}
+                    onClick={() => {
+                      setAddressType("shipping");
+                      handleToggleAddModal();
+                    }}
                     dir={langDir}
                     translate="no"
                   >
@@ -1906,6 +1890,7 @@ const CheckoutPage = () => {
               onClose={() => {
                 setIsAddModalOpen(false);
                 setSelectedAddressId(undefined);
+                setAddressType("shipping"); // Reset to shipping
               }}
               addressId={selectedAddressId}
             />
@@ -1914,8 +1899,9 @@ const CheckoutPage = () => {
               onClose={() => {
                 setIsAddModalOpen(false);
                 setSelectedAddressId(undefined);
+                setAddressType("shipping"); // Reset to shipping
               }}
-              addressType={addressType}
+              addressType={addressType || "shipping"} // Default to shipping
               setGuestShippingAddress={setGuestShippingAddress}
               setGuestBillingAddress={setGuestBillingAddress}
               guestShippingAddress={guestShippingAddress}
