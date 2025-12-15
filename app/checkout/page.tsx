@@ -25,7 +25,7 @@ import { AddressItem } from "@/utils/types/address.types";
 import { useClickOutside } from "use-events";
 import { getCookie } from "cookies-next";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
-import { convertDateTimeToUTC, getOrCreateDeviceId } from "@/utils/helper";
+import { getOrCreateDeviceId } from "@/utils/helper";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -604,7 +604,6 @@ const CheckoutPage = () => {
       { value: "PICKUP", label: "Consumer Pickup" },
       { value: "SELLERDROP", label: "Delivery By Seller" },
       { value: "THIRDPARTY", label: "Third Party" },
-      { value: "PLATFORM", label: "Third Party (Within Platform)" },
     ];
   };
 
@@ -913,45 +912,7 @@ const CheckoutPage = () => {
     for (let info of shippingInfo) {
       errors[i].errors = {};
 
-      if (info.shippingType == "PICKUP") {
-        if (!info?.info?.shippingDate) {
-          errors[i]["errors"]["shippingDate"] = "Shipping date is required";
-        } else {
-          let date = new Date();
-          date = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-          if (
-            new Date(info?.info?.shippingDate + " 00:00:00").getTime() <=
-            date.getTime()
-          ) {
-            errors[i]["errors"]["shippingDate"] =
-              "Shipping date must be greater than current date";
-          }
-        }
-
-        if (!info?.info?.fromTime) {
-          errors[i]["errors"]["fromTime"] = "From time is required";
-        }
-
-        if (!info?.info?.toTime) {
-          errors[i]["errors"]["toTime"] = "To time is required";
-        }
-
-        if (
-          info?.info?.fromTime &&
-          info?.info?.toTime &&
-          info?.info?.fromTime >= info?.info?.toTime
-        ) {
-          errors[i]["errors"]["fromTime"] =
-            "From time must be less than to time";
-        }
-
-        count += Object.keys(errors[i]["errors"]).length > 0 ? 1 : 0;
-      }
-
-      if (
-        info.shippingType == "SELLERDROP" ||
-        info.shippingType == "PLATFORM"
-      ) {
+      if (info.shippingType == "SELLERDROP") {
         if (!info?.info?.serviceId) {
           errors[i]["errors"]["serviceId"] = "Shipping service is required";
         }
@@ -981,20 +942,7 @@ const CheckoutPage = () => {
         serviceId: null,
       };
 
-      if (info.shippingType == "PICKUP") {
-        data[i].shippingDate = convertDateTimeToUTC(
-          `${info.info.shippingDate} ${info.info.fromTime}:00`,
-        );
-        data[i].fromTime = convertDateTimeToUTC(
-          `${info.info.shippingDate} ${info.info.fromTime}:00`,
-        );
-        data[i].toTime = convertDateTimeToUTC(
-          `${info.info.shippingDate} ${info.info.toTime}:00`,
-        );
-      } else if (
-        info.shippingType == "SELLERDROP" ||
-        info.shippingType == "PLATFORM"
-      ) {
+      if (info.shippingType == "SELLERDROP") {
         data[i].shippingCharge = info.info.shippingCharge;
         data[i].serviceId = info.info.serviceId;
       }
@@ -1363,6 +1311,22 @@ const CheckoutPage = () => {
                                           shippingInfo[index].shippingType ==
                                           option.value,
                                       )}
+                                      menuPlacement="auto"
+                                      menuPortalTarget={
+                                        typeof document !== "undefined"
+                                          ? document.body
+                                          : undefined
+                                      }
+                                      styles={{
+                                        menuPortal: (base) => ({
+                                          ...base,
+                                          zIndex: 9999,
+                                        }),
+                                        menu: (base) => ({
+                                          ...base,
+                                          zIndex: 9999,
+                                        }),
+                                      }}
                                       onChange={(newValue: any) => {
                                         let data = shippingInfo;
                                         data[index].shippingType = newValue?.value;
@@ -1429,68 +1393,6 @@ const CheckoutPage = () => {
                                     </>
                                   )}
                                 </div>
-
-                                {/* Pickup Details */}
-                                {shippingInfo[index].shippingType == "PICKUP" && (
-                                  <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <div>
-                                      <Label className="text-sm font-medium text-gray-600">Pickup Date</Label>
-                                      <Input
-                                        type="date"
-                                        className="mt-1"
-                                        value={
-                                          shippingInfo[index].info?.shippingDate || ""
-                                        }
-                                        onChange={(e) => {
-                                          let data = shippingInfo;
-                                          data[index].info.shippingDate =
-                                            e.target.value;
-                                          setShippingInfo([...data]);
-                                        }}
-                                      />
-                                      <span className="text-xs text-red-500">
-                                        {shippingErrors?.[index]?.errors
-                                          ?.shippingDate || ""}
-                                      </span>
-                                    </div>
-                                    <div>
-                                      <Label className="text-sm font-medium text-gray-600">From Time</Label>
-                                      <Input
-                                        type="time"
-                                        className="mt-1"
-                                        value={
-                                          shippingInfo[index].info?.fromTime || ""
-                                        }
-                                        onChange={(e) => {
-                                          let data = shippingInfo;
-                                          data[index].info.fromTime = e.target.value;
-                                          setShippingInfo([...data]);
-                                        }}
-                                      />
-                                      <span className="text-xs text-red-500">
-                                        {shippingErrors?.[index]?.errors?.fromTime ||
-                                          ""}
-                                      </span>
-                                    </div>
-                                    <div>
-                                      <Label className="text-sm font-medium text-gray-600">To Time</Label>
-                                      <Input
-                                        type="time"
-                                        className="mt-1"
-                                        value={shippingInfo[index].info?.toTime || ""}
-                                        onChange={(e) => {
-                                          let data = shippingInfo;
-                                          data[index].info.toTime = e.target.value;
-                                          setShippingInfo([...data]);
-                                        }}
-                                      />
-                                      <span className="text-xs text-red-500">
-                                        {shippingErrors?.[index]?.errors?.toTime ||
-                                          ""}
-                                      </span>
-                                    </div>
-                                  </div>
-                                )}
                               </div>
                             </div>
                           </div>

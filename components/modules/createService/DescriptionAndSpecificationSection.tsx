@@ -1,5 +1,6 @@
 import React from "react";
 import ControlledRichTextEditor from "@/components/shared/Forms/ControlledRichTextEditor";
+import ControlledMarkdownEditor from "@/components/shared/Forms/ControlledMarkdownEditor";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
@@ -48,9 +49,10 @@ const DescriptionAndSpecificationSection = () => {
       <h3 dir={langDir} translate="no">{t("description_n_specification")}</h3>
       <div className="mb-3.5 w-full">
         <div className="relative mb-4 w-full">
-          <ControlledRichTextEditor
+          <ControlledMarkdownEditor
             label={t("description")}
             name="description"
+            height={400}
           />
           <p className="text-red-500 text-sm mt-1">
             {typeof descriptionError?.message === "string" ? descriptionError.message : null}

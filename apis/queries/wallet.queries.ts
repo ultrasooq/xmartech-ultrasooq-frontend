@@ -24,6 +24,24 @@ export const useWalletBalance = (enabled = true) =>
     enabled,
     refetchInterval: 30000, // Refetch every 30 seconds
     staleTime: 10000, // Consider data stale after 10 seconds
+    retry: (failureCount, error: any) => {
+      // Retry up to 3 times for 500 errors (wallet might not be created yet)
+      if (failureCount < 3) {
+        // Check if it's a 500 error (server error - wallet might not exist yet)
+        if (error?.response?.status === 500) {
+          return true;
+        }
+        // Also retry network errors
+        if (!error?.response) {
+          return true;
+        }
+      }
+      return false;
+    },
+    retryDelay: (attemptIndex) => {
+      // Exponential backoff: 1s, 2s, 4s
+      return Math.min(1000 * Math.pow(2, attemptIndex), 4000);
+    },
   });
 
 export const useWalletTransactions = (
@@ -45,6 +63,22 @@ export const useWalletTransactions = (
     enabled,
     refetchInterval: 30000, // Refetch every 30 seconds to see new transactions
     staleTime: 10000, // Consider data stale after 10 seconds
+    retry: (failureCount, error: any) => {
+      // Retry up to 3 times for 500 errors
+      if (failureCount < 3) {
+        if (error?.response?.status === 500) {
+          return true;
+        }
+        if (!error?.response) {
+          return true;
+        }
+      }
+      return false;
+    },
+    retryDelay: (attemptIndex) => {
+      // Exponential backoff: 1s, 2s, 4s
+      return Math.min(1000 * Math.pow(2, attemptIndex), 4000);
+    },
   });
 
 export const useWalletTransactionById = (transactionId: number, enabled = true) =>

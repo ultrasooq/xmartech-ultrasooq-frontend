@@ -1933,49 +1933,32 @@ const CreateProductPage = () => {
                     </div>
                   </div>
 
-                  {/* Action Buttons Card */}
-                  <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 text-sm text-gray-500">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        {t("save_as_draft_info")}
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <button
-                          type="button"
-                          className="px-6 py-3 text-sm font-medium text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors duration-200"
-                          dir={langDir}
-                          translate="no"
-                        >
-                          {t("save_as_draft")}
-                        </button>
-
-                        <Button
-                          disabled={
-                            createProduct.isPending || uploadMultiple.isPending || updateProductFull.isPending || updateProductPrice.isPending
-                          }
-                          type="submit"
-                          className="px-8 py-3 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
-                          dir={langDir}
-                          translate="no"
-                          onClick={() => {
-                            // Force trigger validation to see all errors
-                            form.trigger();
-                          }}
-                        >
-                          {createProduct.isPending ||
-                            uploadMultiple.isPending ||
-                            (updateProductFull.isPending || updateProductPrice.isPending) ? (
-                            <LoaderWithMessage message={t("please_wait")} />
-                          ) : (
-                            isEditMode ? t("update_product") : t("continue")
-                          )}
-                        </Button>
-                      </div>
-                    </div>
+                {/* Action Buttons Card */}
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+                  <div className="flex items-center justify-end">
+                    <Button
+                      disabled={
+                        createProduct.isPending || uploadMultiple.isPending || updateProductFull.isPending || updateProductPrice.isPending
+                      }
+                      type="submit"
+                      className="px-8 py-3 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                      dir={langDir}
+                      translate="no"
+                      onClick={() => {
+                        // Force trigger validation to see all errors
+                        form.trigger();
+                      }}
+                    >
+                      {createProduct.isPending ||
+                        uploadMultiple.isPending ||
+                        (updateProductFull.isPending || updateProductPrice.isPending) ? (
+                        <LoaderWithMessage message={t("please_wait")} />
+                      ) : (
+                        isEditMode ? t("update_product") : t("continue")
+                      )}
+                    </Button>
                   </div>
+                </div>
                 </form>
               </Form>
             )}

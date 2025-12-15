@@ -20,10 +20,11 @@ import BackgroundImage from "@/public/images/before-login-bg.png";
 import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import { fetchMe, fetchUserPermissions } from "@/apis/requests/user.requests";
 
 export default function OtpVerifyPage() {
   const t = useTranslations();
-  const { langDir } = useAuth();
+  const { langDir, setUser, setPermissions } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const [otp, setOtp] = useState(new Array(4).fill(""));
@@ -89,6 +90,33 @@ export default function OtpVerifyPage() {
         // 3 days
         expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
       });
+      
+      // Fetch user data and update AuthContext (same as login page)
+      try {
+        const userRes = await fetchMe();
+        if (userRes?.data?.data?.id) {
+          setUser({
+            id: userRes.data.data.id,
+            firstName: userRes.data.data.firstName || '',
+            lastName: userRes.data.data.lastName || '',
+            tradeRole: userRes.data.data.tradeRole || '',
+          });
+        }
+      } catch (e) {
+        // If fetchMe fails, the AuthContext useEffect will try to recover
+        console.error("Failed to fetch user after OTP verification:", e);
+      }
+
+      // Fetch permissions (optional, same as login page)
+      try {
+        const permissions = await fetchUserPermissions();
+        setPermissions([
+          ...(permissions?.data?.data?.userRoleDetail?.userRolePermission || []),
+        ]);
+      } catch (e) {
+        // Silent fail - permissions are optional
+      }
+
       toast({
         title: t("verification_successful"),
         description: response.message,

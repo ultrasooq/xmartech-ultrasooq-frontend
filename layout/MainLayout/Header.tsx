@@ -143,6 +143,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
   const [subCategoryIndex, setSubCategoryIndex] = useState(0);
   const [subSubCategoryIndex, setSubSubCategoryIndex] = useState(0);
   const [subSubSubCategoryIndex, setSubSubSubCategoryIndex] = useState(0);
+
   const hasAccessToken = !!getCookie(PUREMOON_TOKEN_KEY);
   const deviceId = getOrCreateDeviceId() || "";
   const {
@@ -158,6 +159,15 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
     { deviceId },
     !hasAccessToken,
   );
+
+  // Determine if there are any items in cart (for layout adjustments)
+  const hasCartItems =
+    (hasAccessToken &&
+      !isArray(cartCountWithLogin.data?.data) &&
+      (cartCountWithLogin.data?.data || 0) > 0) ||
+    (!hasAccessToken &&
+      !isArray(cartCountWithoutLogin.data?.data) &&
+      (cartCountWithoutLogin.data?.data || 0) > 0);
   const category = useCategoryStore();
   const me = useMe(!!accessToken);
   const currentAccount = useCurrentAccount();
@@ -1146,7 +1156,11 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
 
       {/* Desktop/Tablet Header - Hidden on mobile */}
       <header
-        className={`bg-dark-cyan relative sticky top-0 z-50 hidden w-full shadow-lg transition-all duration-300 md:block ${showHeader ? "translate-y-0" : "-translate-y-full"}`}
+        className={`bg-dark-cyan relative sticky top-0 z-50 hidden w-full shadow-lg transition-all duration-300 md:block ${
+          (pathname === "/trending" || pathname === "/buygroup") && hasCartItems
+            ? "lg:pr-36"
+            : ""
+        } ${showHeader ? "translate-y-0" : "-translate-y-full"}`}
         key={`header-${currentTradeRole}-${currentAccount?.data?.data?.account?.id}`}
         style={{
           paddingLeft: `${sidebarWidth}px`,

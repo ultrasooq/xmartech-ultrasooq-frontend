@@ -56,6 +56,8 @@ import {
   useCartListByDevice,
   useCartListByUserId,
   useDeleteCartItem,
+  useUpdateCartByDevice,
+  useUpdateCartWithLogin,
 } from "@/apis/queries/cart.queries";
 import { getOrCreateDeviceId } from "@/utils/helper";
 import { getCookie } from "cookies-next";
@@ -69,7 +71,7 @@ import { useTranslations } from "next-intl";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/context/AuthContext";
-import { Package, Building2, X, ShoppingCart } from "lucide-react";
+import { Package, Building2, X, ShoppingCart, Trash2 } from "lucide-react";
 // @ts-ignore
 import { startDebugger } from "remove-child-node-error-debugger";
 import Cart from "@/components/modules/cartList/Cart";
@@ -85,6 +87,7 @@ import {
 import { useVendorBusinessCategories } from "@/hooks/useVendorBusinessCategories";
 import { checkCategoryConnection } from "@/utils/categoryConnection";
 import { useCategory } from "@/apis/queries/category.queries";
+import Link from "next/link";
 
 interface TrendingPageProps {
   searchParams?: Promise<{ term?: string }>;
@@ -135,6 +138,8 @@ const TrendingPage = (props0: TrendingPageProps) => {
   const addToWishlist = useAddToWishList();
   const deleteFromWishlist = useDeleteFromWishList();
   const deleteCartItem = useDeleteCartItem();
+  const updateCartWithLogin = useUpdateCartWithLogin();
+  const updateCartByDevice = useUpdateCartByDevice();
 
   const allProductsQuery = useAllProducts({
     page,
@@ -561,6 +566,53 @@ const TrendingPage = (props0: TrendingPageProps) => {
     }
   };
 
+  // Handle update cart quantity
+  const handleUpdateCartQuantity = async (
+    cartItem: any,
+    newQuantity: number,
+    actionType: "add" | "remove",
+  ) => {
+    if (newQuantity <= 0) {
+      handleRemoveItemFromCart(cartItem.id);
+      return;
+    }
+
+    if (haveAccessToken) {
+      const response = await updateCartWithLogin.mutateAsync({
+        productPriceId: cartItem.productPriceDetails?.id,
+        quantity: newQuantity,
+        productVariant: cartItem.object,
+      });
+      if (response.status) {
+        toast({
+          title:
+            actionType === "add"
+              ? t("item_added_to_cart")
+              : t("item_removed_from_cart"),
+          description: t("check_your_cart_for_more_details"),
+          variant: "success",
+        });
+      }
+    } else {
+      const response = await updateCartByDevice.mutateAsync({
+        productPriceId: cartItem.productPriceDetails?.id,
+        quantity: newQuantity,
+        deviceId,
+        productVariant: cartItem.object,
+      });
+      if (response.status) {
+        toast({
+          title:
+            actionType === "add"
+              ? t("item_added_to_cart")
+              : t("item_removed_from_cart"),
+          description: t("check_your_cart_for_more_details"),
+          variant: "success",
+        });
+      }
+    }
+  };
+
   // Get unique category IDs from cart items for fresh category data
   const uniqueCartCategoryIds = useMemo(() => {
     const categoryIds = new Set<number>();
@@ -611,8 +663,52 @@ const TrendingPage = (props0: TrendingPageProps) => {
       }
 
       const quantity = Number(cartItem?.quantity) || 1;
-
       const cartPriceDetails = cartItem?.productPriceDetails || {};
+
+      // If productData is not found (e.g., buygroup product on trending page),
+      // use simpler calculation directly from cart item price details
+      if (!productData && cartPriceDetails) {
+        const offerPrice = Number(cartPriceDetails.offerPrice || 0);
+        let discount = 0;
+        let discountType: string | undefined;
+
+        if (currentTradeRole && currentTradeRole !== "BUYER") {
+          discount = Number(cartPriceDetails.vendorDiscount || 0);
+          discountType = cartPriceDetails.vendorDiscountType;
+        } else {
+          discount = Number(cartPriceDetails.consumerDiscount || 0);
+          discountType = cartPriceDetails.consumerDiscountType;
+        }
+
+        let unitPrice = offerPrice;
+        if (discount > 0 && discountType) {
+          const normalizedDiscountType = discountType.toUpperCase().trim();
+          if (normalizedDiscountType === "PERCENTAGE") {
+            unitPrice = offerPrice * (1 - discount / 100);
+          } else if (
+            normalizedDiscountType === "AMOUNT" ||
+            normalizedDiscountType === "FLAT" ||
+            normalizedDiscountType === "FIXED"
+          ) {
+            unitPrice = offerPrice - discount;
+          }
+        }
+
+        const totalPrice = Number((unitPrice * quantity).toFixed(2));
+        const originalUnitPrice = Number(
+          cartPriceDetails.price || cartPriceDetails.basePrice || offerPrice,
+        );
+        const originalTotalPrice = Number(
+          (originalUnitPrice * quantity).toFixed(2),
+        );
+
+        return {
+          unitPrice: Number(unitPrice.toFixed(2)),
+          totalPrice,
+          originalUnitPrice,
+          originalTotalPrice,
+        };
+      }
 
       let originalPrice = 0;
       if (productData?.productProductPrice) {
@@ -781,7 +877,35 @@ const TrendingPage = (props0: TrendingPageProps) => {
         cartPriceDetails?.offerPrice ?? cartItem?.offerPrice ?? 0,
       );
 
-      if (backendOfferPrice > 0) {
+      // For buygroup products or when productData is missing, prioritize cart item's offerPrice
+      // as it may already have the correct discounted price
+      if (!productData && backendOfferPrice > 0) {
+        // Use the offerPrice directly if it seems to be the final price
+        // Otherwise apply discount if needed
+        let calculatedPrice = backendOfferPrice;
+        const discount =
+          currentTradeRole && currentTradeRole !== "BUYER"
+            ? Number(cartPriceDetails?.vendorDiscount || 0)
+            : Number(cartPriceDetails?.consumerDiscount || 0);
+        const discountType =
+          currentTradeRole && currentTradeRole !== "BUYER"
+            ? cartPriceDetails?.vendorDiscountType
+            : cartPriceDetails?.consumerDiscountType;
+
+        if (discount > 0 && discountType) {
+          const normalizedDiscountType = discountType.toUpperCase().trim();
+          if (normalizedDiscountType === "PERCENTAGE") {
+            calculatedPrice = backendOfferPrice * (1 - discount / 100);
+          } else if (
+            normalizedDiscountType === "AMOUNT" ||
+            normalizedDiscountType === "FLAT" ||
+            normalizedDiscountType === "FIXED"
+          ) {
+            calculatedPrice = backendOfferPrice - discount;
+          }
+        }
+        finalPrice = calculatedPrice;
+      } else if (backendOfferPrice > 0) {
         finalPrice =
           finalPrice > 0
             ? Math.min(finalPrice, backendOfferPrice)
@@ -824,6 +948,17 @@ const TrendingPage = (props0: TrendingPageProps) => {
       firstCartCategoryId,
     ],
   );
+
+  // Calculate cart subtotal
+  const cartSubtotal = useMemo(() => {
+    return cartList.reduce((total: number, cartItem: any) => {
+      const productData = memoizedProductList.find(
+        (product: any) => product.id === cartItem.productId,
+      );
+      const pricing = getCartPricing(productData, cartItem);
+      return total + pricing.totalPrice;
+    }, 0);
+  }, [cartList, memoizedProductList, getCartPricing]);
 
   const getProductVariants = async () => {
     let productPriceIds = memoizedProductList
@@ -954,9 +1089,9 @@ const TrendingPage = (props0: TrendingPageProps) => {
         {t("store")} | Ultrasooq
       </title>
       <div className="body-content-s1 bg-white">
-        <TrendingCategories />
+        {/* <TrendingCategories /> */}
 
-        <BannerSection />
+        {/* <BannerSection /> */}
 
         {/* Full Width Two Column Layout */}
         <div className="min-h-screen w-full bg-white px-2 sm:px-4 lg:px-8">
@@ -1155,8 +1290,8 @@ const TrendingPage = (props0: TrendingPageProps) => {
               </div>
             </div>
 
-            {/* Main Content Column - Products (FULL WIDTH NOW) */}
-            <div className="w-full flex-1 overflow-y-auto bg-white lg:w-auto">
+            {/* Main Content Column - Products */}
+            <div className="w-full flex-1 overflow-y-auto bg-white lg:w-auto lg:pr-36">
               <div className="p-2 sm:p-4 lg:p-6">
                 <Tabs
                   value={activeTab}
@@ -1390,18 +1525,172 @@ const TrendingPage = (props0: TrendingPageProps) => {
           </div>
         </div>
 
-        {/* Floating Cart Button - Only show when cart has items */}
+        {/* Fixed Right Sidebar Cart - Desktop Only (Amazon Style) */}
         {cartList.length > 0 && (
-          <button
-            onClick={() => setShowCartDrawer(true)}
-            className="group fixed right-6 bottom-6 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-blue-600 text-white shadow-2xl transition-all duration-300 hover:scale-110 hover:bg-blue-700 lg:h-14 lg:w-14"
-            aria-label={t("my_cart")}
-          >
-            <ShoppingCart className="h-5 w-5 lg:h-6 lg:w-6" />
-            <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full border-2 border-white bg-red-500 text-xs font-bold text-white shadow-lg lg:h-6 lg:w-6">
-              {cartList.length > 99 ? "99+" : cartList.length}
-            </span>
-          </button>
+          <div className="hidden lg:block">
+            <div className="fixed top-0 right-0 z-[60] h-screen w-36 border-l border-gray-200 bg-white shadow-lg">
+              <div className="flex h-full flex-col">
+                {/* Top sticky subtotal + Go To Cart */}
+                <div className="sticky top-0 z-10 border-b border-gray-200 bg-white px-4 pt-4 pb-3 text-center">
+                  <div className="flex flex-col items-center">
+                    <span
+                      className="mb-0.5 text-[11px] font-medium text-gray-600"
+                      dir={langDir}
+                      translate="no"
+                    >
+                      {t("subtotal")}
+                    </span>
+                    <span className="text-sm font-bold text-red-600">
+                      {currency.symbol}
+                      {cartSubtotal.toFixed(2)}
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => {
+                      window.location.href = "/cart";
+                    }}
+                    className="mt-3 flex w-full items-center justify-center space-x-1.5 rounded-lg bg-yellow-400 px-3 py-2 text-xs font-medium text-gray-900 shadow-sm transition-colors duration-200 hover:bg-yellow-500"
+                  >
+                    <Package className="h-3 w-3" />
+                    <span>{t("go_to_cart")}</span>
+                  </button>
+                </div>
+
+                {/* Scrollable product list */}
+                <div className="scrollbar-hide flex-1 overflow-y-auto px-4 pt-3 pb-4">
+                  <div className="space-y-3">
+                    {cartList.map((cartItem: any) => {
+                      const productData = memoizedProductList.find(
+                        (product: any) => product.id === cartItem.productId,
+                      );
+                      const pricing = getCartPricing(productData, cartItem);
+                      const quantity = cartItem.quantity || 1;
+
+                      // Fallbacks for products that aren't in memoizedProductList (e.g. added from Buygroup)
+                      const productImage =
+                        productData?.productImage ||
+                        cartItem.productPriceDetails?.productPrice_product
+                          ?.productImages?.[0]?.image ||
+                        null;
+
+                      const productName =
+                        productData?.productName ||
+                        cartItem.productPriceDetails?.productPrice_product
+                          ?.productName ||
+                        t("product");
+
+                      return (
+                        <div
+                          key={cartItem.id}
+                          className="space-y-2 text-center"
+                        >
+                          {/* Product Image */}
+                          <div className="flex justify-center">
+                            <Link
+                              href={`/trending/${cartItem.productId}`}
+                              className="h-20 w-20 overflow-hidden rounded-lg bg-gray-100 transition-opacity hover:opacity-80"
+                            >
+                              {productImage ? (
+                                <img
+                                  src={productImage}
+                                  alt={productName}
+                                  className="h-full w-full object-cover"
+                                />
+                              ) : (
+                                <div className="flex h-full w-full items-center justify-center">
+                                  <Package className="h-8 w-8 text-gray-400" />
+                                </div>
+                              )}
+                            </Link>
+                          </div>
+
+                          {/* Price */}
+                          <div className="mb-2 text-center">
+                            <p className="text-sm font-semibold text-gray-900">
+                              {currency.symbol}
+                              {pricing.totalPrice.toFixed(2)}
+                            </p>
+                          </div>
+
+                          {/* Quantity Selector - Amazon Style */}
+                          <div className="mb-2 flex items-center justify-center">
+                            <div className="flex items-center overflow-hidden rounded-md border-2 border-yellow-400">
+                              {/* Trash/Remove Button */}
+                              <button
+                                onClick={() => {
+                                  if (quantity > 1) {
+                                    handleUpdateCartQuantity(
+                                      cartItem,
+                                      quantity - 1,
+                                      "remove",
+                                    );
+                                  } else {
+                                    handleRemoveItemFromCart(cartItem.id);
+                                  }
+                                }}
+                                disabled={
+                                  deleteCartItem.isPending ||
+                                  updateCartWithLogin.isPending ||
+                                  updateCartByDevice.isPending
+                                }
+                                className="px-1.5 py-1 transition-colors hover:bg-yellow-50 disabled:cursor-not-allowed disabled:opacity-50"
+                                aria-label={t("decrease_quantity")}
+                              >
+                                <Trash2 className="h-3 w-3 text-gray-600" />
+                              </button>
+
+                              {/* Quantity Number */}
+                              <span className="min-w-[2rem] border-x border-yellow-400 bg-white px-2 py-1 text-center text-xs font-medium text-gray-900">
+                                {quantity}
+                              </span>
+
+                              {/* Plus Button */}
+                              <button
+                                onClick={() => {
+                                  handleUpdateCartQuantity(
+                                    cartItem,
+                                    quantity + 1,
+                                    "add",
+                                  );
+                                }}
+                                disabled={
+                                  updateCartWithLogin.isPending ||
+                                  updateCartByDevice.isPending
+                                }
+                                className="px-1.5 py-1 transition-colors hover:bg-yellow-50 disabled:cursor-not-allowed disabled:opacity-50"
+                                aria-label={t("increase_quantity")}
+                              >
+                                <span className="text-sm font-semibold text-gray-600">
+                                  +
+                                </span>
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* Remove Button */}
+                          <div className="flex justify-center">
+                            <button
+                              onClick={() =>
+                                handleRemoveItemFromCart(cartItem.id)
+                              }
+                              disabled={deleteCartItem.isPending}
+                              className="text-xs text-blue-600 underline hover:text-blue-800 disabled:cursor-not-allowed disabled:opacity-50"
+                              aria-label={t("remove_from_cart")}
+                            >
+                              {t("remove")}
+                            </button>
+                          </div>
+
+                          {/* Divider */}
+                          <div className="mt-3 border-t border-gray-200" />
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         )}
 
         {/* Mobile Filter Drawer */}
@@ -1583,11 +1872,11 @@ const TrendingPage = (props0: TrendingPageProps) => {
           </SheetContent>
         </Sheet>
 
-        {/* Desktop & Mobile Cart Drawer - Enhanced */}
+        {/* Mobile Cart Drawer - Only for mobile devices */}
         <Sheet open={showCartDrawer} onOpenChange={setShowCartDrawer}>
           <SheetContent
             side="right"
-            className="w-full overflow-y-auto sm:w-[400px] lg:w-[450px]"
+            className="w-full overflow-y-auto sm:w-[400px] lg:hidden"
           >
             <SheetHeader className="mb-4 border-b border-gray-200 pb-4">
               <SheetTitle className="flex items-center justify-between">
@@ -1620,16 +1909,33 @@ const TrendingPage = (props0: TrendingPageProps) => {
                       (product: any) => product.id === cartItem.productId,
                     );
 
+                    // Fallbacks for products that aren't in memoizedProductList (e.g. added from Buygroup)
+                    const productImage =
+                      productData?.productImage ||
+                      cartItem.productPriceDetails?.productPrice_product
+                        ?.productImages?.[0]?.image ||
+                      null;
+
+                    const productName =
+                      productData?.productName ||
+                      cartItem.productPriceDetails?.productPrice_product
+                        ?.productName ||
+                      t("product");
+
                     return (
                       <div
                         key={cartItem.id}
                         className="group flex items-center space-x-4 rounded-lg border border-gray-100 p-3 transition-colors hover:bg-gray-50"
                       >
-                        <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100">
-                          {productData?.productImage ? (
+                        <Link
+                          href={`/trending/${cartItem.productId}`}
+                          className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100 transition-opacity hover:opacity-80"
+                          onClick={() => setShowCartDrawer(false)}
+                        >
+                          {productImage ? (
                             <img
-                              src={productData.productImage}
-                              alt={productData.productName || "Product"}
+                              src={productImage}
+                              alt={productName}
                               className="h-full w-full object-cover"
                             />
                           ) : (
@@ -1637,11 +1943,11 @@ const TrendingPage = (props0: TrendingPageProps) => {
                               <Package className="h-8 w-8 text-gray-400" />
                             </div>
                           )}
-                        </div>
+                        </Link>
 
                         <div className="min-w-0 flex-1">
                           <h4 className="mb-1 truncate text-sm font-semibold text-gray-900">
-                            {productData?.productName || t("product")}
+                            {productName}
                           </h4>
                           <div className="flex items-center justify-between">
                             <p className="text-xs text-gray-500">

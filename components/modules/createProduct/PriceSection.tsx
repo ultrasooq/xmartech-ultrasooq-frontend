@@ -1099,6 +1099,16 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
         </>
       ) : null}
 
+      {activeProductType !== "R" ? (
+        <h3
+          className="text-base font-bold text-gray-900 mb-3"
+          dir={langDir}
+          translate="no"
+        >
+          Warehouse location
+        </h3>
+      ) : null}
+
       <div className="mb-3 grid w-full grid-cols-1 gap-x-5 md:grid-cols-2">
         {activeProductType !== "R" ? (
           // <div className="mt-2 flex flex-col gap-y-3">
@@ -1427,3 +1437,6 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
 };
 
 export default PriceSection;
+
+
+

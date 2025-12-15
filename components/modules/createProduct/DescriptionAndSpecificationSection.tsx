@@ -1,5 +1,6 @@
 import React from "react";
 import ControlledRichTextEditor from "@/components/shared/Forms/ControlledRichTextEditor";
+import ControlledMarkdownEditor from "@/components/shared/Forms/ControlledMarkdownEditor";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -47,9 +48,10 @@ const DescriptionAndSpecificationSection = () => {
         </div>
         
         <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
-          <ControlledRichTextEditor
+          <ControlledMarkdownEditor
             label={t("description")}
             name="descriptionJson"
+            height={400}
           />
         </div>
       </div>

@@ -21,8 +21,24 @@ interface ControlledDatePickerProps {
 }
 
 // Helper function to convert Date to YYYY-MM-DD format
-const formatDateForInput = (date: Date | undefined): string => {
+const formatDateForInput = (date: Date | string | undefined): string => {
   if (!date) return "";
+  
+  // If it's already a string in YYYY-MM-DD format, return it
+  if (typeof date === "string") {
+    // Check if it's a valid date string
+    const parsed = new Date(date);
+    if (!isNaN(parsed.getTime())) {
+      return date.split('T')[0]; // Return just the date part if it includes time
+    }
+    return "";
+  }
+  
+  // Ensure it's a Date object
+  if (!(date instanceof Date) || isNaN(date.getTime())) {
+    return "";
+  }
+  
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");

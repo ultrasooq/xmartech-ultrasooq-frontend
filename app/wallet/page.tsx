@@ -94,12 +94,177 @@ const WalletPage = () => {
 
   if (walletLoading) {
     return (
-      <div className="wallet_page">
-        <div className="container">
-          <div className="row">
-            <div className="col-12">
-              <LoaderWithMessage message={t("loading_wallet")} />
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 lg:px-8 py-8">
+          {/* Header Skeleton */}
+          <div className="mb-8">
+            <div className="h-9 bg-gray-200 rounded-lg w-48 mb-2 animate-pulse"></div>
+            <div className="h-5 bg-gray-200 rounded-lg w-64 animate-pulse"></div>
+          </div>
+
+          {/* Wallet Balance Card Skeleton */}
+          <div className="mb-8">
+            <div className="bg-gradient-to-br from-[#022335] to-[#022335] rounded-xl shadow-lg p-8 border border-gray-200">
+              <div className="flex justify-between items-center mb-6">
+                <div className="h-6 bg-white/20 rounded w-32 animate-pulse"></div>
+                <div className="h-5 bg-white/20 rounded w-16 animate-pulse"></div>
+              </div>
+              <div className="mb-6">
+                <div className="h-12 bg-white/20 rounded w-48 mb-2 animate-pulse"></div>
+                <div className="h-4 bg-white/10 rounded w-32 animate-pulse"></div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="h-16 bg-white/10 rounded-lg animate-pulse"></div>
+                <div className="h-16 bg-white/10 rounded-lg animate-pulse"></div>
+              </div>
             </div>
+          </div>
+
+          {/* Wallet Actions Skeleton */}
+          <div className="mb-8">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="h-20 bg-gray-100 rounded-lg animate-pulse"></div>
+                <div className="h-20 bg-gray-100 rounded-lg animate-pulse"></div>
+                <div className="h-20 bg-gray-100 rounded-lg animate-pulse"></div>
+              </div>
+            </div>
+          </div>
+
+          {/* Main Content Grid Skeleton */}
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            {/* Left Column - Main Content */}
+            <div className="lg:col-span-3">
+              {/* Tabs Navigation Skeleton */}
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-6">
+                <div className="border-b border-gray-200">
+                  <div className="flex space-x-0">
+                    <div className="flex-1 px-6 py-4">
+                      <div className="h-5 bg-gray-200 rounded w-20 mx-auto animate-pulse"></div>
+                    </div>
+                    <div className="flex-1 px-6 py-4">
+                      <div className="h-5 bg-gray-200 rounded w-24 mx-auto animate-pulse"></div>
+                    </div>
+                    <div className="flex-1 px-6 py-4">
+                      <div className="h-5 bg-gray-200 rounded w-16 mx-auto animate-pulse"></div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Tab Content Skeleton */}
+                <div className="p-6">
+                  <div className="space-y-6">
+                    {/* Stats Cards Skeleton */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 border border-green-200">
+                        <div className="flex items-center space-x-4">
+                          <div className="w-12 h-12 bg-green-200 rounded-lg animate-pulse"></div>
+                          <div className="flex-1">
+                            <div className="h-4 bg-green-200 rounded w-24 mb-2 animate-pulse"></div>
+                            <div className="h-6 bg-green-200 rounded w-20 animate-pulse"></div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-6 border border-orange-200">
+                        <div className="flex items-center space-x-4">
+                          <div className="w-12 h-12 bg-orange-200 rounded-lg animate-pulse"></div>
+                          <div className="flex-1">
+                            <div className="h-4 bg-orange-200 rounded w-28 mb-2 animate-pulse"></div>
+                            <div className="h-6 bg-orange-200 rounded w-20 animate-pulse"></div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200">
+                        <div className="flex items-center space-x-4">
+                          <div className="w-12 h-12 bg-blue-200 rounded-lg animate-pulse"></div>
+                          <div className="flex-1">
+                            <div className="h-4 bg-blue-200 rounded w-28 mb-2 animate-pulse"></div>
+                            <div className="h-6 bg-blue-200 rounded w-20 animate-pulse"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Recent Activity Skeleton */}
+                    <div className="bg-white rounded-xl border border-gray-200 p-6">
+                      <div className="h-6 bg-gray-200 rounded w-32 mb-6 animate-pulse"></div>
+                      <div className="space-y-4">
+                        {[1, 2, 3].map((i) => (
+                          <div key={i} className="flex items-center justify-between p-4 border border-gray-100 rounded-lg">
+                            <div className="flex items-center space-x-4 flex-1">
+                              <div className="w-10 h-10 bg-gray-200 rounded-full animate-pulse"></div>
+                              <div className="flex-1">
+                                <div className="h-4 bg-gray-200 rounded w-32 mb-2 animate-pulse"></div>
+                                <div className="h-3 bg-gray-200 rounded w-24 animate-pulse"></div>
+                              </div>
+                            </div>
+                            <div className="h-5 bg-gray-200 rounded w-20 animate-pulse"></div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column - Sidebar Skeleton */}
+            <div className="lg:col-span-1">
+              <div className="space-y-6">
+                {/* Quick Actions Skeleton */}
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                  <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                    <div className="h-5 bg-gray-200 rounded w-28 animate-pulse"></div>
+                  </div>
+                  <div className="p-6 space-y-4">
+                    <div className="h-14 bg-gray-100 rounded-lg animate-pulse"></div>
+                    <div className="h-14 bg-gray-100 rounded-lg animate-pulse"></div>
+                  </div>
+                </div>
+
+                {/* Wallet Info Skeleton */}
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                  <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                    <div className="h-5 bg-gray-200 rounded w-24 animate-pulse"></div>
+                  </div>
+                  <div className="p-6 space-y-4">
+                    {[1, 2, 3, 4].map((i) => (
+                      <div key={i} className="flex justify-between items-center py-2 border-b border-gray-100">
+                        <div className="h-4 bg-gray-200 rounded w-20 animate-pulse"></div>
+                        <div className="h-4 bg-gray-200 rounded w-16 animate-pulse"></div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Loading Indicator with Theme Color */}
+          <div className="fixed bottom-8 right-8 flex items-center space-x-3 bg-white rounded-lg shadow-lg px-4 py-3 border border-gray-200">
+            <svg
+              className="h-5 w-5 animate-spin text-[#DB2302]"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              ></circle>
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+            <span className="text-sm font-medium text-gray-700" dir={langDir} translate="no">
+              {t("loading_wallet")}
+            </span>
           </div>
         </div>
       </div>

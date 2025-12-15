@@ -526,14 +526,14 @@ export const DEFAULT_SUB_ACCOUNT_STATUS = "WAITING";
 // Product Types
 export const PRODUCT_TYPES = {
   NORMAL: "P",
-  RFQ: "R", 
+  RFQ: "R",
   FACTORY: "F",
-  DROPSHIP: "D"
+  DROPSHIP: "D",
 } as const;
 
 export const PRODUCT_TYPE_LABELS = {
   P: "Normal Product",
-  R: "RFQ Product", 
+  R: "RFQ Product",
   F: "Factory Product",
-  D: "Dropship Product"
+  D: "Dropship Product",
 } as const;

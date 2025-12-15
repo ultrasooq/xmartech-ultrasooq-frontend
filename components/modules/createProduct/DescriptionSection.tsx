@@ -5,7 +5,7 @@ import Image from "next/image";
 import AddIcon from "@/public/images/add-icon.svg";
 import TrashIcon from "@/public/images/social-delete-icon.svg";
 import { useFieldArray, useFormContext } from "react-hook-form";
-import ControlledRichTextEditor from "@/components/shared/Forms/ControlledRichTextEditor";
+import ControlledMarkdownEditor from "@/components/shared/Forms/ControlledMarkdownEditor";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 
@@ -52,11 +52,12 @@ const DescriptionSection = () => {
           {fieldArrayForShortDescription.fields.map((field, index) => (
             <div key={field.id} className="relative w-full">
               <div className="relative mb-4 w-full">
-                <ControlledRichTextEditor
+                <ControlledMarkdownEditor
                   key={field.id}
                   label=""
                   name={`productShortDescriptionList.${index}.shortDescription`}
                   maxLength={20}
+                  height={200}
                 />
                 <p className="text-[13px] font-medium text-red-500" dir={langDir}>
                   {/* @ts-ignore */}

@@ -10,6 +10,7 @@ import { NotificationProvider } from "@/context/NotificationContext";
 import ReactQueryProvider from "@/providers/ReactQueryProvider";
 import LocaleProvider from "@/components/LocaleProvider";
 import ConditionalLayout from "@/components/ConditionalLayout";
+import TitleProtection from "@/components/TitleProtection";
 import { getUserLocale } from "@/src/services/locale";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import axios from "axios";
@@ -92,12 +93,14 @@ export default async function RootLayout({
   const messages = (await import(`../translations/${locale}.json`)).default;
 
   // Create user object only if we have valid data
-  const userObject = userData?.data?.id ? {
-    id: userData.data.id,
-    firstName: userData.data.firstName || '',
-    lastName: userData.data.lastName || '',
-    tradeRole: userData.data.tradeRole || '',
-  } : null;
+  const userObject = userData?.data?.id
+    ? {
+        id: userData.data.id,
+        firstName: userData.data.firstName || "",
+        lastName: userData.data.lastName || "",
+        tradeRole: userData.data.tradeRole || "",
+      }
+    : null;
 
   return (
     <SessionWrapper>
@@ -115,6 +118,7 @@ export default async function RootLayout({
             >
               <SocketProvider>
                 <SidebarProvider>
+                  <TitleProtection />
                   <main className="overflow-x-visible">
                     <LocaleProvider messages={messages} initialLocale={locale}>
                       <NotificationProvider>
