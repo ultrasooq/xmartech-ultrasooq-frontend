@@ -797,3 +797,62 @@ export const getDropshipProductsFromOriginal = (originalProductId: number) => {
     },
   });
 };
+
+// Track product view
+export const trackProductView = (payload: {
+  productId: number;
+  deviceId?: string;
+}) => {
+  // Build query params manually to ensure deviceId is included
+  const params: any = { productId: payload.productId };
+  if (payload.deviceId) {
+    params.deviceId = payload.deviceId;
+  }
+  
+  return axios({
+    method: "PATCH",
+    url: urlcat(`${getApiUrl()}/product/productViewCount`, params),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+// Track product click
+export const trackProductClick = (payload: {
+  productId: number;
+  clickSource?: string;
+  deviceId?: string;
+}) => {
+  return axios({
+    method: "POST",
+    url: `${getApiUrl()}/product/trackClick`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+// Track product search
+export const trackProductSearch = (payload: {
+  searchTerm: string;
+  productId?: number;
+  clicked?: boolean;
+  deviceId?: string;
+}) => {
+  return axios({
+    method: "POST",
+    url: `${getApiUrl()}/product/trackSearch`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};

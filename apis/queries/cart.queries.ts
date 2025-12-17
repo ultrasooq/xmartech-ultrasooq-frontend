@@ -13,6 +13,7 @@ import {
   updateCartWithLogin,
   updateCartWithService,
   updateUserCartByDeviceId,
+  fetchCartRecommendations,
 } from "../requests/cart.requests";
 
 export const useCartListByUserId = (
@@ -283,5 +284,23 @@ export const useAddServiceToCartWithProduct = () => {
     },
     onError: (err: APIResponseError) => {
     },
+  });
+};
+
+export const useCartRecommendations = (
+  payload: {
+    productIds?: string;
+    limit?: number;
+    deviceId?: string;
+  },
+  enabled = true,
+) => {
+  return useQuery({
+    queryKey: ["cart-recommendations", payload],
+    queryFn: async () => {
+      const res = await fetchCartRecommendations(payload);
+      return res.data;
+    },
+    enabled,
   });
 };

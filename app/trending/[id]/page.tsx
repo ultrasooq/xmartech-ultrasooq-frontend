@@ -4,6 +4,7 @@ import {
   useProductById,
   useOneWithProductPrice,
   useProductVariant,
+  useTrackProductView,
 } from "@/apis/queries/product.queries";
 // import SimilarProductsSection from "@/components/modules/productDetails/SimilarProductsSection";
 import RelatedProductsSection from "@/components/modules/productDetails/RelatedProductsSection";
@@ -103,6 +104,7 @@ const ProductDetailsPage = () => {
     !!searchParams?.id && !otherSellerId && !otherProductId,
   );
   const getProductVariant = useProductVariant();
+  const trackView = useTrackProductView();
 
   const handleProductUpdateSuccess = () => {
     queryClient.invalidateQueries({
@@ -339,6 +341,22 @@ const ProductDetailsPage = () => {
 
     if (!productQueryById?.isLoading) fetchProductVariant();
   }, [productQueryById?.data?.data]);
+
+  // Track product view when product loads
+  useEffect(() => {
+    if (productQueryById.data?.data?.id && !productQueryById.isLoading) {
+      const payload: any = {
+        productId: productQueryById.data.data.id,
+      };
+      
+      // Always send deviceId if user is not logged in
+      if (!haveAccessToken && deviceId) {
+        payload.deviceId = deviceId;
+      }
+      
+      trackView.mutate(payload);
+    }
+  }, [productQueryById.data?.data?.id, productQueryById.isLoading, haveAccessToken, deviceId]);
 
   useEffect(() => {
     addToCartFromSharedLink();

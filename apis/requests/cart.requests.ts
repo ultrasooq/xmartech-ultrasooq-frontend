@@ -145,3 +145,19 @@ export const addServiceToCartWithProduct = (payload: {
     },
   });
 };
+
+export const fetchCartRecommendations = (payload: {
+  productIds?: string;
+  limit?: number;
+  deviceId?: string;
+}) => {
+  return axios({
+    method: "GET",
+    url: urlcat(`${getApiUrl()}/cart/recommendations`, payload),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};

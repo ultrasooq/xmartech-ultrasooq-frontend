@@ -6,6 +6,7 @@ import {
   useDeleteServiceFromCart,
   useUpdateCartByDevice,
   useUpdateCartWithLogin,
+  useCartRecommendations,
 } from "@/apis/queries/cart.queries";
 import {
   useAddToWishList,
@@ -130,23 +131,29 @@ const CartListPage = () => {
     return Array.from(categoryIds);
   }, [allProductsQuery?.data?.data, uniqueProductIds]);
 
-  // Fetch recommended products based on cart categories
-  const recommendedProductsQuery = useAllProducts(
+  // Get product IDs from cart for recommendations
+  const cartProductIds = useMemo(() => {
+    return memoizedCartList
+      .filter((item: CartItem) => item.cartType === "DEFAULT" && item.productId)
+      .map((item: CartItem) => item.productId)
+      .join(",");
+  }, [memoizedCartList]);
+
+  // Fetch recommendations using the new API
+  const cartRecommendationsQuery = useCartRecommendations(
     {
-      page: 1,
-      limit: 20, // Fetch more to have enough after filtering
-      categoryIds:
-        uniqueCategoryIds.length > 0 ? uniqueCategoryIds.join(",") : undefined,
+      productIds: cartProductIds,
+      limit: 20,
+      deviceId: !haveAccessToken ? deviceId : undefined,
     },
-    memoizedCartList.length > 0 && uniqueCategoryIds.length > 0 && !loading,
+    memoizedCartList.length > 0 && !loading,
   );
 
-
-  // Format recommended products and exclude cart items
+  // Format recommended products
   const recommendedProducts = useMemo(() => {
-    if (!recommendedProductsQuery?.data?.data) return [];
+    if (!cartRecommendationsQuery?.data?.data) return [];
 
-    return recommendedProductsQuery.data.data
+    return cartRecommendationsQuery.data.data
       .filter((product: any) => {
         // Exclude products already in cart
         return !uniqueProductIds.includes(product.id);
@@ -189,11 +196,10 @@ const CartListPage = () => {
         };
       });
   }, [
-    recommendedProductsQuery?.data?.data,
+    cartRecommendationsQuery?.data?.data,
     uniqueProductIds,
     me.data?.data?.id,
   ]);
-
 
   // Fetch category data for the first category (if vendor)
   // Note: We fetch one category at a time to avoid hooks rule violations
@@ -235,7 +241,7 @@ const CartListPage = () => {
             ) || product?.product_productPrice?.[0];
 
           const categoryId = product?.categoryId ?? product?.category?.id;
-          
+
           // Get fresh category connections - prioritize from category query if it matches
           // Otherwise fall back to product query data
           let freshCategoryConnections: any[] = [];
@@ -297,7 +303,8 @@ const CartListPage = () => {
         ? rawConsumerType.toUpperCase().trim()
         : "";
     const isVendorType =
-      normalizedConsumerType === "VENDOR" || normalizedConsumerType === "VENDORS";
+      normalizedConsumerType === "VENDOR" ||
+      normalizedConsumerType === "VENDORS";
     const isConsumerType = normalizedConsumerType === "CONSUMER";
     const isEveryoneType = normalizedConsumerType === "EVERYONE";
 
@@ -337,10 +344,7 @@ const CartListPage = () => {
           }
         } else {
           if (isEveryoneType) {
-            if (
-              consumerDiscountValue > 0 &&
-              normalizedConsumerDiscountType
-            ) {
+            if (consumerDiscountValue > 0 && normalizedConsumerDiscountType) {
               discount = consumerDiscountValue;
               applicableDiscountType = normalizedConsumerDiscountType;
             }
@@ -350,10 +354,7 @@ const CartListPage = () => {
     } else {
       // CONSUMER (BUYER)
       if (isConsumerType || isEveryoneType) {
-        if (
-          consumerDiscountValue > 0 &&
-          normalizedConsumerDiscountType
-        ) {
+        if (consumerDiscountValue > 0 && normalizedConsumerDiscountType) {
           discount = consumerDiscountValue;
           applicableDiscountType = normalizedConsumerDiscountType;
         }
@@ -752,10 +753,14 @@ const CartListPage = () => {
             dir={langDir}
             translate="no"
           >
-              {t("my_cart")}
-            </h1>
+            {t("my_cart")}
+          </h1>
           {memoizedCartList.length > 0 && (
-            <p className="mt-1 text-sm text-gray-600" dir={langDir} translate="no">
+            <p
+              className="mt-1 text-sm text-gray-600"
+              dir={langDir}
+              translate="no"
+            >
               {memoizedCartList.length}{" "}
               {memoizedCartList.length === 1 ? t("item") : t("items")}
             </p>
@@ -775,10 +780,15 @@ const CartListPage = () => {
                     translate="no"
                   >
                     {t("items_in_your_cart") || "Items in Your Cart"}
-              </h2>
-                  <p className="mt-1 text-sm text-gray-600" dir={langDir} translate="no">
+                  </h2>
+                  <p
+                    className="mt-1 text-sm text-gray-600"
+                    dir={langDir}
+                    translate="no"
+                  >
                     {memoizedCartList.length}{" "}
-                    {memoizedCartList.length === 1 ? t("item") : t("items")} added by you
+                    {memoizedCartList.length === 1 ? t("item") : t("items")}{" "}
+                    added by you
                   </p>
                 </div>
                 <div className="rounded-full bg-blue-100 px-3 py-1">
@@ -786,29 +796,29 @@ const CartListPage = () => {
                     {memoizedCartList.length}
                   </span>
                 </div>
-            </div>
-            
-            <div className="space-y-4">
+              </div>
+
+              <div className="space-y-4">
                 {/* Empty Cart State */}
                 {haveAccessToken &&
                 !cartListByUser.data?.data?.length &&
                 !cartListByUser.isLoading ? (
-                <div className="py-12 text-center">
-                  <div className="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-gray-100">
-                    <ShoppingBag className="h-12 w-12 text-gray-400" />
+                  <div className="py-12 text-center">
+                    <div className="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-gray-100">
+                      <ShoppingBag className="h-12 w-12 text-gray-400" />
                     </div>
-                  <h3
-                    className="mb-2 text-lg font-medium text-gray-900"
-                    translate="no"
-                  >
-                    {t("no_cart_items")}
-                  </h3>
-                  <p className="mb-6 text-gray-500" translate="no">
-                    Add some products to get started
-                  </p>
-                    <Button 
-                    onClick={() => router.push("/trending")}
-                    className="bg-blue-600 px-6 py-2 text-white hover:bg-blue-700"
+                    <h3
+                      className="mb-2 text-lg font-medium text-gray-900"
+                      translate="no"
+                    >
+                      {t("no_cart_items")}
+                    </h3>
+                    <p className="mb-6 text-gray-500" translate="no">
+                      Add some products to get started
+                    </p>
+                    <Button
+                      onClick={() => router.push("/trending")}
+                      className="bg-blue-600 px-6 py-2 text-white hover:bg-blue-700"
                     >
                       Continue Shopping
                     </Button>
@@ -818,22 +828,22 @@ const CartListPage = () => {
                 {!haveAccessToken &&
                 !cartListByDeviceQuery.data?.data?.length &&
                 !cartListByDeviceQuery.isLoading ? (
-                <div className="py-12 text-center">
-                  <div className="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-gray-100">
-                    <ShoppingBag className="h-12 w-12 text-gray-400" />
+                  <div className="py-12 text-center">
+                    <div className="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-gray-100">
+                      <ShoppingBag className="h-12 w-12 text-gray-400" />
                     </div>
-                  <h3
-                    className="mb-2 text-lg font-medium text-gray-900"
-                    translate="no"
-                  >
-                    {t("no_cart_items")}
-                  </h3>
-                  <p className="mb-6 text-gray-500" translate="no">
-                    Add some products to get started
-                  </p>
-                    <Button 
-                    onClick={() => router.push("/trending")}
-                    className="bg-blue-600 px-6 py-2 text-white hover:bg-blue-700"
+                    <h3
+                      className="mb-2 text-lg font-medium text-gray-900"
+                      translate="no"
+                    >
+                      {t("no_cart_items")}
+                    </h3>
+                    <p className="mb-6 text-gray-500" translate="no">
+                      Add some products to get started
+                    </p>
+                    <Button
+                      onClick={() => router.push("/trending")}
+                      className="bg-blue-600 px-6 py-2 text-white hover:bg-blue-700"
                     >
                       Continue Shopping
                     </Button>
@@ -844,10 +854,10 @@ const CartListPage = () => {
                 {cartListByUser.isLoading || loading ? (
                   <div className="space-y-4">
                     {Array.from({ length: 2 }).map((_, i) => (
-                    <div
-                      key={i}
-                      className="flex items-center space-x-4 rounded-lg border border-gray-200 p-4"
-                    >
+                      <div
+                        key={i}
+                        className="flex items-center space-x-4 rounded-lg border border-gray-200 p-4"
+                      >
                         <Skeleton className="h-20 w-20 rounded-lg" />
                         <div className="flex-1 space-y-2">
                           <Skeleton className="h-4 w-3/4" />
@@ -859,14 +869,14 @@ const CartListPage = () => {
                   </div>
                 ) : null}
 
-              {!haveAccessToken &&
-              (cartListByDeviceQuery.isLoading || loading) ? (
+                {!haveAccessToken &&
+                (cartListByDeviceQuery.isLoading || loading) ? (
                   <div className="space-y-4">
                     {Array.from({ length: 2 }).map((_, i) => (
-                    <div
-                      key={i}
-                      className="flex items-center space-x-4 rounded-lg border border-gray-200 p-4"
-                    >
+                      <div
+                        key={i}
+                        className="flex items-center space-x-4 rounded-lg border border-gray-200 p-4"
+                      >
                         <Skeleton className="h-20 w-20 rounded-lg" />
                         <div className="flex-1 space-y-2">
                           <Skeleton className="h-4 w-3/4" />
@@ -884,16 +894,16 @@ const CartListPage = () => {
                     {memoizedCartList?.map((item: CartItem) => {
                       if (item.cartType == "DEFAULT") {
                         let relatedCart = memoizedCartList
-                        ?.filter(
-                          (c: any) =>
-                            c.serviceId && c.cartProductServices?.length,
-                        )
+                          ?.filter(
+                            (c: any) =>
+                              c.serviceId && c.cartProductServices?.length,
+                          )
                           .find((c: any) => {
-                          return !!c.cartProductServices.find(
-                            (r: any) =>
-                              r.relatedCartType == "PRODUCT" &&
-                              r.productId == item.productId,
-                          );
+                            return !!c.cartProductServices.find(
+                              (r: any) =>
+                                r.relatedCartType == "PRODUCT" &&
+                                r.productId == item.productId,
+                            );
                           });
                         return (
                           <CartProductCardWrapper
@@ -904,51 +914,54 @@ const CartListPage = () => {
                             haveAccessToken={haveAccessToken}
                             relatedCart={relatedCart}
                           />
-                      );
+                        );
                       }
 
                       if (!item.cartServiceFeatures?.length) return null;
 
-                    const features = item.cartServiceFeatures.map(
-                      (feature: any) => ({
-                        id: feature.id,
-                        serviceFeatureId: feature.serviceFeatureId,
-                        quantity: feature.quantity,
-                      }),
-                    );
+                      const features = item.cartServiceFeatures.map(
+                        (feature: any) => ({
+                          id: feature.id,
+                          serviceFeatureId: feature.serviceFeatureId,
+                          quantity: feature.quantity,
+                        }),
+                      );
 
                       let relatedCart: any = memoizedCartList
-                      ?.filter(
-                        (c: any) =>
-                          c.productId && c.cartProductServices?.length,
-                      )
+                        ?.filter(
+                          (c: any) =>
+                            c.productId && c.cartProductServices?.length,
+                        )
                         .find((c: any) => {
-                        return !!c.cartProductServices.find(
-                          (r: any) =>
-                            r.relatedCartType == "SERVICE" &&
-                            r.serviceId == item.serviceId,
-                        );
+                          return !!c.cartProductServices.find(
+                            (r: any) =>
+                              r.relatedCartType == "SERVICE" &&
+                              r.serviceId == item.serviceId,
+                          );
                         });
 
                       return item.cartServiceFeatures.map((feature: any) => {
                         return (
-                        <div
-                          key={feature.id}
-                          className="rounded-lg border border-gray-200 p-4 transition-shadow hover:shadow-md"
-                        >
-                            <ServiceCard 
+                          <div
+                            key={feature.id}
+                            className="rounded-lg border border-gray-200 p-4 transition-shadow hover:shadow-md"
+                          >
+                            <ServiceCard
                               cartId={item.id}
                               serviceId={item.serviceId}
                               serviceFeatureId={feature.serviceFeatureId}
                               serviceFeatureName={feature.serviceFeature.name}
-                            serviceCost={Number(
-                              feature.serviceFeature.serviceCost,
-                            )}
+                              serviceCost={Number(
+                                feature.serviceFeature.serviceCost,
+                              )}
                               cartQuantity={feature.quantity}
                               serviceFeatures={features}
                               relatedCart={relatedCart}
                               onRemove={() => {
-                                handleRemoveServiceFromCart(item.id, feature.id);
+                                handleRemoveServiceFromCart(
+                                  item.id,
+                                  feature.id,
+                                );
                               }}
                             />
                           </div>
@@ -973,19 +986,24 @@ const CartListPage = () => {
                   {t("order_summary") || "Order Summary"}
                 </h2>
               </div>
-              
+
               <div className="p-4">
                 <div className="space-y-3 text-sm">
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-600" dir={langDir} translate="no">
-                      {t("subtotal")} ({memoizedCartList.length} {memoizedCartList.length === 1 ? t("item") : t("items")})
+                    <span
+                      className="text-gray-600"
+                      dir={langDir}
+                      translate="no"
+                    >
+                      {t("subtotal")} ({memoizedCartList.length}{" "}
+                      {memoizedCartList.length === 1 ? t("item") : t("items")})
                     </span>
                     <span className="font-medium text-gray-900">
                       {currency.symbol}
                       {totalAmount}
                     </span>
                   </div>
-                  
+
                   <div className="border-t border-gray-200 pt-3">
                     <div className="flex items-center justify-between">
                       <span
@@ -1014,7 +1032,7 @@ const CartListPage = () => {
                   >
                     {t("proceed_to_checkout") || "Proceed to checkout"}
                   </Button>
-                  
+
                   {memoizedCartList?.length > 0 && (
                     <Button
                       onClick={() => router.push("/trending")}
@@ -1028,53 +1046,87 @@ const CartListPage = () => {
 
                 {/* Security Badge */}
                 <div className="mt-4 flex items-center justify-center gap-2 text-xs text-gray-500">
-                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  <svg
+                    className="h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                    />
                   </svg>
                   <span translate="no">Secure checkout</span>
+                </div>
               </div>
-            </div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Promotional Products Sections - Full Screen Width */}
-      <div className="w-full bg-gray-50 py-8">
+      <div className="w-full bg-gray-50">
         <div className="mx-auto w-full px-2 sm:px-4 lg:px-6">
           <div className="space-y-8">
-          {/* Recommended Products Section */}
-          {memoizedCartList.length > 0 && (
-            <div className="w-full bg-transparent p-4">
-                <div className="mb-4 flex items-center justify-between">
-                  <div>
-                    <h2
-                      className="text-xl font-semibold text-gray-900"
-                      dir={langDir}
-                      translate="no"
-                    >
-                      {t("recommended_products") || "Frequently bought together"}
-                    </h2>
-                    <p
-                      className="mt-1 text-sm text-gray-500"
-                      dir={langDir}
-                      translate="no"
-                    >
-                      {t("customers_who_bought_this_also_bought") || "Customers who bought items in your cart also bought"}
-                    </p>
+            {/* Recommended for You Section - Amazon Style */}
+            {memoizedCartList.length > 0 && (
+              <div className="w-full bg-white p-4">
+                {/* Header Section - Amazon Style */}
+                <div className="mb-4 flex items-start justify-between border-b border-gray-200 pb-3">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <h2
+                        className="text-lg font-semibold text-gray-900"
+                        dir={langDir}
+                        translate="no"
+                      >
+                        Recommended products
+                      </h2>
+                    </div>
+                    <div className="mt-1 flex items-center gap-1">
+                      <span className="text-xs text-gray-500" translate="no">
+                        Sponsored
+                      </span>
+                      <svg
+                        className="h-3 w-3 text-gray-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                    </div>
                   </div>
+                  {/* <div className="flex items-center gap-2 text-xs text-gray-600">
+                    <span translate="no">Page 1 of 1</span>
+                      <button
+                        className="text-blue-600 hover:text-blue-800 hover:underline"
+                        translate="no"
+                      >
+                        Start over
+                      </button>
+                    </div> */}
                 </div>
 
-                {recommendedProductsQuery.isLoading ? (
+                {cartRecommendationsQuery.isLoading ? (
                   <div className="flex gap-4 overflow-x-auto pb-4">
-                    {Array.from({ length: 5 }).map((_, i) => (
+                    {Array.from({ length: 6 }).map((_, i) => (
                       <div
                         key={i}
-                        className="w-[200px] flex-shrink-0 rounded-lg border border-gray-200 bg-white p-3"
+                        className="w-[180px] flex-shrink-0 rounded border border-gray-200 bg-white p-3"
                       >
-                        <Skeleton className="mb-3 h-40 w-full rounded-lg" />
+                        <Skeleton className="mb-3 h-40 w-full rounded" />
                         <Skeleton className="mb-2 h-4 w-full" />
-                        <Skeleton className="h-4 w-2/3" />
+                        <Skeleton className="mb-2 h-3 w-2/3" />
+                        <Skeleton className="h-4 w-1/2" />
                       </div>
                     ))}
                   </div>
@@ -1089,102 +1141,162 @@ const CartListPage = () => {
                       className="w-full"
                     >
                       <CarouselContent className="-ml-2 md:-ml-4">
-                        {recommendedProducts.slice(0, 10).map((product: any) => (
-                          <CarouselItem
-                            key={product.id}
-                            className="basis-auto pl-2 md:pl-4"
-                          >
-                            <div className="w-[200px] sm:w-[220px]">
-                              <div className="group/product relative rounded-lg border border-gray-200 bg-white p-3 transition-all hover:border-blue-300 hover:shadow-lg">
-                                {/* Product Image */}
-                                <div className="relative mb-3 aspect-square w-full overflow-hidden rounded-lg bg-gray-100">
-                                  <Image
-                                    src={product.productImages?.[0]?.image || PlaceholderImage}
-                                    alt={product.productName}
-                                    fill
-                                    className="object-cover transition-transform group-hover/product:scale-105"
-                                  />
-                                  {/* Quick Add Badge */}
-                                  <div className="absolute bottom-2 right-2 opacity-0 transition-opacity group-hover/product:opacity-100">
-                                    <Button
-                                      size="sm"
-                                      onClick={() =>
-                                        handleRecommendedAddToCart(
-                                          1,
-                                          product.productProductPriceId,
-                                        )
-                                      }
-                                      className="h-8 rounded-full bg-blue-600 px-3 text-xs font-medium text-white shadow-md hover:bg-blue-700"
-                                    >
-                                      + Add
-                                    </Button>
-                                  </div>
-                                </div>
-                                
-                                {/* Product Info */}
-                                <div className="space-y-1">
-                                  <h3 className="line-clamp-2 text-sm font-medium text-gray-900 group-hover/product:text-blue-600" dir={langDir}>
-                                    {product.productName}
-                                  </h3>
-                                  
-                                  {/* Rating */}
-                                  {product.productReview?.length > 0 && (
-                                    <div className="flex items-center gap-1">
-                                      <div className="flex items-center">
-                                        <FaStar className="h-3 w-3 text-yellow-400" />
-                                        <span className="ml-1 text-xs text-gray-600">
-                                          {(
-                                            product.productReview.reduce(
-                                              (sum: number, r: any) => sum + (r.rating || 0),
-                                              0
-                                            ) / product.productReview.length
-                                          ).toFixed(1)}
-                                        </span>
-                                      </div>
-                                      <span className="text-xs text-gray-400">({product.productReview.length})</span>
+                        {recommendedProducts
+                          .slice(0, 12)
+                          .map((product: any) => {
+                            const avgRating =
+                              product.productReview?.length > 0
+                                ? (
+                                    product.productReview.reduce(
+                                      (sum: number, r: any) =>
+                                        sum + (r.rating || 0),
+                                      0,
+                                    ) / product.productReview.length
+                                  ).toFixed(1)
+                                : null;
+                            const priceInfo =
+                              getPromotionalProductPrice(product);
+                            const hasListPrice =
+                              priceInfo.hasDiscount &&
+                              priceInfo.originalPrice >
+                                priceInfo.discountedPrice;
+
+                            return (
+                              <CarouselItem
+                                key={product.id}
+                                className="basis-auto pl-2 md:pl-4"
+                              >
+                                <div className="w-[180px] flex-shrink-0">
+                                  <div className="group/product relative flex h-full min-h-[380px] flex-col rounded border border-gray-200 bg-white p-3 transition-shadow hover:shadow-md">
+                                    {/* Product Image */}
+                                    <div className="relative mb-3 aspect-square w-full overflow-hidden rounded bg-gray-50">
+                                      <Image
+                                        src={
+                                          product.productImages?.[0]?.image ||
+                                          PlaceholderImage
+                                        }
+                                        alt={product.productName}
+                                        fill
+                                        className="object-contain transition-transform group-hover/product:scale-105"
+                                      />
                                     </div>
-                                  )}
-                                  
-                                  {/* Price */}
-                                  {(() => {
-                                    const priceInfo = getPromotionalProductPrice(product);
-                                    return (
-                                      <div className="flex items-baseline gap-2">
-                                        <span className="text-base font-semibold text-gray-900">
-                                          {currency.symbol}{priceInfo.discountedPrice}
-                                        </span>
-                                        {priceInfo.hasDiscount && priceInfo.originalPrice > priceInfo.discountedPrice && (
-                                          <span className="text-xs text-gray-500 line-through">
-                                            {currency.symbol}{priceInfo.originalPrice}
-                                          </span>
-                                        )}
-                                        {!priceInfo.hasDiscount && product.productPrice > product.offerPrice && (
-                                          <span className="text-xs text-gray-500 line-through">
-                                            {currency.symbol}{product.productPrice}
-                                          </span>
-                                        )}
+
+                                    {/* Product Info */}
+                                    <div className="flex flex-1 flex-col space-y-2">
+                                      {/* Product Title */}
+                                      <h3
+                                        className="line-clamp-2 cursor-pointer text-sm leading-tight text-gray-900 group-hover/product:text-blue-600"
+                                        dir={langDir}
+                                        onClick={() =>
+                                          router.push(`/trending/${product.id}`)
+                                        }
+                                      >
+                                        {product.productName}
+                                      </h3>
+
+                                      {/* Rating with Stars - Always reserve space */}
+                                      <div className="min-h-[20px]">
+                                        {avgRating &&
+                                          product.productReview?.length > 0 && (
+                                            <div className="flex items-center gap-1">
+                                              <div className="flex items-center">
+                                                {Array.from({ length: 5 }).map(
+                                                  (_, i) => {
+                                                    const rating =
+                                                      parseFloat(avgRating);
+                                                    const starValue = i + 1;
+                                                    return (
+                                                      <FaStar
+                                                        key={i}
+                                                        className={`h-3 w-3 ${
+                                                          starValue <=
+                                                          Math.round(rating)
+                                                            ? "text-orange-400"
+                                                            : "text-gray-300"
+                                                        }`}
+                                                      />
+                                                    );
+                                                  },
+                                                )}
+                                                <span className="ml-1 text-xs text-gray-600">
+                                                  {avgRating}
+                                                </span>
+                                              </div>
+                                              <span className="text-xs text-gray-500">
+                                                ({product.productReview.length})
+                                              </span>
+                                            </div>
+                                          )}
                                       </div>
-                                    );
-                                  })()}
-                                  
-                                  {/* Prime-like Badge */}
-                                  <div className="pt-1">
-                                    <span className="inline-flex items-center rounded bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700">
-                                      ✓ Fast Delivery
-                                    </span>
+
+                                      {/* Price Section */}
+                                      <div className="space-y-0.5">
+                                        <div className="flex items-baseline gap-1">
+                                          <span className="text-base font-semibold text-gray-900">
+                                            {currency.symbol}
+                                            {Number(
+                                              priceInfo.discountedPrice || 0,
+                                            ).toFixed(2)}
+                                          </span>
+                                        </div>
+                                        {hasListPrice && (
+                                          <div className="text-xs text-gray-500">
+                                            <span translate="no">
+                                              List Price:{" "}
+                                            </span>
+                                            <span className="line-through">
+                                              {currency.symbol}
+                                              {Number(
+                                                priceInfo.originalPrice || 0,
+                                              ).toFixed(2)}
+                                            </span>
+                                          </div>
+                                        )}
+                                        {!hasListPrice &&
+                                          Number(product.productPrice || 0) >
+                                            Number(product.offerPrice || 0) && (
+                                            <div className="text-xs text-gray-500">
+                                              <span translate="no">
+                                                List Price:{" "}
+                                              </span>
+                                              <span className="line-through">
+                                                {currency.symbol}
+                                                {Number(
+                                                  product.productPrice || 0,
+                                                ).toFixed(2)}
+                                              </span>
+                                            </div>
+                                          )}
+                                      </div>
+
+                                      {/* Add to Cart Button - Yellow Amazon Style - Pushed to bottom */}
+                                      <div className="mt-auto pt-2">
+                                        <Button
+                                          onClick={() =>
+                                            handleRecommendedAddToCart(
+                                              1,
+                                              product.productProductPriceId,
+                                            )
+                                          }
+                                          className="w-full rounded-md bg-yellow-400 px-3 py-1.5 text-xs font-medium text-gray-900 shadow-sm transition-colors hover:bg-yellow-500"
+                                          translate="no"
+                                        >
+                                          Add to Cart
+                                        </Button>
+                                      </div>
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                            </div>
-                          </CarouselItem>
-                        ))}
+                              </CarouselItem>
+                            );
+                          })}
                       </CarouselContent>
-                      <CarouselPrevious className="left-0 border border-gray-300 bg-white shadow-md hover:bg-gray-50" />
-                      <CarouselNext className="right-0 border border-gray-300 bg-white shadow-md hover:bg-gray-50" />
+                      <CarouselPrevious className="-left-4 h-8 w-8 border border-gray-300 bg-white shadow-md hover:bg-gray-50" />
+                      <CarouselNext className="-right-4 h-8 w-8 border border-gray-300 bg-white shadow-md hover:bg-gray-50" />
                     </Carousel>
                   </div>
-                ) : !recommendedProductsQuery.isLoading &&
-                  uniqueCategoryIds.length > 0 ? (
+                ) : !cartRecommendationsQuery.isLoading &&
+                  memoizedCartList.length > 0 ? (
                   <div className="py-8 text-center text-gray-500">
                     <p>
                       {t("no_recommended_products") ||
@@ -1194,7 +1306,6 @@ const CartListPage = () => {
                 ) : null}
               </div>
             )}
-
           </div>
         </div>
       </div>

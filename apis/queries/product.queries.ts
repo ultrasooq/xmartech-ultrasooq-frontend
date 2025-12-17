@@ -43,6 +43,9 @@ import {
   getWholesaleProductSales,
   getUserOwnDropshipableProducts,
   getDropshipProductsFromOriginal,
+  trackProductView,
+  trackProductClick,
+  trackProductSearch,
 } from "../requests/product.request";
 import {
   ICreateProduct,
@@ -920,3 +923,27 @@ export const useDropshipProductsFromOriginal = (originalProductId: number, enabl
     },
     enabled: enabled && !!originalProductId,
   });
+
+// Track product view
+export const useTrackProductView = () => {
+  return useMutation({
+    mutationFn: (payload: { productId: number; deviceId?: string }) =>
+      trackProductView(payload),
+  });
+};
+
+// Track product click
+export const useTrackProductClick = () => {
+  return useMutation({
+    mutationFn: (payload: { productId: number; clickSource?: string; deviceId?: string }) =>
+      trackProductClick(payload),
+  });
+};
+
+// Track product search
+export const useTrackProductSearch = () => {
+  return useMutation({
+    mutationFn: (payload: { searchTerm: string; productId?: number; clicked?: boolean; deviceId?: string }) =>
+      trackProductSearch(payload),
+  });
+};
