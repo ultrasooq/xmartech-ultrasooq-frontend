@@ -70,8 +70,7 @@ const Sidebar: React.FC<SidebarProps> = ({ notificationCount }) => {
     const baseItems = [
       {
         icon: <UserIcon className="h-5 w-5 text-blue-600" />,
-        label: t("account_switch"),
-        subLabel: t("dashboard"),
+        label: t("my_accounts"),
         onClick: () => {
           router.push("/my-accounts");
         },

@@ -2,14 +2,22 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { Form } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import _ from "lodash";
 import { useLogin, useSocialLogin } from "@/apis/queries/auth.queries";
 import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useToast } from "@/components/ui/use-toast";
-import { EMAIL_REGEX_LOWERCASE, PUREMOON_TOKEN_KEY } from "@/utils/constants";
+import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import { setCookie } from "cookies-next";
 import Image from "next/image";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -36,9 +44,7 @@ const formSchema = (t: any) => {
       .email({
         message: t("invalid_email_address"),
       })
-      .refine((val) => (EMAIL_REGEX_LOWERCASE.test(val) ? true : false), {
-        message: t("email_must_be_lower_case"),
-      }),
+      .transform((val) => val.toLowerCase()),
     password: z
       .string()
       .trim()
@@ -246,12 +252,26 @@ export default function LoginPage() {
                     onSubmit={form.handleSubmit(onSubmit)}
                   >
                     <div className="space-y-1">
-                      <ControlledTextInput
-                        label={t("email_phone_id")}
+                      <FormField
+                        control={form.control}
                         name="email"
-                        placeholder={t("enter_email_phone_id")}
-                        dir={langDir}
-                        translate="no"
+                        render={({ field }) => (
+                          <FormItem className="mt-2 flex w-full flex-col gap-y-1">
+                            <FormLabel dir={langDir}>{t("email_phone_id")}</FormLabel>
+                            <FormControl>
+                              <Input
+                                {...field}
+                                className="theme-form-control-s1"
+                                placeholder={t("enter_email_phone_id")}
+                                dir={langDir}
+                                onChange={(e) => {
+                                  field.onChange(e.target.value.toLowerCase());
+                                }}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
                       />
                     </div>
 

@@ -703,10 +703,10 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
               >
                 <Image
                   src={WishlistIcon}
-                  height={22}
-                  width={22}
+                  height={24}
+                  width={24}
                   alt="wishlist"
-                  className="h-5 w-5 sm:h-6 sm:w-6"
+                  className="h-5 min-h-[20px] w-5 min-w-[20px] object-contain sm:h-6 sm:w-6"
                 />
                 {wishlistCount.data?.data > 0 && (
                   <div className="absolute top-0 right-0 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-lg sm:h-5 sm:w-5 sm:text-xs">
@@ -724,10 +724,10 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
               >
                 <Image
                   src={CartIcon}
-                  height={22}
-                  width={22}
+                  height={24}
+                  width={24}
                   alt="cart"
-                  className="h-5 w-5 sm:h-6 sm:w-6"
+                  className="h-5 min-h-[20px] w-5 min-w-[20px] object-contain sm:h-6 sm:w-6"
                 />
                 {((hasAccessToken &&
                   !isArray(cartCountWithLogin.data?.data) &&
@@ -1659,7 +1659,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                 </div>
               </div>
               <div className="order-3 flex w-[80%] items-center gap-2 py-1.5 md:order-2 md:w-7/12 md:px-3 md:py-2 lg:w-4/6">
-                <div className="relative flex-1">
+                <div className="relative max-w-[55%] flex-1 md:max-w-[60%] lg:max-w-[75%]">
                   <input
                     type="text"
                     className={`form-control h-9 w-full rounded-lg border-2 border-white/20 text-sm text-black transition-all placeholder:text-gray-400 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none md:h-10 md:text-base ${
@@ -1712,10 +1712,10 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                     >
                       <Image
                         src={WishlistIcon}
-                        height={24}
-                        width={24}
+                        height={28}
+                        width={28}
                         alt="wishlist"
-                        className="h-6 w-6 md:h-7 md:w-7"
+                        className="h-6 min-h-[24px] w-6 min-w-[24px] object-contain md:h-7 md:w-7"
                       />
                       {wishlistCount.data?.data > 0 && (
                         <div className="absolute -top-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-lg">
@@ -1733,10 +1733,10 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                     >
                       <Image
                         src={CartIcon}
-                        height={24}
-                        width={24}
+                        height={28}
+                        width={28}
                         alt="cart"
-                        className="h-6 w-6 md:h-7 md:w-7"
+                        className="h-6 min-h-[24px] w-6 min-w-[24px] object-contain md:h-7 md:w-7"
                       />
                       {((hasAccessToken &&
                         !isArray(cartCountWithLogin.data?.data) &&
@@ -1872,7 +1872,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                                 {currentTradeRole !== "BUYER" &&
                                 accessControl.hasFullAccess ? (
                                   <>
-                                    {hideMenu(PERMISSION_TEAM_MEMBERS) ? (
+                                    {/* {hideMenu(PERMISSION_TEAM_MEMBERS) ? (
                                       <Link href="/team-members">
                                         <DropdownMenuItem
                                           dir={langDir}
@@ -1881,7 +1881,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                                           {t("team_members")}
                                         </DropdownMenuItem>
                                       </Link>
-                                    ) : null}
+                                    ) : null} */}
 
                                     {hideMenu(PERMISSION_PRODUCTS) ? (
                                       <Link href="/manage-products">

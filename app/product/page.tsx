@@ -11,7 +11,15 @@ import ProductDetailsSection from "@/components/modules/createProduct/ProductDet
 import DescriptionAndSpecificationSection from "@/components/modules/createProduct/DescriptionAndSpecificationSection";
 import DropshipProductForm from "@/components/modules/createProduct/DropshipProductForm";
 import Footer from "@/components/shared/Footer";
-import { useCreateProduct, useProductById, useProductVariant, useExistingProductById, useUpdateSingleProduct, useOneProductByProductCondition, useUpdateProduct } from "@/apis/queries/product.queries";
+import {
+  useCreateProduct,
+  useProductById,
+  useProductVariant,
+  useExistingProductById,
+  useUpdateSingleProduct,
+  useOneProductByProductCondition,
+  useUpdateProduct,
+} from "@/apis/queries/product.queries";
 import { useCurrentAccount } from "@/apis/queries/auth.queries";
 import { getCookie } from "cookies-next";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
@@ -30,7 +38,12 @@ import {
   videoExtensions,
 } from "@/utils/constants";
 import BackgroundImage from "@/public/images/before-login-bg.png";
-import { convertDate, convertTime, generateRandomSkuNoWithTimeStamp, handleDescriptionParse } from "@/utils/helper";
+import {
+  convertDate,
+  convertTime,
+  generateRandomSkuNoWithTimeStamp,
+  handleDescriptionParse,
+} from "@/utils/helper";
 import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
@@ -93,18 +106,25 @@ const productPriceItemSchemaWhenSetUpPriceTrue = (t: any) => {
       },
     )
     .refine(
-      ({ minQuantityPerCustomer, maxQuantityPerCustomer, sellType, consumerType }) => {
+      ({
+        minQuantityPerCustomer,
+        maxQuantityPerCustomer,
+        sellType,
+        consumerType,
+      }) => {
         // Skip validation if fields are not required (TRIAL_PRODUCT with non-EVERYONE consumer type)
         if (sellType === "TRIAL_PRODUCT" && consumerType !== "EVERYONE") {
           return true;
         }
         // Apply validation for other cases
-        return (minQuantityPerCustomer &&
-          Number(minQuantityPerCustomer || 0) <
-          Number(maxQuantityPerCustomer || 0)) ||
-        (maxQuantityPerCustomer &&
-          Number(minQuantityPerCustomer || 0) <
-          Number(maxQuantityPerCustomer || 0));
+        return (
+          (minQuantityPerCustomer &&
+            Number(minQuantityPerCustomer || 0) <
+              Number(maxQuantityPerCustomer || 0)) ||
+          (maxQuantityPerCustomer &&
+            Number(minQuantityPerCustomer || 0) <
+              Number(maxQuantityPerCustomer || 0))
+        );
       },
       {
         message: t(
@@ -133,7 +153,8 @@ const productPriceItemSchemaWhenSetUpPriceTrue = (t: any) => {
         startTime,
         endTime,
       } = schema;
-      if (sellType === "NORMALSELL" || sellType === "BUYGROUP" || sellType === "WHOLESALE_PRODUCT") {
+      // Make quantity per customer optional for BUYGROUP, but required for NORMALSELL
+      if (sellType === "NORMALSELL") {
         if (!minQuantityPerCustomer) {
           ctx.addIssue({
             code: "custom",
@@ -166,42 +187,8 @@ const productPriceItemSchemaWhenSetUpPriceTrue = (t: any) => {
           });
         }
       }
-      if (sellType === "BUYGROUP" || sellType === "WHOLESALE_PRODUCT") {
-        if (!minQuantity) {
-          ctx.addIssue({
-            code: "custom",
-            message: t("min_quantity_is_required"),
-            path: ["minQuantity"],
-          });
-        }
-      }
-      if (sellType === "BUYGROUP" || sellType === "WHOLESALE_PRODUCT") {
-        if (!maxQuantity) {
-          ctx.addIssue({
-            code: "custom",
-            message: t("max_quantity_is_required"),
-            path: ["maxQuantity"],
-          });
-        }
-      }
-      if (sellType === "BUYGROUP" || sellType === "WHOLESALE_PRODUCT") {
-        if (!minCustomer) {
-          ctx.addIssue({
-            code: "custom",
-            message: t("min_customer_is_required"),
-            path: ["minCustomer"],
-          });
-        }
-      }
-      if (sellType === "BUYGROUP" || sellType === "WHOLESALE_PRODUCT") {
-        if (!maxCustomer) {
-          ctx.addIssue({
-            code: "custom",
-            message: t("max_customer_is_required"),
-            path: ["maxCustomer"],
-          });
-        }
-      }
+      // Removed required validations for BUYGROUP fields to make them optional
+      // minQuantity, maxQuantity, minCustomer, maxCustomer are now optional for BUYGROUP
       if (sellType == "BUYGROUP" || sellType == "WHOLESALE_PRODUCT") {
         if (
           (minQuantity &&
@@ -253,10 +240,7 @@ const formSchemaForTypeP = (t: any) => {
       sellStateIds: z.any().optional(),
       sellCityIds: z.any().optional(),
       skuNo: z.string().trim().optional(),
-      productCondition: z
-        .string()
-        .trim()
-        .optional(),
+      productCondition: z.string().trim().optional(),
       productTagList: z
         .array(
           z.object({
@@ -320,9 +304,13 @@ const formSchemaForTypeP = (t: any) => {
             .string()
             .trim()
             .min(3, {
-              message: t("variant_type_must_be_equal_greater_than_2_characters"),
+              message: t(
+                "variant_type_must_be_equal_greater_than_2_characters",
+              ),
             })
-            .max(20, { message: t("variant_type_must_be_less_than_20_characters") })
+            .max(20, {
+              message: t("variant_type_must_be_less_than_20_characters"),
+            })
             .optional()
             .or(z.literal("")),
           variants: z.array(
@@ -337,8 +325,8 @@ const formSchemaForTypeP = (t: any) => {
                 .optional()
                 .or(z.literal("")),
               image: z.any().optional(),
-            })
-          )
+            }),
+          ),
         }),
       ),
     })
@@ -420,10 +408,7 @@ const formSchemaForTypeR = (t: any) => {
         })
         .trim(),
       brandId: z.number().min(1, { message: t("brand_is_required") }),
-      productCondition: z
-        .string()
-        .trim()
-        .optional(),
+      productCondition: z.string().trim().optional(),
       productTagList: z
         .array(
           z.object({
@@ -485,9 +470,13 @@ const formSchemaForTypeR = (t: any) => {
             .string()
             .trim()
             .min(3, {
-              message: t("variant_type_must_be_equal_greater_than_2_characters"),
+              message: t(
+                "variant_type_must_be_equal_greater_than_2_characters",
+              ),
             })
-            .max(20, { message: t("variant_type_must_be_less_than_20_characters") })
+            .max(20, {
+              message: t("variant_type_must_be_less_than_20_characters"),
+            })
             .optional()
             .or(z.literal("")),
           variants: z.array(
@@ -502,8 +491,8 @@ const formSchemaForTypeR = (t: any) => {
                 .optional()
                 .or(z.literal("")),
               image: z.any().optional(),
-            })
-          )
+            }),
+          ),
         }),
       ),
     })
@@ -613,10 +602,10 @@ const defaultValues: { [key: string]: any } = {
       variants: [
         {
           value: "",
-          image: null
-        }
-      ]
-    }
+          image: null,
+        },
+      ],
+    },
   ],
 };
 
@@ -626,12 +615,15 @@ const CreateProductPage = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
   const searchParams = useSearchParams();
-  const productId = searchParams?.get('copy') || searchParams?.get('productId') || searchParams?.get('existingProductId');
-  const isEditMode = searchParams?.get('edit') === 'true';
-  const editProductPriceId = searchParams?.get('productPriceId');
+  const productId =
+    searchParams?.get("copy") ||
+    searchParams?.get("productId") ||
+    searchParams?.get("existingProductId");
+  const isEditMode = searchParams?.get("edit") === "true";
+  const editProductPriceId = searchParams?.get("productPriceId");
   const { toast } = useToast();
   const [activeProductType, setActiveProductType] = useState<string>();
-  const [activeTab, setActiveTab] = useState<'create' | 'dropship'>('create');
+  const [activeTab, setActiveTab] = useState<"create" | "dropship">("create");
   const [isClient, setIsClient] = useState(false);
   const form = useForm({
     resolver: zodResolver(
@@ -639,7 +631,7 @@ const CreateProductPage = () => {
     ),
     defaultValues,
   });
-  
+
   // Ensure component only renders on client side
   useEffect(() => {
     setIsClient(true);
@@ -648,18 +640,18 @@ const CreateProductPage = () => {
   // Handle tab parameter from URL and set isDropshipable for wholesale products
   useEffect(() => {
     if (isClient && searchParams) {
-      const tab = searchParams.get('tab');
-      const productType = searchParams.get('productType');
-      
-      if (tab === 'dropship' || productType === 'D') {
-        setActiveTab('dropship');
+      const tab = searchParams.get("tab");
+      const productType = searchParams.get("productType");
+
+      if (tab === "dropship" || productType === "D") {
+        setActiveTab("dropship");
       } else {
-        setActiveTab('create');
+        setActiveTab("create");
       }
-      
+
       // Set isDropshipable to true if productType=D
-      if (productType === 'D') {
-        form.setValue('isDropshipable', true);
+      if (productType === "D") {
+        form.setValue("isDropshipable", true);
       }
     }
   }, [isClient, searchParams, form]);
@@ -669,8 +661,8 @@ const CreateProductPage = () => {
   // Query for product data when editing
   const editProductQuery = useOneProductByProductCondition(
     {
-      productId: parseInt(productId || '0'),
-      productPriceId: parseInt(editProductPriceId || '0'),
+      productId: parseInt(productId || "0"),
+      productPriceId: parseInt(editProductPriceId || "0"),
     },
     isEditMode && !!editProductPriceId && !!productId,
   );
@@ -679,140 +671,276 @@ const CreateProductPage = () => {
   useEffect(() => {
     if (isEditMode && editProductQuery.data?.data) {
       const productData = editProductQuery.data.data;
-      
+
       // Based on console output, check if there's additional data in nested objects
       const productPriceData = productData;
-      
+
       // Check if there's data in the product_productPrice array
       let priceSpecificData = {};
-      if (productData.product_productPrice && Array.isArray(productData.product_productPrice) && productData.product_productPrice.length > 0) {
+      if (
+        productData.product_productPrice &&
+        Array.isArray(productData.product_productPrice) &&
+        productData.product_productPrice.length > 0
+      ) {
         priceSpecificData = productData.product_productPrice[0];
       }
-      
+
       // Try to find the missing fields in different possible locations
       // Check if there's any other nested object that might contain the missing data
       let additionalData = {};
-      Object.keys(productData).forEach(key => {
-        if (typeof productData[key] === 'object' && productData[key] !== null && !Array.isArray(productData[key])) {
-          if (productData[key].consumerType || productData[key].sellType || productData[key].stock) {
+      Object.keys(productData).forEach((key) => {
+        if (
+          typeof productData[key] === "object" &&
+          productData[key] !== null &&
+          !Array.isArray(productData[key])
+        ) {
+          if (
+            productData[key].consumerType ||
+            productData[key].sellType ||
+            productData[key].stock
+          ) {
             additionalData = productData[key];
           }
         }
       });
-      
+
       // Create productPriceList array as expected by the form
       // Use the best available data source for price-related fields
-      const priceData = Object.keys(priceSpecificData).length > 0 
-        ? priceSpecificData 
-        : Object.keys(additionalData).length > 0 
-          ? additionalData 
-          : productData;
-      
+      const priceData =
+        Object.keys(priceSpecificData).length > 0
+          ? priceSpecificData
+          : Object.keys(additionalData).length > 0
+            ? additionalData
+            : productData;
+
       // Enhanced field extraction with multiple variations
-      const getFieldValue = (obj: any, fieldVariations: string[], defaultValue: any = null) => {
+      const getFieldValue = (
+        obj: any,
+        fieldVariations: string[],
+        defaultValue: any = null,
+      ) => {
         for (const field of fieldVariations) {
-          if (obj && obj[field] !== undefined && obj[field] !== null && obj[field] !== '') {
+          if (
+            obj &&
+            obj[field] !== undefined &&
+            obj[field] !== null &&
+            obj[field] !== ""
+          ) {
             return obj[field];
           }
         }
         return defaultValue;
       };
 
-      const productPriceList = [{
-        consumerType: getFieldValue(priceData, ['consumerType', 'consumer_type', 'consumerTypeId', 'consumer_type_id']) || 
-                     getFieldValue(productData, ['consumerType', 'consumer_type', 'consumerTypeId', 'consumer_type_id']) || 'CONSUMER',
-        sellType: getFieldValue(priceData, ['sellType', 'sell_type', 'sellTypeId', 'sell_type_id']) || 
-                 getFieldValue(productData, ['sellType', 'sell_type', 'sellTypeId', 'sell_type_id']) || 'NORMALSELL',
-        productPrice: parseInt(productData.productPrice || productData.offerPrice || 0),
-        offerPrice: parseInt(productData.offerPrice || 0),
-        stock: getFieldValue(priceData, ['stock', 'stockQuantity', 'quantity', 'availableStock']) || 
-               getFieldValue(productData, ['stock', 'stockQuantity', 'quantity', 'availableStock']) || 0,
-        deliveryAfter: priceData.deliveryAfter || 0,
-        timeOpen: priceData.timeOpen || 0,
-        timeClose: priceData.timeClose || 0,
-        dateOpen: priceData.dateOpen || '',
-        dateClose: priceData.dateClose || '',
-        startTime: priceData.startTime || '',
-        endTime: priceData.endTime || '',
-        consumerDiscount: priceData.consumerDiscount || 0,
-        vendorDiscount: priceData.vendorDiscount || 0,
-        consumerDiscountType: priceData.consumerDiscountType || 'PERCENTAGE',
-        vendorDiscountType: priceData.vendorDiscountType || 'PERCENTAGE',
-        minCustomer: priceData.minCustomer || 0,
-        maxCustomer: priceData.maxCustomer || 0,
-        minQuantity: priceData.minQuantity || 0,
-        maxQuantity: priceData.maxQuantity || 0,
-        minQuantityPerCustomer: priceData.minQuantityPerCustomer || 0,
-        maxQuantityPerCustomer: priceData.maxQuantityPerCustomer || 0,
-        askForPrice: (() => {
-          // If product has actual price values, set askForPrice to NO
-          const hasActualPrice = productData.productPrice && productData.productPrice > 0;
-          const hasActualOfferPrice = productData.offerPrice && productData.offerPrice > 0;
-          if (hasActualPrice || hasActualOfferPrice) {
-            return 'NO';
-          }
-          return priceData.askForPrice || 'NO';
-        })(),
-        askForStock: (() => {
-          // If product has actual stock value, set askForStock to NO
-          const hasActualStock = productData.stock && productData.stock > 0;
-          if (hasActualStock) {
-            return 'NO';
-          }
-          return priceData.askForStock || 'NO';
-        })(),
-        status: priceData.status || 'ACTIVE',
-      }];
+      const productPriceList = [
+        {
+          consumerType:
+            getFieldValue(priceData, [
+              "consumerType",
+              "consumer_type",
+              "consumerTypeId",
+              "consumer_type_id",
+            ]) ||
+            getFieldValue(productData, [
+              "consumerType",
+              "consumer_type",
+              "consumerTypeId",
+              "consumer_type_id",
+            ]) ||
+            "CONSUMER",
+          sellType:
+            getFieldValue(priceData, [
+              "sellType",
+              "sell_type",
+              "sellTypeId",
+              "sell_type_id",
+            ]) ||
+            getFieldValue(productData, [
+              "sellType",
+              "sell_type",
+              "sellTypeId",
+              "sell_type_id",
+            ]) ||
+            "NORMALSELL",
+          productPrice: parseInt(
+            productData.productPrice || productData.offerPrice || 0,
+          ),
+          offerPrice: parseInt(productData.offerPrice || 0),
+          stock:
+            getFieldValue(priceData, [
+              "stock",
+              "stockQuantity",
+              "quantity",
+              "availableStock",
+            ]) ||
+            getFieldValue(productData, [
+              "stock",
+              "stockQuantity",
+              "quantity",
+              "availableStock",
+            ]) ||
+            0,
+          deliveryAfter: priceData.deliveryAfter || 0,
+          timeOpen: priceData.timeOpen || 0,
+          timeClose: priceData.timeClose || 0,
+          dateOpen: priceData.dateOpen || "",
+          dateClose: priceData.dateClose || "",
+          startTime: priceData.startTime || "",
+          endTime: priceData.endTime || "",
+          consumerDiscount: priceData.consumerDiscount || 0,
+          vendorDiscount: priceData.vendorDiscount || 0,
+          consumerDiscountType: priceData.consumerDiscountType || "PERCENTAGE",
+          vendorDiscountType: priceData.vendorDiscountType || "PERCENTAGE",
+          minCustomer: priceData.minCustomer || 0,
+          maxCustomer: priceData.maxCustomer || 0,
+          minQuantity: priceData.minQuantity || 0,
+          maxQuantity: priceData.maxQuantity || 0,
+          minQuantityPerCustomer: priceData.minQuantityPerCustomer || 0,
+          maxQuantityPerCustomer: priceData.maxQuantityPerCustomer || 0,
+          askForPrice: (() => {
+            // If product has actual price values, set askForPrice to NO
+            const hasActualPrice =
+              productData.productPrice && productData.productPrice > 0;
+            const hasActualOfferPrice =
+              productData.offerPrice && productData.offerPrice > 0;
+            if (hasActualPrice || hasActualOfferPrice) {
+              return "NO";
+            }
+            return priceData.askForPrice || "NO";
+          })(),
+          askForStock: (() => {
+            // If product has actual stock value, set askForStock to NO
+            const hasActualStock = productData.stock && productData.stock > 0;
+            if (hasActualStock) {
+              return "NO";
+            }
+            return priceData.askForStock || "NO";
+          })(),
+          status: priceData.status || "ACTIVE",
+        },
+      ];
 
       const editData = {
         // Basic product information
-        productName: productData.productName || '',
-        productCondition: productData.productCondition || productData.product_productPrice?.[0]?.productCondition || 'New',
+        productName: productData.productName || "",
+        productCondition:
+          productData.productCondition ||
+          productData.product_productPrice?.[0]?.productCondition ||
+          "New",
         categoryId: productData.categoryId || 0,
         brandId: productData.brandId || 0,
-        skuNo: productData.skuNo || '',
-        description: productData.description || '',
-        shortDescription: productData.shortDescription || '',
-        
+        skuNo: productData.skuNo || "",
+        description: productData.description || "",
+        shortDescription: productData.shortDescription || "",
+
         // Location information (use enhanced field extraction from multiple sources)
-        productCountryId: Number(getFieldValue(productData, ['productCountryId', 'countryId', 'country_id']) || 
-                         (productData.product_productPrice?.[0] ? getFieldValue(productData.product_productPrice[0], ['productCountryId', 'countryId', 'country_id']) : null) || 0),
-        productStateId: Number(getFieldValue(productData, ['productStateId', 'stateId', 'state_id']) || 
-                       (productData.product_productPrice?.[0] ? getFieldValue(productData.product_productPrice[0], ['productStateId', 'stateId', 'state_id']) : null) || 0),
-        productCityId: Number(getFieldValue(productData, ['productCityId', 'cityId', 'city_id']) || 
-                      (productData.product_productPrice?.[0] ? getFieldValue(productData.product_productPrice[0], ['productCityId', 'cityId', 'city_id']) : null) || 0),
-        productTown: getFieldValue(productData, ['productTown', 'town', 'product_town']) || 
-                    (productData.product_productPrice?.[0] ? getFieldValue(productData.product_productPrice[0], ['productTown', 'town', 'product_town']) : null) || '',
-        productLatLng: getFieldValue(productData, ['productLatLng', 'latLng', 'lat_lng', 'coordinates']) || 
-                      (productData.product_productPrice?.[0] ? getFieldValue(productData.product_productPrice[0], ['productLatLng', 'latLng', 'lat_lng', 'coordinates']) : null) || '',
+        productCountryId: Number(
+          getFieldValue(productData, [
+            "productCountryId",
+            "countryId",
+            "country_id",
+          ]) ||
+            (productData.product_productPrice?.[0]
+              ? getFieldValue(productData.product_productPrice[0], [
+                  "productCountryId",
+                  "countryId",
+                  "country_id",
+                ])
+              : null) ||
+            0,
+        ),
+        productStateId: Number(
+          getFieldValue(productData, [
+            "productStateId",
+            "stateId",
+            "state_id",
+          ]) ||
+            (productData.product_productPrice?.[0]
+              ? getFieldValue(productData.product_productPrice[0], [
+                  "productStateId",
+                  "stateId",
+                  "state_id",
+                ])
+              : null) ||
+            0,
+        ),
+        productCityId: Number(
+          getFieldValue(productData, ["productCityId", "cityId", "city_id"]) ||
+            (productData.product_productPrice?.[0]
+              ? getFieldValue(productData.product_productPrice[0], [
+                  "productCityId",
+                  "cityId",
+                  "city_id",
+                ])
+              : null) ||
+            0,
+        ),
+        productTown:
+          getFieldValue(productData, ["productTown", "town", "product_town"]) ||
+          (productData.product_productPrice?.[0]
+            ? getFieldValue(productData.product_productPrice[0], [
+                "productTown",
+                "town",
+                "product_town",
+              ])
+            : null) ||
+          "",
+        productLatLng:
+          getFieldValue(productData, [
+            "productLatLng",
+            "latLng",
+            "lat_lng",
+            "coordinates",
+          ]) ||
+          (productData.product_productPrice?.[0]
+            ? getFieldValue(productData.product_productPrice[0], [
+                "productLatLng",
+                "latLng",
+                "lat_lng",
+                "coordinates",
+              ])
+            : null) ||
+          "",
         placeOfOriginId: Number(productData.placeOfOriginId || 1),
-        
+
         // Selling locations
         sellCountryIds: productData.sellCountryIds || [],
         sellStateIds: productData.sellStateIds || [],
         sellCityIds: productData.sellCityIds || [],
-        
+
         // Price information (use the actual values from console)
-        productPrice: parseInt(productData.productPrice || productData.offerPrice || 0),
+        productPrice: parseInt(
+          productData.productPrice || productData.offerPrice || 0,
+        ),
         offerPrice: parseInt(productData.offerPrice || 0),
         productPriceList: productPriceList,
         setUpPrice: true,
-        
+
         // Stock and offer requirements - use the corrected values from productPriceList
-        isStockRequired: productPriceList[0].askForStock === 'YES',
-        isOfferPriceRequired: productPriceList[0].askForPrice === 'YES',
+        isStockRequired: productPriceList[0].askForStock === "YES",
+        isOfferPriceRequired: productPriceList[0].askForPrice === "YES",
         isCustomProduct: productData.isCustomProduct || false,
-        
+
         // Lists and arrays - handle nested data structures
-        productShortDescriptionList: productData.product_productShortDescription || productData.productShortDescriptionList || [],
-        productSpecificationList: productData.product_productSpecification || productData.productSpecificationList || [],
+        productShortDescriptionList:
+          productData.product_productShortDescription ||
+          productData.productShortDescriptionList ||
+          [],
+        productSpecificationList:
+          productData.product_productSpecification ||
+          productData.productSpecificationList ||
+          [],
         productTagList: productData.productTagList || [],
-        productImagesList: productData.productImages || productData.productImagesList || [],
-        
+        productImagesList:
+          productData.productImages || productData.productImagesList || [],
+
         // Handle description JSON (parse if it's a string)
         descriptionJson: (() => {
           try {
-            if (typeof productData.description === 'string' && productData.description.startsWith('[')) {
+            if (
+              typeof productData.description === "string" &&
+              productData.description.startsWith("[")
+            ) {
               return JSON.parse(productData.description);
             }
             return productData.descriptionJson || [];
@@ -820,74 +948,86 @@ const CreateProductPage = () => {
             return [];
           }
         })(),
-        
+
         // Additional fields
-        typeOfProduct: productData.typeOfProduct || productData.typeOfProduct || 'BRAND',
-        categoryLocation: productData.categoryLocation || '',
+        typeOfProduct:
+          productData.typeOfProduct || productData.typeOfProduct || "BRAND",
+        categoryLocation: productData.categoryLocation || "",
       };
-      
+
       // Reset form first to ensure clean state
       form.reset();
-      
+
       // Set form values first
       Object.entries(editData).forEach(([key, value]) => {
         form.setValue(key as any, value);
       });
-      
+
       // Set category IDs - try multiple times to ensure it works
       if (editData.categoryLocation && editData.categoryLocation.trim()) {
-        const categoryIds = editData.categoryLocation.split(',').filter((item: string) => item.trim());
-        
+        const categoryIds = editData.categoryLocation
+          .split(",")
+          .filter((item: string) => item.trim());
+
         // Set immediately
         setSelectedCategoryIds(categoryIds);
-        
+
         // Also set after delays to ensure component has loaded
         setTimeout(() => {
           setSelectedCategoryIds(categoryIds);
         }, 200);
-        
+
         setTimeout(() => {
           setSelectedCategoryIds(categoryIds);
         }, 500);
-        
+
         setTimeout(() => {
           setSelectedCategoryIds(categoryIds);
         }, 1000);
       }
-      
+
       // Force form to re-render by triggering a change event
       setTimeout(() => {
         form.trigger(); // This will trigger validation and re-render
       }, 100);
 
       // Manually set critical fields with the correct values from our mapping
-      form.setValue('productPriceList.0.consumerType', productPriceList[0].consumerType);
-      form.setValue('productPriceList.0.sellType', productPriceList[0].sellType);
-      form.setValue('productPriceList.0.stock', productPriceList[0].stock);
-      
+      form.setValue(
+        "productPriceList.0.consumerType",
+        productPriceList[0].consumerType,
+      );
+      form.setValue(
+        "productPriceList.0.sellType",
+        productPriceList[0].sellType,
+      );
+      form.setValue("productPriceList.0.stock", productPriceList[0].stock);
+
       // Set location fields if they're missing or have default values
       const currentValues = form.getValues();
       if (!currentValues.productStateId || currentValues.productStateId === 0) {
-        form.setValue('productStateId', 1); // Default state
+        form.setValue("productStateId", 1); // Default state
       }
       if (!currentValues.productCityId || currentValues.productCityId === 0) {
-        form.setValue('productCityId', 1); // Default city
+        form.setValue("productCityId", 1); // Default city
       }
-      if (!currentValues.productCountryId || currentValues.productCountryId === 0) {
-        form.setValue('productCountryId', 1); // Default country (India)
+      if (
+        !currentValues.productCountryId ||
+        currentValues.productCountryId === 0
+      ) {
+        form.setValue("productCountryId", 1); // Default country (India)
       }
-      if (!currentValues.productTown || currentValues.productTown === '') {
-        form.setValue('productTown', 'Default Town'); // Default town
+      if (!currentValues.productTown || currentValues.productTown === "") {
+        form.setValue("productTown", "Default Town"); // Default town
       }
-      if (!currentValues.productLatLng || currentValues.productLatLng === '') {
-        form.setValue('productLatLng', '0,0'); // Default coordinates
+      if (!currentValues.productLatLng || currentValues.productLatLng === "") {
+        form.setValue("productLatLng", "0,0"); // Default coordinates
       }
 
       // Set product type based on sell type
-      if (priceData.sellType === 'BUYGROUP') {
-        setActiveProductType('R');
+      if (priceData.sellType === "BUYGROUP") {
+        setActiveProductType("R");
       } else {
-        setActiveProductType('P');
+        setActiveProductType("P");
       }
     }
   }, [isEditMode, editProductQuery.data, form]);
@@ -899,24 +1039,26 @@ const CreateProductPage = () => {
   const updateProductFull = useUpdateProduct();
   const watchProductImages = form.watch("productImages");
   const watchSetUpPrice = form.watch("setUpPrice");
-  
+
   // Get current account to ensure we use the correct user ID
   const { data: currentAccount } = useCurrentAccount();
 
   // Query for user's own product (for copy from manage-products or regular view)
   const productQueryById = useProductById(
     {
-      productId: productId || ''
+      productId: productId || "",
     },
-    !!productId && (!searchParams?.get('copy') || searchParams?.get('fromExisting') !== 'true'),
+    !!productId &&
+      (!searchParams?.get("copy") ||
+        searchParams?.get("fromExisting") !== "true"),
   );
 
   // Query for existing product when copying from existing products catalog (admin-added products)
   const existingProductQueryById = useExistingProductById(
     {
-      existingProductId: productId || ''
+      existingProductId: productId || "",
     },
-    !!productId && searchParams?.get('fromExisting') === 'true',
+    !!productId && searchParams?.get("fromExisting") === "true",
   );
 
   const getProductVariant = useProductVariant();
@@ -949,33 +1091,46 @@ const CreateProductPage = () => {
     const response = await getProductVariant.mutateAsync([productPriceId]);
     const variants = response?.data?.[0]?.object || [];
     if (variants.length > 0) {
-      const productSellerImages = product?.product_productPrice?.[0]?.productPrice_productSellerImage?.length
+      const productSellerImages = product?.product_productPrice?.[0]
+        ?.productPrice_productSellerImage?.length
         ? product?.product_productPrice?.[0]?.productPrice_productSellerImage
         : product?.productImages?.length
-        ? product?.productImages
-        : [];
+          ? product?.productImages
+          : [];
 
       // @ts-ignore
-      let variantTypes = [...new Set(variants.map((variant: any) => variant.type))];
-      form.setValue("productVariants", variantTypes.map((type: string) => {
-        return {
-          type: type,
-          variants: variants.filter((variant: any) => variant.type == type).map((variant: any) => {
-            return {
-              value: variant.value, 
-              image: productSellerImages?.find((image: any) => {
-                return image.variant && image.variant?.type == type && image.variant?.value == variant.value;
-              })?.image || null
-            };
-          })
-        };
-      }));
+      let variantTypes = [
+        ...new Set(variants.map((variant: any) => variant.type)),
+      ];
+      form.setValue(
+        "productVariants",
+        variantTypes.map((type: string) => {
+          return {
+            type: type,
+            variants: variants
+              .filter((variant: any) => variant.type == type)
+              .map((variant: any) => {
+                return {
+                  value: variant.value,
+                  image:
+                    productSellerImages?.find((image: any) => {
+                      return (
+                        image.variant &&
+                        image.variant?.type == type &&
+                        image.variant?.value == variant.value
+                      );
+                    })?.image || null,
+                };
+              }),
+          };
+        }),
+      );
     }
-  }
+  };
 
   useEffect(() => {
     // Handle regular product data (including copy from manage-products)
-    if (productQueryById?.data?.data && !searchParams?.get('fromExisting')) {
+    if (productQueryById?.data?.data && !searchParams?.get("fromExisting")) {
       const product = productQueryById?.data?.data;
       populateFormWithProductData(product);
     }
@@ -983,51 +1138,64 @@ const CreateProductPage = () => {
 
   useEffect(() => {
     // Handle existing product data when copying from existing products catalog
-    if (existingProductQueryById?.data?.data && searchParams?.get('fromExisting') === 'true') {
+    if (
+      existingProductQueryById?.data?.data &&
+      searchParams?.get("fromExisting") === "true"
+    ) {
       const existingProduct = existingProductQueryById?.data?.data;
       populateFormWithExistingProductData(existingProduct);
     }
   }, [existingProductQueryById?.data?.data, searchParams]);
 
   const populateFormWithProductData = (product: any) => {
-      setActiveProductType(product.productType);
-      
-      form.setValue("categoryId", product.categoryId);
-      form.setValue("categoryLocation", product.categoryLocation);
-      setSelectedCategoryIds(
-      product.categoryLocation ? product.categoryLocation.split(',').filter((item: string) => item) : []
-      );
+    setActiveProductType(product.productType);
 
-      form.setValue("productName", product.productName);
-      form.setValue("typeOfProduct", product.typeOfProduct);
-      form.setValue("brandId", product.brandId);
-      form.setValue("productCondition", product.product_productPrice?.[0]?.productCondition || "New");
-      const productTagList = product.productTags?.filter((item: any) => item.productTagsTag)?.map((item: any) => {
-        return {
-          label: item.productTagsTag.tagName,
-          value: item.productTagsTag.id
-        }
-      }) || [];
-      form.setValue("productTagList", productTagList);
-      // Trigger validation after setting tags
-      setTimeout(() => {
-        form.trigger("productTagList");
-      }, 100);
+    form.setValue("categoryId", product.categoryId);
+    form.setValue("categoryLocation", product.categoryLocation);
+    setSelectedCategoryIds(
+      product.categoryLocation
+        ? product.categoryLocation.split(",").filter((item: string) => item)
+        : [],
+    );
 
-      const productSellerImages = product?.product_productPrice?.[0]
-        ?.productPrice_productSellerImage?.length
-        ? product?.product_productPrice?.[0]?.productPrice_productSellerImage
-        : product?.productImages?.length
+    form.setValue("productName", product.productName);
+    form.setValue("typeOfProduct", product.typeOfProduct);
+    form.setValue("brandId", product.brandId);
+    form.setValue(
+      "productCondition",
+      product.product_productPrice?.[0]?.productCondition || "New",
+    );
+    const productTagList =
+      product.productTags
+        ?.filter((item: any) => item.productTagsTag)
+        ?.map((item: any) => {
+          return {
+            label: item.productTagsTag.tagName,
+            value: item.productTagsTag.id,
+          };
+        }) || [];
+    form.setValue("productTagList", productTagList);
+    // Trigger validation after setting tags
+    setTimeout(() => {
+      form.trigger("productTagList");
+    }, 100);
+
+    const productSellerImages = product?.product_productPrice?.[0]
+      ?.productPrice_productSellerImage?.length
+      ? product?.product_productPrice?.[0]?.productPrice_productSellerImage
+      : product?.productImages?.length
         ? product?.productImages
         : [];
 
-      const productImages = productSellerImages?.filter((item: any) => item.image)
-      .map((item: any) => ({
-        id: item.id,
-        path: item.image,
-        name: item.imageName || 'product-image',
-        type: 'image'
-      })) || [];
+    const productImages =
+      productSellerImages
+        ?.filter((item: any) => item.image)
+        .map((item: any) => ({
+          id: item.id,
+          path: item.image,
+          name: item.imageName || "product-image",
+          type: "image",
+        })) || [];
 
     form.setValue("productImages", productImages);
     form.setValue("productPrice", product.productPrice);
@@ -1040,39 +1208,48 @@ const CreateProductPage = () => {
     form.setValue("productType", product.productType);
     form.setValue("typeProduct", product.typeProduct);
 
-      form.setValue("productSpecificationList", product.product_productSpecification?.map((item: any) => {
+    form.setValue(
+      "productSpecificationList",
+      product.product_productSpecification?.map((item: any) => {
         return {
           label: item.label,
-          specification: item.specification
-        }
-      }) || []);
+          specification: item.specification,
+        };
+      }) || [],
+    );
 
-      if (product.product_productPrice?.length) {
-        fetchProductVariant(product.product_productPrice?.[0]?.id);
-      }
+    if (product.product_productPrice?.length) {
+      fetchProductVariant(product.product_productPrice?.[0]?.id);
+    }
   };
 
   const populateFormWithExistingProductData = (existingProduct: any) => {
-    
     setActiveProductType(existingProduct.productType);
-    
+
     form.setValue("categoryId", existingProduct.categoryId);
     form.setValue("categoryLocation", existingProduct.categoryLocation);
     setSelectedCategoryIds(
-      existingProduct.categoryLocation ? existingProduct.categoryLocation.split(',').filter((item: string) => item) : []
+      existingProduct.categoryLocation
+        ? existingProduct.categoryLocation
+            .split(",")
+            .filter((item: string) => item)
+        : [],
     );
 
     form.setValue("productName", existingProduct.productName);
-    
+
     form.setValue("typeOfProduct", existingProduct.typeOfProduct);
     form.setValue("brandId", existingProduct.brandId);
     form.setValue("productCondition", "New"); // Default for existing products
-    const productTagList = existingProduct.existingProductTags?.filter((item: any) => item.existingProductTag)?.map((item: any) => {
-      return {
-        label: item.existingProductTag.tagName,
-        value: item.existingProductTag.id
-      }
-    }) || [];
+    const productTagList =
+      existingProduct.existingProductTags
+        ?.filter((item: any) => item.existingProductTag)
+        ?.map((item: any) => {
+          return {
+            label: item.existingProductTag.tagName,
+            value: item.existingProductTag.id,
+          };
+        }) || [];
     form.setValue("productTagList", productTagList);
     // Trigger validation after setting tags
     setTimeout(() => {
@@ -1080,19 +1257,21 @@ const CreateProductPage = () => {
     }, 100);
 
     // Use existingProductImages for existing products
-    const productImages = existingProduct.existingProductImages?.filter((item: any) => item.image)
-      .map((item: any) => ({
-        id: item.id,
-        path: item.image,
-        name: item.imageName || 'product-image',
-        type: 'image'
-      })) || [];
+    const productImages =
+      existingProduct.existingProductImages
+        ?.filter((item: any) => item.image)
+        .map((item: any) => ({
+          id: item.id,
+          path: item.image,
+          name: item.imageName || "product-image",
+          type: "image",
+        })) || [];
 
     form.setValue("productImages", productImages);
     form.setValue("productPrice", existingProduct.productPrice);
     form.setValue("offerPrice", existingProduct.offerPrice);
     form.setValue("description", existingProduct.description);
-    
+
     // Parse description JSON if it exists, otherwise create proper Slate format
     if (existingProduct.description) {
       try {
@@ -1104,33 +1283,33 @@ const CreateProductPage = () => {
           // If it's not a proper Slate format, create one
           form.setValue("descriptionJson", [
             {
-              id: '1',
-              type: 'p',
-              children: [{ text: existingProduct.description }]
-            }
+              id: "1",
+              type: "p",
+              children: [{ text: existingProduct.description }],
+            },
           ]);
         }
       } catch (e) {
         // Create proper Slate format from plain text
         form.setValue("descriptionJson", [
           {
-            id: '1',
-            type: 'p',
-            children: [{ text: existingProduct.description }]
-          }
+            id: "1",
+            type: "p",
+            children: [{ text: existingProduct.description }],
+          },
         ]);
       }
     } else {
       // Default empty Slate format
       form.setValue("descriptionJson", [
         {
-          id: '1',
-          type: 'p',
-          children: [{ text: '' }]
-        }
+          id: "1",
+          type: "p",
+          children: [{ text: "" }],
+        },
       ]);
     }
-    
+
     // Set product specifications - ExistingProduct has specification as a simple string field
     if (existingProduct.specification && existingProduct.specification.trim()) {
       // Try to parse as JSON first, if it fails, treat as plain text
@@ -1139,7 +1318,7 @@ const CreateProductPage = () => {
         if (Array.isArray(specData) && specData.length > 0) {
           const productSpecificationList = specData.map((item: any) => ({
             label: item.label || "",
-            specification: item.specification || ""
+            specification: item.specification || "",
           }));
           form.setValue("productSpecificationList", productSpecificationList);
         } else {
@@ -1147,8 +1326,8 @@ const CreateProductPage = () => {
           form.setValue("productSpecificationList", [
             {
               label: "Specification",
-              specification: existingProduct.specification
-            }
+              specification: existingProduct.specification,
+            },
           ]);
         }
       } catch (e) {
@@ -1156,8 +1335,8 @@ const CreateProductPage = () => {
         form.setValue("productSpecificationList", [
           {
             label: "Specification",
-            specification: existingProduct.specification
-          }
+            specification: existingProduct.specification,
+          },
         ]);
       }
     } else {
@@ -1165,81 +1344,90 @@ const CreateProductPage = () => {
       form.setValue("productSpecificationList", [
         {
           label: "",
-          specification: ""
-        }
+          specification: "",
+        },
       ]);
     }
-    
+
     // Set product short descriptions - ExistingProduct has shortDescription as a simple string field
-    if (existingProduct.shortDescription && existingProduct.shortDescription.trim()) {
+    if (
+      existingProduct.shortDescription &&
+      existingProduct.shortDescription.trim()
+    ) {
       // Try to parse as JSON first, if it fails, treat as plain text
       try {
         const shortDescData = JSON.parse(existingProduct.shortDescription);
         if (Array.isArray(shortDescData) && shortDescData.length > 0) {
-          const productShortDescriptionList = shortDescData.map((item: any) => ({
-            shortDescription: item.shortDescription || ""
-          }));
-          form.setValue("productShortDescriptionList", productShortDescriptionList);
+          const productShortDescriptionList = shortDescData.map(
+            (item: any) => ({
+              shortDescription: item.shortDescription || "",
+            }),
+          );
+          form.setValue(
+            "productShortDescriptionList",
+            productShortDescriptionList,
+          );
         } else {
           // If it's not an array, create a single short description entry
           form.setValue("productShortDescriptionList", [
             {
-              shortDescription: existingProduct.shortDescription
-            }
+              shortDescription: existingProduct.shortDescription,
+            },
           ]);
         }
       } catch (e) {
         // If parsing fails, treat as plain text
         form.setValue("productShortDescriptionList", [
           {
-            shortDescription: existingProduct.shortDescription
-          }
+            shortDescription: existingProduct.shortDescription,
+          },
         ]);
       }
     } else {
       // Default empty short description
       form.setValue("productShortDescriptionList", [
         {
-          shortDescription: ""
-        }
+          shortDescription: "",
+        },
       ]);
     }
-    
+
     form.setValue("shortDescription", existingProduct.shortDescription);
     form.setValue("barcode", existingProduct.barcode);
     form.setValue("placeOfOriginId", existingProduct.placeOfOriginId);
     form.setValue("productType", existingProduct.productType);
     form.setValue("typeProduct", existingProduct.typeProduct);
-    
   };
 
   const onSubmit = async (formData: any) => {
-    
     // Get the current user ID from the current account for debugging
     const currentUserId = currentAccount?.data?.account?.id;
-    
+
     if (!currentUserId) {
       toast({
         title: t("error"),
-        description: "Unable to determine current account. Please try switching accounts and try again.",
+        description:
+          "Unable to determine current account. Please try switching accounts and try again.",
         variant: "danger",
       });
       return;
     }
 
-    
-
     // Check if this is a wholesale/dropship product from URL
-    const isWholesaleProduct = searchParams?.get('productType') === 'D';
-    
+    const isWholesaleProduct = searchParams?.get("productType") === "D";
+
     const updatedFormData = {
       ...formData,
       productType:
-        activeProductType === "R" ? "R" : 
-        activeProductType === "F" ? "F" : 
-        isWholesaleProduct ? "D" :  // Wholesale/Dropship product from URL
-        formData.isDropshipable === true ? "D" :  // Wholesale/Dropship product from form
-        "P",  // Regular product
+        activeProductType === "R"
+          ? "R"
+          : activeProductType === "F"
+            ? "F"
+            : isWholesaleProduct
+              ? "D" // Wholesale/Dropship product from URL
+              : formData.isDropshipable === true
+                ? "D" // Wholesale/Dropship product from form
+                : "P", // Regular product
       isDropshipable: isWholesaleProduct || formData.isDropshipable === true, // Set based on URL or form
       status:
         activeProductType === "R" || activeProductType === "F"
@@ -1259,11 +1447,10 @@ const CreateProductPage = () => {
         : [];
 
       updatedFormData.productImages = [
-        ...watchProductImages.filter(
-          (item: any) => typeof item.path === "string",
-        )
-        .map((item: any) => item.path),
-        ...imageUrlArray
+        ...watchProductImages
+          .filter((item: any) => typeof item.path === "string")
+          .map((item: any) => item.path),
+        ...imageUrlArray,
       ];
 
       if (updatedFormData.productImages.length) {
@@ -1325,7 +1512,7 @@ const CreateProductPage = () => {
               ? "ACTIVE"
               : "INACTIVE"
             : updatedFormData.productPrice ||
-              updatedFormData.isOfferPriceRequired
+                updatedFormData.isOfferPriceRequired
               ? "ACTIVE"
               : "INACTIVE",
       },
@@ -1372,7 +1559,9 @@ const CreateProductPage = () => {
     if (updatedFormData.productPriceList?.[0]?.sellType == "TRIAL_PRODUCT") {
       updatedFormData.productPriceList[0].menuId = STORE_MENU_ID; // Trial products use store menu
     }
-    if (updatedFormData.productPriceList?.[0]?.sellType == "WHOLESALE_PRODUCT") {
+    if (
+      updatedFormData.productPriceList?.[0]?.sellType == "WHOLESALE_PRODUCT"
+    ) {
       updatedFormData.productPriceList[0].menuId = STORE_MENU_ID; // Wholesale products use store menu
     }
     if (updatedFormData.isCustomProduct) {
@@ -1409,7 +1598,7 @@ const CreateProductPage = () => {
         : (updatedFormData.productPrice ?? 0);
 
     // Add existingProductId if creating from existing product
-    if (productId && searchParams?.get('copy')) {
+    if (productId && searchParams?.get("copy")) {
       updatedFormData.existingProductId = parseInt(productId);
     }
 
@@ -1423,24 +1612,27 @@ const CreateProductPage = () => {
       return;
     }
 
-    (updatedFormData.description = updatedFormData?.descriptionJson
+    ((updatedFormData.description = updatedFormData?.descriptionJson
       ? JSON.stringify(updatedFormData?.descriptionJson)
       : ""),
-      delete updatedFormData.descriptionJson;
+      delete updatedFormData.descriptionJson);
 
     // Process short descriptions for backend
     if (updatedFormData.productShortDescriptionList?.length > 0) {
       // Filter out empty short descriptions
       const validShortDescriptions = updatedFormData.productShortDescriptionList
-        .filter((item: any) => item.shortDescription && item.shortDescription.trim())
+        .filter(
+          (item: any) => item.shortDescription && item.shortDescription.trim(),
+        )
         .map((item: any) => ({
-          shortDescription: item.shortDescription.trim()
+          shortDescription: item.shortDescription.trim(),
         }));
-      
+
       if (validShortDescriptions.length > 0) {
         updatedFormData.productShortDescriptionList = validShortDescriptions;
         // Also set the first short description as the main shortDescription field
-        updatedFormData.shortDescription = validShortDescriptions[0].shortDescription;
+        updatedFormData.shortDescription =
+          validShortDescriptions[0].shortDescription;
       } else {
         delete updatedFormData.productShortDescriptionList;
         updatedFormData.shortDescription = "";
@@ -1453,12 +1645,18 @@ const CreateProductPage = () => {
     if (updatedFormData.productSpecificationList?.length > 0) {
       // Filter out empty specifications
       const validSpecifications = updatedFormData.productSpecificationList
-        .filter((item: any) => item.label && item.label.trim() && item.specification && item.specification.trim())
+        .filter(
+          (item: any) =>
+            item.label &&
+            item.label.trim() &&
+            item.specification &&
+            item.specification.trim(),
+        )
         .map((item: any) => ({
           label: item.label.trim(),
-          specification: item.specification.trim()
+          specification: item.specification.trim(),
         }));
-      
+
       if (validSpecifications.length > 0) {
         updatedFormData.productSpecificationList = validSpecifications;
       } else {
@@ -1473,9 +1671,9 @@ const CreateProductPage = () => {
           if (variant.value) {
             updatedFormData.productVariant.push({
               type: productVariant.type,
-              value: variant.value
-            })
-          } 
+              value: variant.value,
+            });
+          }
         }
       }
     }
@@ -1485,9 +1683,9 @@ const CreateProductPage = () => {
       if (productVariant.type) {
         for (let variant of productVariant.variants) {
           if (variant.image && variant.value) {
-            productVariantImages.push({ 
+            productVariantImages.push({
               path: variant.image,
-              id: productVariant.type + '-' + variant.value,
+              id: productVariant.type + "-" + variant.value,
             });
           }
         }
@@ -1496,32 +1694,37 @@ const CreateProductPage = () => {
 
     if (productVariantImages.length > 0) {
       const productVariantImagesArray = await handleUploadedFile(
-        productVariantImages.filter((item: any) => typeof item.path === 'object')
+        productVariantImages.filter(
+          (item: any) => typeof item.path === "object",
+        ),
       );
       let updatedProductVariantImagesArray: any[] = [];
       let i = 0;
       productVariantImages.forEach((item: any) => {
-        if (typeof item.path === 'object') {
+        if (typeof item.path === "object") {
           updatedProductVariantImagesArray.push(
-            productVariantImagesArray ? productVariantImagesArray[i] : null
+            productVariantImagesArray ? productVariantImagesArray[i] : null,
           );
           i++;
         } else {
           updatedProductVariantImagesArray.push(item.path);
         }
-      })
+      });
       if (updatedProductVariantImagesArray.length) {
-        productVariantImages = productVariantImages.map((image: any, index: number) => {
-          image.url = updatedProductVariantImagesArray[index];
-          return image;
-        });
+        productVariantImages = productVariantImages.map(
+          (image: any, index: number) => {
+            image.url = updatedProductVariantImagesArray[index];
+            return image;
+          },
+        );
 
         for (let productVariant of updatedFormData.productVariants) {
           if (productVariant.type) {
             for (let variant of productVariant.variants) {
               if (variant.image && variant.value) {
                 let variantImage = productVariantImages.find(
-                  (image: any) => image.id == `${productVariant.type}-${variant.value}`
+                  (image: any) =>
+                    image.id == `${productVariant.type}-${variant.value}`,
                 );
                 if (variantImage) {
                   const url = variantImage.url;
@@ -1559,20 +1762,23 @@ const CreateProductPage = () => {
 
     delete updatedFormData.productVariants;
 
-    if (productQueryById?.data?.data && searchParams?.get('copy') && updatedFormData.productName.trim() == productQueryById?.data?.data?.productName.trim()) {
+    if (
+      productQueryById?.data?.data &&
+      searchParams?.get("copy") &&
+      updatedFormData.productName.trim() ==
+        productQueryById?.data?.data?.productName.trim()
+    ) {
       updatedFormData.status = "ACTIVE";
     }
 
-    
     let response;
-    
+
     try {
-      
       if (isEditMode) {
         // Handle edit mode - update existing product
-        const productPriceId = searchParams?.get('productPriceId');
+        const productPriceId = searchParams?.get("productPriceId");
         const actualProductId = productId || editProductQuery?.data?.data?.id;
-        
+
         if (!productPriceId || !actualProductId) {
           toast({
             title: t("error"),
@@ -1583,25 +1789,31 @@ const CreateProductPage = () => {
         }
 
         // Calculate status based on the same logic as create mode
-        const calculatedStatus = activeProductType === "R"
-          ? (updatedFormData.offerPrice || updatedFormData.isOfferPriceRequired)
-            ? "ACTIVE"
-            : "INACTIVE"
-          : (updatedFormData.productPrice || updatedFormData.isOfferPriceRequired)
-            ? "ACTIVE"
-            : "INACTIVE";
+        const calculatedStatus =
+          activeProductType === "R"
+            ? updatedFormData.offerPrice || updatedFormData.isOfferPriceRequired
+              ? "ACTIVE"
+              : "INACTIVE"
+            : updatedFormData.productPrice ||
+                updatedFormData.isOfferPriceRequired
+              ? "ACTIVE"
+              : "INACTIVE";
 
         // Prepare full product update data (product-level fields: name, category, brand, images, description, etc.)
         const fullProductUpdateData = {
           productId: parseInt(actualProductId),
-          productType: updatedFormData.productType || (activeProductType === "R" ? "R" : "P"),
+          productType:
+            updatedFormData.productType ||
+            (activeProductType === "R" ? "R" : "P"),
           productName: updatedFormData.productName,
           categoryId: updatedFormData.categoryId,
           brandId: updatedFormData.brandId,
-          skuNo: updatedFormData.skuNo || editProductQuery?.data?.data?.skuNo || "",
-          productTagList: updatedFormData.productTagList?.map((tag: any) => ({
-            tagId: typeof tag === 'object' ? tag.value || tag.tagId : tag
-          })) || [],
+          skuNo:
+            updatedFormData.skuNo || editProductQuery?.data?.data?.skuNo || "",
+          productTagList:
+            updatedFormData.productTagList?.map((tag: any) => ({
+              tagId: typeof tag === "object" ? tag.value || tag.tagId : tag,
+            })) || [],
           productImagesList: updatedFormData.productImagesList || [],
           placeOfOriginId: updatedFormData.placeOfOriginId || 0,
           productPrice: updatedFormData.productPrice || 0,
@@ -1615,21 +1827,36 @@ const CreateProductPage = () => {
         const priceUpdateData = {
           productPriceId: parseInt(productPriceId),
           stock: updatedFormData.productPriceList?.[0]?.stock || 0,
-          deliveryAfter: updatedFormData.productPriceList?.[0]?.deliveryAfter || 0,
+          deliveryAfter:
+            updatedFormData.productPriceList?.[0]?.deliveryAfter || 0,
           timeOpen: updatedFormData.productPriceList?.[0]?.timeOpen || null,
           timeClose: updatedFormData.productPriceList?.[0]?.timeClose || null,
-          consumerType: updatedFormData.productPriceList?.[0]?.consumerType || 'CONSUMER',
-          sellType: updatedFormData.productPriceList?.[0]?.sellType || 'NORMALSELL',
-          vendorDiscount: updatedFormData.productPriceList?.[0]?.vendorDiscount || null,
-          vendorDiscountType: updatedFormData.productPriceList?.[0]?.vendorDiscountType || null,
-          consumerDiscount: updatedFormData.productPriceList?.[0]?.consumerDiscount || null,
-          consumerDiscountType: updatedFormData.productPriceList?.[0]?.consumerDiscountType || null,
-          minQuantity: updatedFormData.productPriceList?.[0]?.minQuantity || null,
-          maxQuantity: updatedFormData.productPriceList?.[0]?.maxQuantity || null,
-          minCustomer: updatedFormData.productPriceList?.[0]?.minCustomer || null,
-          maxCustomer: updatedFormData.productPriceList?.[0]?.maxCustomer || null,
-          minQuantityPerCustomer: updatedFormData.productPriceList?.[0]?.minQuantityPerCustomer || null,
-          maxQuantityPerCustomer: updatedFormData.productPriceList?.[0]?.maxQuantityPerCustomer || null,
+          consumerType:
+            updatedFormData.productPriceList?.[0]?.consumerType || "CONSUMER",
+          sellType:
+            updatedFormData.productPriceList?.[0]?.sellType || "NORMALSELL",
+          vendorDiscount:
+            updatedFormData.productPriceList?.[0]?.vendorDiscount || null,
+          vendorDiscountType:
+            updatedFormData.productPriceList?.[0]?.vendorDiscountType || null,
+          consumerDiscount:
+            updatedFormData.productPriceList?.[0]?.consumerDiscount || null,
+          consumerDiscountType:
+            updatedFormData.productPriceList?.[0]?.consumerDiscountType || null,
+          minQuantity:
+            updatedFormData.productPriceList?.[0]?.minQuantity || null,
+          maxQuantity:
+            updatedFormData.productPriceList?.[0]?.maxQuantity || null,
+          minCustomer:
+            updatedFormData.productPriceList?.[0]?.minCustomer || null,
+          maxCustomer:
+            updatedFormData.productPriceList?.[0]?.maxCustomer || null,
+          minQuantityPerCustomer:
+            updatedFormData.productPriceList?.[0]?.minQuantityPerCustomer ||
+            null,
+          maxQuantityPerCustomer:
+            updatedFormData.productPriceList?.[0]?.maxQuantityPerCustomer ||
+            null,
           productCondition: updatedFormData.productCondition,
           askForPrice: updatedFormData.isOfferPriceRequired ? "YES" : "NO",
           askForStock: updatedFormData.isStockRequired ? "YES" : "NO",
@@ -1639,63 +1866,69 @@ const CreateProductPage = () => {
         };
 
         // Update product-level fields first
-        const productUpdateResponse = await updateProductFull.mutateAsync(fullProductUpdateData);
-        
+        const productUpdateResponse = await updateProductFull.mutateAsync(
+          fullProductUpdateData,
+        );
+
         // If product update failed, show error and return early
         if (!productUpdateResponse.status) {
           toast({
             title: t("product_update_failed"),
-            description: productUpdateResponse?.message || "Failed to update product details",
+            description:
+              productUpdateResponse?.message ||
+              "Failed to update product details",
             variant: "danger",
           });
           return;
         }
-        
+
         // Then update product price details (this is critical for trending page visibility)
         // The trending page filters by product_productPrice[].status === "ACTIVE"
-        const priceUpdateResponse = await updateProductPrice.mutateAsync(priceUpdateData);
+        const priceUpdateResponse =
+          await updateProductPrice.mutateAsync(priceUpdateData);
 
         // Use the price update response as the main response (it's more specific)
         response = priceUpdateResponse;
-        
+
         // If price update failed, show error
         if (!priceUpdateResponse.status) {
           toast({
             title: t("product_update_failed"),
-            description: priceUpdateResponse?.message || "Failed to update product price details",
+            description:
+              priceUpdateResponse?.message ||
+              "Failed to update product price details",
             variant: "danger",
           });
           return;
         }
-        
+
         // Both updates succeeded - invalidate queries immediately to refresh trending page
         // The trending page uses "existing-products" query key with payload
         // Use predicate to invalidate all queries that start with "existing-products"
-        queryClient.invalidateQueries({ 
+        queryClient.invalidateQueries({
           predicate: (query) => {
             return query.queryKey[0] === "existing-products";
-          }
+          },
         });
         queryClient.invalidateQueries({ queryKey: ["products"] });
         queryClient.invalidateQueries({ queryKey: ["managed-products"] });
-        queryClient.invalidateQueries({ 
+        queryClient.invalidateQueries({
           predicate: (query) => {
             return query.queryKey[0] === "product-by-id";
-          }
+          },
         });
-        
+
         // Force refetch all existing-products queries to ensure data is fresh
-        queryClient.refetchQueries({ 
+        queryClient.refetchQueries({
           predicate: (query) => {
             return query.queryKey[0] === "existing-products";
-          }
+          },
         });
       } else {
         // Handle create mode - create new product
-        
+
         response = await createProduct.mutateAsync(updatedFormData);
       }
-
 
       if (response && response.status && response.data) {
         // For create mode, invalidate queries
@@ -1705,9 +1938,11 @@ const CreateProductPage = () => {
           queryClient.invalidateQueries({ queryKey: ["managed-products"] });
           queryClient.invalidateQueries({ queryKey: ["existing-products"] });
         }
-        
+
         toast({
-          title: isEditMode ? t("product_update_successful") : t("product_create_successful"),
+          title: isEditMode
+            ? t("product_update_successful")
+            : t("product_create_successful"),
           description: response.message,
           variant: "success",
         });
@@ -1728,15 +1963,22 @@ const CreateProductPage = () => {
         }
       } else {
         toast({
-          title: isEditMode ? t("product_update_failed") : t("product_create_failed"),
+          title: isEditMode
+            ? t("product_update_failed")
+            : t("product_create_failed"),
           description: response?.message || "Unknown error occurred",
           variant: "danger",
         });
       }
     } catch (error: any) {
       toast({
-        title: isEditMode ? t("product_update_failed") : t("product_create_failed"),
-        description: error?.response?.data?.message || error?.message || "Network error occurred",
+        title: isEditMode
+          ? t("product_update_failed")
+          : t("product_create_failed"),
+        description:
+          error?.response?.data?.message ||
+          error?.message ||
+          "Network error occurred",
         variant: "danger",
       });
     }
@@ -1776,7 +2018,7 @@ const CreateProductPage = () => {
 
   useEffect(() => {
     if (activeProductType == "R") {
-      form.setValue("typeOfProduct", "BRAND")
+      form.setValue("typeOfProduct", "BRAND");
     }
   }, [activeProductType]);
 
@@ -1788,14 +2030,14 @@ const CreateProductPage = () => {
       setActiveProductType(activeProductType);
     } else {
       // Default to 'P' (Product) if no productType is specified
-      setActiveProductType('P');
+      setActiveProductType("P");
     }
   }, []);
 
   // Show loading state when not on client side
   if (!isClient) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex min-h-screen items-center justify-center">
         <LoaderWithMessage message={t("loading")} />
       </div>
     );
@@ -1804,7 +2046,7 @@ const CreateProductPage = () => {
   // Show loading state when fetching product data for editing
   if (isEditMode && editProductQuery.isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex min-h-screen items-center justify-center">
         <LoaderWithMessage message={t("loading_product_data")} />
       </div>
     );
@@ -1813,25 +2055,27 @@ const CreateProductPage = () => {
   // Show error state if product data fetch fails
   if (isEditMode && editProductQuery.error) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <h2 className="text-xl font-semibold text-red-600 mb-2">
+          <h2 className="mb-2 text-xl font-semibold text-red-600">
             {t("error_loading_product")}
           </h2>
-          <p className="text-gray-600 mb-4">
+          <p className="mb-4 text-gray-600">
             {t("failed_to_load_product_data")}
           </p>
-          <Button onClick={() => {
-            if (activeProductType === "D") {
-              router.push('/dropship-products');
-            } else if (activeProductType === "R") {
-              router.push('/rfq');
-            } else if (activeProductType === "F") {
-              router.push('/factories');
-            } else {
-              router.push('/manage-products');
-            }
-          }}>
+          <Button
+            onClick={() => {
+              if (activeProductType === "D") {
+                router.push("/dropship-products");
+              } else if (activeProductType === "R") {
+                router.push("/rfq");
+              } else if (activeProductType === "F") {
+                router.push("/factories");
+              } else {
+                router.push("/manage-products");
+              }
+            }}
+          >
             {t("back_to_products")}
           </Button>
         </div>
@@ -1841,33 +2085,35 @@ const CreateProductPage = () => {
 
   return (
     <>
-          <section className="min-h-screen bg-gray-50 py-8">
+      <section className="min-h-screen bg-gray-50 py-8">
         <div className="container mx-auto max-w-6xl px-4">
           {/* Header Section */}
           <div className="mb-8 text-center">
-            {!searchParams?.get('productType') || (searchParams?.get('productType') !== 'D' && searchParams?.get('productType') !== 'R') ? (
+            {!searchParams?.get("productType") ||
+            (searchParams?.get("productType") !== "D" &&
+              searchParams?.get("productType") !== "R") ? (
               <>
                 {/* Tab Navigation */}
-                <div className="inline-flex rounded-xl bg-white p-1 shadow-sm border border-gray-200">
+                <div className="inline-flex rounded-xl border border-gray-200 bg-white p-1 shadow-sm">
                   <button
                     type="button"
-                    className={`px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
-                      activeTab === 'create'
-                        ? 'bg-orange-500 text-white shadow-md'
-                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                    className={`rounded-lg px-6 py-3 text-sm font-medium transition-all duration-200 ${
+                      activeTab === "create"
+                        ? "bg-orange-500 text-white shadow-md"
+                        : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                     }`}
-                    onClick={() => setActiveTab('create')}
+                    onClick={() => setActiveTab("create")}
                   >
                     {t("create_new_product")}
                   </button>
                   <button
                     type="button"
-                    className={`px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
-                      activeTab === 'dropship'
-                        ? 'bg-orange-500 text-white shadow-md'
-                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                    className={`rounded-lg px-6 py-3 text-sm font-medium transition-all duration-200 ${
+                      activeTab === "dropship"
+                        ? "bg-orange-500 text-white shadow-md"
+                        : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                     }`}
-                    onClick={() => setActiveTab('dropship')}
+                    onClick={() => setActiveTab("dropship")}
                   >
                     {t("dropship_product")}
                   </button>
@@ -1877,22 +2123,33 @@ const CreateProductPage = () => {
           </div>
 
           {/* Form Content */}
-          <div className="max-w-5xl mx-auto">
-            {activeTab === 'dropship' && searchParams?.get('productType') !== 'D' ? (
+          <div className="mx-auto max-w-5xl">
+            {activeTab === "dropship" &&
+            searchParams?.get("productType") !== "D" ? (
               <DropshipProductForm />
             ) : (
               <Form {...form}>
-                <form 
-                  onSubmit={form.handleSubmit(onSubmit)} 
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
                   className="space-y-8"
                 >
                   {/* Basic Information Card */}
-                  <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-                    <div className="bg-blue-50 px-6 py-4 border-b border-gray-200">
+                  <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+                    <div className="border-b border-gray-200 bg-blue-50 px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center">
-                          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500">
+                          <svg
+                            className="h-6 w-6 text-white"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
+                            />
                           </svg>
                         </div>
                         <div>
@@ -1907,18 +2164,33 @@ const CreateProductPage = () => {
                         tagsList={memoizedTags}
                         activeProductType={activeProductType}
                         selectedCategoryIds={selectedCategoryIds}
-                        copy={searchParams?.get('copy') && productQueryById?.data?.data ? true : false}
+                        copy={
+                          searchParams?.get("copy") &&
+                          productQueryById?.data?.data
+                            ? true
+                            : false
+                        }
                       />
                     </div>
                   </div>
 
                   {/* Description and Specifications Card */}
-                  <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-                    <div className="bg-green-50 px-6 py-4 border-b border-gray-200">
+                  <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+                    <div className="border-b border-gray-200 bg-green-50 px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-green-500 rounded-xl flex items-center justify-center">
-                          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-500">
+                          <svg
+                            className="h-6 w-6 text-white"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                            />
                           </svg>
                         </div>
                         <div>
@@ -1933,32 +2205,38 @@ const CreateProductPage = () => {
                     </div>
                   </div>
 
-                {/* Action Buttons Card */}
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-                  <div className="flex items-center justify-end">
-                    <Button
-                      disabled={
-                        createProduct.isPending || uploadMultiple.isPending || updateProductFull.isPending || updateProductPrice.isPending
-                      }
-                      type="submit"
-                      className="px-8 py-3 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
-                      dir={langDir}
-                      translate="no"
-                      onClick={() => {
-                        // Force trigger validation to see all errors
-                        form.trigger();
-                      }}
-                    >
-                      {createProduct.isPending ||
+                  {/* Action Buttons Card */}
+                  <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+                    <div className="flex items-center justify-end">
+                      <Button
+                        disabled={
+                          createProduct.isPending ||
+                          uploadMultiple.isPending ||
+                          updateProductFull.isPending ||
+                          updateProductPrice.isPending
+                        }
+                        type="submit"
+                        className="rounded-xl bg-orange-500 px-8 py-3 font-medium text-white shadow-lg transition-all duration-200 hover:bg-orange-600 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50"
+                        dir={langDir}
+                        translate="no"
+                        onClick={() => {
+                          // Force trigger validation to see all errors
+                          form.trigger();
+                        }}
+                      >
+                        {createProduct.isPending ||
                         uploadMultiple.isPending ||
-                        (updateProductFull.isPending || updateProductPrice.isPending) ? (
-                        <LoaderWithMessage message={t("please_wait")} />
-                      ) : (
-                        isEditMode ? t("update_product") : t("continue")
-                      )}
-                    </Button>
+                        updateProductFull.isPending ||
+                        updateProductPrice.isPending ? (
+                          <LoaderWithMessage message={t("please_wait")} />
+                        ) : isEditMode ? (
+                          t("update_product")
+                        ) : (
+                          t("continue")
+                        )}
+                      </Button>
+                    </div>
                   </div>
-                </div>
                 </form>
               </Form>
             )}

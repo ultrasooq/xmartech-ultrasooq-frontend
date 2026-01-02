@@ -5,7 +5,7 @@ import {
   useUpdateProfile,
   useUserBusinessCategories,
 } from "@/apis/queries/user.queries";
-import { useCurrentAccount } from "@/apis/queries/auth.queries";
+import { useCurrentAccount, useMyAccounts } from "@/apis/queries/auth.queries";
 import {
   Accordion,
   AccordionContent,
@@ -34,7 +34,9 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { UsersIcon, ArrowRightIcon } from "lucide-react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -176,6 +178,15 @@ export default function ProfilePage() {
   const businessCategoriesQuery = useUserBusinessCategories();
   const upload = useUploadFile();
   const updateProfile = useUpdateProfile();
+  const { data: accountsData } = useMyAccounts();
+
+  // Check if user has additional accounts (sub-accounts, excluding main account)
+  const allAccounts = accountsData?.data?.data?.allAccounts || [];
+  const mainAccount = accountsData?.data?.data?.mainAccount;
+  const subAccounts = allAccounts.filter(
+    (account: any) => account.id !== mainAccount?.id
+  );
+  const hasAdditionalAccounts = subAccounts.length > 0;
 
   useEffect(() => {
     if (uniqueUser?.data?.data) {
@@ -488,6 +499,37 @@ export default function ProfilePage() {
                 {t("update_profile")}
               </p>
             </div>
+
+            {/* Welcome Banner for New Users */}
+            {!hasAdditionalAccounts && (
+              <div className="mb-6 rounded-lg border border-blue-200 bg-gradient-to-r from-blue-50 via-indigo-50 to-blue-50 p-6 shadow-sm">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+                  <div className="flex-shrink-0">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
+                      <UsersIcon className="h-6 w-6 text-blue-600" />
+                    </div>
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="mb-2 text-lg font-semibold text-gray-900" dir={langDir}>
+                      {t("create_your_business_account")}
+                    </h3>
+                    <p className="mb-4 text-sm text-gray-600" dir={langDir}>
+                      {t("create_business_account_description")}
+                    </p>
+                    <Link href="/my-accounts">
+                      <Button
+                        className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white"
+                        dir={langDir}
+                      >
+                        {t("create_account_now")}
+                        <ArrowRightIcon className="ml-2 h-4 w-4" />
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className="w-full">
               <Form {...form}>
                 <form

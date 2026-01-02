@@ -1107,12 +1107,12 @@ const CartListPage = () => {
                   </div>
                   {/* <div className="flex items-center gap-2 text-xs text-gray-600">
                     <span translate="no">Page 1 of 1</span>
-                      <button
-                        className="text-blue-600 hover:text-blue-800 hover:underline"
-                        translate="no"
-                      >
-                        Start over
-                      </button>
+                    <button
+                      className="text-blue-600 hover:text-blue-800 hover:underline"
+                      translate="no"
+                    >
+                      Start over
+                    </button>
                     </div> */}
                 </div>
 
