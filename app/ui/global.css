@@ -97,6 +97,51 @@
   }
 }
 
+/* Custom scrollbar styles for CategorySidebar */
+.custom-scrollbar-left::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar-left::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.custom-scrollbar-left::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.custom-scrollbar-left::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.custom-scrollbar-left {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f1f5f9;
+}
+
+.custom-scrollbar-right::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scrollbar-right::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.custom-scrollbar-right::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.custom-scrollbar-right::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.custom-scrollbar-right {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f1f5f9;
+}
+
 @utility table-responsive {
   /* start: common */
   @apply w-full overflow-x-auto;

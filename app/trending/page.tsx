@@ -88,6 +88,8 @@ import { useVendorBusinessCategories } from "@/hooks/useVendorBusinessCategories
 import { checkCategoryConnection } from "@/utils/categoryConnection";
 import { useCategory } from "@/apis/queries/category.queries";
 import Link from "next/link";
+import CategorySidebar from "@/components/modules/trending/CategorySidebar";
+import { cn } from "@/lib/utils";
 
 interface TrendingPageProps {
   searchParams?: Promise<{ term?: string }>;
@@ -125,6 +127,7 @@ const TrendingPage = (props0: TrendingPageProps) => {
     "products",
   );
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>([]);
+  const [isCategorySidebarOpen, setIsCategorySidebarOpen] = useState(false);
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
   const category = useCategoryStore();
 
@@ -537,6 +540,32 @@ const TrendingPage = (props0: TrendingPageProps) => {
     },
     haveAccessToken,
   );
+
+  // Listen for category sidebar open/close events from header (hover-based)
+  useEffect(() => {
+    const handleOpenCategorySidebar = () => {
+      setIsCategorySidebarOpen(true);
+    };
+
+    const handleCloseCategorySidebar = () => {
+      // Don't immediately close, let the CategorySidebar handle the delay
+      // setIsCategorySidebarOpen(false);
+    };
+
+    window.addEventListener("openCategorySidebar", handleOpenCategorySidebar);
+    window.addEventListener("closeCategorySidebar", handleCloseCategorySidebar);
+
+    return () => {
+      window.removeEventListener(
+        "openCategorySidebar",
+        handleOpenCategorySidebar,
+      );
+      window.removeEventListener(
+        "closeCategorySidebar",
+        handleCloseCategorySidebar,
+      );
+    };
+  }, []);
 
   useEffect(() => {
     if (cartListByUser.data?.data) {
@@ -1060,6 +1089,46 @@ const TrendingPage = (props0: TrendingPageProps) => {
     setSelectedCategoryIds([]);
   };
 
+  // Listen for category sidebar open/close events from header (hover-based)
+  useEffect(() => {
+    const handleOpenCategorySidebar = () => {
+      setIsCategorySidebarOpen(true);
+    };
+
+    const handleCloseCategorySidebar = () => {
+      // Don't immediately close, let the CategorySidebar handle the delay
+      // setIsCategorySidebarOpen(false);
+    };
+
+    window.addEventListener("openCategorySidebar", handleOpenCategorySidebar);
+    window.addEventListener("closeCategorySidebar", handleCloseCategorySidebar);
+
+    return () => {
+      window.removeEventListener(
+        "openCategorySidebar",
+        handleOpenCategorySidebar,
+      );
+      window.removeEventListener(
+        "closeCategorySidebar",
+        handleCloseCategorySidebar,
+      );
+    };
+  }, []);
+
+  // Handle category from URL query parameter
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const categoryParam = params.get("category");
+      if (categoryParam) {
+        const categoryId = parseInt(categoryParam, 10);
+        if (!isNaN(categoryId)) {
+          setSelectedCategoryIds([categoryId]);
+        }
+      }
+    }
+  }, []);
+
   useEffect(() => {
     if (accessToken) {
       setHaveAccessToken(true);
@@ -1085,6 +1154,16 @@ const TrendingPage = (props0: TrendingPageProps) => {
 
   return (
     <>
+      {/* Category Sidebar */}
+      <CategorySidebar
+        isOpen={isCategorySidebarOpen}
+        onClose={() => setIsCategorySidebarOpen(false)}
+        onCategorySelect={(categoryId) => {
+          setSelectedCategoryIds([categoryId]);
+          setIsCategorySidebarOpen(false);
+        }}
+      />
+
       <title dir={langDir} translate="no">
         {t("store")} | Ultrasooq
       </title>
@@ -1123,7 +1202,8 @@ const TrendingPage = (props0: TrendingPageProps) => {
                 </div>
 
                 {/* Category Filter - Improved */}
-                <div className="mb-6">
+                {/* Commented out for now */}
+                {/* <div className="mb-6">
                   <Accordion
                     type="multiple"
                     defaultValue={["category_filter"]}
@@ -1145,7 +1225,7 @@ const TrendingPage = (props0: TrendingPageProps) => {
                       </AccordionContent>
                     </AccordionItem>
                   </Accordion>
-                </div>
+                </div> */}
 
                 {/* Brand Filter - Improved */}
                 <div className="mb-6">
@@ -1291,7 +1371,12 @@ const TrendingPage = (props0: TrendingPageProps) => {
             </div>
 
             {/* Main Content Column - Products */}
-            <div className="w-full flex-1 overflow-y-auto bg-white lg:w-auto lg:pr-36">
+            <div
+              className={cn(
+                "w-full flex-1 overflow-y-auto bg-white lg:w-auto",
+                cartList.length > 0 ? "lg:pr-36" : "lg:pr-0",
+              )}
+            >
               <div className="p-2 sm:p-4 lg:p-6">
                 <Tabs
                   value={activeTab}
@@ -1723,7 +1808,8 @@ const TrendingPage = (props0: TrendingPageProps) => {
               </div>
 
               {/* Category Filter */}
-              <Accordion
+              {/* Commented out for now */}
+              {/* <Accordion
                 type="multiple"
                 defaultValue={["category_filter"]}
                 className="mb-4"
@@ -1740,7 +1826,7 @@ const TrendingPage = (props0: TrendingPageProps) => {
                     />
                   </AccordionContent>
                 </AccordionItem>
-              </Accordion>
+              </Accordion> */}
 
               {/* Brand Filter */}
               <Accordion

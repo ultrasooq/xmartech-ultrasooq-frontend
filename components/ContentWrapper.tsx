@@ -31,15 +31,17 @@ const ContentWrapper: React.FC<ContentWrapperProps> = ({ children }) => {
 
   // Calculate padding based on sidebar state
   // Mobile: no padding (sidebar slides in/out)
-  // Desktop: Always 64px (collapsed width) - sidebar expands over content on hover
+  // Desktop: Always 72px (collapsed width) - sidebar expands over content on hover
   // Use 0 during SSR to match initial client render
-  const sidebarWidth = mounted && accessToken && !isMobile ? 64 : 0;
+  const sidebarWidth = mounted && accessToken && !isMobile ? 72 : 0;
 
   return (
     <div
       className="transition-all duration-300 ease-in-out min-h-screen"
       style={{
-        paddingLeft: `${sidebarWidth}px`,
+        ...(langDir === "rtl"
+          ? { paddingRight: `${sidebarWidth}px` }
+          : { paddingLeft: `${sidebarWidth}px` }),
       }}
     >
       {children}

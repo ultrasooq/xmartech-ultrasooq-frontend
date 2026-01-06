@@ -53,7 +53,7 @@ import { getInitials, getOrCreateDeviceId } from "@/utils/helper";
 import { useQueryClient } from "@tanstack/react-query";
 import { deleteCookie, getCookie, setCookie } from "cookies-next";
 import { debounce, isArray } from "lodash";
-import { MenuIcon } from "lucide-react";
+import { MenuIcon, LayoutGrid } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
@@ -129,9 +129,9 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
 
   // Calculate sidebar width for header padding
   // Mobile: no padding (sidebar slides in/out)
-  // Desktop: Always 64px (collapsed width) - sidebar expands over content on hover
+  // Desktop: Always 72px (collapsed width) - sidebar expands over content on hover
   // Use 0 during SSR to match initial client render
-  const sidebarWidth = mounted && accessToken && !isMobile ? 64 : 0;
+  const sidebarWidth = mounted && accessToken && !isMobile ? 72 : 0;
 
   const homeButtonClasses =
     pathname === "/home" ? "active-nav-item" : "inactive-nav-item";
@@ -555,7 +555,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                 {t("rfq_quotes")}
               </Link>
             </li>
-            <li className="py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
+            {/* <li className="py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
               <Link
                 href="/seller-rewards"
                 className={getActiveClass("/seller-rewards")}
@@ -563,7 +563,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
               >
                 {t("rewards")}
               </Link>
-            </li>
+            </li> */}
           </>
         );
       case "COMPANY":
@@ -605,7 +605,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                 {t("rfq_requests")}
               </Link>
             </li>
-            <li className="py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
+            {/* <li className="py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
               <Link
                 href="/seller-rewards"
                 className={getActiveClass("/seller-rewards")}
@@ -613,7 +613,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
               >
                 {t("rewards")}
               </Link>
-            </li>
+            </li> */}
           </>
         );
       default:
@@ -771,22 +771,32 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                       )}
                       {userStatus && userStatus !== "ACTIVE" && (
                         <div
-                          className={`border-dark-cyan absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full border-2 sm:h-3.5 sm:w-3.5 ${
+                          className={cn(
+                            "border-dark-cyan absolute -top-0.5 h-3 w-3 rounded-full border-2 sm:h-3.5 sm:w-3.5",
+                            langDir === "rtl" ? "-left-0.5" : "-right-0.5",
                             userStatus === "INACTIVE"
                               ? "bg-red-500"
                               : userStatus === "WAITING"
                                 ? "bg-yellow-500"
                                 : userStatus === "REJECT"
                                   ? "bg-red-600"
-                                  : "bg-gray-500"
-                          }`}
+                                  : "bg-gray-500",
+                          )}
                         />
                       )}
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
-                      align="end"
+                      align={langDir === "rtl" ? "start" : "end"}
                       sideOffset={5}
-                      className="w-56"
+                      alignOffset={langDir === "rtl" ? -16 : 0}
+                      collisionPadding={
+                        langDir === "rtl" ? sidebarWidth + 8 : 8
+                      }
+                      avoidCollisions={true}
+                      className="z-[80] max-h-[80vh] w-56 overflow-y-auto"
+                      style={{
+                        contain: "layout style paint",
+                      }}
                     >
                       {userStatus && userStatus !== "ACTIVE" && (
                         <div className="border-b border-gray-200 px-2 py-1.5 text-xs text-gray-500">
@@ -887,23 +897,23 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                                     </DropdownMenuItem>
                                   </Link>
                                 )}
-                                {hideMenu(PERMISSION_SELLER_REWARDS) && (
+                                {/* {hideMenu(PERMISSION_SELLER_REWARDS) && (
                                   <Link href="/seller-rewards">
                                     <DropdownMenuItem translate="no">
                                       {t("seller_rewards")}
                                     </DropdownMenuItem>
                                   </Link>
-                                )}
+                                )} */}
                               </>
                             )}
 
-                          {hideMenu(PERMISSION_SHARE_LINKS) && (
+                          {/* {hideMenu(PERMISSION_SHARE_LINKS) && (
                             <Link href="/share-links">
                               <DropdownMenuItem translate="no">
                                 {t("share_links")}
                               </DropdownMenuItem>
                             </Link>
-                          )}
+                          )} */}
 
                           {accessControl.canAccessSettings && (
                             <Link href="/my-settings/address">
@@ -1163,7 +1173,9 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
         } ${showHeader ? "translate-y-0" : "-translate-y-full"}`}
         key={`header-${currentTradeRole}-${currentAccount?.data?.data?.account?.id}`}
         style={{
-          paddingLeft: `${sidebarWidth}px`,
+          ...(langDir === "rtl"
+            ? { paddingRight: `${sidebarWidth}px` }
+            : { paddingLeft: `${sidebarWidth}px` }),
         }}
       >
         <div className="bg-dark-cyan w-full">
@@ -1781,20 +1793,36 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                             {/* Status indicator - only show for non-active users */}
                             {userStatus && userStatus !== "ACTIVE" && (
                               <div
-                                className={`border-dark-cyan absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full border-2 ${
+                                className={cn(
+                                  "border-dark-cyan absolute -top-0.5 h-4 w-4 rounded-full border-2",
+                                  langDir === "rtl"
+                                    ? "-left-0.5"
+                                    : "-right-0.5",
                                   userStatus === "INACTIVE"
                                     ? "bg-red-500"
                                     : userStatus === "WAITING"
                                       ? "bg-yellow-500"
                                       : userStatus === "REJECT"
                                         ? "bg-red-600"
-                                        : "bg-gray-500"
-                                }`}
+                                        : "bg-gray-500",
+                                )}
                                 title={`Status: ${userStatus}`}
                               />
                             )}
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" sideOffset={5}>
+                          <DropdownMenuContent
+                            align={langDir === "rtl" ? "start" : "end"}
+                            sideOffset={5}
+                            alignOffset={langDir === "rtl" ? -16 : 0}
+                            collisionPadding={
+                              langDir === "rtl" ? sidebarWidth + 8 : 8
+                            }
+                            avoidCollisions={true}
+                            className="z-[80] max-h-[80vh] overflow-y-auto"
+                            style={{
+                              contain: "layout style paint",
+                            }}
+                          >
                             {/* Status indicator - only show for non-active users */}
                             {userStatus && userStatus !== "ACTIVE" && (
                               <div className="border-b border-gray-200 px-2 py-1.5 text-xs text-gray-500">
@@ -1963,7 +1991,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                                       </Link>
                                     ) : null}
 
-                                    {hideMenu(PERMISSION_SELLER_REWARDS) ? (
+                                    {/* {hideMenu(PERMISSION_SELLER_REWARDS) ? (
                                       <Link href="/seller-rewards">
                                         <DropdownMenuItem
                                           dir={langDir}
@@ -1972,11 +2000,11 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                                           {t("seller_rewards")}
                                         </DropdownMenuItem>
                                       </Link>
-                                    ) : null}
+                                    ) : null} */}
                                   </>
                                 ) : null}
 
-                                {hideMenu(PERMISSION_SHARE_LINKS) ? (
+                                {/* {hideMenu(PERMISSION_SHARE_LINKS) ? (
                                   <Link href="/share-links">
                                     <DropdownMenuItem
                                       dir={langDir}
@@ -1985,7 +2013,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                                       {t("share_links")}
                                     </DropdownMenuItem>
                                   </Link>
-                                ) : null}
+                                ) : null} */}
 
                                 {/* My Settings - Available for all authenticated users */}
                                 {accessControl.canAccessSettings && (
@@ -2524,10 +2552,43 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                 ) : null}
               </div>
 
-              <div className="flex w-full items-center justify-end md:w-auto">
-                <ul className="flex items-center justify-end gap-x-4">
+              <div className="flex w-full items-center py-1">
+                {/* Hamburger Menu Button - On trending/buygroup/home pages - Left end */}
+                {(pathname === "/trending" ||
+                  pathname === "/buygroup" ||
+                  pathname === "/home" ||
+                  pathname === "/") && (
+                  <div
+                    className="group relative flex items-center gap-2"
+                    onMouseEnter={() => {
+                      // Dispatch custom event that pages can listen to
+                      if (typeof window !== "undefined") {
+                        window.dispatchEvent(
+                          new CustomEvent("openCategorySidebar"),
+                        );
+                      }
+                    }}
+                    onMouseLeave={() => {
+                      // Dispatch custom event to close sidebar
+                      if (typeof window !== "undefined") {
+                        window.dispatchEvent(
+                          new CustomEvent("closeCategorySidebar"),
+                        );
+                      }
+                    }}
+                  >
+                    <div className="flex items-center gap-2 rounded-lg px-3 py-2 transition-all hover:bg-gray-100">
+                      <LayoutGrid className="h-5 w-5 text-gray-700" />
+                      <span className="text-sm font-medium text-gray-700">
+                        {t("all_categories") || "All Categories"}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                <ul className="ml-auto flex items-center justify-end gap-x-4">
                   {getRoleBasedHeaderOptions()}
-                  <li className="py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
+                  {/* <li className="py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
                     <a
                       href="#"
                       className="text-light-gray transition-colors hover:text-blue-400"
@@ -2536,7 +2597,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                     >
                       {t("help_center")}
                     </a>
-                  </li>
+                  </li> */}
                 </ul>
               </div>
             </div>

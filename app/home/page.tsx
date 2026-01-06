@@ -46,6 +46,7 @@ import { useCategoryStore } from "@/lib/categoryStore";
 import { useRouter } from "next/navigation";
 import { useCategory } from "@/apis/queries/category.queries";
 import { TrendingUp, ArrowRight } from "lucide-react";
+import CategorySidebar from "@/components/modules/trending/CategorySidebar";
 // @ts-ignore
 import { startDebugger } from "remove-child-node-error-debugger";
 // import { Metadata } from "next";
@@ -63,6 +64,7 @@ function HomePage() {
   const [cartList, setCartList] = useState<any[]>();
   const deviceId = getOrCreateDeviceId() || "";
   const [haveAccessToken, setHaveAccessToken] = useState(false);
+  const [isCategorySidebarOpen, setIsCategorySidebarOpen] = useState(false);
   const accessToken = getCookie(PUREMOON_TOKEN_KEY);
 
   const addToWishlist = useAddToWishList();
@@ -77,6 +79,32 @@ function HomePage() {
       setHaveAccessToken(false);
     }
   }, [accessToken]);
+
+  // Listen for category sidebar open/close events from header (hover-based)
+  useEffect(() => {
+    const handleOpenCategorySidebar = () => {
+      setIsCategorySidebarOpen(true);
+    };
+
+    const handleCloseCategorySidebar = () => {
+      // Don't immediately close, let the CategorySidebar handle the delay
+      // setIsCategorySidebarOpen(false);
+    };
+
+    window.addEventListener("openCategorySidebar", handleOpenCategorySidebar);
+    window.addEventListener("closeCategorySidebar", handleCloseCategorySidebar);
+
+    return () => {
+      window.removeEventListener(
+        "openCategorySidebar",
+        handleOpenCategorySidebar,
+      );
+      window.removeEventListener(
+        "closeCategorySidebar",
+        handleCloseCategorySidebar,
+      );
+    };
+  }, []);
 
   const categoryQuery = useCategory("4");
 
@@ -367,11 +395,21 @@ function HomePage() {
   startDebugger();
   return (
     <>
+      {/* Category Sidebar */}
+      <CategorySidebar
+        isOpen={isCategorySidebarOpen}
+        onClose={() => setIsCategorySidebarOpen(false)}
+        onCategorySelect={(categoryId) => {
+          router.push(`/trending?category=${categoryId}`);
+          setIsCategorySidebarOpen(false);
+        }}
+      />
+
       {/* Hero Banner Section - Dynamic */}
       <HeroBanner />
 
       {/* Categories Section */}
-      <section className="w-full bg-white px-4 py-12 sm:px-8 sm:py-16 lg:px-12 lg:py-20">
+      {/* <section className="w-full bg-white px-4 py-12 sm:px-8 sm:py-16 lg:px-12 lg:py-20">
         <div className="mx-auto w-full max-w-[1400px]">
           <div className="mb-8 sm:mb-12" dir="ltr">
             <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center sm:gap-6">
@@ -407,7 +445,7 @@ function HomePage() {
             <TrendingCategories />
           </div>
         </div>
-      </section>
+      </section> */}
 
       {memoizedBuyGroupProducts?.length > 0 ? (
         <section className="w-full bg-gradient-to-b from-orange-50 to-white px-4 py-12 sm:px-8 sm:py-16 lg:px-12 lg:py-20">

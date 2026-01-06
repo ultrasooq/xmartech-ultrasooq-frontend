@@ -451,6 +451,10 @@ export const CURRENCIES = [
     code: "AUD",
     symbol: "$",
   },
+  {
+    code: "OMR",
+    symbol: "﷼",
+  },
 ];
 
 // User Status System Constants
@@ -537,3 +541,7 @@ export const PRODUCT_TYPE_LABELS = {
   F: "Factory Product",
   D: "Dropship Product",
 } as const;
+
+// WhatsApp Support Configuration
+export const WHATSAPP_SUPPORT_NUMBER = "1234567890"; // Replace with your admin's WhatsApp number (with country code, e.g., "201234567890" for Egypt)
+export const WHATSAPP_SUPPORT_MESSAGE = "Hello, I need help with Ultrasooq"; // Default message

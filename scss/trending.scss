@@ -481,3 +481,96 @@
     }
 }
 
+// Category Sidebar Cascading Dropdown Styles (matching admin products page)
+.category-dropdown-content {
+  display: block;
+  position: absolute;
+  background-color: #fff;
+  min-width: 280px;
+  box-shadow: 0px 8px 8px 0px rgba(0, 0, 0, 0.2);
+  z-index: 100;
+  height: 432px;
+  overflow-y: auto;
+  left: 0;
+  top: 0;
+  border-right: 1px solid #e5e7eb;
+}
+
+.category-dropdown-content-child {
+  transition: background-color 0.2s ease;
+}
+
+.category-dropdown-content-child:hover {
+  background-color: #f1f1f1;
+}
+
+.category-dropdown-active-child {
+  background-color: #f1f1f1;
+}
+
+.category-dropdown-divider {
+  position: absolute;
+  width: 1px;
+  height: 432px;
+  background-color: #e5e7eb;
+  z-index: 99;
+  top: 0;
+}
+
+.category-dropdown-content-second {
+  display: block;
+  position: absolute;
+  background-color: #fff;
+  min-width: 280px;
+  box-shadow: 0px 8px 8px 0px rgba(0, 0, 0, 0.2);
+  z-index: 100;
+  left: 280px;
+  height: 432px;
+  overflow-y: auto;
+  top: 0;
+  border-right: 1px solid #e5e7eb;
+}
+
+.category-dropdown-content-third {
+  display: block;
+  position: absolute;
+  background-color: #fff;
+  min-width: 560px;
+  box-shadow: 0px 8px 8px 0px rgba(0, 0, 0, 0.2);
+  z-index: 100;
+  left: 560px;
+  height: 380px;
+  overflow-y: auto;
+  top: 0;
+  border-right: 1px solid #e5e7eb;
+}
+
+// Support for additional levels (4th, 5th, etc.)
+.category-dropdown-content-fourth {
+  display: block;
+  position: absolute;
+  background-color: #fff;
+  min-width: 560px;
+  box-shadow: 0px 8px 8px 0px rgba(0, 0, 0, 0.2);
+  z-index: 100;
+  left: 840px;
+  height: 380px;
+  overflow-y: auto;
+  top: 0;
+  border-right: 1px solid #e5e7eb;
+}
+
+.category-dropdown-content-fifth {
+  display: block;
+  position: absolute;
+  background-color: #fff;
+  min-width: 560px;
+  box-shadow: 0px 8px 8px 0px rgba(0, 0, 0, 0.2);
+  z-index: 100;
+  left: 1120px;
+  height: 380px;
+  overflow-y: auto;
+  top: 0;
+  border-right: 1px solid #e5e7eb;
+}
+
