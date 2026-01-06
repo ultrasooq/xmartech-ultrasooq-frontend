@@ -40,6 +40,8 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
   const [subCategoryIndex, setSubCategoryIndex] = useState(0);
   const [subSubCategoryIndex, setSubSubCategoryIndex] = useState(0);
   const [subSubSubCategoryIndex, setSubSubSubCategoryIndex] = useState(0);
+  // Track selected path for deeper levels: [subCategoryId, subSubCategoryId, ...]
+  const [selectedPath, setSelectedPath] = useState<number[]>([]);
   const rightContentRef = useRef<HTMLDivElement>(null);
   const categorySectionRefs = useRef<Map<number, HTMLDivElement>>(new Map());
   const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -466,12 +468,14 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
                           setSubCategoryIndex(0);
                           setSubSubCategoryIndex(0);
                           setSubSubSubCategoryIndex(0);
+                          setSelectedPath([]); // Reset path when hovering parent
                         }}
                         onClick={() => {
                           setSelectedMainCategory(category.id);
                           setSubCategoryIndex(0);
                           setSubSubCategoryIndex(0);
                           setSubSubSubCategoryIndex(0);
+                          setSelectedPath([]); // Reset path when clicking parent
                         }}
                       >
                         {category.icon ? (
@@ -523,27 +527,53 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
                     .find(({ category }) => category.id === selectedMainCategory)
                     ?.subcategories?.map((item: any, index: number) => {
                       const isSubActive = index === subCategoryIndex;
+                      // Check if category has children - either loaded or available to load
                       const hasChildren =
-                        item.children &&
-                        Array.isArray(item.children) &&
-                        item.children.length > 0;
+                        (item.children &&
+                          Array.isArray(item.children) &&
+                          item.children.length > 0) ||
+                        item.hasChildren ||
+                        (item._originalChildren &&
+                          Array.isArray(item._originalChildren) &&
+                          item._originalChildren.length > 0);
 
                       return (
                         <div
                           key={item.id}
-                          className={cn(
-                            "flex flex-col items-center cursor-pointer group transition-all",
-                            {
-                              "opacity-100": true,
-                            },
-                          )}
-                          onMouseEnter={() => {
-                            setSubCategoryIndex(index);
-                            setSubSubCategoryIndex(0);
-                            setSubSubSubCategoryIndex(0);
-                          }}
-                          onClick={() => {
-                            if (!hasChildren) {
+                          className="flex flex-col items-center cursor-pointer transition-all"
+                          onClick={async () => {
+                            if (hasChildren) {
+                              // If has children, set as active and show children
+                              setSubCategoryIndex(index);
+                              setSubSubCategoryIndex(0);
+                              setSubSubSubCategoryIndex(0);
+                              setSelectedPath([]); // Reset path when selecting a new subcategory
+                              
+                              // Fetch children if not already loaded
+                              if (!item.children || item.children.length === 0) {
+                                const originalChildren = (item as any)._originalChildren;
+                                const children = await fetchCategoryChildren(item.id, originalChildren);
+                                
+                                // Update the category in the state with fetched children
+                                setCategoriesWithSubcategories((prev) =>
+                                  prev.map((catItem) => {
+                                    if (catItem.category.id === selectedMainCategory) {
+                                      const updatedSubcategories = catItem.subcategories.map(
+                                        (sub: any, idx: number) => {
+                                          if (idx === index) {
+                                            return { ...sub, children };
+                                          }
+                                          return sub;
+                                        },
+                                      );
+                                      return { ...catItem, subcategories: updatedSubcategories };
+                                    }
+                                    return catItem;
+                                  }),
+                                );
+                              }
+                            } else {
+                              // If no children, navigate to category
                               handleSubCategoryClick(item.id);
                             }
                           }}
@@ -554,7 +584,7 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
                               "relative w-20 h-20 rounded-full flex items-center justify-center mb-2 transition-all border-2",
                               isSubActive
                                 ? "border-blue-500 bg-blue-50 shadow-md scale-105"
-                                : "border-gray-200 bg-white hover:border-blue-300 hover:bg-gray-50",
+                                : "border-gray-200 bg-white",
                             )}
                           >
                             {item.icon ? (
@@ -579,7 +609,7 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
                               "text-xs text-center line-clamp-2 max-w-[100px]",
                               isSubActive
                                 ? "text-blue-600 font-medium"
-                                : "text-gray-700 group-hover:text-blue-600",
+                                : "text-gray-700",
                             )}
                           >
                             {item.name}
@@ -589,8 +619,186 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
                     })}
                 </div>
 
-                {/* Third Level - Sub-subcategories (if available) */}
+                {/* Recursive rendering of deeper levels */}
                 {(() => {
+                  // Recursive function to render category levels
+                  const renderCategoryLevel = (
+                    categories: any[],
+                    level: number,
+                    parentPath: number[],
+                    activeIndex: number,
+                    categoryName: string,
+                  ): React.ReactNode => {
+                    if (!categories || categories.length === 0) return null;
+
+                    // For level 2, use subSubSubCategoryIndex, for deeper levels find from path
+                    let actualActiveIndex = activeIndex;
+                    if (level > 2 && selectedPath.length >= level - 1) {
+                      const targetId = selectedPath[level - 2];
+                      actualActiveIndex = categories.findIndex((cat: any) => cat.id === targetId);
+                      if (actualActiveIndex === -1) actualActiveIndex = 0;
+                    }
+
+                    const activeCategory = categories[actualActiveIndex] || categories[0];
+                    const activeCategoryChildren = activeCategory?.children || [];
+
+                    return (
+                      <>
+                        <div className="mt-8 pt-6 border-t border-gray-200">
+                          <h4 className="text-base font-semibold text-gray-900 mb-4">
+                            {categoryName}
+                          </h4>
+                          <div className="grid grid-cols-7 gap-4">
+                            {categories.map((item: any, index: number) => {
+                              // Determine if this item is active
+                              let isActive = false;
+                              if (level === 2) {
+                                isActive = index === subSubSubCategoryIndex;
+                              } else if (level > 2 && selectedPath.length >= level - 1) {
+                                isActive = item.id === selectedPath[level - 2];
+                              } else {
+                                isActive = index === actualActiveIndex;
+                              }
+                              // Check if category has children - either loaded or available to load
+                              const hasChildren =
+                                (item.children &&
+                                  Array.isArray(item.children) &&
+                                  item.children.length > 0) ||
+                                item.hasChildren ||
+                                (item._originalChildren &&
+                                  Array.isArray(item._originalChildren) &&
+                                  item._originalChildren.length > 0);
+
+                              return (
+                                <div
+                                  key={item.id}
+                                  className="flex flex-col items-center cursor-pointer transition-all"
+                                  onClick={async () => {
+                                    if (hasChildren) {
+                                      // Update active index for this level and update path
+                                      if (level === 2) {
+                                        setSubSubSubCategoryIndex(index);
+                                        setSelectedPath([item.id]);
+                                      } else {
+                                        // For deeper levels, update the path
+                                        const newPath = [...parentPath, item.id];
+                                        setSelectedPath(newPath);
+                                      }
+                                      
+                                      // Fetch children if not already loaded
+                                      if (!item.children || item.children.length === 0) {
+                                        const originalChildren = (item as any)._originalChildren;
+                                        const children = await fetchCategoryChildren(
+                                          item.id,
+                                          originalChildren,
+                                        );
+                                        
+                                        // Update the category in the state
+                                        setCategoriesWithSubcategories((prev) =>
+                                          prev.map((catItem) => {
+                                            if (catItem.category.id === selectedMainCategory) {
+                                              const updatedSubcategories = catItem.subcategories.map(
+                                                (sub: any, subIdx: number) => {
+                                                  if (subIdx === subCategoryIndex) {
+                                                    const updateChildren = (
+                                                      childrenList: any[],
+                                                      path: number[],
+                                                    ): any[] => {
+                                                      if (path.length === 0) return childrenList;
+                                                      const [firstId, ...rest] = path;
+                                                      return childrenList.map((child: any) => {
+                                                        if (child.id === firstId) {
+                                                          if (rest.length === 0) {
+                                                            return { ...child, children };
+                                                          }
+                                                          return {
+                                                            ...child,
+                                                            children: updateChildren(
+                                                              child.children || [],
+                                                              rest,
+                                                            ),
+                                                          };
+                                                        }
+                                                        return child;
+                                                      });
+                                                    };
+                                                    const updatedChildren = updateChildren(
+                                                      sub.children || [],
+                                                      [...parentPath, item.id],
+                                                    );
+                                                    return { ...sub, children: updatedChildren };
+                                                  }
+                                                  return sub;
+                                                },
+                                              );
+                                              return { ...catItem, subcategories: updatedSubcategories };
+                                            }
+                                            return catItem;
+                                          }),
+                                        );
+                                      }
+                                    } else {
+                                      // If no children, navigate to category
+                                      handleSubCategoryClick(item.id);
+                                    }
+                                  }}
+                                >
+                                  {/* Circular Icon Container */}
+                                  <div
+                                    className={cn(
+                                      "relative w-20 h-20 rounded-full flex items-center justify-center mb-2 transition-all border-2",
+                                      isActive
+                                        ? "border-blue-500 bg-blue-50 shadow-md scale-105"
+                                        : "border-gray-200 bg-white",
+                                    )}
+                                  >
+                                    {item.icon ? (
+                                      <Image
+                                        src={item.icon}
+                                        alt={item.name}
+                                        width={48}
+                                        height={48}
+                                        className="object-contain"
+                                      />
+                                    ) : (
+                                      <div className="w-12 h-12 rounded-full bg-gray-100" />
+                                    )}
+                                    {/* Active indicator dot */}
+                                    {isActive && (
+                                      <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-blue-600 border-2 border-white" />
+                                    )}
+                                  </div>
+                                  {/* Category Name */}
+                                  <span
+                                    className={cn(
+                                      "text-xs text-center line-clamp-2 max-w-[100px]",
+                                      isActive
+                                        ? "text-blue-600 font-medium"
+                                        : "text-gray-700",
+                                    )}
+                                  >
+                                    {item.name}
+                                  </span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+
+                        {/* Recursively render next level if active category has children */}
+                        {activeCategory &&
+                          activeCategoryChildren.length > 0 &&
+                          renderCategoryLevel(
+                            activeCategoryChildren,
+                            level + 1,
+                            [...parentPath, activeCategory.id],
+                            0, // Will be determined from selectedPath in the function
+                            activeCategory.name,
+                          )}
+                      </>
+                    );
+                  };
+
                   const selectedCategory = categoriesWithSubcategoriesFiltered.find(
                     ({ category }) => category.id === selectedMainCategory,
                   );
@@ -598,72 +806,15 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
                     selectedCategory?.subcategories?.[subCategoryIndex];
                   const subSubCategories = subCategory?.children || [];
 
-                  return subSubCategories.length > 0 ? (
-                    <div className="mt-8 pt-6 border-t border-gray-200">
-                      <h4 className="text-base font-semibold text-gray-900 mb-4">
-                        {subCategory?.name || ""}
-                      </h4>
-                      <div className="grid grid-cols-7 gap-4">
-                        {subSubCategories.map((item: any, index: number) => {
-                          const isSubSubActive = index === subSubSubCategoryIndex;
-                          const hasChildren =
-                            item.children &&
-                            Array.isArray(item.children) &&
-                            item.children.length > 0;
-
-                          return (
-                            <div
-                              key={item.id}
-                              className="flex flex-col items-center cursor-pointer group transition-all"
-                              onMouseEnter={() => setSubSubSubCategoryIndex(index)}
-                              onClick={() => {
-                                if (!hasChildren) {
-                                  handleSubCategoryClick(item.id);
-                                }
-                              }}
-                            >
-                              {/* Circular Icon Container */}
-                              <div
-                                className={cn(
-                                  "relative w-20 h-20 rounded-full flex items-center justify-center mb-2 transition-all border-2",
-                                  isSubSubActive
-                                    ? "border-blue-500 bg-blue-50 shadow-md scale-105"
-                                    : "border-gray-200 bg-white hover:border-blue-300 hover:bg-gray-50",
-                                )}
-                              >
-                                {item.icon ? (
-                                  <Image
-                                    src={item.icon}
-                                    alt={item.name}
-                                    width={48}
-                                    height={48}
-                                    className="object-contain"
-                                  />
-                                ) : (
-                                  <div className="w-12 h-12 rounded-full bg-gray-100" />
-                                )}
-                                {/* Active indicator dot */}
-                                {isSubSubActive && (
-                                  <div className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-blue-600 border-2 border-white" />
-                                )}
-                              </div>
-                              {/* Category Name */}
-                              <span
-                                className={cn(
-                                  "text-xs text-center line-clamp-2 max-w-[100px]",
-                                  isSubSubActive
-                                    ? "text-blue-600 font-medium"
-                                    : "text-gray-700 group-hover:text-blue-600",
-                                )}
-                              >
-                                {item.name}
-                              </span>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  ) : null;
+                  return subSubCategories.length > 0
+                    ? renderCategoryLevel(
+                        subSubCategories,
+                        2,
+                        [subCategory.id],
+                        subSubSubCategoryIndex,
+                        subCategory?.name || "",
+                      )
+                    : null;
                 })()}
               </div>
             )}
