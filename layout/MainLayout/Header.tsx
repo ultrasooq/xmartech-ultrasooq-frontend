@@ -53,7 +53,7 @@ import { getInitials, getOrCreateDeviceId } from "@/utils/helper";
 import { useQueryClient } from "@tanstack/react-query";
 import { deleteCookie, getCookie, setCookie } from "cookies-next";
 import { debounce, isArray } from "lodash";
-import { MenuIcon, LayoutGrid } from "lucide-react";
+import { MenuIcon, LayoutGrid, Search } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
@@ -1001,12 +1001,26 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                 />
               </svg>
             </div>
+            {/* Search Icon Button */}
             <button
               type="button"
-              className="h-9 rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 px-4 text-sm font-semibold text-white shadow-lg transition-all hover:from-orange-600 hover:to-orange-700 active:scale-95 sm:h-10 sm:px-5 sm:text-base"
+              className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg transition-all hover:from-orange-600 hover:to-orange-700 active:scale-95 sm:h-10 sm:w-10"
               onClick={() => updateURL(searchTerm)}
             >
-              {t("search")}
+              <Search className="h-5 w-5" />
+            </button>
+            {/* All Categories Icon Button - Clickable on mobile, hoverable on desktop */}
+            <button
+              type="button"
+              className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg transition-all hover:from-orange-600 hover:to-orange-700 active:scale-95 sm:h-10 sm:w-10 md:hidden"
+              onClick={() => {
+                // On mobile, open the category sidebar
+                if (typeof window !== "undefined") {
+                  window.dispatchEvent(new CustomEvent("openCategorySidebar"));
+                }
+              }}
+            >
+              <LayoutGrid className="h-5 w-5 text-white" />
             </button>
           </div>
 
@@ -1166,7 +1180,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
 
       {/* Desktop/Tablet Header - Hidden on mobile */}
       <header
-        className={`bg-dark-cyan relative sticky top-0 z-50 hidden w-full shadow-lg transition-all duration-300 md:block ${
+        className={`bg-dark-cyan relative sticky top-0 z-50 hidden w-full ${!isLoggedIn ? "border-b border-solid border-gray-300 shadow-xl" : ""} transition-all duration-300 md:block ${
           (pathname === "/trending" || pathname === "/buygroup") && hasCartItems
             ? "lg:pr-36"
             : ""
@@ -1179,7 +1193,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
         }}
       >
         <div className="bg-dark-cyan w-full">
-          <div className="w-full px-6 pt-1.5 md:px-8 md:pt-2 lg:px-12 lg:pt-2.5">
+          <div className="w-full px-6 pt-1.5 pb-1.5 md:px-8 md:pt-2 md:pb-2 lg:px-12 lg:pt-1.5 lg:pb-1">
             <div className="hidden md:flex md:gap-x-2.5">
               <div className="py-1 text-xs font-normal text-white/90 md:w-4/12 md:py-1.5 md:text-sm lg:w-4/12 lg:py-2">
                 <p
@@ -1248,7 +1262,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                     </select>
                   </li>
                   <li className="google_translate px-3 pr-0 text-xs font-normal text-white/90 md:text-sm">
-                    <GoogleTranslate />
+                    {/* <GoogleTranslate /> */}
                     <select
                       dir={langDir}
                       className="cursor-pointer rounded border-0 bg-transparent px-1 py-1 text-white/90 transition-colors hover:text-white focus:outline-none"
@@ -1671,7 +1685,27 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                 </div>
               </div>
               <div className="order-3 flex w-[80%] items-center gap-2 py-1.5 md:order-2 md:w-7/12 md:px-3 md:py-2 lg:w-4/6">
-                <div className="relative max-w-[55%] flex-1 md:max-w-[60%] lg:max-w-[75%]">
+                {/* Category icon placed to the left of the search bar (icon only) */}
+                <div
+                  className="group relative hidden h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 transition-all hover:from-orange-600 hover:to-orange-700 active:scale-95 md:flex md:h-10 md:w-10"
+                  onMouseEnter={() => {
+                    if (typeof window !== "undefined") {
+                      window.dispatchEvent(
+                        new CustomEvent("openCategorySidebar"),
+                      );
+                    }
+                  }}
+                  onMouseLeave={() => {
+                    if (typeof window !== "undefined") {
+                      window.dispatchEvent(
+                        new CustomEvent("closeCategorySidebar"),
+                      );
+                    }
+                  }}
+                >
+                  <LayoutGrid className="h-6 w-6 text-white" />
+                </div>
+                <div className="relative max-w-[55%] flex-1 md:max-w-[50%] lg:max-w-[65%] xl:max-w-[75%]">
                   <input
                     type="text"
                     className={`form-control h-9 w-full rounded-lg border-2 border-white/20 text-sm text-black transition-all placeholder:text-gray-400 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none md:h-10 md:text-base ${
@@ -1702,7 +1736,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                 </div>
                 <button
                   type="button"
-                  className="h-9 rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 px-6 text-sm font-semibold whitespace-nowrap text-white shadow-lg transition-all hover:from-orange-600 hover:to-orange-700 active:scale-95 md:h-10 md:px-8 md:text-base"
+                  className="h-9 rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 px-4 text-sm font-semibold whitespace-nowrap text-white shadow-lg transition-all hover:from-orange-600 hover:to-orange-700 active:scale-95 md:h-10 md:px-6 md:text-base lg:px-8"
                   onClick={() => updateURL(searchTerm)}
                   dir={langDir}
                   translate="no"
@@ -2282,12 +2316,13 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
           </div>
         </div>
 
-        <div className="w-full border-b border-solid border-gray-300 bg-white">
-          <div className="w-full px-8 lg:px-12">
-            <div className="relative flex flex-row flex-wrap md:flex-nowrap">
-              <div className="flex w-full flex-1 flex-wrap gap-x-3 md:w-auto md:gap-x-5">
-                <div className="dropdown">
-                  {/* {pathname == "/trending" || pathname == "/buygroup" ? (
+        {isLoggedIn && (
+          <div className="w-full border-b border-solid border-gray-300 bg-white">
+            <div className="w-full px-8 lg:px-12">
+              <div className="relative flex flex-row flex-wrap md:flex-nowrap">
+                <div className="flex w-full flex-1 flex-wrap gap-x-3 md:w-auto md:gap-x-5">
+                  <div className="dropdown">
+                    {/* {pathname == "/trending" || pathname == "/buygroup" ? (
                     <button className="dropbtn flex items-center">
                       <div>
                         <Image src={HamburgerIcon} alt="hamburger-icon" />
@@ -2307,117 +2342,48 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                     </button>
                   ) : null} */}
 
-                  {(pathname == "/trending" || pathname == "/buygroup") &&
-                  memoizedSubCategory?.length ? (
-                    <div className="dropdown-content">
-                      {memoizedSubCategory?.map(
-                        (item: CategoryProps, index: number) => (
-                          <div
-                            key={item?.id}
-                            className={cn(
-                              "dropdown-content-child flex cursor-pointer items-center justify-start gap-2 p-3",
-                              memoizedSubCategory?.length
-                                ? index === subCategoryIndex
-                                  ? "dropdown-active-child"
-                                  : null
-                                : null,
-                            )}
-                            dir={langDir}
-                            onMouseEnter={() => setSubCategoryIndex(index)}
-                            onClick={() => {
-                              setSubCategoryIndex(index);
-                              category.setSubCategories(
-                                memoizedSubCategory?.[subCategoryIndex]
-                                  ?.children,
-                              );
-                              // category.setSubSubCategories([]);
-                              category.setCategoryId(item?.id.toString());
-                              // save index to check for child categories part of parent or not
-                              category.setSubCategoryIndex(index);
-                              category.setSubCategoryParentName(item?.name);
-                              category.setSubSubCategoryParentName(
-                                memoizedSubCategory?.[subCategoryIndex]
-                                  ?.children?.[0]?.name,
-                              );
-                              category.setSubSubCategories(
-                                memoizedSubCategory?.[subCategoryIndex]
-                                  ?.children?.[0]?.children,
-                              );
-
-                              //reset for second level category active index
-                              category.setSecondLevelCategoryIndex(0);
-
-                              category.setCategoryIds(item?.id.toString());
-                            }}
-                          >
-                            {item?.icon ? (
-                              <Image
-                                src={item.icon}
-                                alt={item?.name}
-                                height={24}
-                                width={24}
-                              />
-                            ) : (
-                              <MdOutlineImageNotSupported size={24} />
-                            )}
-                            <p
-                              title={item?.name}
-                              className="text-beat text-start text-sm"
-                            >
-                              {item?.name}
-                            </p>
-                          </div>
-                        ),
-                      )}
-                    </div>
-                  ) : null}
-
-                  {pathname == "/trending" || pathname == "/buygroup" ? (
-                    memoizedSubCategory?.[subCategoryIndex]?.children
-                      ?.length ? (
-                      <div className="dropdown-content-second">
-                        {memoizedSubCategory?.[subCategoryIndex]?.children?.map(
+                    {(pathname == "/trending" || pathname == "/buygroup") &&
+                    memoizedSubCategory?.length ? (
+                      <div className="dropdown-content">
+                        {memoizedSubCategory?.map(
                           (item: CategoryProps, index: number) => (
                             <div
                               key={item?.id}
                               className={cn(
                                 "dropdown-content-child flex cursor-pointer items-center justify-start gap-2 p-3",
-                                memoizedSubCategory?.[subCategoryIndex]
-                                  ?.children?.length
-                                  ? index === subSubCategoryIndex
+                                memoizedSubCategory?.length
+                                  ? index === subCategoryIndex
                                     ? "dropdown-active-child"
                                     : null
                                   : null,
                               )}
-                              onMouseEnter={() => setSubSubCategoryIndex(index)}
+                              dir={langDir}
+                              onMouseEnter={() => setSubCategoryIndex(index)}
                               onClick={() => {
-                                setSubSubCategoryIndex(index);
+                                setSubCategoryIndex(index);
+                                category.setSubCategories(
+                                  memoizedSubCategory?.[subCategoryIndex]
+                                    ?.children,
+                                );
+                                // category.setSubSubCategories([]);
+                                category.setCategoryId(item?.id.toString());
+                                // save index to check for child categories part of parent or not
+                                category.setSubCategoryIndex(index);
+                                category.setSubCategoryParentName(item?.name);
+                                category.setSubSubCategoryParentName(
+                                  memoizedSubCategory?.[subCategoryIndex]
+                                    ?.children?.[0]?.name,
+                                );
                                 category.setSubSubCategories(
                                   memoizedSubCategory?.[subCategoryIndex]
-                                    ?.children?.[subSubCategoryIndex]?.children,
+                                    ?.children?.[0]?.children,
                                 );
-                                category.setCategoryId(item?.id.toString());
-                                category.setSecondLevelCategoryIndex(index);
-                                category.setSubSubCategoryParentName(
-                                  item?.name,
-                                );
-                                //FIXME: need condition
-                                if (
-                                  category.subCategoryIndex !== subCategoryIndex
-                                ) {
-                                  category.setSubCategories([]);
-                                  category.setSubCategoryParentName("");
-                                }
-                                category.setCategoryIds(
-                                  [
-                                    memoizedSubCategory?.[
-                                      subCategoryIndex
-                                    ]?.id.toString(),
-                                    item?.id.toString(),
-                                  ].join(","),
-                                );
+
+                                //reset for second level category active index
+                                category.setSecondLevelCategoryIndex(0);
+
+                                category.setCategoryIds(item?.id.toString());
                               }}
-                              dir={langDir}
                             >
                               {item?.icon ? (
                                 <Image
@@ -2439,156 +2405,205 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                           ),
                         )}
                       </div>
-                    ) : null
-                  ) : null}
+                    ) : null}
 
-                  {(pathname == "/trending" || pathname == "/buygroup") &&
-                  memoizedSubCategory?.[subCategoryIndex]?.children?.[
-                    subSubCategoryIndex
-                  ]?.children?.length ? (
-                    <div className="dropdown-content-third p-3">
-                      <h4 className="mb-2 text-sm" dir={langDir}>
-                        {memoizedSubCategory?.[subCategoryIndex]?.children?.[
-                          subSubCategoryIndex
-                        ]?.name || ""}
-                      </h4>
-                      <div className="flex flex-col sm:grid sm:grid-cols-5">
-                        {memoizedSubCategory?.[subCategoryIndex]?.children?.[
-                          subSubCategoryIndex
-                        ]?.children?.map(
-                          (item: CategoryProps, index: number) => (
-                            <div
-                              key={item?.id}
-                              className={cn(
-                                "dropdown-content-child flex cursor-pointer flex-row items-center justify-start gap-2 p-3 sm:flex-col",
-                                memoizedSubCategory?.[subCategoryIndex]
-                                  ?.children?.[subSubCategoryIndex]?.children
-                                  ?.length
-                                  ? index === subSubSubCategoryIndex
-                                    ? "dropdown-active-child"
-                                    : null
-                                  : null,
-                              )}
-                              onMouseEnter={() =>
-                                setSubSubSubCategoryIndex(index)
-                              }
-                              onClick={() => {
-                                setSubSubSubCategoryIndex(index);
-                                category.setCategoryId(item?.id.toString());
-                                category.setCategoryIds(
-                                  [
-                                    memoizedSubCategory?.[
-                                      subCategoryIndex
-                                    ]?.id.toString(),
-                                    memoizedSubCategory?.[
-                                      subCategoryIndex
-                                    ]?.children?.[
-                                      subSubCategoryIndex
-                                    ]?.id.toString(),
-                                    item?.id.toString(),
-                                  ].join(","),
-                                );
-                              }}
-                              dir={langDir}
-                            >
-                              <div className="relative h-8 w-8">
+                    {pathname == "/trending" || pathname == "/buygroup" ? (
+                      memoizedSubCategory?.[subCategoryIndex]?.children
+                        ?.length ? (
+                        <div className="dropdown-content-second">
+                          {memoizedSubCategory?.[
+                            subCategoryIndex
+                          ]?.children?.map(
+                            (item: CategoryProps, index: number) => (
+                              <div
+                                key={item?.id}
+                                className={cn(
+                                  "dropdown-content-child flex cursor-pointer items-center justify-start gap-2 p-3",
+                                  memoizedSubCategory?.[subCategoryIndex]
+                                    ?.children?.length
+                                    ? index === subSubCategoryIndex
+                                      ? "dropdown-active-child"
+                                      : null
+                                    : null,
+                                )}
+                                onMouseEnter={() =>
+                                  setSubSubCategoryIndex(index)
+                                }
+                                onClick={() => {
+                                  setSubSubCategoryIndex(index);
+                                  category.setSubSubCategories(
+                                    memoizedSubCategory?.[subCategoryIndex]
+                                      ?.children?.[subSubCategoryIndex]
+                                      ?.children,
+                                  );
+                                  category.setCategoryId(item?.id.toString());
+                                  category.setSecondLevelCategoryIndex(index);
+                                  category.setSubSubCategoryParentName(
+                                    item?.name,
+                                  );
+                                  //FIXME: need condition
+                                  if (
+                                    category.subCategoryIndex !==
+                                    subCategoryIndex
+                                  ) {
+                                    category.setSubCategories([]);
+                                    category.setSubCategoryParentName("");
+                                  }
+                                  category.setCategoryIds(
+                                    [
+                                      memoizedSubCategory?.[
+                                        subCategoryIndex
+                                      ]?.id.toString(),
+                                      item?.id.toString(),
+                                    ].join(","),
+                                  );
+                                }}
+                                dir={langDir}
+                              >
                                 {item?.icon ? (
                                   <Image
                                     src={item.icon}
                                     alt={item?.name}
-                                    // height={30}
-                                    // width={30}
-                                    fill
-                                    className="object-contain"
+                                    height={24}
+                                    width={24}
                                   />
                                 ) : (
-                                  <MdOutlineImageNotSupported size={30} />
+                                  <MdOutlineImageNotSupported size={24} />
                                 )}
+                                <p
+                                  title={item?.name}
+                                  className="text-beat text-start text-sm"
+                                >
+                                  {item?.name}
+                                </p>
                               </div>
-                              <p
-                                title={item?.name}
-                                className="text-beat text-center text-sm"
+                            ),
+                          )}
+                        </div>
+                      ) : null
+                    ) : null}
+
+                    {(pathname == "/trending" || pathname == "/buygroup") &&
+                    memoizedSubCategory?.[subCategoryIndex]?.children?.[
+                      subSubCategoryIndex
+                    ]?.children?.length ? (
+                      <div className="dropdown-content-third p-3">
+                        <h4 className="mb-2 text-sm" dir={langDir}>
+                          {memoizedSubCategory?.[subCategoryIndex]?.children?.[
+                            subSubCategoryIndex
+                          ]?.name || ""}
+                        </h4>
+                        <div className="flex flex-col sm:grid sm:grid-cols-5">
+                          {memoizedSubCategory?.[subCategoryIndex]?.children?.[
+                            subSubCategoryIndex
+                          ]?.children?.map(
+                            (item: CategoryProps, index: number) => (
+                              <div
+                                key={item?.id}
+                                className={cn(
+                                  "dropdown-content-child flex cursor-pointer flex-row items-center justify-start gap-2 p-3 sm:flex-col",
+                                  memoizedSubCategory?.[subCategoryIndex]
+                                    ?.children?.[subSubCategoryIndex]?.children
+                                    ?.length
+                                    ? index === subSubSubCategoryIndex
+                                      ? "dropdown-active-child"
+                                      : null
+                                    : null,
+                                )}
+                                onMouseEnter={() =>
+                                  setSubSubSubCategoryIndex(index)
+                                }
+                                onClick={() => {
+                                  setSubSubSubCategoryIndex(index);
+                                  category.setCategoryId(item?.id.toString());
+                                  category.setCategoryIds(
+                                    [
+                                      memoizedSubCategory?.[
+                                        subCategoryIndex
+                                      ]?.id.toString(),
+                                      memoizedSubCategory?.[
+                                        subCategoryIndex
+                                      ]?.children?.[
+                                        subSubCategoryIndex
+                                      ]?.id.toString(),
+                                      item?.id.toString(),
+                                    ].join(","),
+                                  );
+                                }}
+                                dir={langDir}
                               >
-                                {item?.name}
-                              </p>
-                            </div>
-                          ),
-                        )}
+                                <div className="relative h-8 w-8">
+                                  {item?.icon ? (
+                                    <Image
+                                      src={item.icon}
+                                      alt={item?.name}
+                                      // height={30}
+                                      // width={30}
+                                      fill
+                                      className="object-contain"
+                                    />
+                                  ) : (
+                                    <MdOutlineImageNotSupported size={30} />
+                                  )}
+                                </div>
+                                <p
+                                  title={item?.name}
+                                  className="text-beat text-center text-sm"
+                                >
+                                  {item?.name}
+                                </p>
+                              </div>
+                            ),
+                          )}
+                        </div>
                       </div>
+                    ) : null}
+                  </div>
+
+                  {pathname == "/trending" || pathname == "/buygroup" ? (
+                    <div
+                      className="flex items-center gap-x-1 md:gap-x-5"
+                      dir={langDir}
+                    >
+                      {memoizedCategory.map((item: any) => (
+                        <Button
+                          type="button"
+                          key={item.id}
+                          onClick={() => {
+                            if (item?.assignTo) {
+                              setCategoryId(item.assignTo);
+                              setAssignedToId(item.id);
+                            } else {
+                              setCategoryId(undefined);
+                              setAssignedToId(undefined);
+                            }
+                          }}
+                          variant="link"
+                          className={cn(
+                            "text-color-dark p-1 text-sm font-semibold capitalize sm:text-base md:py-3",
+                            item?.id === assignedToId
+                              ? "underline"
+                              : "no-underline",
+                          )}
+                        >
+                          <p>{item.name}</p>
+                        </Button>
+                      ))}
                     </div>
                   ) : null}
                 </div>
 
-                {pathname == "/trending" || pathname == "/buygroup" ? (
-                  <div
-                    className="flex items-center gap-x-1 md:gap-x-5"
-                    dir={langDir}
-                  >
-                    {memoizedCategory.map((item: any) => (
-                      <Button
-                        type="button"
-                        key={item.id}
-                        onClick={() => {
-                          if (item?.assignTo) {
-                            setCategoryId(item.assignTo);
-                            setAssignedToId(item.id);
-                          } else {
-                            setCategoryId(undefined);
-                            setAssignedToId(undefined);
-                          }
-                        }}
-                        variant="link"
-                        className={cn(
-                          "text-color-dark p-1 text-sm font-semibold capitalize sm:text-base md:py-3",
-                          item?.id === assignedToId
-                            ? "underline"
-                            : "no-underline",
-                        )}
-                      >
-                        <p>{item.name}</p>
-                      </Button>
-                    ))}
-                  </div>
-                ) : null}
-              </div>
+                <div className="flex w-full items-center py-1">
+                  {/* Hamburger Menu Button - On trending/buygroup/home pages - Left end */}
+                  {(pathname === "/trending" ||
+                    pathname === "/buygroup" ||
+                    pathname === "/home" ||
+                    pathname === "/") &&
+                    false && <div />}
 
-              <div className="flex w-full items-center py-1">
-                {/* Hamburger Menu Button - On trending/buygroup/home pages - Left end */}
-                {(pathname === "/trending" ||
-                  pathname === "/buygroup" ||
-                  pathname === "/home" ||
-                  pathname === "/") && (
-                  <div
-                    className="group relative flex items-center gap-2"
-                    onMouseEnter={() => {
-                      // Dispatch custom event that pages can listen to
-                      if (typeof window !== "undefined") {
-                        window.dispatchEvent(
-                          new CustomEvent("openCategorySidebar"),
-                        );
-                      }
-                    }}
-                    onMouseLeave={() => {
-                      // Dispatch custom event to close sidebar
-                      if (typeof window !== "undefined") {
-                        window.dispatchEvent(
-                          new CustomEvent("closeCategorySidebar"),
-                        );
-                      }
-                    }}
-                  >
-                    <div className="flex items-center gap-2 rounded-lg px-3 py-2 transition-all hover:bg-gray-100">
-                      <LayoutGrid className="h-5 w-5 text-gray-700" />
-                      <span className="text-sm font-medium text-gray-700">
-                        {t("all_categories") || "All Categories"}
-                      </span>
-                    </div>
-                  </div>
-                )}
-
-                <ul className="ml-auto flex items-center justify-end gap-x-4">
-                  {getRoleBasedHeaderOptions()}
-                  {/* <li className="py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
+                  <ul className="ml-auto flex items-center justify-end gap-x-4">
+                    {getRoleBasedHeaderOptions()}
+                    {/* <li className="py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
                     <a
                       href="#"
                       className="text-light-gray transition-colors hover:text-blue-400"
@@ -2598,11 +2613,12 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                       {t("help_center")}
                     </a>
                   </li> */}
-                </ul>
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
       </header>
 
       <Dialog open={isQueryModalOpen} onOpenChange={handleToggleQueryModal}>

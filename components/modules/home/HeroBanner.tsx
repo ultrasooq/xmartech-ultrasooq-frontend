@@ -50,7 +50,7 @@ const HeroBanner: React.FC = () => {
       <section className="w-full py-6 sm:py-10 lg:py-12 px-4 sm:px-8 lg:px-12 bg-gray-50">
         <div className="w-full max-w-[1400px] mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6 lg:gap-8">
-            <div className="lg:col-span-1 h-72 sm:h-80 lg:h-[420px] bg-gray-200 animate-pulse rounded-3xl" />
+            <div className="lg:col-span-1 h-[404px] sm:h-[376px] lg:h-[432px] bg-gray-200 animate-pulse rounded-3xl" />
             <div className="lg:col-span-1 flex flex-col gap-5 sm:gap-6 lg:gap-8">
               <div className="h-48 sm:h-44 lg:h-[200px] bg-gray-200 animate-pulse rounded-3xl" />
               <div className="h-48 sm:h-44 lg:h-[200px] bg-gray-200 animate-pulse rounded-3xl" />
@@ -126,7 +126,7 @@ const BannerCarousel: React.FC<{
   if (!currentBanner || !currentBanner.image) return null;
 
   return (
-    <div className="group relative h-72 sm:h-80 lg:h-[420px] w-full overflow-hidden rounded-3xl border border-gray-200">
+    <div className="group relative h-[404px] sm:h-[376px] lg:h-[432px] w-full overflow-hidden rounded-3xl border border-gray-200">
       <Image
         src={currentBanner.image}
         className="absolute inset-0 h-full w-full object-cover transition-opacity duration-500"
