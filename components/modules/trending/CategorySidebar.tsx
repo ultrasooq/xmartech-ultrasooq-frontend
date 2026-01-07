@@ -473,6 +473,19 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
     }
   }, [shouldShow]);
 
+  // Prevent body scroll when sidebar is open
+  useEffect(() => {
+    if (shouldShow) {
+      // Prevent body scroll
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [shouldShow]);
+
   if (!hasBeenShown && !shouldShow) return null;
 
   // Scrollable main category column component
@@ -516,6 +529,21 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
         style={{
           scrollbarWidth: 'thin',
           scrollbarColor: 'transparent transparent',
+        }}
+        onWheel={(e) => {
+          // Ensure scroll works smoothly
+          const element = columnRef.current;
+          if (element) {
+            const { scrollTop, scrollHeight, clientHeight } = element;
+            const canScrollUp = scrollTop > 0;
+            const canScrollDown = scrollTop < scrollHeight - clientHeight - 1;
+            
+            // Only prevent default if at boundary
+            if ((e.deltaY < 0 && !canScrollUp) || (e.deltaY > 0 && !canScrollDown)) {
+              e.preventDefault();
+            }
+            e.stopPropagation();
+          }
         }}
       >
         {children}
@@ -618,9 +646,25 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
           scrollbarWidth: 'thin',
           scrollbarColor: 'transparent transparent',
         }}
+        onWheel={(e) => {
+          // Ensure smooth scrolling
+          const element = columnRef.current;
+          if (element) {
+            const { scrollTop, scrollHeight, clientHeight } = element;
+            const canScrollUp = scrollTop > 0;
+            const canScrollDown = scrollTop < scrollHeight - clientHeight - 1;
+            
+            // Only prevent default if at boundary to allow natural scroll behavior
+            if ((e.deltaY < 0 && !canScrollUp) || (e.deltaY > 0 && !canScrollDown)) {
+              e.preventDefault();
+            }
+            // Stop propagation to prevent body scroll
+            e.stopPropagation();
+          }
+        }}
       >
         <div className="p-4">
-          <h3 className="text-sm font-semibold text-gray-900 mb-3 sticky top-0 bg-white pb-2 border-b border-gray-200 z-10">
+          <h3 className="text-sm font-semibold text-gray-900 mb-3 sticky top-0 bg-white pb-2 border-b border-gray-200 z-10 -mx-4 -mt-4 px-4 pt-4">
             {title}
           </h3>
           <div className="space-y-1">
@@ -645,15 +689,36 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
                       ? "bg-blue-50 text-blue-700 font-medium border border-blue-200"
                       : "hover:bg-gray-50 text-gray-700",
                   )}
-                  onMouseEnter={() => {
+                  onMouseEnter={(e) => {
+                    // Add delay to allow scroll to work smoothly
                     if (hasChildren) {
-                      onCategoryHover(item.id, item);
+                      const timeoutId = setTimeout(() => {
+                        onCategoryHover(item.id, item);
+                      }, 200);
+                      (e.currentTarget as any)._hoverTimeout = timeoutId;
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    // Clear hover timeout if mouse leaves
+                    const target = e.currentTarget as any;
+                    if (target._hoverTimeout) {
+                      clearTimeout(target._hoverTimeout);
+                      target._hoverTimeout = null;
                     }
                   }}
                   onClick={() => {
                     if (!hasChildren) {
                       onCategoryClick(item.id);
                     }
+                  }}
+                  onWheel={(e) => {
+                    // Clear any pending hover when scrolling
+                    const target = e.currentTarget as any;
+                    if (target._hoverTimeout) {
+                      clearTimeout(target._hoverTimeout);
+                      target._hoverTimeout = null;
+                    }
+                    // Allow scroll to work - don't stop propagation so parent can handle it
                   }}
                 >
                   {item.icon ? (
@@ -764,6 +829,47 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
         }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
+        onWheel={(e) => {
+          // Prevent scroll propagation to body when scrolling within sidebar
+          const target = e.currentTarget;
+          const scrollableElement = (e.target as HTMLElement).closest('.custom-scrollbar') as HTMLElement;
+          
+          if (scrollableElement) {
+            const { scrollTop, scrollHeight, clientHeight } = scrollableElement;
+            const { scrollLeft, scrollWidth, clientWidth } = scrollableElement;
+            
+            // Check if we can scroll in the direction of the wheel event
+            const canScrollUp = scrollTop > 0;
+            const canScrollDown = scrollTop < scrollHeight - clientHeight;
+            const canScrollLeft = scrollLeft > 0;
+            const canScrollRight = scrollLeft < scrollWidth - clientWidth;
+            
+            // Only prevent default if we're at the boundary and trying to scroll further
+            if (e.deltaY < 0 && !canScrollUp) {
+              e.preventDefault();
+              e.stopPropagation();
+            } else if (e.deltaY > 0 && !canScrollDown) {
+              e.preventDefault();
+              e.stopPropagation();
+            } else if (e.deltaX < 0 && !canScrollLeft) {
+              e.preventDefault();
+              e.stopPropagation();
+            } else if (e.deltaX > 0 && !canScrollRight) {
+              e.preventDefault();
+              e.stopPropagation();
+            } else {
+              // Prevent propagation to body when scrolling within sidebar
+              e.stopPropagation();
+            }
+          } else {
+            // If not scrolling a scrollable element, prevent propagation
+            e.stopPropagation();
+          }
+        }}
+        onTouchMove={(e) => {
+          // Prevent touch scroll propagation to body
+          e.stopPropagation();
+        }}
         dir={langDir}
       >
         <div className="relative flex h-full w-full items-start justify-start bg-white">
