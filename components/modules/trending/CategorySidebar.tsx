@@ -11,6 +11,48 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useCategoryStore } from "@/lib/categoryStore";
 
+// Custom scrollbar styles
+const scrollbarStyles = `
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: transparent;
+    border-radius: 3px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .custom-scrollbar:hover::-webkit-scrollbar-thumb,
+  .custom-scrollbar.scrolling::-webkit-scrollbar-thumb {
+    background-color: #9ca3af;
+  }
+  
+  .custom-scrollbar:hover::-webkit-scrollbar-thumb:hover,
+  .custom-scrollbar.scrolling::-webkit-scrollbar-thumb:hover {
+    background-color: #6b7280;
+  }
+`;
+
+if (typeof document !== 'undefined') {
+  const styleId = 'category-sidebar-scrollbar-styles';
+  if (!document.getElementById(styleId)) {
+    const style = document.createElement('style');
+    style.id = styleId;
+    style.textContent = scrollbarStyles;
+    document.head.appendChild(style);
+  }
+}
+
 interface CategorySidebarProps {
   isOpen: boolean;
   onClose: () => void;
@@ -433,17 +475,149 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
 
   if (!hasBeenShown && !shouldShow) return null;
 
-  // Render a category column
-  const renderCategoryColumn = (level: number, title: string) => {
-    const categories = getCategoriesForLevel(level);
-    if (categories.length === 0) return null;
+  // Scrollable main category column component
+  const ScrollableMainColumn: React.FC<{
+    children: React.ReactNode;
+  }> = ({ children }) => {
+    const [isScrolling, setIsScrolling] = useState(false);
+    const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const columnRef = useRef<HTMLDivElement>(null);
 
-    const selectedId = selectedLevels[level + 1];
+    useEffect(() => {
+      const column = columnRef.current;
+      if (!column) return;
+
+      const handleScroll = () => {
+        setIsScrolling(true);
+        if (scrollTimeoutRef.current) {
+          clearTimeout(scrollTimeoutRef.current);
+        }
+        scrollTimeoutRef.current = setTimeout(() => {
+          setIsScrolling(false);
+        }, 1000);
+      };
+
+      column.addEventListener('scroll', handleScroll);
+      return () => {
+        column.removeEventListener('scroll', handleScroll);
+        if (scrollTimeoutRef.current) {
+          clearTimeout(scrollTimeoutRef.current);
+        }
+      };
+    }, []);
 
     return (
       <div
-        key={level}
-        className="flex-shrink-0 w-[240px] h-full overflow-y-auto border-r border-gray-200 bg-white"
+        ref={columnRef}
+        className={cn(
+          "flex-shrink-0 w-[240px] h-full overflow-y-auto bg-gray-50 border-r border-gray-200 custom-scrollbar",
+          isScrolling && "scrolling"
+        )}
+        style={{
+          scrollbarWidth: 'thin',
+          scrollbarColor: 'transparent transparent',
+        }}
+      >
+        {children}
+      </div>
+    );
+  };
+
+  // Scrollable horizontal container component
+  const ScrollableHorizontalContainer: React.FC<{
+    children: React.ReactNode;
+  }> = ({ children }) => {
+    const [isScrolling, setIsScrolling] = useState(false);
+    const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+      const container = containerRef.current;
+      if (!container) return;
+
+      const handleScroll = () => {
+        setIsScrolling(true);
+        if (scrollTimeoutRef.current) {
+          clearTimeout(scrollTimeoutRef.current);
+        }
+        scrollTimeoutRef.current = setTimeout(() => {
+          setIsScrolling(false);
+        }, 1000);
+      };
+
+      container.addEventListener('scroll', handleScroll);
+      return () => {
+        container.removeEventListener('scroll', handleScroll);
+        if (scrollTimeoutRef.current) {
+          clearTimeout(scrollTimeoutRef.current);
+        }
+      };
+    }, []);
+
+    return (
+      <div
+        ref={containerRef}
+        className={cn(
+          "flex-1 flex overflow-x-auto min-w-0 h-full custom-scrollbar",
+          isScrolling && "scrolling"
+        )}
+        style={{
+          scrollbarWidth: 'thin',
+          scrollbarColor: 'transparent transparent',
+        }}
+      >
+        {children}
+      </div>
+    );
+  };
+
+  // Scrollable column component
+  const ScrollableColumn: React.FC<{
+    level: number;
+    title: string;
+    categories: any[];
+    selectedId: number | null;
+    onCategoryHover: (categoryId: number, category: any) => void;
+    onCategoryClick: (categoryId: number) => void;
+  }> = ({ level, title, categories, selectedId, onCategoryHover, onCategoryClick }) => {
+    const [isScrolling, setIsScrolling] = useState(false);
+    const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const columnRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+      const column = columnRef.current;
+      if (!column) return;
+
+      const handleScroll = () => {
+        setIsScrolling(true);
+        if (scrollTimeoutRef.current) {
+          clearTimeout(scrollTimeoutRef.current);
+        }
+        scrollTimeoutRef.current = setTimeout(() => {
+          setIsScrolling(false);
+        }, 1000);
+      };
+
+      column.addEventListener('scroll', handleScroll);
+      return () => {
+        column.removeEventListener('scroll', handleScroll);
+        if (scrollTimeoutRef.current) {
+          clearTimeout(scrollTimeoutRef.current);
+        }
+      };
+    }, []);
+
+    return (
+      <div
+        ref={columnRef}
+        className={cn(
+          "flex-shrink-0 w-[240px] h-full overflow-y-auto border-r border-gray-200 bg-white custom-scrollbar",
+          isScrolling && "scrolling"
+        )}
+        style={{
+          scrollbarWidth: 'thin',
+          scrollbarColor: 'transparent transparent',
+        }}
       >
         <div className="p-4">
           <h3 className="text-sm font-semibold text-gray-900 mb-3 sticky top-0 bg-white pb-2 border-b border-gray-200 z-10">
@@ -473,12 +647,12 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
                   )}
                   onMouseEnter={() => {
                     if (hasChildren) {
-                      handleCategoryHover(item.id, level + 1, item);
+                      onCategoryHover(item.id, item);
                     }
                   }}
                   onClick={() => {
                     if (!hasChildren) {
-                      handleCategoryClick(item.id);
+                      onCategoryClick(item.id);
                     }
                   }}
                 >
@@ -517,6 +691,26 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
           </div>
         </div>
       </div>
+    );
+  };
+
+  // Render a category column
+  const renderCategoryColumn = (level: number, title: string) => {
+    const categories = getCategoriesForLevel(level);
+    if (categories.length === 0) return null;
+
+    const selectedId = selectedLevels[level + 1];
+
+    return (
+      <ScrollableColumn
+        key={level}
+        level={level}
+        title={title}
+        categories={categories}
+        selectedId={selectedId}
+        onCategoryHover={(categoryId, category) => handleCategoryHover(categoryId, level + 1, category)}
+        onCategoryClick={handleCategoryClick}
+      />
     );
   };
 
@@ -567,7 +761,6 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
         style={{
           top: `${headerHeight}px`,
           transformOrigin: "top center",
-          overflow: shouldShow ? "visible" : "hidden",
         }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
@@ -576,7 +769,7 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
         <div className="relative flex h-full w-full items-start justify-start bg-white">
           {/* Column 1: Main Categories (Left Sidebar) */}
           {categoriesWithSubcategoriesFiltered.length > 0 && (
-            <div className="flex-shrink-0 w-[240px] h-full overflow-y-auto bg-gray-50 border-r border-gray-200">
+            <ScrollableMainColumn>
               <div className="py-2">
                 {categoriesWithSubcategoriesFiltered.map(
                   ({ category }) => {
@@ -620,18 +813,18 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
                   },
                 )}
               </div>
-            </div>
+            </ScrollableMainColumn>
           )}
 
           {/* Columns 2-6: Subcategories (Dynamic Columns) */}
-          <div className="flex-1 flex overflow-x-auto">
+          <ScrollableHorizontalContainer>
             {selectedLevels[0] && renderCategoryColumn(0, getColumnTitle(0))}
             {selectedLevels[1] && renderCategoryColumn(1, getColumnTitle(1))}
             {selectedLevels[2] && renderCategoryColumn(2, getColumnTitle(2))}
             {selectedLevels[3] && renderCategoryColumn(3, getColumnTitle(3))}
             {selectedLevels[4] && renderCategoryColumn(4, getColumnTitle(4))}
             {selectedLevels[5] && renderCategoryColumn(5, getColumnTitle(5))}
-          </div>
+          </ScrollableHorizontalContainer>
         </div>
       </div>
     </>
