@@ -263,15 +263,11 @@ const BannerCard: React.FC<{
               {banner.description}
             </p>
           )}
-          {banner.link && (
-            <Link
-              href={banner.link}
-              onClick={handleClick}
-              className="inline-flex items-center gap-2 text-white hover:text-yellow-300 transition-colors text-sm sm:text-base font-semibold"
-            >
+          {banner.buttonText && (
+            <span className="inline-flex items-center gap-2 text-white hover:text-yellow-300 transition-colors text-sm sm:text-base font-semibold cursor-pointer">
               {banner.buttonText || "Shop Now"}
               <ArrowRight className="h-4 w-4" />
-            </Link>
+            </span>
           )}
         </div>
       </div>

@@ -225,9 +225,9 @@ const Sidebar: React.FC<SidebarProps> = ({ notificationCount }) => {
           label: t("rfq_quotes"),
           translationKey: "rfq_quotes",
           shortLabel: getShortLabel("rfq_quotes"),
-          path: "/rfq-quotes",
+          path: "/rfq-request",
           onClick: () => {
-            router.push("/rfq-quotes");
+            router.push("/rfq-request");
           },
         },
         {
@@ -301,9 +301,9 @@ const Sidebar: React.FC<SidebarProps> = ({ notificationCount }) => {
           label: t("rfq_quotes"),
           translationKey: "rfq_quotes",
           shortLabel: getShortLabel("rfq_quotes"),
-          path: "/rfq-quotes",
+          path: "/rfq-request",
           onClick: () => {
-            router.push("/rfq-quotes");
+            router.push("/rfq-request");
           },
         },
         {

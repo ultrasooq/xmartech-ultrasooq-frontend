@@ -33,11 +33,15 @@ const ContentWrapper: React.FC<ContentWrapperProps> = ({ children }) => {
   // Mobile: no padding (sidebar slides in/out)
   // Desktop: Always 72px (collapsed width) - sidebar expands over content on hover
   // Use 0 during SSR to match initial client render
+  // IMPORTANT: Use 0 during SSR to prevent hydration mismatch
   const sidebarWidth = mounted && accessToken && !isMobile ? 72 : 0;
+
+  // Static className to prevent hydration mismatch - must match server and client exactly
+  const baseClassName = "transition-all duration-300 ease-in-out min-h-screen w-full overflow-x-hidden";
 
   return (
     <div
-      className="transition-all duration-300 ease-in-out min-h-screen"
+      className={baseClassName}
       style={{
         ...(langDir === "rtl"
           ? { paddingRight: `${sidebarWidth}px` }

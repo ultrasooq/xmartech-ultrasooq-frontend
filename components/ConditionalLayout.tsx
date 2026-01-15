@@ -1,8 +1,10 @@
 "use client";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import Header from "@/layout/MainLayout/Header";
 import Sidebar from "@/layout/MainLayout/Sidebar";
 import ContentWrapper from "@/components/ContentWrapper";
+import CategorySidebar from "@/components/modules/trending/CategorySidebar";
 
 interface ConditionalLayoutProps {
   children: React.ReactNode;
@@ -24,7 +26,35 @@ export default function ConditionalLayout({
   locale,
 }: ConditionalLayoutProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const isAuthPage = authPages.includes(pathname);
+  const [isCategorySidebarOpen, setIsCategorySidebarOpen] = useState(false);
+
+  // Listen for category sidebar open/close events from header (hover-based)
+  useEffect(() => {
+    const handleOpenCategorySidebar = () => {
+      setIsCategorySidebarOpen(true);
+    };
+
+    const handleCloseCategorySidebar = () => {
+      // Don't immediately close, let the CategorySidebar handle the delay
+      // setIsCategorySidebarOpen(false);
+    };
+
+    window.addEventListener("openCategorySidebar", handleOpenCategorySidebar);
+    window.addEventListener("closeCategorySidebar", handleCloseCategorySidebar);
+
+    return () => {
+      window.removeEventListener(
+        "openCategorySidebar",
+        handleOpenCategorySidebar,
+      );
+      window.removeEventListener(
+        "closeCategorySidebar",
+        handleCloseCategorySidebar,
+      );
+    };
+  }, []);
 
   if (isAuthPage) {
     // For auth pages, render children without sidebar, header, or content wrapper padding
@@ -36,6 +66,15 @@ export default function ConditionalLayout({
     <>
       <Sidebar />
       <Header locale={locale} />
+      {/* Category Sidebar - Global for all pages */}
+      <CategorySidebar
+        isOpen={isCategorySidebarOpen}
+        onClose={() => setIsCategorySidebarOpen(false)}
+        onCategorySelect={(categoryId) => {
+          router.push(`/trending?category=${categoryId}`);
+          setIsCategorySidebarOpen(false);
+        }}
+      />
       <ContentWrapper>{children}</ContentWrapper>
     </>
   );

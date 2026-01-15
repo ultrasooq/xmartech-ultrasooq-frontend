@@ -392,6 +392,11 @@ const TrendingPage = (props0: TrendingPageProps) => {
           categoryLocation: item?.categoryLocation,
           categoryConnections: item?.category?.category_categoryIdDetail || [],
           consumerType: activePriceEntry?.consumerType,
+          productQuantity: activePriceEntry?.stock !== undefined && activePriceEntry?.stock !== null 
+            ? Number(activePriceEntry.stock) 
+            : (item?.productQuantity !== undefined && item?.productQuantity !== null 
+              ? Number(item.productQuantity) 
+              : null),
 
           // Add vendor information
           vendorId: item?.addedBy || item?.userId,
@@ -1582,7 +1587,66 @@ const TrendingPage = (props0: TrendingPageProps) => {
 
                     {viewType === "list" && memoizedProductList.length ? (
                       <div className="product-list-s1 overflow-x-auto p-2 sm:p-4">
-                        <ProductTable list={memoizedProductList} />
+                        <ProductTable 
+                          list={memoizedProductList}
+                          onWishlist={handleAddToWishlist}
+                          onAddToCart={async (item, quantity, action, variant, cartId) => {
+                            if (!item?.productProductPriceId) {
+                              toast({
+                                title: t("something_went_wrong"),
+                                description: t("product_price_id_not_found"),
+                                variant: "danger",
+                              });
+                              return;
+                            }
+
+                            if (haveAccessToken) {
+                              const response = await updateCartWithLogin.mutateAsync({
+                                productPriceId: item.productProductPriceId,
+                                quantity: action === "add" ? quantity : 0,
+                                productVariant: variant,
+                              });
+                              if (response.status) {
+                                toast({
+                                  title:
+                                    action === "add"
+                                      ? t("item_added_to_cart")
+                                      : t("item_removed_from_cart"),
+                                  description: t("check_your_cart_for_more_details"),
+                                  variant: "success",
+                                });
+                              }
+                            } else {
+                              const response = await updateCartByDevice.mutateAsync({
+                                productPriceId: item.productProductPriceId,
+                                quantity: action === "add" ? quantity : 0,
+                                deviceId,
+                                productVariant: variant,
+                              });
+                              if (response.status) {
+                                toast({
+                                  title:
+                                    action === "add"
+                                      ? t("item_added_to_cart")
+                                      : t("item_removed_from_cart"),
+                                  description: t("check_your_cart_for_more_details"),
+                                  variant: "success",
+                                });
+                              }
+                            }
+                          }}
+                          wishlistMap={new Map(
+                            memoizedProductList.map(item => [item.id, item?.inWishlist || false])
+                          )}
+                          cartMap={new Map(
+                            cartList?.map((item: any) => [
+                              item.productId,
+                              { quantity: item.quantity, cartId: item.id }
+                            ]) || []
+                          )}
+                          haveAccessToken={haveAccessToken}
+                          productVariants={productVariants}
+                        />
                       </div>
                     ) : null}
 

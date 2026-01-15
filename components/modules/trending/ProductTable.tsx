@@ -16,150 +16,316 @@ import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 import { useVendorBusinessCategories } from "@/hooks/useVendorBusinessCategories";
-import { checkCategoryConnection } from "@/utils/categoryConnection";
-import { useCategory } from "@/apis/queries/category.queries";
 import { useCurrentAccount } from "@/apis/queries/auth.queries";
+import { Button } from "@/components/ui/button";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
+import { FiEye } from "react-icons/fi";
+import ShoppingIcon from "@/components/icons/ShoppingIcon";
+import { FaStar, FaRegStar } from "react-icons/fa";
 
-type ProducTableProps = {
+type ProductTableProps = {
   list: TrendingProduct[];
+  onWishlist?: (productId: number, wishlist: any) => void;
+  onAddToCart?: (item: TrendingProduct, quantity: number, action: "add" | "remove", variant?: any, cartId?: number) => void;
+  wishlistMap?: Map<number, boolean>;
+  cartMap?: Map<number, { quantity: number; cartId?: number }>;
+  haveAccessToken?: boolean;
+  productVariants?: any[];
 };
 
-const ProductTable: React.FC<ProducTableProps> = ({ list }) => {
+const ProductTable: React.FC<ProductTableProps> = ({ 
+  list,
+  onWishlist,
+  onAddToCart,
+  wishlistMap,
+  cartMap,
+  haveAccessToken = false,
+  productVariants = [],
+}) => {
   const t = useTranslations();
   const { user, langDir, currency } = useAuth();
   const currentAccount = useCurrentAccount();
   const vendorBusinessCategoryIds = useVendorBusinessCategories();
 
-  // Get the current account's trade role (for multi-account system)
   const currentTradeRole = currentAccount?.data?.data?.account?.tradeRole || user?.tradeRole;
 
   const calculateDiscountedPrice = ({ item }: { item: TrendingProduct }) => {
     const price = item.productProductPrice ? Number(item.productProductPrice) : 0;
     
-    // Normalize consumerType to uppercase and handle both "VENDOR" and "VENDORS"
     const rawConsumerType = item.consumerType || "CONSUMER";
     const consumerType = typeof rawConsumerType === "string" 
       ? rawConsumerType.toUpperCase().trim() 
       : "CONSUMER";
     
-    // Check if it's a vendor type (VENDOR or VENDORS)
     const isVendorType = consumerType === "VENDOR" || consumerType === "VENDORS";
     const isConsumerType = consumerType === "CONSUMER";
     const isEveryoneType = consumerType === "EVERYONE";
     
-    // For ProductTable, we can't fetch category for each item efficiently
-    // So we'll use a simplified check - if categoryId matches any vendor business category
-    // This is a fallback - ideally categoryConnections should be checked
     const isCategoryMatch = item.categoryId && vendorBusinessCategoryIds.includes(item.categoryId);
     
     let discount = 0;
     let discountType: string | undefined;
     
-    // Apply discount logic based on your table
     if (currentTradeRole && currentTradeRole !== "BUYER") {
-      // VENDOR (V) or EVERYONE (E) as vendor
       if (isCategoryMatch) {
-        // Same relation - Vendor gets vendor discount
         if (item.vendorDiscount && item.vendorDiscount > 0) {
           discount = item.vendorDiscount;
           discountType = item.vendorDiscountType;
-        } else {
-          // No vendor discount available, no discount
-          discount = 0;
         }
       } else {
-        // Not same relation
         if (isEveryoneType) {
-          // E + Not Same relation → Consumer Discount
           discount = item.consumerDiscount || 0;
           discountType = item.consumerDiscountType;
-        } else {
-          // VENDORS or CONSUMER + Not Same relation → No Discount
-          discount = 0;
         }
       }
     } else {
-      // CONSUMER (BUYER) - Gets consumer discount if consumerType is CONSUMER or EVERYONE
-      // NO discount if consumerType is VENDOR or VENDORS
       if (isConsumerType || isEveryoneType) {
         discount = item.consumerDiscount || 0;
         discountType = item.consumerDiscountType;
-      } else {
-        // consumerType is VENDOR/VENDORS - no discount for buyers
-        discount = 0;
       }
     }
     
-    // Calculate final price
     if (discount > 0 && discountType) {
       if (discountType === "PERCENTAGE") {
-        return Number((price - (price * discount) / 100).toFixed(2));
+        return {
+          finalPrice: Number((price - (price * discount) / 100).toFixed(2)),
+          originalPrice: price,
+          discount,
+          discountType,
+        };
       } else if (discountType === "FLAT") {
-        return Number((price - discount).toFixed(2));
+        return {
+          finalPrice: Number((price - discount).toFixed(2)),
+          originalPrice: price,
+          discount,
+          discountType,
+        };
       }
     }
     
-    return price;
+    return {
+      finalPrice: price,
+      originalPrice: price,
+      discount: 0,
+      discountType: undefined,
+    };
+  };
+
+  const calculateRating = (item: TrendingProduct) => {
+    if (!item.productReview || item.productReview.length === 0) return 0;
+    const totalRating = item.productReview.reduce((sum: number, review: any) => sum + (review.rating || 0), 0);
+    return totalRating / item.productReview.length;
   };
 
   return (
-    <CardContent className="main-content w-full">
-      <Card className="main-content-card p-0! shadow-none">
-        <div className="table-responsive theme-table-s1">
+    <CardContent className="main-content w-full p-0">
+      <Card className="main-content-card shadow-sm border-0">
+        <div className="overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead dir={langDir} translate="no">{t("product")}</TableHead>
-                <TableHead dir={langDir} translate="no">{t("category")}</TableHead>
-                {/* <TableHead>SKU No</TableHead> */}
-                <TableHead dir={langDir} translate="no">{t("brand")}</TableHead>
-                <TableHead dir={langDir} translate="no">{t("price")}</TableHead>
+              <TableRow className="bg-gray-50 hover:bg-gray-50">
+                <TableHead className="min-w-[300px]" dir={langDir} translate="no">
+                  {t("product")}
+                </TableHead>
+                <TableHead className="min-w-[120px]" dir={langDir} translate="no">
+                  {t("category")}
+                </TableHead>
+                <TableHead className="min-w-[120px]" dir={langDir} translate="no">
+                  {t("brand")}
+                </TableHead>
+                <TableHead className="min-w-[120px]" dir={langDir} translate="no">
+                  {t("price")}
+                </TableHead>
+                <TableHead className="min-w-[150px] text-center" dir={langDir} translate="no">
+                  {t("actions") || "Actions"}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {list?.map((item: TrendingProduct) => (
-                <TableRow key={item.id}>
-                  <TableCell th-name="Product">
-                    <Link href={`/trending/${item.id}`}>
-                      <figure className="product-image-with-text">
-                        <div className="image-container rounded-lg">
-                          <Image
-                            src={
-                              item?.productImage &&
-                              validator.isURL(item.productImage)
-                                ? item.productImage
-                                : PlaceholderImage
-                            }
-                            alt="product-image"
-                            height={80}
-                            width={80}
-                          />
+              {list?.map((item: TrendingProduct) => {
+                const priceData = calculateDiscountedPrice({ item });
+                const rating = calculateRating(item);
+                const inWishlist = wishlistMap?.get(item.id) || item?.inWishlist || false;
+                const cartItem = cartMap?.get(item.id);
+                const isInCart = !!cartItem;
+                const cartQuantity = cartItem?.quantity || 0;
+                
+                // Get stock from productPrices array if productQuantity is not available
+                const stock = item.productQuantity !== null && item.productQuantity !== undefined
+                  ? item.productQuantity
+                  : (item.productPrices?.[0]?.stock !== null && item.productPrices?.[0]?.stock !== undefined
+                    ? Number(item.productPrices[0].stock)
+                    : null);
+                const isInStock = stock === null || stock > 0;
+
+                return (
+                  <TableRow 
+                    key={item.id} 
+                    className="hover:bg-gray-50 transition-colors group"
+                  >
+                    {/* Product Column */}
+                    <TableCell className="py-4">
+                      <Link href={`/trending/${item.id}`} className="flex items-center gap-4 group/link">
+                        <div className="relative flex-shrink-0">
+                          <div className="relative h-20 w-20 sm:h-24 sm:w-24 rounded-lg overflow-hidden border border-gray-200 bg-gray-100">
+                            <Image
+                              src={
+                                item?.productImage &&
+                                validator.isURL(item.productImage)
+                                  ? item.productImage
+                                  : PlaceholderImage
+                              }
+                              alt={item?.productName || "product"}
+                              fill
+                              className="object-cover group-hover/link:scale-105 transition-transform duration-200"
+                              sizes="(max-width: 640px) 80px, 96px"
+                            />
+                          </div>
+                          {/* Discount Badge */}
+                          {priceData.discount > 0 && (
+                            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                              {priceData.discountType === "PERCENTAGE" 
+                                ? `-${priceData.discount}%`
+                                : `-${currency.symbol}${priceData.discount}`}
+                            </span>
+                          )}
                         </div>
-                        <figcaption>{item?.productName}</figcaption>
-                      </figure>
-                    </Link>
-                  </TableCell>
-                  <TableCell th-name="Category">{item?.categoryName}</TableCell>
-                  {/* <TableCell th-name="SKU No">{item?.skuNo}</TableCell> */}
-                  <TableCell th-name="Brand">{item?.brandName}</TableCell>
-                  <TableCell th-name="Price">
-                    {item?.askForPrice === "true" ? (
-                      <Link href={`/seller-rfq-request?product_id=${item?.id}`}>
-                        <button
-                          type="button"
-                          className="inline-block rounded-sm bg-color-yellow px-3 py-1 text-sm font-bold text-white"
-                          dir={langDir}
-                          translate="no"
-                        >
-                          {t("ask_vendor_for_price")}
-                        </button>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-gray-900 text-sm sm:text-base mb-1 line-clamp-2 group-hover/link:text-blue-600 transition-colors">
+                            {item?.productName}
+                          </h3>
+                          {/* Rating */}
+                          {rating > 0 && (
+                            <div className="flex items-center gap-1 mb-1">
+                              {[...Array(5)].map((_, i) => (
+                                <span key={i} className="text-yellow-400">
+                                  {i < Math.floor(rating) ? (
+                                    <FaStar size={12} />
+                                  ) : (
+                                    <FaRegStar size={12} />
+                                  )}
+                                </span>
+                              ))}
+                              <span className="text-xs text-gray-500 ml-1">
+                                ({item.productReview?.length || 0})
+                              </span>
+                            </div>
+                          )}
+                          {/* Stock Status */}
+                          {item.askForPrice !== "true" && stock !== null && (
+                            <span className={`text-xs font-medium ${
+                              isInStock 
+                                ? "text-green-600" 
+                                : "text-red-600"
+                            }`}>
+                              {isInStock 
+                                ? `${t("in_stock") || "In Stock"}` 
+                                : `${t("out_of_stock") || "Out of Stock"}`}
+                            </span>
+                          )}
+                        </div>
                       </Link>
-                    ) : (
-                      `${currency.symbol}${calculateDiscountedPrice({ item })}`
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))}
+                    </TableCell>
+
+                    {/* Category Column */}
+                    <TableCell className="py-4">
+                      <span className="text-sm text-gray-700">{item?.categoryName || "-"}</span>
+                    </TableCell>
+
+                    {/* Brand Column */}
+                    <TableCell className="py-4">
+                      <span className="text-sm text-gray-700 font-medium">
+                        {item?.brandName || "-"}
+                      </span>
+                    </TableCell>
+
+                    {/* Price Column */}
+                    <TableCell className="py-4">
+                      {item?.askForPrice === "true" ? (
+                        <Link href={`/seller-rfq-request?product_id=${item?.id}`}>
+                          <Button
+                            size="sm"
+                            className="bg-yellow-500 hover:bg-yellow-600 text-white text-xs px-3 py-1"
+                            dir={langDir}
+                            translate="no"
+                          >
+                            {t("ask_vendor_for_price")}
+                          </Button>
+                        </Link>
+                      ) : (
+                        <div className="flex flex-col gap-1">
+                          <div className="flex items-center gap-2">
+                            <span className="text-lg font-bold text-gray-900">
+                              {currency.symbol}{priceData.finalPrice}
+                            </span>
+                            {priceData.discount > 0 && priceData.originalPrice !== priceData.finalPrice && (
+                              <span className="text-sm text-gray-500 line-through">
+                                {currency.symbol}{priceData.originalPrice}
+                              </span>
+                            )}
+                          </div>
+                          {priceData.discount > 0 && (
+                            <span className="text-xs text-green-600 font-medium">
+                              {t("save") || "Save"} {priceData.discountType === "PERCENTAGE" 
+                                ? `${priceData.discount}%`
+                                : `${currency.symbol}${priceData.discount}`}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </TableCell>
+
+                    {/* Actions Column */}
+                    <TableCell className="py-4">
+                      <div className="flex items-center justify-center gap-2">
+                        {/* Add to Cart */}
+                        {haveAccessToken && 
+                         item?.askForPrice !== "true" && 
+                         isInStock && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-9 w-9 p-0 border-gray-300 hover:bg-blue-50 hover:border-blue-500 hover:text-blue-600 transition-colors"
+                            onClick={() => onAddToCart?.(item, 1, "add", undefined, cartItem?.cartId)}
+                            title={t("add_to_cart")}
+                          >
+                            <ShoppingIcon />
+                          </Button>
+                        )}
+
+                        {/* View Button */}
+                        <Link href={`/trending/${item.id}`}>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-9 w-9 p-0 border-gray-300 hover:bg-gray-100 transition-colors"
+                            title={t("view") || "View"}
+                          >
+                            <FiEye size={16} className="text-gray-600" />
+                          </Button>
+                        </Link>
+
+                        {/* Wishlist Button */}
+                        {haveAccessToken && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-9 w-9 p-0 border-gray-300 hover:bg-red-50 hover:border-red-500 transition-colors"
+                            onClick={() => onWishlist?.(item.id, item?.productWishlist)}
+                            title={t("wishlist") || "Wishlist"}
+                          >
+                            {inWishlist ? (
+                              <FaHeart size={16} className="text-red-500" />
+                            ) : (
+                              <FaRegHeart size={16} className="text-gray-600" />
+                            )}
+                          </Button>
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </div>

@@ -65,7 +65,7 @@ const AddFromExistingProductPage = () => {
   }, [searchTerm, toast, t]);
 
   const handleSelectProduct = (product: any) => {
-    router.push(`/product?copy=${product.id}`);
+    router.push(`/product?copy=${product.id}&fromExisting=true`);
   };
 
   const handleViewProduct = (product: any) => {

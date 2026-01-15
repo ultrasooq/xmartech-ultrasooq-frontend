@@ -95,6 +95,17 @@
   ::file-selector-button {
     border-color: var(--color-gray-200, currentcolor);
   }
+
+  html,
+  body {
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
+  }
+
+  body {
+    position: relative;
+  }
 }
 
 /* Custom scrollbar styles for CategorySidebar */

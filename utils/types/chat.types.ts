@@ -10,9 +10,26 @@ export enum MessageStatus {
     DELETED
 }
 
+export interface SuggestedProductItem {
+    suggestedProductId: number;
+    offerPrice?: number;
+    quantity?: number;
+}
+
 export interface CreatePrivateRoomRequest {
     creatorId: string;
     participants: number[];
+    content?: string;
+    rfqId?: number;
+    rfqQuoteProductId?: number;
+    buyerId?: number;
+    sellerId?: number;
+    requestedPrice?: number;
+    rfqQuotesUserId?: number;
+    suggestForRfqQuoteProductId?: number; // NEW: For product suggestions
+    suggestedProducts?: SuggestedProductItem[]; // NEW: Array of suggested products
+    uniqueId?: number;
+    attachments?: any[];
 }
 
 export interface FindRoomRequest {

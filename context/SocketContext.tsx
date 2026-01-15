@@ -216,6 +216,8 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
     buyerId,
     sellerId,
     rfqQuotesUserId,
+    suggestForRfqQuoteProductId,
+    suggestedProducts,
     attachments,
     uniqueId
   }: {
@@ -227,6 +229,8 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
     sellerId?: number;
     requestedPrice?: number;
     rfqQuotesUserId?: number | null;
+    suggestForRfqQuoteProductId?: number; // NEW: For product suggestions
+    suggestedProducts?: Array<{ suggestedProductId: number; offerPrice?: number; quantity?: number }>; // NEW: Array of suggested products
     attachments?: any[],
     uniqueId: number
   }) => {
@@ -260,6 +264,8 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
       sellerId,
       requestedPrice,
       rfqQuotesUserId,
+      suggestForRfqQuoteProductId,
+      suggestedProducts,
       attachments: attachments || [],
       uniqueId
     });
@@ -274,6 +280,8 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
     sellerId,
     requestedPrice,
     rfqQuotesUserId,
+    suggestForRfqQuoteProductId,
+    suggestedProducts,
     attachments,
     uniqueId
   }: {
@@ -285,6 +293,8 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
     sellerId?: number;
     requestedPrice?: number;
     rfqQuotesUserId?: number | null;
+    suggestForRfqQuoteProductId?: number; // NEW: For product suggestions
+    suggestedProducts?: Array<{ suggestedProductId: number; offerPrice?: number; quantity?: number }>; // NEW: Array of suggested products
     attachments?: any[],
     uniqueId: number
   }) => {
@@ -318,6 +328,8 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
       sellerId,
       requestedPrice,
       rfqQuotesUserId,
+      suggestForRfqQuoteProductId,
+      suggestedProducts,
       messageStatus: MessageStatus.READ,
       attachments: attachments || [],
       uniqueId

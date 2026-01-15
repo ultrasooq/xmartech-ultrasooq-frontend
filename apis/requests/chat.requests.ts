@@ -147,3 +147,39 @@ export const downloadAttachment = (filePath: string) => {
     },
   });
 };
+
+// NEW: Get vendor products for suggestion modal
+export const getVendorProductsForSuggestion = (payload: {
+  vendorId: number;
+  page: number;
+  limit: number;
+  term?: string;
+}) => {
+  return axios({
+    method: "GET",
+    url: urlcat(`${getApiUrl()}/chat/vendor-products-for-suggestion`, payload),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+// NEW: Select suggested products (Buyer action)
+export const selectSuggestedProducts = (payload: {
+  selectedSuggestionIds: number[];
+  rfqQuoteProductId: number;
+  rfqQuotesUserId: number;
+}) => {
+  return axios({
+    method: "POST",
+    url: `${getApiUrl()}/chat/select-suggested-products`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};

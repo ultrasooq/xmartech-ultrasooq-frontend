@@ -1367,6 +1367,9 @@
   "price_updated": "Price updated",
   "selected": "Selected",
   "select": "Select",
+  "component": "Component",
+  "selection": "Selection",
+  "choose": "Choose",
   "no_products_found": "No products found",
   "try_different_search_terms": "Try different search terms",
   "no_dropshipable_products_available": "No dropshipable products available",
@@ -1917,5 +1920,16 @@
   "account_status_description": "New accounts will be created with a \"Waiting\" status and require admin approval before activation.",
   "cancel": "Cancel",
   "create_account": "Create Account",
-  "creating_account": "Creating Account..."
+  "creating_account": "Creating Account...",
+  "suggested_alternative_products": "Suggested Alternative Products",
+  "suggest_alternative_products": "Suggest Alternative Products",
+  "suggested": "Suggested",
+  "suggest_alternative_for": "Suggest alternative for",
+  "selecting": "Selecting...",
+  "unselect": "Unselect",
+  "products_selected_successfully": "Products selected successfully",
+  "products_deselected_successfully": "Products deselected successfully",
+  "failed_to_select_products": "Failed to select products",
+  "suggest_products": "Suggest Products",
+  "products_selected": "products selected"
 }

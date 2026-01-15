@@ -14,9 +14,15 @@ import { useQueryClient } from "@tanstack/react-query";
 
 interface ProductMessagesListProps {
   onSelectProduct: (productId: number, roomId: number, userId?: number) => void;
+  layoutMode?: "grid" | "column";
+  selectedCustomerId?: number | null;
 }
 
-const ProductMessagesList: React.FC<ProductMessagesListProps> = ({ onSelectProduct }) => {
+const ProductMessagesList: React.FC<ProductMessagesListProps> = ({ 
+  onSelectProduct,
+  layoutMode = "grid",
+  selectedCustomerId = null,
+}) => {
   const t = useTranslations();
   const { user, langDir } = useAuth();
   const queryClient = useQueryClient();
@@ -36,24 +42,28 @@ const ProductMessagesList: React.FC<ProductMessagesListProps> = ({ onSelectProdu
 
   if (isLoading) {
     return (
-      <div className="w-full">
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">{t("product_messages") || "Product Messages"}</h2>
-          <p className="mt-1 text-sm text-gray-500">{t("view_product_messages") || "View and respond to product inquiries"}</p>
-        </div>
-        <div className="space-y-3">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="rounded-xl border border-gray-200 bg-white p-4">
-              <div className="flex items-center gap-4">
-                <Skeleton className="h-20 w-20 rounded-xl" />
-                <div className="flex-1 space-y-2">
-                  <Skeleton className="h-5 w-3/4" />
-                  <Skeleton className="h-4 w-1/2" />
-                  <Skeleton className="h-3 w-1/4" />
+      <div className={layoutMode === "column" ? "flex h-full flex-col" : "w-full"}>
+        {layoutMode === "grid" && (
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">{t("product_messages") || "Product Messages"}</h2>
+            <p className="mt-1 text-sm text-gray-500">{t("view_product_messages") || "View and respond to product inquiries"}</p>
+          </div>
+        )}
+        <div className={layoutMode === "column" ? "flex-1 overflow-y-auto p-4" : ""}>
+          <div className="space-y-3">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="rounded-xl border border-gray-200 bg-white p-4">
+                <div className="flex items-center gap-4">
+                  <Skeleton className="h-20 w-20 rounded-xl" />
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-5 w-3/4" />
+                    <Skeleton className="h-4 w-1/2" />
+                    <Skeleton className="h-3 w-1/4" />
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -61,12 +71,14 @@ const ProductMessagesList: React.FC<ProductMessagesListProps> = ({ onSelectProdu
 
   if (productsWithMessages.length === 0) {
     return (
-      <div className="w-full">
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">{t("product_messages") || "Product Messages"}</h2>
-          <p className="mt-1 text-sm text-gray-500">{t("view_product_messages") || "View and respond to product inquiries"}</p>
-        </div>
-        <div className="flex h-[400px] w-full items-center justify-center rounded-xl border-2 border-dashed border-gray-200 bg-gray-50">
+      <div className={layoutMode === "column" ? "flex h-full flex-col" : "w-full"}>
+        {layoutMode === "grid" && (
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">{t("product_messages") || "Product Messages"}</h2>
+            <p className="mt-1 text-sm text-gray-500">{t("view_product_messages") || "View and respond to product inquiries"}</p>
+          </div>
+        )}
+        <div className={layoutMode === "column" ? "flex-1 overflow-y-auto p-4" : "flex h-[400px] w-full items-center justify-center rounded-xl border-2 border-dashed border-gray-200 bg-gray-50"}>
           <div className="text-center">
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
               <svg className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -86,23 +98,28 @@ const ProductMessagesList: React.FC<ProductMessagesListProps> = ({ onSelectProdu
   }
 
   return (
-    <div className="w-full">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900" dir={langDir}>
-          {t("product_messages") || "Product Messages"}
-        </h2>
-        <p className="mt-1 text-sm text-gray-500">
-          {t("view_product_messages") || "View and respond to product inquiries"}
-        </p>
-      </div>
-      <div className="space-y-3">
-        {productsWithMessages.map((item: any) => (
-          <ProductMessageItem
-            key={`${item.productId}-${item.userId}`}
-            item={item}
-            onSelect={() => onSelectProduct(item.productId, item.roomId, item.userId)}
-          />
-        ))}
+    <div className={layoutMode === "column" ? "flex h-full flex-col" : "w-full"}>
+      {layoutMode === "grid" && (
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-gray-900" dir={langDir}>
+            {t("product_messages") || "Product Messages"}
+          </h2>
+          <p className="mt-1 text-sm text-gray-500">
+            {t("view_product_messages") || "View and respond to product inquiries"}
+          </p>
+        </div>
+      )}
+      <div className={layoutMode === "column" ? "flex-1 overflow-y-auto p-4" : ""}>
+        <div className="space-y-3">
+          {productsWithMessages.map((item: any) => (
+            <ProductMessageItem
+              key={`${item.productId}-${item.userId}`}
+              item={item}
+              onSelect={() => onSelectProduct(item.productId, item.roomId, item.userId)}
+              isSelected={layoutMode === "column" && selectedCustomerId === item.roomId}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -125,9 +142,10 @@ interface ProductMessageItemProps {
     unreadMsgCount: number;
   };
   onSelect: () => void;
+  isSelected?: boolean;
 }
 
-const ProductMessageItem: React.FC<ProductMessageItemProps> = ({ item, onSelect }) => {
+const ProductMessageItem: React.FC<ProductMessageItemProps> = ({ item, onSelect, isSelected = false }) => {
   const t = useTranslations();
   const { data: productData } = useGetProductDetails(item.productId, !!item.productId);
   const product = productData?.data;
@@ -137,7 +155,11 @@ const ProductMessageItem: React.FC<ProductMessageItemProps> = ({ item, onSelect 
   return (
     <button
       onClick={onSelect}
-      className="group relative flex w-full items-center gap-4 rounded-xl border border-gray-200 bg-white p-5 text-left transition-all duration-200 hover:border-gray-300 hover:shadow-lg hover:shadow-gray-100 active:scale-[0.99]"
+      className={`group relative flex w-full items-center gap-4 rounded-xl border-2 bg-white p-5 text-left transition-all duration-200 active:scale-[0.99] ${
+        isSelected
+          ? "border-red-600 bg-red-50 hover:border-red-600 hover:bg-red-50"
+          : "border-gray-200 hover:border-red-600 hover:bg-red-50 hover:shadow-lg hover:shadow-gray-100"
+      }`}
     >
       {/* Product Image */}
       <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl border-2 border-gray-100 shadow-sm group-hover:border-gray-200 transition-colors">

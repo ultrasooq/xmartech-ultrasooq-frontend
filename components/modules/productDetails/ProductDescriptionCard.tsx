@@ -801,8 +801,8 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
             </Button>
           )}
 
-          {/* Message Seller Button - Show only if seller exists and user is not the seller */}
-          {sellerId && userId !== sellerId && onOpenChat && (
+          {/* Message Seller Button - Show only if seller exists and user is not the seller, but not for buygroup products */}
+          {sellerId && userId !== sellerId && onOpenChat && !isBuygroup && (
             <Button
               onClick={onOpenChat}
               variant="outline"

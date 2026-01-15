@@ -548,8 +548,8 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
             </li> */}
             <li className="py-1.5 text-sm font-normal capitalize sm:text-base md:text-lg">
               <Link
-                href="/rfq-quotes"
-                className={getActiveClass("/rfq-quotes")}
+                href="/rfq-request"
+                className={getActiveClass("/rfq-request")}
                 translate="no"
               >
                 {t("rfq_quotes")}
@@ -814,7 +814,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                       </Link>
 
                       {currentTradeRole === "BUYER" && (
-                        <Link href="/rfq-quotes">
+                        <Link href="/rfq-request">
                           <DropdownMenuItem translate="no">
                             {t("rfq_quotes")}
                           </DropdownMenuItem>
@@ -877,7 +877,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                                   </Link>
                                 )}
                                 {hideMenu(PERMISSION_RFQ_QUOTES) && (
-                                  <Link href="/rfq-quotes">
+                                  <Link href="/rfq-request">
                                     <DropdownMenuItem translate="no">
                                       {t("rfq_quotes")}
                                     </DropdownMenuItem>
@@ -891,7 +891,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                                   </Link>
                                 )}
                                 {hideMenu(PERMISSION_RFQ_SELLER_REQUESTS) && (
-                                  <Link href="/seller-rfq-request">
+                                  <Link href="/seller-rfq-list">
                                     <DropdownMenuItem translate="no">
                                       {t("rfq_seller_requests")}
                                     </DropdownMenuItem>
@@ -1685,26 +1685,36 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                 </div>
               </div>
               <div className="order-3 flex w-[80%] items-center gap-2 py-1.5 md:order-2 md:w-7/12 md:px-3 md:py-2 lg:w-4/6">
-                {/* Category icon placed to the left of the search bar (icon only) */}
-                <div
-                  className="group relative hidden h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 transition-all hover:from-orange-600 hover:to-orange-700 active:scale-95 md:flex md:h-10 md:w-10"
-                  onMouseEnter={() => {
-                    if (typeof window !== "undefined") {
-                      window.dispatchEvent(
-                        new CustomEvent("openCategorySidebar"),
-                      );
-                    }
-                  }}
-                  onMouseLeave={() => {
-                    if (typeof window !== "undefined") {
-                      window.dispatchEvent(
-                        new CustomEvent("closeCategorySidebar"),
-                      );
-                    }
-                  }}
-                >
-                  <LayoutGrid className="h-6 w-6 text-white" />
-                </div>
+                {/* Category icon and text placed to the left of the search bar */}
+                {mounted && (
+                  <div
+                    className="group relative hidden items-center gap-2 rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 px-3 transition-all hover:from-orange-600 hover:to-orange-700 active:scale-95 md:flex md:h-10 md:px-4"
+                    onMouseEnter={() => {
+                      if (typeof window !== "undefined") {
+                        window.dispatchEvent(
+                          new CustomEvent("openCategorySidebar"),
+                        );
+                      }
+                    }}
+                    onMouseLeave={() => {
+                      if (typeof window !== "undefined") {
+                        window.dispatchEvent(
+                          new CustomEvent("closeCategorySidebar"),
+                        );
+                      }
+                    }}
+                  >
+                    <LayoutGrid className="h-5 w-5 text-white md:h-6 md:w-6" />
+                    <span className="text-sm font-semibold text-white md:text-base">
+                      {t("categories") || "Categories"}
+                    </span>
+                  </div>
+                )}
+                {!mounted && (
+                  <div className="group relative hidden h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 transition-all hover:from-orange-600 hover:to-orange-700 active:scale-95 md:flex md:h-10 md:w-10">
+                    <LayoutGrid className="h-6 w-6 text-white" />
+                  </div>
+                )}
                 <div className="relative max-w-[55%] flex-1 md:max-w-[50%] lg:max-w-[65%] xl:max-w-[75%]">
                   <input
                     type="text"
@@ -1890,7 +1900,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
 
                             {/* RFQ Quotes for Buyers */}
                             {currentTradeRole === "BUYER" && (
-                              <Link href="/rfq-quotes">
+                              <Link href="/rfq-request">
                                 <DropdownMenuItem
                                   className="cursor-pointer"
                                   dir={langDir}
@@ -1980,7 +1990,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                                     ) : null}
 
                                     {hideMenu(PERMISSION_RFQ_QUOTES) ? (
-                                      <Link href="/rfq-quotes">
+                                      <Link href="/rfq-request">
                                         <DropdownMenuItem
                                           dir={langDir}
                                           translate="no"
@@ -2004,7 +2014,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                                     {hideMenu(
                                       PERMISSION_RFQ_SELLER_REQUESTS,
                                     ) ? (
-                                      <Link href="/seller-rfq-request?tab=rfq">
+                                      <Link href="/seller-rfq-list">
                                         <DropdownMenuItem
                                           dir={langDir}
                                           translate="no"

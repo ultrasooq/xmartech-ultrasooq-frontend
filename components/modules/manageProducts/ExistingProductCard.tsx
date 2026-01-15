@@ -47,7 +47,7 @@ const ExistingProductCard: React.FC<ExistingProductCardProps> = ({
   const router = useRouter();
 
   const handleAddToMyProducts = () => {
-    router.push(`/product?copy=${id}`);
+    router.push(`/product?copy=${id}&fromExisting=true`);
   };
 
   const handleAddToRfqProducts = () => {

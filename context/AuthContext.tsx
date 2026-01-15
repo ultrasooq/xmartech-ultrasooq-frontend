@@ -4,7 +4,7 @@ import { setUserLocale } from "@/src/services/locale";
 import { CURRENCIES, LANGUAGES, PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import { fetchMe } from "@/apis/requests/user.requests";
 import { getCookie } from "cookies-next";
-import React, { createContext, startTransition, useContext, useState, useEffect } from "react";
+import React, { createContext, startTransition, useContext, useState, useEffect, useMemo } from "react";
 
 interface User {
   id: number;
@@ -87,6 +87,24 @@ export const AuthProvider: React.FC<{
     })
   };
 
+  // Compute currency symbol based on locale (for OMR: Arabic vs English)
+  const currencyWithLocale = useMemo(() => {
+    let symbol = currency.symbol;
+    
+    if (currency.code === 'OMR') {
+      // Check if currency has symbolAr property and locale is Arabic
+      const currencyWithAr = currency as typeof CURRENCIES[0] & { symbolAr?: string };
+      symbol = selectedLocale === 'ar' && currencyWithAr.symbolAr 
+        ? currencyWithAr.symbolAr 
+        : currency.symbol;
+    }
+    
+    return {
+      ...currency,
+      symbol,
+    };
+  }, [currency, selectedLocale]);
+
   let data = { 
     user, 
     setUser, 
@@ -97,7 +115,7 @@ export const AuthProvider: React.FC<{
     applyTranslation, 
     selectedLocale, 
     langDir: LANGUAGES.find(language => language.locale == selectedLocale)?.direction || 'ltr', 
-    currency, 
+    currency: currencyWithLocale, 
     changeCurrency
   };
 

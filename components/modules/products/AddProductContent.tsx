@@ -88,7 +88,7 @@ const AddProductContent: React.FC<AddProductContentProps> = ({ productId, onClos
   }, [searchTerm, searchProducts, toast, t]);
 
   const handleSelectProduct = (product: any) => {
-    router.push(`/product?copy=${product.id}`);
+    router.push(`/product?copy=${product.id}&fromExisting=true`);
     onClose?.();
   };
 

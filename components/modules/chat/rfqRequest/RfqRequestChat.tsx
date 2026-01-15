@@ -5,6 +5,7 @@ import AttachIcon from "@/public/images/attach.svg";
 import SmileIcon from "@/public/images/smile.svg";
 import Link from "next/link";
 import SendIcon from "@/public/images/send-button.png";
+import PlaceholderImage from "@/public/images/product-placeholder.png";
 import OfferPriceCard from "@/components/modules/rfqRequest/OfferPriceCard";
 import RequestProductCard from "@/components/modules/rfqRequest/RequestProductCard";
 import {
@@ -16,9 +17,11 @@ import {
   getChatHistory,
   updateUnreadMessages,
   uploadAttachment,
+  selectSuggestedProducts,
 } from "@/apis/requests/chat.requests";
 import RfqRequestChatHistory from "./RfqRequestChatHistory";
 import RfqRequestVendorCard from "./RfqRequestVendorCard";
+import BuyerProductSelectionModal from "./BuyerProductSelectionModal";
 import { newAttachmentType, useSocket } from "@/context/SocketContext";
 import { useToast } from "@/components/ui/use-toast";
 import { CHAT_REQUEST_MESSAGE } from "@/utils/constants";
@@ -32,6 +35,10 @@ import { useOrderStore } from "@/lib/orderStore";
 
 interface RfqRequestChatProps {
   rfqQuoteId: any;
+  layoutMode?: "grid" | "column";
+  viewMode?: "vendors" | "details";
+  selectedVendorId?: number | null;
+  onSelectVendor?: (vendor: any) => void;
 }
 
 interface RfqRequestVendorDetailsProps {
@@ -57,7 +64,13 @@ interface RfqRequestVendorDetailsProps {
   rfqQuotesProducts?: any[];
 }
 
-const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
+const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ 
+  rfqQuoteId,
+  layoutMode = "grid",
+  viewMode,
+  selectedVendorId,
+  onSelectVendor,
+}) => {
   const t = useTranslations();
   const { langDir, currency } = useAuth();
   const [activeSellerId, setActiveSellerId] = useState<number>();
@@ -72,6 +85,14 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
   const [attachments, setAttachments] = useState<any>([]);
   const [isAttachmentUploading, setIsAttachmentUploading] =
     useState<boolean>(false);
+  const [selectingSuggestions, setSelectingSuggestions] = useState<Set<number>>(new Set());
+  const [showProductSelectionModal, setShowProductSelectionModal] = useState(false);
+  const [selectedProductForModal, setSelectedProductForModal] = useState<{
+    rfqQuoteProductId: number;
+    rfqQuotesUserId: number;
+  } | null>(null);
+  const [pendingProductSelections, setPendingProductSelections] = useState<Map<number, number[]>>(new Map());
+  const [hasPendingSelections, setHasPendingSelections] = useState(false);
   const {
     sendMessage,
     cratePrivateRoom,
@@ -86,6 +107,154 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
   const { user } = useAuth();
   const router = useRouter();
   const orderStore = useOrderStore();
+
+  // Collect suggested products for a given RFQ quote product from chat history,
+  // deduped by suggestedProductId and ignoring removed ones (quantity <= 0)
+  const getSuggestionsForRfqQuoteProduct = (productId: number) => {
+    const suggestions = selectedChatHistory
+      .flatMap((chat: any) => chat?.rfqSuggestedProducts || [])
+      .filter((s: any) => s?.rfqQuoteProductId === productId);
+
+    const byProductId = new Map<number, any>();
+    suggestions.forEach((s: any) => {
+      if (!s?.suggestedProductId) return;
+      byProductId.set(s.suggestedProductId, s);
+    });
+
+    let result = Array.from(byProductId.values()).filter(
+      (s: any) => (s.quantity ?? 0) > 0,
+    );
+
+    // Merge pending selections for UI preview
+    const pendingIds = pendingProductSelections.get(productId) || [];
+    result = result.map((s: any) => {
+      const isPendingSelected = pendingIds.includes(s.id);
+      return {
+        ...s,
+        isSelectedByBuyer: isPendingSelected || s.isSelectedByBuyer,
+      };
+    });
+
+    return result;
+  };
+
+  // Handle selecting/deselecting suggested products
+  const handleSelectSuggestedProducts = async (
+    suggestionIds: number[],
+    rfqQuoteProductId: number,
+    rfqQuotesUserId: number,
+  ) => {
+    if (!user?.id) return;
+
+    // Mark all suggestions as "selecting" for better UX
+    const allSuggestionIds = selectedChatHistory
+      .flatMap((chat: any) => chat?.rfqSuggestedProducts?.map((s: any) => s.id) || [])
+      .filter((id: number) => id);
+    
+    setSelectingSuggestions(new Set(allSuggestionIds));
+    try {
+      const response = await selectSuggestedProducts({
+        selectedSuggestionIds: suggestionIds,
+        rfqQuoteProductId,
+        rfqQuotesUserId,
+      });
+
+      if (response.data?.status === 200) {
+        toast({
+          title: t("success") || "Success",
+          description: suggestionIds.length > 0 
+            ? (t("products_selected_successfully") || "Products selected successfully")
+            : (t("products_deselected_successfully") || "Products deselected successfully"),
+          variant: "success",
+        });
+        // Refresh chat history to see updated selection status
+        if (selectedRoom) {
+          await handleChatHistory();
+        }
+      }
+    } catch (error: any) {
+      toast({
+        title: t("error") || "Error",
+        description: error?.response?.data?.message || (t("something_went_wrong") || "Something went wrong"),
+        variant: "danger",
+      });
+    } finally {
+      setSelectingSuggestions(new Set());
+    }
+  };
+
+  // Handle opening product selection modal
+  const handleOpenProductSelectionModal = (rfqQuoteProductId: number, rfqQuotesUserId: number) => {
+    setSelectedProductForModal({ rfqQuoteProductId, rfqQuotesUserId });
+    setShowProductSelectionModal(true);
+  };
+
+  const handleCloseProductSelectionModal = () => {
+    setShowProductSelectionModal(false);
+    setSelectedProductForModal(null);
+  };
+
+  const handleProductSelectionFromModal = (suggestionIds: number[]) => {
+    if (!selectedProductForModal) return;
+    
+    const { rfqQuoteProductId, rfqQuotesUserId } = selectedProductForModal;
+    
+    // Store pending selections locally
+    setPendingProductSelections((prev) => {
+      const newMap = new Map(prev);
+      newMap.set(rfqQuoteProductId, suggestionIds);
+      return newMap;
+    });
+    
+    // Update local state immediately for UI feedback
+    // We'll actually send the update when "Send Update" is pressed
+    setHasPendingSelections(true);
+    
+    // Close modal
+    handleCloseProductSelectionModal();
+  };
+
+  // Handle sending update to vendor
+  const handleSendUpdateToVendor = async () => {
+    if (!selectedRoom || !hasPendingSelections || !selectedVendor) return;
+
+    try {
+      // Send all pending selections
+      for (const [rfqQuoteProductId, suggestionIds] of pendingProductSelections.entries()) {
+        await handleSelectSuggestedProducts(
+          suggestionIds,
+          rfqQuoteProductId,
+          selectedVendor.id,
+        );
+      }
+
+      // Send notification message to vendor
+      const notificationMessage = "Customer selected products from your suggestions.";
+      
+      sendNewMessage(
+        selectedRoom,
+        notificationMessage,
+        undefined,
+        selectedVendor.sellerID,
+      );
+
+      // Clear pending selections
+      setPendingProductSelections(new Map());
+      setHasPendingSelections(false);
+
+      toast({
+        title: t("success") || "Success",
+        description: "Update sent to vendor",
+        variant: "success",
+      });
+    } catch (error: any) {
+      toast({
+        title: t("error") || "Error",
+        description: error?.response?.data?.message || (t("something_went_wrong") || "Something went wrong"),
+        variant: "danger",
+      });
+    }
+  };
 
   const allRfqQuotesQuery = useAllRfqQuotesUsersByBuyerId(
     {
@@ -109,11 +278,30 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
 
     if (rfqQuotesDetails) {
       setVendorList(rfqQuotesDetails);
-      handleRfqProducts(rfqQuotesDetails[0]);
-      setActiveSellerId(rfqQuotesDetails[0]?.sellerID);
-      setRfqQuotesUserId(rfqQuotesDetails[0]?.id);
+      // Auto-select first vendor only in grid mode
+      if (layoutMode === "grid" && rfqQuotesDetails[0] && !selectedVendorId) {
+        handleRfqProducts(rfqQuotesDetails[0]);
+        setActiveSellerId(rfqQuotesDetails[0]?.sellerID);
+        setRfqQuotesUserId(rfqQuotesDetails[0]?.id);
+      }
+      // In column mode, select vendor by selectedVendorId
+      if (layoutMode === "column" && selectedVendorId && rfqQuotesDetails.length > 0) {
+        const vendor = rfqQuotesDetails.find(
+          (v: any) => v.id === selectedVendorId || v.sellerID === selectedVendorId
+        );
+        if (vendor) {
+          handleRfqProducts(vendor);
+          setActiveSellerId(vendor?.sellerID);
+          setRfqQuotesUserId(vendor?.id);
+        }
+      }
+      // In column mode vendors view, auto-select first vendor if none selected
+      if (layoutMode === "column" && viewMode === "vendors" && !selectedVendorId && rfqQuotesDetails[0]) {
+        // Don't auto-select, just show the list
+      }
     }
-  }, [allRfqQuotesQuery.data?.data]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allRfqQuotesQuery.data?.data, selectedVendorId, layoutMode, viewMode]);
 
   // check room id
   useEffect(() => {
@@ -732,20 +920,44 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
     // Calculate total from approved product prices
     const calculatedTotal = calculateTotalPrice();
 
+    // NEW: Extract selected suggested products from chat history
+    const selectedSuggestedProducts: any[] = [];
+    selectedChatHistory.forEach((chat: any) => {
+      if (chat?.rfqSuggestedProducts && chat.rfqSuggestedProducts.length > 0) {
+        chat.rfqSuggestedProducts.forEach((suggestion: any) => {
+          if (suggestion.isSelectedByBuyer && suggestion.suggestedProduct) {
+            selectedSuggestedProducts.push({
+              id: suggestion.id, // RfqSuggestedProduct ID
+              suggestedProductId: suggestion.suggestedProductId,
+              rfqQuoteProductId: suggestion.rfqQuoteProductId,
+              offerPrice: parseFloat(suggestion.offerPrice || "0"),
+              quantity: suggestion.quantity || 1,
+              productName: suggestion.suggestedProduct?.productName || "Product",
+              productImage: suggestion.suggestedProduct?.productImages?.[0]?.image ||
+                            suggestion.suggestedProduct?.product_productPrice?.[0]?.productPrice_productSellerImage?.[0]?.image,
+              isSuggested: true, // Flag to indicate this is a suggested product
+            });
+          }
+        });
+      }
+    });
+
     // Store RFQ quote data in order store for checkout
     const rfqQuoteData = {
       rfqQuotesUserId: selectedVendor?.id,
       rfqQuotesId: selectedVendor?.rfqQuotesId,
       sellerId: selectedVendor?.sellerID,
       buyerId: selectedVendor?.buyerID,
-      totalPrice: calculatedTotal,
+      totalPrice: calculatedTotal + selectedSuggestedProducts.reduce((sum, p) => sum + (p.offerPrice * p.quantity), 0),
       quoteProducts:
         selectedVendor?.rfqQuotesProducts?.map((product: any) => ({
           id: product.id,
           offerPrice: parseFloat(product.offerPrice || "0"),
           quantity: product.quantity || 1,
           priceRequestId: product.priceRequest?.id,
+          isSuggested: false,
         })) || [],
+      suggestedProducts: selectedSuggestedProducts, // NEW: Include selected suggested products
     };
 
     // Store RFQ quote data in sessionStorage for checkout page to access
@@ -757,7 +969,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
     orderStore.setOrders({
       ...orderStore.orders,
     });
-    orderStore.setTotal(calculatedTotal);
+    orderStore.setTotal(rfqQuoteData.totalPrice);
 
     // Redirect to checkout page with RFQ flag
     router.push("/checkout?fromRfq=true");
@@ -801,6 +1013,805 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
     );
   };
 
+  // Column layout - Vendors List View
+  if (layoutMode === "column" && viewMode === "vendors") {
+    return (
+      <div className="flex h-full flex-col">
+        {allRfqQuotesQuery?.isLoading ? (
+          <div className="grid grid-cols-1 gap-4 p-4 md:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Skeleton key={i} className="h-40 w-full rounded-xl" />
+            ))}
+          </div>
+        ) : !vendorList?.length ? (
+          <div className="flex h-full flex-col items-center justify-center p-8">
+            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
+              <svg
+                className="h-8 w-8 text-gray-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                />
+              </svg>
+            </div>
+            <p
+              className="text-center text-sm font-medium text-gray-500"
+              dir={langDir}
+              translate="no"
+            >
+              {t("no_data_found")}
+            </p>
+          </div>
+        ) : (
+          <div className="flex-1 overflow-y-auto p-2 space-y-1.5">
+            {vendorList?.map((item: RfqRequestVendorDetailsProps) => {
+              const getVendorName = () => {
+                const seller = item?.sellerIDDetail;
+                if (seller?.accountName) {
+                  return seller.accountName;
+                }
+                if (seller?.firstName && seller?.lastName) {
+                  return `${seller.firstName} ${seller.lastName}`;
+                }
+                if (seller?.firstName) {
+                  return seller.firstName;
+                }
+                if (seller?.email) {
+                  return seller.email;
+                }
+                if (item?.sellerID) {
+                  return `Vendor ${item.sellerID}`;
+                }
+                return "Unknown Vendor";
+              };
+
+              const getVendorOfferPrice = () => {
+                const products =
+                  item?.rfqQuotesUser_rfqQuotes?.rfqQuotesProducts || [];
+                const hasPriceRequests =
+                  item?.rfqProductPriceRequests &&
+                  item.rfqProductPriceRequests.length > 0;
+
+                if (hasPriceRequests && products.length > 0) {
+                  const calculatedTotal = products.reduce(
+                    (total: number, product: any) => {
+                      const priceRequest = item.rfqProductPriceRequests?.find(
+                        (request: any) =>
+                          request.rfqQuoteProductId === product.id,
+                      );
+                      if (priceRequest) {
+                        const price = parseFloat(
+                          priceRequest.requestedPrice || "0",
+                        );
+                        const quantity = product.quantity || 1;
+                        return total + price * quantity;
+                      }
+                      return total;
+                    },
+                    0,
+                  );
+                  return calculatedTotal > 0 ? calculatedTotal.toString() : "-";
+                }
+
+                if (products.length > 0) {
+                  const allHaveBudgetRange = products.every(
+                    (product: any) =>
+                      product.offerPriceFrom &&
+                      product.offerPriceTo &&
+                      product.offerPriceFrom > 0 &&
+                      product.offerPriceTo > 0,
+                  );
+                  if (allHaveBudgetRange) {
+                    const budgetMaxTotal = products.reduce(
+                      (total: number, product: any) => {
+                        const maxPrice = parseFloat(
+                          product.offerPriceTo || "0",
+                        );
+                        const quantity = product.quantity || 1;
+                        return total + maxPrice * quantity;
+                      },
+                      0,
+                    );
+                    const currentOfferPrice = parseFloat(
+                      item?.offerPrice || "0",
+                    );
+                    if (Math.abs(currentOfferPrice - budgetMaxTotal) < 0.01) {
+                      return "-";
+                    }
+                  }
+                }
+                return item?.offerPrice || "-";
+              };
+
+              const isSelected = selectedVendorId === item?.id || selectedVendorId === item?.sellerID;
+
+              return (
+                <div
+                  key={item?.id}
+                  onClick={() => {
+                    handleRfqProducts(item);
+                    setActiveSellerId(item?.sellerID);
+                    setRfqQuotesUserId(item.id);
+                    onSelectVendor?.(item);
+                  }}
+                  className={cn(
+                    "cursor-pointer rounded-lg border-2 p-1.5 transition-all hover:shadow-md",
+                    isSelected
+                      ? "border-orange-500 bg-orange-50"
+                      : "border-gray-200 bg-white hover:border-gray-300",
+                  )}
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="relative h-8 w-8 flex-shrink-0 overflow-hidden rounded-full border border-white ring-1 ring-gray-100">
+                      <Image
+                        src={
+                          item?.sellerIDDetail?.profilePicture ||
+                          PlaceholderImage
+                        }
+                        alt={getVendorName()}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-xs font-semibold text-gray-900 truncate">
+                        {getVendorName()}
+                      </h4>
+                      {getVendorOfferPrice() && getVendorOfferPrice() !== "-" ? (
+                        <p className="mt-0.5 text-[10px] font-bold text-green-600">
+                          {t("offer_price")}: {currency.symbol}
+                          {getVendorOfferPrice()}
+                        </p>
+                      ) : (
+                        <p className="mt-0.5 text-[9px] text-gray-500">
+                          {t("no_offer_yet") || "No offer yet"}
+                        </p>
+                      )}
+                      {item.unreadMsgCount > 0 && (
+                        <div className="mt-0.5 flex items-center gap-1">
+                          <span className="text-[9px] text-blue-600 font-medium">
+                            {item.unreadMsgCount} {t("unread_messages")}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    {isSelected && (
+                      <div className="flex-shrink-0">
+                        <div className="h-1.5 w-1.5 rounded-full bg-orange-500"></div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Column layout - Details/Chat View
+  if (layoutMode === "column" && viewMode === "details") {
+    if (!selectedVendor) {
+      return (
+        <div className="flex h-full items-center justify-center p-8">
+          <p className="text-center text-sm text-gray-500">
+            Select a vendor to view details
+          </p>
+        </div>
+      );
+    }
+
+    return (
+      <div className="flex h-full flex-col overflow-hidden">
+        {/* Header with Vendor Info, Price and Checkout */}
+        <div className="flex-shrink-0 border-b border-gray-100 bg-white px-3 py-2">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            {/* Vendor Info */}
+            <div className="flex items-center gap-2">
+              {selectedVendor?.sellerIDDetail?.profilePicture && (
+                <div className="relative h-8 w-8 overflow-hidden rounded-full border border-orange-200 shadow-sm">
+                  <Image
+                    src={selectedVendor.sellerIDDetail.profilePicture}
+                    alt="Vendor"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+              )}
+              <div>
+                <h3 className="text-sm font-bold text-gray-900">
+                  {selectedVendor?.sellerIDDetail?.accountName ||
+                    `${selectedVendor?.sellerIDDetail?.firstName || ""} ${selectedVendor?.sellerIDDetail?.lastName || ""}`.trim() ||
+                    selectedVendor?.sellerIDDetail?.email ||
+                    `Vendor ${selectedVendor?.sellerID}`}
+                </h3>
+                <p className="text-xs text-gray-500">
+                  {t("vendor_details") || "Vendor Details"}
+                </p>
+              </div>
+            </div>
+
+            {/* Price and Checkout */}
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+              <div className="flex items-center gap-2 rounded-lg border border-green-100 bg-green-50 px-3 py-1.5">
+                <div className="flex h-6 w-6 items-center justify-center rounded bg-green-500 shadow-sm">
+                  <svg
+                    className="h-3 w-3 text-white"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
+                <div className="flex flex-row items-center gap-2">
+                  <span
+                    className="text-[10px] font-medium text-gray-600 whitespace-nowrap"
+                    dir={langDir}
+                    translate="no"
+                  >
+                    Total Price
+                  </span>
+                  <span className="text-sm font-bold text-gray-900">
+                    {(() => {
+                      // Calculate main products total
+                      let mainProductsTotal = 0;
+                      if (
+                        selectedVendor?.rfqQuotesProducts &&
+                        selectedVendor.rfqQuotesProducts.length > 0
+                      ) {
+                        mainProductsTotal =
+                        selectedVendor.rfqQuotesProducts.reduce(
+                          (total: number, product: any) => {
+                            if (
+                              product?.priceRequest &&
+                              product?.priceRequest?.status === "APPROVED" &&
+                              product?.offerPrice
+                            ) {
+                              const price = parseFloat(
+                                product.offerPrice || "0",
+                              );
+                              const quantity = product.quantity || 1;
+                              return total + price * quantity;
+                            }
+                            return total;
+                          },
+                          0,
+                        );
+                      } else {
+                        mainProductsTotal = parseFloat(
+                          selectedVendor?.offerPrice || "0",
+                        );
+                      }
+
+                      // Calculate selected suggested products total (including pending selections)
+                      const selectedSuggestedTotal = (() => {
+                        // Get all suggestions from chat history
+                        const allSuggestions = selectedChatHistory
+                          .flatMap((chat: any) => chat?.rfqSuggestedProducts || [])
+                          .filter((s: any) => (s.quantity ?? 0) > 0);
+                        
+                        // Create a map of productId -> selected suggestion IDs (from chat + pending)
+                        const selectedByProduct = new Map<number, Set<number>>();
+                        
+                        // Add selections from chat history
+                        allSuggestions.forEach((s: any) => {
+                          if (s.isSelectedByBuyer && s.rfqQuoteProductId) {
+                            if (!selectedByProduct.has(s.rfqQuoteProductId)) {
+                              selectedByProduct.set(s.rfqQuoteProductId, new Set());
+                            }
+                            selectedByProduct.get(s.rfqQuoteProductId)!.add(s.id);
+                          }
+                        });
+                        
+                        // Merge pending selections
+                        pendingProductSelections.forEach((pendingIds, productId) => {
+                          if (!selectedByProduct.has(productId)) {
+                            selectedByProduct.set(productId, new Set());
+                          }
+                          pendingIds.forEach(id => {
+                            selectedByProduct.get(productId)!.add(id);
+                          });
+                        });
+                        
+                        // Calculate total from selected suggestions
+                        return allSuggestions.reduce((total: number, suggestion: any) => {
+                          const productId = suggestion.rfqQuoteProductId;
+                          const selectedIds = selectedByProduct.get(productId);
+                          if (selectedIds && selectedIds.has(suggestion.id)) {
+                            const price = parseFloat(suggestion.offerPrice || "0");
+                            const quantity = suggestion.quantity || 1;
+                            return total + price * quantity;
+                          }
+                          return total;
+                        }, 0);
+                      })();
+
+                      const totalPrice = mainProductsTotal + selectedSuggestedTotal;
+
+                      // Check if we have approved prices or if we should show the original offer price
+                      const hasApprovedPrices =
+                        selectedVendor?.rfqQuotesProducts?.some(
+                          (product: any) =>
+                            product?.priceRequest &&
+                            product?.priceRequest?.status === "APPROVED",
+                        ) || false;
+
+                      if (hasApprovedPrices && mainProductsTotal > 0) {
+                        return `${currency.symbol}${totalPrice}`;
+                      } else if (selectedSuggestedTotal > 0) {
+                        // If we have selected suggested products but no approved main products
+                        return `${currency.symbol}${totalPrice}`;
+                      } else if (selectedVendor?.offerPrice) {
+                        return `${currency.symbol}${selectedVendor?.offerPrice}`;
+                      }
+                      return "-";
+                    })()}
+                  </span>
+                </div>
+              </div>
+              {(() => {
+                if (
+                  !selectedVendor?.rfqQuotesProducts ||
+                  selectedVendor.rfqQuotesProducts.length === 0
+                ) {
+                  return selectedVendor?.offerPrice ? true : false;
+                }
+                const hasApprovedPrices =
+                  selectedVendor.rfqQuotesProducts.some(
+                    (product: any) =>
+                      product?.priceRequest &&
+                      product?.priceRequest?.status === "APPROVED",
+                  );
+                return hasApprovedPrices || selectedVendor?.offerPrice;
+              })() && (
+                <button
+                  onClick={handleCheckout}
+                  disabled={!canCheckout()}
+                  className="bg-dark-orange inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold text-white shadow-md transition-all duration-200 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-50"
+                  dir={langDir}
+                  translate="no"
+                >
+                  <svg
+                    className="h-3.5 w-3.5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                    />
+                  </svg>
+                  {t("checkout")}
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Product Details Table and Chat */}
+        <div className="flex-1 flex flex-col overflow-hidden min-h-0 px-2 py-1.5 gap-1.5">
+          {/* Product Details Table - list style like vendor side */}
+          {selectedVendor?.rfqQuotesProducts?.length > 0 ? (
+            <div className="flex-shrink-0 overflow-hidden rounded border border-gray-200 bg-white">
+              <div className="grid grid-cols-4 gap-1 border-b border-gray-200 bg-gray-50 px-3 py-1.5">
+                <div
+                  className="text-[11px] font-semibold text-gray-700"
+                  dir={langDir}
+                  translate="no"
+                >
+                  {t("component") || "Component"}
+                </div>
+                <div
+                  className="text-[11px] font-semibold text-gray-700 text-center"
+                  dir={langDir}
+                  translate="no"
+                >
+                  {t("selection") || "Selection"}
+                </div>
+                <div
+                  className="text-[11px] font-semibold text-gray-700 text-center"
+                  dir={langDir}
+                  translate="no"
+                >
+                  {t("price") || "Price"}
+                </div>
+                <div
+                  className="text-[11px] font-semibold text-gray-700 text-center"
+                  dir={langDir}
+                  translate="no"
+                >
+                  {t("address") || "Address"}
+                </div>
+                </div>
+              <div className="overflow-y-auto max-h-[220px]">
+                <div className="min-w-[700px]">
+                {rfqQuotesUsersByBuyerIdQuery.isLoading ? (
+                  <div className="space-y-1 p-2">
+                    {Array.from({ length: 1 }).map((_, i) => (
+                      <Skeleton key={i} className="h-16 w-full rounded-lg" />
+                    ))}
+                  </div>
+                ) : (
+                    selectedVendor?.rfqQuotesProducts?.map((item: any) => {
+                      const suggestions = getSuggestionsForRfqQuoteProduct(
+                        item.id,
+                      );
+
+                      return (
+                        <div
+                          key={item.id}
+                          className="border-b border-gray-200"
+                        >
+                          {/* Main requested product row */}
+                          <div className="grid grid-cols-4 items-center gap-2 px-3 py-2.5 bg-white">
+                            {/* Requested product info */}
+                            <div className="flex items-center gap-2 min-w-0">
+                              <div className="relative h-8 w-8 flex-shrink-0 overflow-hidden rounded border border-gray-200 bg-gray-50">
+                                <Image
+                                  src={
+                                    item?.rfqProductDetails?.productImages?.[0]
+                                      ?.image || PlaceholderImage
+                                  }
+                                  alt={
+                                    item?.rfqProductDetails?.productName ||
+                                    "Product"
+                                  }
+                                  fill
+                                  className="object-cover"
+                                />
+                              </div>
+                              <div className="min-w-0">
+                                <p className="truncate text-xs font-semibold text-gray-900">
+                                  {item?.rfqProductDetails?.productName || "-"}
+                                </p>
+                                <p className="text-[10px] text-gray-500">
+                                  {item?.deliveryDate ||
+                                    rfqQuoteDetailsById
+                                      ?.rfqQuotes_rfqQuoteAddress?.rfqDate ||
+                                    "-"}
+                                </p>
+                              </div>
+                            </div>
+
+                            {/* Selection column */}
+                            <div className="flex justify-center">
+                              {(() => {
+                                const suggestions = getSuggestionsForRfqQuoteProduct(item.id);
+                                const hasSuggestions = suggestions.length > 0;
+                                
+                                if (!hasSuggestions) {
+                                  return (
+                                    <span className="text-[10px] text-gray-500">
+                                      {item?.productType === "SIMILAR"
+                                        ? t("similar_product") || "Similar product"
+                                        : t("same_product") || "Same product"}
+                                    </span>
+                                  );
+                                }
+                                
+                                return (
+                                  <button
+                                    onClick={() => handleOpenProductSelectionModal(item.id, selectedVendor?.id || 0)}
+                                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded bg-blue-600 text-white text-[10px] font-medium hover:bg-blue-700 transition-colors"
+                                    translate="no"
+                                  >
+                                    <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                                    </svg>
+                                    {t("choose") || "Choose"}
+                                  </button>
+                                );
+                              })()}
+                            </div>
+
+                            {/* Price column */}
+                            <div className="flex flex-col items-center gap-0.5 text-[10px] text-gray-700">
+                              <span className="font-bold">
+                                {(() => {
+                                  // Multiply price by quantity
+                                  const quantity = item?.quantity || 1;
+                                  if (item?.offerPrice) {
+                                    const totalPrice = parseFloat(item.offerPrice.toString()) * quantity;
+                                    return `${currency.symbol}${totalPrice}`;
+                                  }
+                                  return "-";
+                                })()}
+                              </span>
+                            </div>
+
+                            {/* Address column */}
+                            <div className="text-center text-[10px] text-gray-700">
+                              <span className="line-clamp-2">
+                                {item?.address ||
+                                  rfqQuoteDetailsById
+                                    ?.rfqQuotes_rfqQuoteAddress?.address ||
+                                  "-"}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Suggested products under this requested product - only show selected ones */}
+                          {(() => {
+                            const suggestions = getSuggestionsForRfqQuoteProduct(item.id);
+                            const selectedSuggestions = suggestions.filter((s: any) => s.isSelectedByBuyer);
+                            
+                            if (selectedSuggestions.length === 0) return null;
+                            
+                            return (
+                              <div className="border-t border-gray-100 bg-gray-50 px-3 py-2">
+                                {selectedSuggestions.map((s: any) => {
+                                const p = s.suggestedProduct;
+                                const imageUrl =
+                                  p?.product_productPrice?.[0]
+                                    ?.productPrice_productSellerImage?.[0]
+                                    ?.image ||
+                                  p?.productImages?.[0]?.image ||
+                                  PlaceholderImage;
+                                const unitPrice =
+                                  s.offerPrice ||
+                                  p?.product_productPrice?.[0]?.offerPrice ||
+                                  p?.product_productPrice?.[0]?.productPrice ||
+                                  0;
+                                // Multiply price by quantity
+                                const quantity = s.quantity || 1;
+                                const price = parseFloat(unitPrice.toString()) * quantity;
+                                const isSelected = !!s.isSelectedByBuyer;
+                                const isSelecting = selectingSuggestions.has(s.id);
+                                const rfqQuotesUserId = selectedVendor?.id;
+
+                                // Collect all currently selected product IDs for this RFQ product
+                                const allSelectedIds = suggestions
+                                  .filter((sug: any) => sug.isSelectedByBuyer)
+                                  .map((sug: any) => sug.id);
+
+                                return (
+                                  <div
+                                    key={s.id}
+                                    className="grid grid-cols-4 items-center gap-2 py-1.5 pl-8 text-[11px]"
+                                  >
+                                    {/* Component column */}
+                                    <div className="flex items-center gap-2 min-w-0">
+                                      <div className="relative h-7 w-7 flex-shrink-0 overflow-hidden rounded border border-gray-200 bg-white">
+                                        <Image
+                                          src={imageUrl}
+                                          alt={p?.productName || "Product"}
+                                          fill
+                                          className="object-cover"
+                                        />
+                                      </div>
+                                      <div className="min-w-0 flex-1">
+                                        <span className="truncate block text-[11px]">
+                                          {p?.productName || "-"}
+                                        </span>
+                                        {s.quantity && s.quantity > 0 && (
+                                          <span className="text-[9px] text-gray-500">
+                                            Qty: {s.quantity}
+                                          </span>
+                                        )}
+                                      </div>
+                                    </div>
+
+                                    {/* Selection column - show selected badge */}
+                                    <div className="flex justify-center">
+                                      {isSelected && (
+                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-green-100 text-green-800 text-[9px] font-medium">
+                                          <svg className="h-2.5 w-2.5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                          </svg>
+                                          {t("selected") || "Selected"}
+                                        </span>
+                                      )}
+                                    </div>
+
+                                    {/* Price column */}
+                                    <div className="text-center text-[10px] text-gray-700">
+                                      <span>
+                                        {price ? `${currency.symbol}${price}` : "-"}
+                                      </span>
+                                    </div>
+
+                                    {/* Address column - empty for suggested products */}
+                                    <div className="text-center text-[10px] text-gray-500">
+                                      <span>-</span>
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                              </div>
+                            );
+                          })()}
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
+            </div>
+          ) : null}
+
+          {/* Send Update and Cancel Buttons */}
+          {hasPendingSelections && (
+            <div className="border-t border-gray-200 bg-gray-50 px-3 py-2 flex items-center justify-end gap-2">
+              <button
+                onClick={() => {
+                  setPendingProductSelections(new Map());
+                  setHasPendingSelections(false);
+                }}
+                className="px-4 py-1.5 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-50 transition-colors"
+              >
+                {t("cancel") || "Cancel"}
+              </button>
+              <button
+                onClick={handleSendUpdateToVendor}
+                className="px-4 py-1.5 text-xs font-medium text-white bg-blue-600 rounded hover:bg-blue-700 transition-colors"
+              >
+                {"Send Update"}
+              </button>
+            </div>
+          )}
+
+          {/* Product Selection Modal */}
+          <BuyerProductSelectionModal
+            isOpen={showProductSelectionModal}
+            onClose={handleCloseProductSelectionModal}
+            onSelectProducts={handleProductSelectionFromModal}
+            suggestedProducts={selectedProductForModal 
+              ? getSuggestionsForRfqQuoteProduct(selectedProductForModal.rfqQuoteProductId)
+              : []
+            }
+            rfqQuoteProductId={selectedProductForModal?.rfqQuoteProductId || 0}
+            rfqQuotesUserId={selectedProductForModal?.rfqQuotesUserId || 0}
+          />
+
+          {/* Chat History - Takes remaining space */}
+          <div className="flex-1 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm min-h-0 flex flex-col">
+            <div className="flex-1 overflow-y-auto min-h-0">
+              <RfqRequestChatHistory
+                roomId={selectedRoom}
+                selectedChatHistory={selectedChatHistory}
+                chatHistoryLoading={chatHistoryLoading}
+                activeSellerId={activeSellerId}
+                unreadMsgCount={selectedVendor?.unreadMsgCount}
+                rfqUserId={selectedVendor?.id}
+                updateVendorMessageCount={updateVendorMessageCount}
+                onProductSelected={handleChatHistory}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Message Input Area */}
+        <div className="flex-shrink-0 border-t border-gray-100 bg-white px-3 py-2">
+          {/* Attachment Preview */}
+          {!isAttachmentUploading && attachments.length > 0 && (
+            <div className="mb-2 flex flex-wrap gap-1.5">
+              {attachments.map((file: any, index: any) => (
+                <div
+                  key={index}
+                  className="group flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-2 py-1 shadow-sm transition-all hover:border-red-300 hover:bg-red-50"
+                >
+                  <svg
+                    className="h-3 w-3 text-gray-500"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
+                    />
+                  </svg>
+                  <span className="max-w-[150px] truncate text-xs text-gray-700">
+                    {file.name}
+                  </span>
+                  <button
+                    onClick={() => removeFile(index)}
+                    className="ml-0.5 rounded-full p-0.5 text-red-500 transition-colors hover:bg-red-100"
+                  >
+                    <svg
+                      className="h-3 w-3"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Emoji Picker */}
+          {showEmoji && (
+            <div className="mb-2 rounded-lg border border-gray-200 bg-white p-1 shadow-lg">
+              <EmojiPicker onEmojiClick={onEmojiClick} />
+            </div>
+          )}
+
+          {/* Input Area */}
+          <div className="flex items-end gap-2">
+            {/* File Attachment Button */}
+            <label className="hover:border-dark-orange hover:text-dark-orange flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-600 transition-all hover:bg-orange-50">
+              <input
+                type="file"
+                className="hidden"
+                multiple
+                onChange={handleFileChange}
+              />
+              <Image src={AttachIcon} alt="attach-icon" className="h-4 w-4" />
+            </label>
+
+            {/* Text Input */}
+            <div className="focus-within:border-dark-orange flex-1 rounded-lg border-2 border-gray-200 bg-white transition-all focus-within:ring-1 focus-within:ring-orange-100">
+              <textarea
+                placeholder={t("type_your_message") || "Type your message..."}
+                className="w-full resize-none rounded-lg border-0 bg-transparent px-3 py-2 text-xs text-gray-900 placeholder-gray-400 focus:outline-none"
+                rows={1}
+                value={message}
+                onChange={(e) => {
+                  setMessage(e.target.value);
+                  e.target.style.height = "auto";
+                  e.target.style.height = `${Math.min(e.target.scrollHeight, 80)}px`;
+                }}
+                onKeyDown={handleSendMessageKeyDown}
+              />
+            </div>
+
+            {/* Emoji Button */}
+            <button
+              type="button"
+              onClick={() => setShowEmoji(!showEmoji)}
+              className={cn(
+                "hover:border-dark-orange hover:text-dark-orange flex h-8 w-8 items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-600 transition-all hover:bg-orange-50",
+                showEmoji &&
+                  "border-dark-orange text-dark-orange bg-orange-50",
+              )}
+            >
+              <Image src={SmileIcon} alt="smile-icon" className="h-4 w-4" />
+            </button>
+
+            {/* Send Button */}
+            <button
+              onClick={handleSendMessage}
+              type="button"
+              disabled={!message.trim() && attachments.length === 0}
+              className={cn(
+                "bg-dark-orange flex h-8 w-8 items-center justify-center rounded-lg text-white shadow-sm transition-all hover:shadow-md disabled:cursor-not-allowed disabled:bg-gray-400",
+              )}
+            >
+              <Image src={SendIcon} alt="send-icon" className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Grid layout (default) - Show everything
   return (
     <div className="space-y-6">
       {/* Request Info Section - Top */}
@@ -848,11 +1859,11 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
 
       {/* Vendor List Section - Middle */}
       <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-lg shadow-gray-200/50">
-        <div className="flex min-h-[70px] w-full items-center justify-between border-b border-gray-100 bg-white px-6 py-4">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-orange-100">
+        <div className="flex min-h-[50px] w-full items-center justify-between border-b border-gray-100 bg-white px-3 py-2">
+          <div className="flex items-center gap-2">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-orange-100">
               <svg
-                className="h-6 w-6 text-orange-600"
+                className="h-4 w-4 text-orange-600"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -867,13 +1878,13 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
             </div>
             <div>
               <h2
-                className="text-lg font-bold text-gray-800"
+                className="text-sm font-bold text-gray-800"
                 dir={langDir}
                 translate="no"
               >
                 {t("vendor_lists")}
               </h2>
-              <p className="mt-0.5 text-xs text-gray-500">
+              <p className="mt-0.5 text-[10px] text-gray-500">
                 {t("select_vendor_to_chat") ||
                   "Select a vendor to view details and chat"}
               </p>
@@ -881,15 +1892,15 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
           </div>
           {vendorList?.length > 0 && (
             <div className="flex items-center gap-2">
-              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-500 text-sm font-bold text-white shadow-md">
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-orange-500 text-[10px] font-bold text-white shadow-md">
                 {vendorList.length}
               </span>
             </div>
           )}
         </div>
-        <div className="p-6">
+        <div className="p-3">
           {allRfqQuotesQuery?.isLoading ? (
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
               {Array.from({ length: 4 }).map((_, i) => (
                 <Skeleton key={i} className="h-40 w-full rounded-xl" />
               ))}
@@ -924,7 +1935,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
           ) : null}
 
           {!allRfqQuotesQuery?.isLoading && vendorList?.length > 0 && (
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
               {vendorList?.map((item: RfqRequestVendorDetailsProps) => {
                 // Get vendor name with priority: accountName > firstName+lastName > firstName > email > fallback
                 const getVendorName = () => {
@@ -1034,9 +2045,17 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
                       setActiveSellerId(item?.sellerID);
                       setRfqQuotesUserId(item.id);
                       handleRfqProducts(item);
+                      if (layoutMode === "column" && onSelectVendor) {
+                        onSelectVendor(item);
+                      }
                     }}
                     seller={item.sellerIDDetail}
-                    isSelected={activeSellerId === item?.sellerID}
+                    isSelected={
+                      layoutMode === "column"
+                        ? selectedVendorId === item?.id ||
+                          selectedVendorId === item?.sellerID
+                        : activeSellerId === item?.sellerID
+                    }
                     vendor={item}
                   />
                 );
@@ -1095,9 +2114,9 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
                       />
                     </svg>
                   </div>
-                  <div className="flex flex-col">
+                  <div className="flex flex-row items-center gap-2">
                     <span
-                      className="text-xs font-medium text-gray-600"
+                      className="text-xs font-medium text-gray-600 whitespace-nowrap"
                       dir={langDir}
                       translate="no"
                     >
@@ -1337,6 +2356,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({ rfqQuoteId }) => {
                 unreadMsgCount={selectedVendor?.unreadMsgCount}
                 rfqUserId={selectedVendor?.id}
                 updateVendorMessageCount={updateVendorMessageCount}
+                onProductSelected={handleChatHistory}
               />
             </div>
           </div>

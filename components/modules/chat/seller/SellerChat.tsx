@@ -19,6 +19,7 @@ import {
 } from "@/apis/requests/chat.requests";
 import RequestProductCard from "@/components/modules/rfqRequest/RequestProductCard";
 import SellerChatHistory from "./SellerChatHistory";
+import ProductSuggestionModal from "../ProductSuggestionModal";
 import { useToast } from "@/components/ui/use-toast";
 import { CHAT_REQUEST_MESSAGE } from "@/utils/constants";
 import { useAuth } from "@/context/AuthContext";
@@ -62,9 +63,23 @@ interface RfqQuoteType {
   };
   unreadMsgCount: number;
 }
-interface SellerChatProps {}
+interface SellerChatProps {
+  layoutMode?: "grid" | "column";
+  viewMode?: "rfqRequests" | "customers" | "details";
+  selectedRfqId?: number | null;
+  selectedCustomerId?: number | null;
+  onSelectRfq?: (rfq: any, rfqGroup?: any[]) => void;
+  onSelectCustomer?: (customer: any) => void;
+}
 
-const SellerChat: React.FC<SellerChatProps> = () => {
+const SellerChat: React.FC<SellerChatProps> = ({
+  layoutMode = "grid",
+  viewMode = "rfqRequests",
+  selectedRfqId = null,
+  selectedCustomerId = null,
+  onSelectRfq,
+  onSelectCustomer,
+}) => {
   const t = useTranslations();
   const { langDir, currency } = useAuth();
   const [activeSellerId, setActiveSellerId] = useState<number | undefined>();
@@ -80,11 +95,20 @@ const SellerChat: React.FC<SellerChatProps> = () => {
   const [isAttachmentUploading, setIsAttachmentUploading] =
     useState<boolean>(false);
   const [showDetailView, setShowDetailView] = useState<boolean>(false);
-  const [showSuggestProduct, setShowSuggestProduct] = useState<boolean>(false);
-  const [suggestedProductLink, setSuggestedProductLink] = useState<string>("");
+  const [showProductSuggestionModal, setShowProductSuggestionModal] = useState<boolean>(false);
+  const [suggestingForProductId, setSuggestingForProductId] = useState<number | null>(null);
+  const [suggestingForProductQuantity, setSuggestingForProductQuantity] = useState<number>(1);
+  const [editingPriceProductId, setEditingPriceProductId] = useState<number | null>(null);
+  const [editingPriceValue, setEditingPriceValue] = useState<string>("");
   const [showHiddenRequests, setShowHiddenRequests] = useState<boolean>(false);
   const [selectedRequests, setSelectedRequests] = useState<Set<number>>(new Set());
   const [isSelectMode, setIsSelectMode] = useState<boolean>(false);
+  // Track pending price updates (productId -> price) that haven't been sent yet
+  const [pendingPriceUpdates, setPendingPriceUpdates] = useState<Map<number, number>>(new Map());
+  // Track pending suggestion updates (productId -> suggested products array) that haven't been sent yet
+  const [pendingSuggestionUpdates, setPendingSuggestionUpdates] = useState<Map<number, Array<{ suggestedProductId: number; offerPrice?: number; quantity?: number; productDetails?: any }>>>(new Map());
+  // Track if there are unsent changes (price updates or suggestion changes)
+  const [hasPendingUpdates, setHasPendingUpdates] = useState<boolean>(false);
   const {
     sendMessage,
     cratePrivateRoom,
@@ -105,6 +129,40 @@ const SellerChat: React.FC<SellerChatProps> = () => {
     limit: 10,
     showHidden: showHiddenRequests,
   });
+
+  // Helper: collect suggested products for a given RFQ quote product from chat history.
+  // We dedupe by suggestedProductId and always keep the latest entry,
+  // so updates (or soft-deletes via quantity 0) override older ones.
+  const getSuggestionsForRfqQuoteProduct = (productId: number) => {
+    const suggestions = selectedChatHistory
+      .flatMap((chat: any) => chat?.rfqSuggestedProducts || [])
+      .filter((s: any) => s?.rfqQuoteProductId === productId);
+
+    // Map by suggestedProductId so the last occurrence wins
+    const byProductId = new Map<number, any>();
+    suggestions.forEach((s: any) => {
+      if (!s?.suggestedProductId) return;
+      byProductId.set(s.suggestedProductId, s);
+    });
+
+    // Merge pending suggestions (these override existing ones)
+    const pendingSuggestions = pendingSuggestionUpdates.get(productId) || [];
+    pendingSuggestions.forEach((pending: any) => {
+      if (pending.suggestedProductId) {
+        // Convert pending suggestion format to match chat history format
+        // Include product details if available
+        byProductId.set(pending.suggestedProductId, {
+          rfqQuoteProductId: productId,
+          suggestedProductId: pending.suggestedProductId,
+          offerPrice: pending.offerPrice,
+          quantity: pending.quantity,
+          suggestedProduct: pending.productDetails, // Include product details for display
+        });
+      }
+    });
+
+    return Array.from(byProductId.values());
+  };
 
   const hideRfqRequestMutation = useHideRfqRequest();
 
@@ -464,6 +522,8 @@ const SellerChat: React.FC<SellerChatProps> = () => {
     rfqQuoteProductId?: number,
     sellerId?: number,
     requestedPrice?: number,
+    suggestForRfqQuoteProductId?: number,
+    suggestedProducts?: Array<{ suggestedProductId: number; offerPrice?: number; quantity?: number }>,
   ) => {
     const uniqueId = generateUniqueNumber();
     const attach = attachments.map((att: any) => {
@@ -482,14 +542,16 @@ const SellerChat: React.FC<SellerChatProps> = () => {
     const newMessage = {
       roomId: "",
       rfqId: "",
-      content: message,
+      content: message || content,
       userId: user?.id,
       user: {
         firstName: user?.firstName,
         lastName: user?.lastName,
+        accountName: user?.accountName,
       },
       rfqQuotesUserId: null,
       attachments: attach,
+      rfqSuggestedProducts: suggestedProducts || [],
       uniqueId,
       status: "SD",
       createdAt: new Date(),
@@ -500,12 +562,14 @@ const SellerChat: React.FC<SellerChatProps> = () => {
 
     const msgPayload = {
       roomId: roomId,
-      content,
+      content: content || "",
       rfqId: selectedRfqQuote?.rfqQuotesId,
       requestedPrice,
       rfqQuoteProductId,
       sellerId,
       rfqQuotesUserId: activeSellerId,
+      suggestForRfqQuoteProductId,
+      suggestedProducts,
       uniqueId,
       attachments: attach,
     };
@@ -517,6 +581,8 @@ const SellerChat: React.FC<SellerChatProps> = () => {
     rfqQuoteProductId?: number,
     sellerId?: number,
     requestedPrice?: number,
+    suggestForRfqQuoteProductId?: number,
+    suggestedProducts?: Array<{ suggestedProductId: number; offerPrice?: number; quantity?: number }>,
   ) => {
     try {
       const uniqueId = generateUniqueNumber();
@@ -536,14 +602,16 @@ const SellerChat: React.FC<SellerChatProps> = () => {
       const newMessage = {
         roomId: "",
         rfqId: "",
-        content: message,
+        content: message || content,
         userId: user?.id,
         user: {
           firstName: user?.firstName,
           lastName: user?.lastName,
+          accountName: user?.accountName,
         },
         rfqQuotesUserId: null,
         attachments: attach,
+        rfqSuggestedProducts: suggestedProducts || [],
         uniqueId,
         status: "SD",
         createdAt: new Date(),
@@ -554,12 +622,14 @@ const SellerChat: React.FC<SellerChatProps> = () => {
 
       const payload = {
         participants: [selectedRfqQuote?.sellerID, selectedRfqQuote?.buyerID],
-        content,
+        content: content || "",
         rfqId: selectedRfqQuote?.rfqQuotesId,
         requestedPrice,
         rfqQuoteProductId,
         sellerId,
         rfqQuotesUserId: activeSellerId,
+        suggestForRfqQuoteProductId,
+        suggestedProducts,
         uniqueId,
         attachments: attach,
       };
@@ -611,28 +681,108 @@ const SellerChat: React.FC<SellerChatProps> = () => {
     }
   };
 
+  // NEW: Handle product selection from modal
+  const handleProductsSelected = async (
+    products: Array<{ suggestedProductId: number; offerPrice?: number; quantity?: number; productDetails?: any }>,
+  ) => {
+    if (!suggestingForProductId || !selectedRfqQuote || !user?.id) return;
+
+    // Store suggestion updates locally - don't send message yet
+    // Message will be sent only when "Send Update" is pressed
+    setPendingSuggestionUpdates((prev) => {
+      const newMap = new Map(prev);
+      newMap.set(suggestingForProductId, products);
+      return newMap;
+    });
+    setHasPendingUpdates(true);
+
+    setShowProductSuggestionModal(false);
+    setSuggestingForProductId(null);
+    setSuggestingForProductQuantity(1);
+  };
+
   const handleRequestPrice = (productId: number, requestedPrice: number) => {
-    if (selectedRoom && requestedPrice) {
-      sendNewMessage(
-        selectedRoom,
-        CHAT_REQUEST_MESSAGE.priceRequest.value,
-        productId,
-        selectedRfqQuote?.sellerID,
-        requestedPrice,
-      );
-    } else if (
-      !selectedRoom &&
-      requestedPrice &&
-      selectedRfqQuote?.sellerID &&
-      selectedRfqQuote?.buyerID
-    ) {
-      handleCreateRoom(
-        CHAT_REQUEST_MESSAGE.priceRequest.value,
-        productId,
-        selectedRfqQuote?.sellerID,
-        requestedPrice,
+    // Store the price update locally - don't send message yet
+    // Message will be sent only when "Send Update" is pressed
+    if (requestedPrice && requestedPrice > 0) {
+      setPendingPriceUpdates((prev) => {
+        const newMap = new Map(prev);
+        newMap.set(productId, requestedPrice);
+        return newMap;
+      });
+      setHasPendingUpdates(true);
+    }
+
+    if (requestedPrice) {
+      setHasPendingUpdates(true);
+    }
+  };
+
+  // Handle sending update notification to customer
+  const handleSendUpdate = async () => {
+    if (!selectedRfqQuote?.sellerID || !hasPendingUpdates) return;
+
+    // Ensure room exists before sending updates
+    if (!selectedRoom && selectedRfqQuote?.buyerID) {
+      // Create room first if it doesn't exist - use empty content for initial room creation
+      await handleCreateRoom(
+        "", // Empty content for room creation
+        undefined, // productId
+        selectedRfqQuote.sellerID,
+        undefined, // requestedPrice
       );
     }
+
+    if (!selectedRoom) return;
+
+    // Send all pending price updates first (with empty content - no chat message)
+    for (const [productId, price] of pendingPriceUpdates.entries()) {
+      sendNewMessage(
+        selectedRoom,
+        "", // Empty content - no chat message, just update the price in backend
+        productId,
+        selectedRfqQuote.sellerID,
+        price,
+      );
+    }
+
+    // Send all pending suggestion updates
+    for (const [productId, suggestedProducts] of pendingSuggestionUpdates.entries()) {
+      // Strip productDetails before sending (backend doesn't need it)
+      const productsToSend = suggestedProducts.map((p: any) => ({
+        suggestedProductId: p.suggestedProductId,
+        offerPrice: p.offerPrice,
+        quantity: p.quantity,
+      }));
+      sendNewMessage(
+        selectedRoom,
+        "", // Empty content - no chat message
+        undefined, // rfqQuoteProductId - not a price request
+        selectedRfqQuote.sellerID,
+        undefined, // requestedPrice
+        productId, // suggestForRfqQuoteProductId
+        productsToSend, // suggestedProducts
+      );
+    }
+
+    // Then send the notification message (only this one will appear in chat)
+    const updateMessage =
+      "Vendor made update in product list, you can check.";
+
+    sendNewMessage(
+      selectedRoom,
+      updateMessage,
+      undefined, // rfqQuoteProductId
+      selectedRfqQuote.sellerID,
+      undefined, // requestedPrice
+      undefined, // suggestForRfqQuoteProductId
+      undefined, // suggestedProducts
+    );
+
+    // Clear pending updates after sending
+    setPendingPriceUpdates(new Map());
+    setPendingSuggestionUpdates(new Map());
+    setHasPendingUpdates(false);
   };
 
   const handleRfqRequest = (rRequest: {
@@ -912,11 +1062,244 @@ const SellerChat: React.FC<SellerChatProps> = () => {
     return Array.from(grouped.values());
   }, [rfqQuotes]);
 
+  // Handle selected customer in column mode
+  useEffect(() => {
+    if (layoutMode === "column" && viewMode === "details" && selectedCustomerId) {
+      const customer = rfqQuotes.find((quote) => quote.id === selectedCustomerId);
+      if (customer && (!selectedRfqQuote || selectedRfqQuote.id !== customer.id)) {
+        setSelectedRfqQuote(customer);
+        setActiveSellerId(customer.id);
+        handleRfqProducts(customer);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCustomerId, layoutMode, viewMode, rfqQuotes]);
+
+  // Column layout rendering
+  if (layoutMode === "column") {
+    // RFQ Requests List View (Column 2)
+    if (viewMode === "rfqRequests") {
+      return (
+        <div className="flex h-full flex-col">
+          {/* RFQ Requests List */}
+          <div className="flex-1 overflow-y-auto p-4">
+            {allRfqQuotesQuery?.isLoading ? (
+              <div className="space-y-3">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Skeleton key={i} className="h-20 w-full rounded-lg" />
+                ))}
+              </div>
+            ) : groupedRfqQuotes.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-16">
+                <p className="text-gray-500">{t("no_data_found")}</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {groupedRfqQuotes.map((rfqGroup) => {
+                  const mainQuote = rfqGroup[0];
+                  const buyerInfo = mainQuote.buyerIDDetail;
+                  const buyerName =
+                    (buyerInfo as any)?.accountName ||
+                    `${buyerInfo?.firstName || ""} ${buyerInfo?.lastName || ""}`.trim() ||
+                    "Buyer";
+                  
+                  // Get all product names from all quotes in this group
+                  const allProductNames = rfqGroup
+                    .flatMap(
+                      (quote) =>
+                        quote.rfqQuotesUser_rfqQuotes?.rfqQuotesProducts?.map(
+                          (product: any) =>
+                            product?.rfqProductDetails?.productName || "Product",
+                        ) || [],
+                    )
+                    .filter(Boolean);
+                  
+                  // Get first product image from all quotes in this group
+                  const firstProductImage = rfqGroup
+                    .flatMap(
+                      (quote) =>
+                        quote.rfqQuotesUser_rfqQuotes?.rfqQuotesProducts?.map(
+                          (product: any) =>
+                            product?.rfqProductDetails?.productImages?.[0]?.image,
+                        ) || [],
+                    )
+                    .filter(Boolean)[0];
+                  
+                  // Create a display text from product names
+                  const productDisplayText = allProductNames.length > 0
+                    ? allProductNames.length === 1
+                      ? allProductNames[0]
+                      : `${allProductNames[0]}${allProductNames.length > 1 ? ` +${allProductNames.length - 1} more` : ""}`
+                    : "No products";
+                  
+                  return (
+                    <div
+                      key={mainQuote.rfqQuotesId}
+                      onClick={() => {
+                        if (onSelectRfq) {
+                          // Pass the entire group so parent can access all quotes and products
+                          onSelectRfq(mainQuote, rfqGroup);
+                        }
+                      }}
+                      className={cn(
+                        "cursor-pointer rounded-lg border-2 bg-white p-4 transition-all hover:border-red-600 hover:bg-red-50",
+                        selectedRfqId === mainQuote.rfqQuotesId
+                          ? "border-red-600 bg-red-50"
+                          : "border-gray-200"
+                      )}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="relative h-12 w-12 rounded overflow-hidden bg-gray-200 flex-shrink-0">
+                          {firstProductImage && validator.isURL(firstProductImage) ? (
+                            <Image
+                              src={firstProductImage}
+                              alt={productDisplayText}
+                              fill
+                              className="object-cover"
+                            />
+                          ) : (
+                            <div className="h-full w-full flex items-center justify-center">
+                              <svg className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                              </svg>
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-gray-900 truncate">
+                            {productDisplayText}
+                          </p>
+                          <p className="text-sm text-gray-500 mt-1 truncate">
+                            {buyerName} - {rfqGroup.length} request{rfqGroup.length > 1 ? "s" : ""}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    // Customers List View (Column 3)
+    if (viewMode === "customers") {
+      const rfqCustomers = rfqQuotes.filter(
+        (quote) => quote.rfqQuotesId === selectedRfqId
+      );
+
+      return (
+        <div className="flex h-full flex-col">
+          {/* Customers List */}
+          <div className="flex-1 overflow-y-auto p-4">
+            {rfqCustomers.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-16">
+                <p className="text-gray-500">No customers found</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {rfqCustomers.map((customer) => {
+                  const buyerInfo = customer.buyerIDDetail;
+                  const buyerName =
+                    (buyerInfo as any)?.accountName ||
+                    `${buyerInfo?.firstName || ""} ${buyerInfo?.lastName || ""}`.trim() ||
+                    "Buyer";
+                  
+                  return (
+                    <div
+                      key={customer.id}
+                      onClick={() => {
+                        setSelectedRfqQuote(customer);
+                        setActiveSellerId(customer.id);
+                        handleRfqProducts(customer);
+                        if (onSelectCustomer) {
+                          onSelectCustomer(customer);
+                        }
+                      }}
+                      className={cn(
+                        "cursor-pointer rounded-lg border-2 bg-white p-4 transition-all hover:border-red-600 hover:bg-red-50",
+                        selectedCustomerId === customer.id
+                          ? "border-red-600 bg-red-50"
+                          : "border-gray-200"
+                      )}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="relative h-12 w-12 overflow-hidden rounded-full flex-shrink-0">
+                          <Image
+                            src={buyerInfo?.profilePicture || PlaceholderImage}
+                            alt={buyerName}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-gray-900 truncate">{buyerName}</p>
+                          <p className="text-sm text-gray-500 truncate">
+                            {customer.lastUnreadMessage?.content 
+                              ? customer.lastUnreadMessage.content.substring(0, 50) + "..."
+                              : "Lorem Ipsum Dolor Sit Amet,"}
+                          </p>
+                        </div>
+                        <span className="text-xs text-gray-400 flex-shrink-0">
+                          {customer.lastUnreadMessage?.createdAt
+                            ? moment(customer.lastUnreadMessage.createdAt).fromNow()
+                            : "2hr Ago"}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    // Details View (Column 4) - Use existing detail view code
+    if (viewMode === "details") {
+      // If selectedCustomerId is provided but selectedRfqQuote is not set yet, show loading
+      if (selectedCustomerId && !selectedRfqQuote) {
+        return (
+          <div className="flex h-full items-center justify-center p-8">
+            <div className="text-center">
+              <div className="mb-4 flex justify-center">
+                <Skeleton className="h-12 w-12 rounded-full" />
+              </div>
+              <p className="text-sm text-gray-500">Loading details...</p>
+            </div>
+          </div>
+        );
+      }
+      // If no customer selected, show empty state
+      if (!selectedCustomerId) {
+        return (
+          <div className="flex h-full items-center justify-center p-8">
+            <p className="text-center text-sm text-gray-500">
+              Select a customer to view details and chat
+            </p>
+          </div>
+        );
+      }
+      // If selectedRfqQuote is set, it will be handled by the detail view code below
+      // Return null here to prevent falling through to grid view
+      if (!selectedRfqQuote) {
+        return null;
+      }
+    }
+  }
+
   // If detail view is shown, render the detailed chat interface
-  if (showDetailView && selectedRfqQuote) {
+  if ((showDetailView || (layoutMode === "column" && viewMode === "details")) && selectedRfqQuote) {
     return (
-      <div>
-        {/* Back Button */}
+      <div className={cn(
+        "flex h-full flex-col",
+        layoutMode === "column" ? "bg-white" : ""
+      )}>
+        {/* Back Button - Only show in grid mode */}
+        {layoutMode === "grid" && (
         <div className="mb-4">
           <button
             onClick={() => {
@@ -946,15 +1329,19 @@ const SellerChat: React.FC<SellerChatProps> = () => {
             {t("back_to_requests") || "Back to Requests"}
           </button>
         </div>
+        )}
 
         {/* Detailed View */}
-        <div className="flex w-full flex-col rounded-xl border border-gray-200 bg-white shadow-lg">
-          {/* Header Section */}
-          <div className="flex min-h-[70px] w-full items-center justify-between border-b border-gray-200 bg-gray-50 px-6 py-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-100">
+        <div className={cn(
+          "flex w-full flex-1 flex-col overflow-hidden",
+          layoutMode === "column" ? "bg-white" : "rounded-xl border border-gray-200 bg-white shadow-lg"
+        )}>
+          {/* Header Section - Reduced Size */}
+          <div className="flex w-full items-center justify-between border-b border-gray-200 bg-gray-50 px-4 py-2">
+            <div className="flex items-center gap-2">
+              <div className="flex h-7 w-7 items-center justify-center rounded bg-green-100">
                 <svg
-                  className="h-6 w-6 text-green-600"
+                  className="h-4 w-4 text-green-600"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -967,16 +1354,16 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                   />
                 </svg>
               </div>
-              <div>
+              <div className="flex flex-row items-center gap-2">
                 <p
-                  className="text-sm font-medium text-gray-600"
+                  className="text-xs font-medium text-gray-600 whitespace-nowrap"
                   dir={langDir}
                   translate="no"
                 >
                   {t("offering_price")}
                 </p>
                 <p
-                  className="text-2xl font-bold text-green-600"
+                  className="text-base font-bold text-green-600"
                   dir={langDir}
                   translate="no"
                 >
@@ -1020,61 +1407,40 @@ const SellerChat: React.FC<SellerChatProps> = () => {
           </div>
 
           {/* Content Section */}
-          <div className="flex w-full flex-col p-6">
+          <div className="flex flex-1 flex-col overflow-hidden min-h-0 p-2">
             {/* Product Table Section */}
-            <div className="mb-6 w-full overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+            <div className="mb-2 w-full overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm flex-shrink-0 max-h-[180px] overflow-y-auto">
               <div className="w-full overflow-x-auto">
                 <div className="min-w-[700px]">
-                  {/* Table Header */}
-                  <div className="sticky top-0 z-10 grid grid-cols-7 gap-4 border-b border-gray-200 bg-gray-50 px-4 py-3">
+                  {/* Table Header - list style like PCPartPicker */}
+                  <div className="sticky top-0 z-10 grid grid-cols-4 gap-1 border-b border-gray-200 bg-gray-50 px-3 py-1.5">
                     <div
-                      className="text-sm font-semibold text-gray-700"
+                      className="text-[11px] font-semibold text-gray-700"
                       dir={langDir}
                       translate="no"
                     >
-                      {t("product")}
+                      {t("component") || "Component"}
                     </div>
                     <div
-                      className="text-sm font-semibold text-gray-700"
+                      className="text-[11px] font-semibold text-gray-700 text-center"
                       dir={langDir}
                       translate="no"
                     >
-                      {t("product_type_indicator")}
+                      {t("selection") || "Selection"}
                     </div>
                     <div
-                      className="text-sm font-semibold text-gray-700"
+                      className="text-[11px] font-semibold text-gray-700 text-center"
                       dir={langDir}
                       translate="no"
                     >
-                      {t("delivery_date")}
+                      {t("price") || "Price"}
                     </div>
                     <div
-                      className="text-sm font-semibold text-gray-700"
+                      className="text-[11px] font-semibold text-gray-700 text-center"
                       dir={langDir}
                       translate="no"
                     >
-                      {t("brand")}
-                    </div>
-                    <div
-                      className="text-sm font-semibold text-gray-700"
-                      dir={langDir}
-                      translate="no"
-                    >
-                      {t("number_of_piece")}
-                    </div>
-                    <div
-                      className="text-sm font-semibold text-gray-700"
-                      dir={langDir}
-                      translate="no"
-                    >
-                      {t("price")}
-                    </div>
-                    <div
-                      className="text-sm font-semibold text-gray-700"
-                      dir={langDir}
-                      translate="no"
-                    >
-                      {t("address")}
+                      {t("address") || "Address"}
                     </div>
                   </div>
                   {/* Table Body */}
@@ -1113,55 +1479,268 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                     </div>
                   ) : null}
 
-                  {quoteProducts?.map(
-                    (item: {
-                      id: number;
-                      offerPrice: string;
-                      priceRequest: any;
-                      note: string;
-                      quantity: number;
-                      productType?: string;
-                      offerPriceFrom?: number;
-                      offerPriceTo?: number;
-                      rfqProductDetails: {
-                        productName: string;
-                        productImages: {
-                          id: number;
-                          image: string;
-                        }[];
-                      };
-                      address: string;
-                      deliveryDate: string;
-                    }) => (
-                      <OfferPriceCard
-                        key={item?.id}
-                        productId={item?.id}
-                        offerPrice={item?.offerPrice}
-                        note={item?.note}
-                        quantity={item?.quantity}
-                        productType={item?.productType}
-                        offerPriceFrom={item?.offerPriceFrom}
-                        offerPriceTo={item?.offerPriceTo}
-                        address={item?.address}
-                        deliveryDate={item?.deliveryDate}
-                        productImage={
-                          item?.rfqProductDetails?.productImages[0]?.image
-                        }
-                        productName={item?.rfqProductDetails?.productName}
-                        onRequestPrice={handleRequestPrice}
-                        priceRequest={item?.priceRequest}
-                        isBuyer={false}
-                        hasFirstVendorApproval={item?.hasFirstVendorApproval || false}
-                      />
-                    ),
-                  )}
+                  {quoteProducts?.map((item: any) => {
+                    const isSimilar = item?.productType === "SIMILAR";
+                    const suggestions = getSuggestionsForRfqQuoteProduct(item.id);
+                    const isEditingPrice = editingPriceProductId === item.id;
+
+                    return (
+                      <div key={item.id} className="border-b border-gray-200">
+                        {/* Main requested product row */}
+                        <div className="grid grid-cols-4 items-center gap-2 px-3 py-2.5 bg-white">
+                          {/* Requested product info */}
+                          <div className="flex items-center gap-2 min-w-0">
+                            <div className="relative h-8 w-8 flex-shrink-0 overflow-hidden rounded border border-gray-200 bg-gray-50">
+                              <Image
+                                src={
+                                  item?.rfqProductDetails?.productImages?.[0]?.image ||
+                                  PlaceholderImage
+                                }
+                                alt={item?.rfqProductDetails?.productName || "Product"}
+                                fill
+                                className="object-cover"
+                              />
+                            </div>
+                            <div className="min-w-0">
+                              <p className="truncate text-xs font-semibold text-gray-900">
+                                {item?.rfqProductDetails?.productName || "-"}
+                              </p>
+                              <p className="text-[10px] text-gray-500">
+                                {item?.deliveryDate || "-"}
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* Selection (button) */}
+                          <div className="flex justify-center">
+                            {isSimilar ? (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setSuggestingForProductId(item.id);
+                                  setSuggestingForProductQuantity(item.quantity || 1);
+                                  setShowProductSuggestionModal(true);
+                                }}
+                                className="inline-flex items-center gap-1 rounded bg-blue-600 px-3 py-1.5 text-[11px] font-semibold text-white hover:bg-blue-700"
+                                dir={langDir}
+                                translate="no"
+                              >
+                                <span>+</span>
+                                <span>
+                                  Choose Alternative
+                                </span>
+                              </button>
+                            ) : (
+                              <span className="text-[10px] text-gray-500">
+                                {item?.productType === "SAME"
+                                  ? t("same_product") || "Same product"
+                                  : "-"}
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Base column: main product price editor */}
+                          <div className="flex flex-col items-center gap-0.5 text-[10px] text-gray-700">
+                            {isEditingPrice ? (
+                              <>
+                                <input
+                                  type="number"
+                                  value={editingPriceValue}
+                                  onChange={(e) =>
+                                    setEditingPriceValue(e.target.value)
+                                  }
+                                  className="w-20 rounded border border-gray-300 px-1 py-0.5 text-[10px] focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                />
+                                <div className="flex gap-1">
+                                  <button
+                                    type="button"
+                                    className="text-[9px] text-blue-600"
+                                    onClick={() => {
+                                      const price = parseFloat(editingPriceValue);
+                                      if (!isNaN(price) && price > 0) {
+                                        handleRequestPrice(item.id, price);
+                                      }
+                                      setEditingPriceProductId(null);
+                                      setEditingPriceValue("");
+                                    }}
+                                  >
+                                    {t("save") || "Save"}
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="text-[9px] text-gray-500"
+                                    onClick={() => {
+                                      setEditingPriceProductId(null);
+                                      setEditingPriceValue("");
+                                    }}
+                                  >
+                                    {t("cancel") || "Cancel"}
+                                  </button>
+                                </div>
+                              </>
+                            ) : (
+                              <>
+                                <span className="font-bold">
+                                  {(() => {
+                                    // Show pending price if available, otherwise show original offerPrice
+                                    // Multiply by quantity
+                                    const pendingPrice = pendingPriceUpdates.get(item.id);
+                                    const displayPrice = pendingPrice ?? item?.offerPrice;
+                                    const quantity = item?.quantity || 1;
+                                    if (displayPrice) {
+                                      const totalPrice = parseFloat(displayPrice.toString()) * quantity;
+                                      return `${currency.symbol}${totalPrice}`;
+                                    }
+                                    return "-";
+                                  })()}
+                                </span>
+                                <button
+                                  type="button"
+                                  className="text-[9px] text-blue-600"
+                                  onClick={() => {
+                                    setEditingPriceProductId(item.id);
+                                    // Show pending price if available, otherwise show original offerPrice
+                                    const pendingPrice = pendingPriceUpdates.get(item.id);
+                                    setEditingPriceValue(
+                                      pendingPrice?.toString() || item?.offerPrice?.toString() || "",
+                                    );
+                                  }}
+                                >
+                                  {t("edit") || "Edit"}
+                                </button>
+                              </>
+                            )}
+                          </div>
+
+                          {/* Address column */}
+                          <div className="text-center text-[10px] text-gray-700">
+                            <span className="line-clamp-2">
+                              {item?.address || "-"}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Suggested products under this requested product */}
+                        {suggestions.filter((s: any) => (s.quantity ?? 0) > 0).length > 0 && (
+                          <div className="border-t border-gray-100 bg-gray-50 px-3 py-2">
+                            {suggestions
+                              .filter((s: any) => (s.quantity ?? 0) > 0)
+                              .map((s: any) => {
+                              const p = s.suggestedProduct;
+                              const imageUrl =
+                                p?.product_productPrice?.[0]
+                                  ?.productPrice_productSellerImage?.[0]?.image ||
+                                p?.productImages?.[0]?.image ||
+                                PlaceholderImage;
+                              const unitPrice =
+                                s.offerPrice ||
+                                p?.product_productPrice?.[0]?.offerPrice ||
+                                p?.product_productPrice?.[0]?.productPrice ||
+                                0;
+                              // Multiply price by quantity
+                              const quantity = s.quantity || 1;
+                              const totalPrice = parseFloat(unitPrice.toString()) * quantity;
+                              const isSelected = !!s.isSelectedByBuyer;
+
+                              return (
+                                <div
+                                  key={s.id || `suggestion-${s.suggestedProductId}`}
+                                  className={`grid grid-cols-4 items-center gap-2 py-1.5 pl-8 text-[11px] ${
+                                    isSelected ? "bg-green-50 border-l-4 border-l-green-500" : ""
+                                  }`}
+                                >
+                                  {/* Component column */}
+                                  <div className="flex items-center gap-2 min-w-0">
+                                    <div className="relative h-7 w-7 flex-shrink-0 overflow-hidden rounded border border-gray-200 bg-white">
+                                      <Image
+                                        src={imageUrl}
+                                        alt={p?.productName || "Product"}
+                                        fill
+                                        className="object-cover"
+                                      />
+                                    </div>
+                                    <div className="min-w-0 flex-1">
+                                      <span className="truncate block text-[11px]">
+                                        {p?.productName || "-"}
+                                      </span>
+                                      {s.quantity && s.quantity > 0 && (
+                                        <span className="text-[9px] text-gray-500">
+                                          Qty: {s.quantity}
+                                        </span>
+                                      )}
+                                    </div>
+                                  </div>
+
+                                  {/* Selection column */}
+                                  <div className="flex justify-center">
+                                    {isSelected && (
+                                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-green-100 text-green-800 text-[9px] font-medium">
+                                        <svg className="h-2.5 w-2.5" fill="currentColor" viewBox="0 0 20 20">
+                                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                        </svg>
+                                        {"Selected"}
+                                      </span>
+                                    )}
+                                  </div>
+
+                                  {/* Price column */}
+                                  <div className="text-center text-[10px] text-gray-700">
+                                    <span>
+                                      {totalPrice ? `${currency.symbol}${totalPrice}` : "-"}
+                                    </span>
+                                  </div>
+
+                                  {/* Address column */}
+                                  <div className="text-center text-[10px] text-gray-500">
+                                    <span>-</span>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
+              
+              {/* Send Update and Cancel Buttons */}
+              {quoteProducts && quoteProducts.length > 0 && (
+                <div className="border-t border-gray-200 bg-gray-50 px-3 py-2 flex items-center justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      // Cancel - clear all pending updates
+                      setPendingPriceUpdates(new Map());
+                      setPendingSuggestionUpdates(new Map());
+                      setHasPendingUpdates(false);
+                    }}
+                    className="px-4 py-1.5 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-50 transition-colors"
+                    dir={langDir}
+                  >
+                    {t("cancel") || "Cancel"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSendUpdate}
+                    disabled={!hasPendingUpdates}
+                    className={`px-4 py-1.5 text-xs font-medium rounded transition-colors ${
+                      hasPendingUpdates
+                        ? "bg-blue-600 text-white hover:bg-blue-700"
+                        : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                    }`}
+                    dir={langDir}
+                  >
+                    Send Update
+                  </button>
+                </div>
+              )}
             </div>
 
-            {/* Chat Section */}
+            {/* Chat Section - Scrollable */}
             {rfqQuotes?.length > 0 ? (
-              <div className="mb-6 w-full overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+              <div className="flex-1 flex flex-col overflow-hidden min-h-0 w-full rounded-lg border border-gray-200 bg-white shadow-sm flex-shrink-0">
                 <SellerChatHistory
                   roomId={selectedRoom}
                   selectedChatHistory={selectedChatHistory}
@@ -1174,101 +1753,12 @@ const SellerChat: React.FC<SellerChatProps> = () => {
               </div>
             ) : null}
 
-            {/* Message Input Section */}
+            {/* Message Input Section - Reduced Size */}
             {rfqQuotes?.length > 0 ? (
-              <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
-                {/* Suggest Product Button - Show only if any product has SIMILAR type */}
-                {quoteProducts?.some(
-                  (product: any) => product?.productType === "SIMILAR",
-                ) && (
-                  <div className="mb-3">
-                    <button
-                      onClick={() => setShowSuggestProduct(!showSuggestProduct)}
-                      type="button"
-                      className="flex items-center gap-2 rounded-lg border border-green-500 bg-green-50 px-4 py-2 text-sm font-medium text-green-700 transition-colors hover:bg-green-100"
-                      dir={langDir}
-                      translate="no"
-                    >
-                      <svg
-                        className="h-4 w-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M12 4v16m8-8H4"
-                        />
-                      </svg>
-                      {t("suggest_alternative_product")}
-                    </button>
-
-                    {/* Product Suggestion Input */}
-                    {showSuggestProduct && (
-                      <div className="mt-3 rounded-lg border border-gray-300 bg-white p-4">
-                        <label
-                          className="mb-2 block text-sm font-medium text-gray-700"
-                          dir={langDir}
-                          translate="no"
-                        >
-                          {t("similar_product_suggestion")}:
-                        </label>
-                        <div className="flex gap-2">
-                          <input
-                            type="text"
-                            value={suggestedProductLink}
-                            onChange={(e) =>
-                              setSuggestedProductLink(e.target.value)
-                            }
-                            placeholder={
-                              t("enter_product_link_or_id") ||
-                              "Enter product link or ID"
-                            }
-                            className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-green-500 focus:ring-2 focus:ring-green-200 focus:outline-none"
-                            dir={langDir}
-                          />
-                          <button
-                            onClick={() => {
-                              if (suggestedProductLink.trim()) {
-                                const suggestionMessage = `${t("suggested_product")}: ${suggestedProductLink}`;
-                                setMessage(suggestionMessage);
-                                setSuggestedProductLink("");
-                                setShowSuggestProduct(false);
-                              }
-                            }}
-                            type="button"
-                            className="rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-green-700"
-                            dir={langDir}
-                            translate="no"
-                          >
-                            {t("add")}
-                          </button>
-                          <button
-                            onClick={() => {
-                              setShowSuggestProduct(false);
-                              setSuggestedProductLink("");
-                            }}
-                            type="button"
-                            className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
-                            dir={langDir}
-                            translate="no"
-                          >
-                            {t("cancel")}
-                          </button>
-                        </div>
-                        <p className="mt-2 text-xs text-gray-500" dir={langDir}>
-                          {t("you_can_suggest_similar_products_if_unavailable")}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                <div className="flex w-full items-end gap-3">
+              <div className="flex-shrink-0 rounded-lg border border-gray-200 bg-gray-50 p-2">
+                <div className="flex w-full items-end gap-2">
                   {/* Attachment Button */}
-                  <div className="relative flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg border border-gray-300 bg-white transition-colors hover:bg-gray-50">
+                  <div className="relative flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-gray-300 bg-white transition-colors hover:bg-gray-50">
                     <input
                       type="file"
                       className="absolute inset-0 z-10 cursor-pointer opacity-0"
@@ -1278,31 +1768,31 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                     <Image
                       src={AttachIcon}
                       alt="attach-icon"
-                      className="h-5 w-5"
+                      className="h-4 w-4"
                     />
                   </div>
 
                   {/* Message Input */}
-                  <div className="flex flex-1 items-end gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5">
+                  <div className="flex flex-1 items-end gap-1.5 rounded-lg border border-gray-300 bg-white px-3 py-2">
                     <textarea
                       onChange={(e) => setMessage(e.target.value)}
                       value={message}
                       placeholder={
                         t("type_your_message") || "Type your message...."
                       }
-                      className="max-h-32 min-h-[40px] w-full resize-none border-0 text-sm focus:outline-none"
+                      className="max-h-24 min-h-[32px] w-full resize-none border-0 text-xs focus:outline-none"
                       onKeyDown={handleSendMessageKeyDown}
                       rows={1}
                     />
                     <button
                       onClick={() => setShowEmoji(!showEmoji)}
-                      className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg transition-colors hover:bg-gray-100"
+                      className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg transition-colors hover:bg-gray-100"
                       type="button"
                     >
                       <Image
                         src={SmileIcon}
                         alt="smile-icon"
-                        className="h-5 w-5"
+                        className="h-4 w-4"
                       />
                     </button>
                   </div>
@@ -1311,33 +1801,33 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                   <button
                     onClick={handleSendMessage}
                     type="button"
-                    className="bg-dark-orange flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg transition-colors hover:bg-orange-600"
+                    className="bg-dark-orange flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg transition-colors hover:bg-orange-600"
                   >
-                    <Image src={SendIcon} alt="send-icon" className="h-5 w-5" />
+                    <Image src={SendIcon} alt="send-icon" className="h-4 w-4" />
                   </button>
                 </div>
 
                 {/* Emoji Picker */}
                 {showEmoji ? (
-                  <div className="mt-3 rounded-lg border border-gray-200 bg-white p-2">
+                  <div className="mt-2 rounded-lg border border-gray-200 bg-white p-2">
                     <EmojiPicker
                       lazyLoadEmojis={true}
                       onEmojiClick={onEmojiClick}
-                      className="mt-2"
+                      className="mt-1"
                     />
                   </div>
                 ) : null}
 
                 {/* Attachments Preview */}
                 {!isAttachmentUploading && attachments.length > 0 ? (
-                  <div className="mt-3 flex w-full flex-wrap gap-2">
+                  <div className="mt-2 flex w-full flex-wrap gap-1.5">
                     {attachments.map((file: any, index: any) => (
                       <div
                         key={index}
-                        className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2"
+                        className="flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-2 py-1.5"
                       >
                         <svg
-                          className="h-4 w-4 text-gray-500"
+                          className="h-3.5 w-3.5 text-gray-500"
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
@@ -1349,16 +1839,16 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                             d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                           />
                         </svg>
-                        <span className="max-w-[200px] truncate text-sm text-gray-700">
+                        <span className="max-w-[200px] truncate text-xs text-gray-700">
                           {file.name}
                         </span>
                         <button
                           onClick={() => removeFile(index)}
-                          className="flex h-5 w-5 items-center justify-center rounded-full bg-red-100 text-red-600 transition-colors hover:bg-red-200"
+                          className="flex h-4 w-4 items-center justify-center rounded-full bg-red-100 text-red-600 transition-colors hover:bg-red-200"
                           type="button"
                         >
                           <svg
-                            className="h-3 w-3"
+                            className="h-2.5 w-2.5"
                             fill="none"
                             viewBox="0 0 24 24"
                             stroke="currentColor"
@@ -1377,6 +1867,60 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                 ) : null}
               </div>
             ) : null}
+
+            {/* Product Suggestion Modal */}
+            {showProductSuggestionModal && suggestingForProductId && user?.id && (
+              <ProductSuggestionModal
+                isOpen={showProductSuggestionModal}
+                onClose={() => {
+                  setShowProductSuggestionModal(false);
+                  setSuggestingForProductId(null);
+                  setSuggestingForProductQuantity(1);
+                }}
+                onSelectProducts={handleProductsSelected}
+                rfqQuoteProductId={suggestingForProductId}
+                vendorId={user.id}
+                defaultQuantity={suggestingForProductQuantity}
+                defaultOfferPrice={
+                  quoteProducts.find((p) => p.id === suggestingForProductId)
+                    ?.offerPrice
+                    ? parseFloat(
+                        quoteProducts.find(
+                          (p) => p.id === suggestingForProductId,
+                        )?.offerPrice,
+                      )
+                    : undefined
+                }
+                mainProduct={{
+                  id: suggestingForProductId,
+                  name:
+                    quoteProducts.find((p) => p.id === suggestingForProductId)
+                      ?.rfqProductDetails?.productName || "",
+                  image:
+                    quoteProducts.find((p) => p.id === suggestingForProductId)
+                      ?.rfqProductDetails?.productImages?.[0]?.image,
+                  quantity:
+                    quoteProducts.find((p) => p.id === suggestingForProductId)
+                      ?.quantity || 1,
+                  offerPrice:
+                    quoteProducts.find((p) => p.id === suggestingForProductId)
+                      ?.offerPrice
+                      ? parseFloat(
+                          quoteProducts.find(
+                            (p) => p.id === suggestingForProductId,
+                          )?.offerPrice,
+                        )
+                      : undefined,
+                }}
+                existingSuggestions={getSuggestionsForRfqQuoteProduct(
+                  suggestingForProductId,
+                ).map((s: any) => ({
+                  suggestedProductId: s.suggestedProductId,
+                  offerPrice: s.offerPrice,
+                  quantity: s.quantity,
+                }))}
+              />
+            )}
           </div>
         </div>
       </div>
@@ -1725,11 +2269,16 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                   if (isSelectMode) {
                     handleToggleSelect(mainQuote.id);
                   } else {
-                    // Select the first quote in the group
-                    setSelectedRfqQuote(mainQuote);
-                    setActiveSellerId(mainQuote.id);
-                    handleRfqProducts(mainQuote);
-                    setShowDetailView(true);
+                    // When in grid mode and onSelectRfq is provided, call it to navigate
+                    if (layoutMode === "grid" && onSelectRfq) {
+                      onSelectRfq(mainQuote, rfqGroup);
+                    } else {
+                      // Original behavior for column mode
+                      setSelectedRfqQuote(mainQuote);
+                      setActiveSellerId(mainQuote.id);
+                      handleRfqProducts(mainQuote);
+                      setShowDetailView(true);
+                    }
                   }
                 }}
                 className={cn(
@@ -1812,7 +2361,7 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                           <button
                             onClick={(e) => handleUnhideRequest(e, mainQuote.id)}
                             disabled={hideRfqRequestMutation.isPending}
-                            className="flex h-8 w-8 items-center justify-center rounded-lg border border-green-300 bg-green-50 text-green-600 transition-all hover:bg-green-100 hover:text-green-700 disabled:cursor-not-allowed disabled:opacity-50"
+                            className="flex items-center gap-1.5 rounded-lg border border-green-300 bg-green-50 px-2 py-1.5 text-green-600 transition-all hover:bg-green-100 hover:text-green-700 disabled:cursor-not-allowed disabled:opacity-50"
                             title="Unhide Request"
                             type="button"
                           >
@@ -1837,32 +2386,35 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                                 />
                               </svg>
                             ) : (
-                              <svg
-                                className="h-4 w-4"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                                />
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                                />
-                              </svg>
+                              <>
+                                <svg
+                                  className="h-4 w-4"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                                  />
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                                  />
+                                </svg>
+                                <span className="text-xs font-medium">Unhide</span>
+                              </>
                             )}
                           </button>
                         ) : (
                           <button
                             onClick={(e) => handleHideRequest(e, mainQuote.id)}
                             disabled={hideRfqRequestMutation.isPending}
-                            className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-600 transition-all hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50"
+                            className="flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-2 py-1.5 text-gray-600 transition-all hover:bg-gray-100 hover:text-gray-900 disabled:cursor-not-allowed disabled:opacity-50"
                             title="Hide Request"
                             type="button"
                           >
@@ -1887,19 +2439,22 @@ const SellerChat: React.FC<SellerChatProps> = () => {
                                 />
                               </svg>
                             ) : (
-                              <svg
-                                className="h-4 w-4"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
-                                />
-                              </svg>
+                              <>
+                                <svg
+                                  className="h-4 w-4"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+                                  />
+                                </svg>
+                                <span className="text-xs font-medium">Hide</span>
+                              </>
                             )}
                           </button>
                         )}

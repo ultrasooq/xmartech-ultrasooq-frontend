@@ -285,7 +285,7 @@ const RfqCartPage = () => {
         queryKey: ["rfq-cart-by-user", { page: 1, limit: 20 }],
       });
       form.reset();
-      router.push("/rfq-quotes");
+      router.push("/rfq-request");
     } else {
       toast({
         title: t("something_went_wrong"),

@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/form";
 
 import { Checkbox } from "@/components/ui/checkbox";
-import { useRegister } from "@/apis/queries/auth.queries";
+import { useRegister, useSocialLogin } from "@/apis/queries/auth.queries";
 import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -25,25 +25,22 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  EMAIL_REGEX_LOWERCASE,
-  PUREMOON_TOKEN_KEY,
-} from "@/utils/constants";
+import { EMAIL_REGEX_LOWERCASE, PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import { setCookie } from "cookies-next";
 import PolicyContent from "@/components/shared/PolicyContent";
 import TermsContent from "@/components/shared/TermsContent";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import ControlledPhoneInput from "@/components/shared/Forms/ControlledPhoneInput";
-import BackgroundImage from "@/public/images/before-login-bg.png";
-import FacebookIcon from "@/public/images/facebook-icon.png";
 import GoogleIcon from "@/public/images/google-icon.png";
-import { useSession, signIn } from "next-auth/react";
-import { getLoginType } from "@/utils/helper";
+import LoaderPrimaryIcon from "@/public/images/load-primary.png";
+import { useSession, signIn, signOut } from "next-auth/react";
+import { getLoginType, getOrCreateDeviceId } from "@/utils/helper";
 import Link from "next/link";
 import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 import { fetchMe, fetchUserPermissions } from "@/apis/requests/user.requests";
+import { useUpdateUserCartByDeviceId } from "@/apis/queries/cart.queries";
 
 const formSchema = z
   .object({
@@ -74,7 +71,7 @@ const formSchema = z
         message: "Email must be in lower case",
       }),
     initialPassword: z
-      .string({ required_error: "Login Password is required" })
+      .string()
       .trim()
       .min(1, {
         message: "Login Password is required",
@@ -82,12 +79,9 @@ const formSchema = z
       .min(8, {
         message: "Password must be longer than or equal to 8 characters",
       }),
-    password: z
-      .string({ required_error: "Login Password is required" })
-      .trim()
-      .min(1, {
-        message: "Confirm Password is required",
-      }),
+    password: z.string().trim().min(1, {
+      message: "Confirm Password is required",
+    }),
     cc: z.string().trim(),
     phoneNumber: z
       .string()
@@ -124,6 +118,8 @@ export default function RegisterPage() {
   const { data: session } = useSession();
   const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
   const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
+  const deviceId = getOrCreateDeviceId() || "";
+
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -134,7 +130,6 @@ export default function RegisterPage() {
       password: "",
       phoneNumber: "",
       cc: "",
-
       acceptTerms: false,
     },
   });
@@ -144,6 +139,8 @@ export default function RegisterPage() {
     setIsPrivacyModalOpen(!isPrivacyModalOpen);
 
   const register = useRegister();
+  const socialLogin = useSocialLogin();
+  const updateCart = useUpdateUserCartByDeviceId();
 
   const onSubmit = async (formData: z.infer<typeof formSchema>) => {
     const loginType = session ? getLoginType() : "MANUAL";
@@ -168,16 +165,16 @@ export default function RegisterPage() {
         // 7 days
         expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       });
-      
+
       // Fetch user data and update AuthContext (same as login page)
       try {
         const userRes = await fetchMe();
         if (userRes?.data?.data?.id) {
           setUser({
             id: userRes.data.data.id,
-            firstName: userRes.data.data.firstName || '',
-            lastName: userRes.data.data.lastName || '',
-            tradeRole: userRes.data.data.tradeRole || '',
+            firstName: userRes.data.data.firstName || "",
+            lastName: userRes.data.data.lastName || "",
+            tradeRole: userRes.data.data.tradeRole || "",
           });
         }
       } catch (e) {
@@ -189,7 +186,8 @@ export default function RegisterPage() {
       try {
         const permissions = await fetchUserPermissions();
         setPermissions([
-          ...(permissions?.data?.data?.userRoleDetail?.userRolePermission || []),
+          ...(permissions?.data?.data?.userRoleDetail?.userRolePermission ||
+            []),
         ]);
       } catch (e) {
         // Silent fail - permissions are optional
@@ -211,232 +209,358 @@ export default function RegisterPage() {
     }
   };
 
+  const handleSocialRegister = async (userData: {
+    name?: string | null | undefined;
+    email?: string | null | undefined;
+    image?: string | null | undefined;
+  }) => {
+    if (!userData?.email) return;
+
+    const response = await socialLogin.mutateAsync({
+      firstName: userData.name?.split(" ")[0] || "User",
+      lastName: userData.name?.split(" ")[1] || "",
+      email: userData.email,
+      tradeRole: "BUYER",
+      loginType: getLoginType() || "GOOGLE",
+    });
+
+    if (response?.status && response?.data) {
+      toast({
+        title: t("registration_successful"),
+        description: t("you_have_successfully_registered") || response.message,
+        variant: "success",
+      });
+      setCookie(PUREMOON_TOKEN_KEY, response.accessToken, {
+        expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      });
+
+      // Update cart
+      await updateCart.mutateAsync({ deviceId });
+
+      // Fetch user data
+      try {
+        const userRes = await fetchMe();
+        if (userRes?.data?.data?.id) {
+          setUser({
+            id: userRes.data.data.id,
+            firstName: userRes.data.data.firstName || "",
+            lastName: userRes.data.data.lastName || "",
+            tradeRole: userRes.data.data.tradeRole || "",
+          });
+        }
+      } catch (e) {
+        console.error("Failed to fetch user after registration:", e);
+      }
+
+      // Fetch permissions
+      try {
+        const permissions = await fetchUserPermissions();
+        setPermissions([
+          ...(permissions?.data?.data?.userRoleDetail?.userRolePermission ||
+            []),
+        ]);
+      } catch (e) {}
+
+      localStorage.removeItem("loginType");
+      router.push("/profile");
+    } else {
+      toast({
+        title: t("registration_failed"),
+        description: response?.message || t("something_went_wrong"),
+        variant: "danger",
+      });
+      await signOut({
+        redirect: false,
+        callbackUrl: "/register",
+      });
+    }
+  };
+
   useEffect(() => {
     if (session && session?.user) {
-      form.reset({
-        firstName: session?.user?.name?.split(" ")[0] || "",
-        lastName: session?.user?.name?.split(" ")[1] || "" || "",
-        email: session?.user?.email || "",
-      });
+      const loginType = getLoginType();
+      // Only auto-register if coming from Google OAuth
+      if (loginType === "GOOGLE") {
+        if (session?.user?.email && session?.user?.name) {
+          handleSocialRegister(session.user);
+        }
+      } else {
+        // Just populate form for manual registration
+        form.reset({
+          firstName: session?.user?.name?.split(" ")[0] || "",
+          lastName: session?.user?.name?.split(" ")[1] || "",
+          email: session?.user?.email || "",
+        });
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session]);
 
-  // console.log(session);
-
   return (
     <>
-      <title dir={langDir} translate="no">{t("register")} | Ultrasooq</title>
-      <section className="relative w-full py-7">
-        <div className="absolute left-0 top-0 -z-10 h-full w-full">
-          <Image
-            src={BackgroundImage}
-            className="h-full w-full object-cover object-center"
-            alt="background"
-            fill
-            priority
-          />
-        </div>
-        <div className="container relative z-10 m-auto">
-          <div className="flex">
-            <div className="auth-page-box m-auto mb-12 w-11/12 rounded-lg border border-solid border-gray-300 bg-white p-7 shadow-xs sm:p-12 md:w-9/12 lg:w-7/12">
-              <div className="text-normal m-auto mb-7 w-full text-center text-sm leading-6 text-light-gray">
+      <title dir={langDir} translate="no">
+        {t("register")} | Ultrasooq
+      </title>
+      <section className="relative flex min-h-screen w-full items-center justify-center bg-white px-4 py-4 sm:py-6">
+        {/* Main Content */}
+        <div className="relative z-10 mx-auto w-full max-w-md">
+          {/* Register Card */}
+          <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-xl">
+            {/* Decorative Header */}
+            <div className="from-dark-orange via-dark-orange h-1.5 bg-gradient-to-r to-orange-600"></div>
+
+            <div className="p-6 sm:p-8">
+              {/* Header Section */}
+              <div className="mb-6 text-center">
+                <div className="from-dark-orange mb-3 inline-flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br to-orange-600 shadow-md">
+                  <svg
+                    className="h-6 w-6 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+                    />
+                  </svg>
+                </div>
                 <h2
-                  className="mb-3 text-center text-3xl font-semibold leading-8 text-color-dark sm:text-4xl sm:leading-10"
+                  className="mb-1 text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl"
                   dir={langDir}
                   translate="no"
                 >
                   {t("registration")}
                 </h2>
-                <p dir={langDir} translate="no">{t("create_your_account")}</p>
+                <p
+                  className="text-xs text-gray-600 sm:text-sm"
+                  dir={langDir}
+                  translate="no"
+                >
+                  {t("create_your_account")}
+                </p>
               </div>
-              <div className="w-full">
-                <ul className="flex w-full flex-wrap items-center justify-between">
-                  <li className="mb-3 w-full p-0 sm:mb-0 sm:w-6/12 sm:pr-3">
-                    <Button
-                      variant="outline"
-                      className="inline-flex w-full items-center justify-center rounded-md border border-solid border-gray-300 px-5 py-6 text-sm font-normal leading-4 text-light-gray"
-                      onClick={() => {
-                        localStorage.setItem("loginType", "FACEBOOK");
-                        signIn("facebook");
-                      }}
-                      dir={langDir}
-                      translate="no"
-                    >
+
+              {/* Social Login Buttons */}
+              <div className="mb-5">
+                <Button
+                  variant="outline"
+                  className="h-10 w-full rounded-lg border-2 border-gray-200 text-xs font-semibold text-gray-700 shadow-sm transition-all duration-200 hover:border-red-500 hover:bg-red-50 hover:text-red-700 hover:shadow-md sm:h-11 sm:text-sm"
+                  onClick={() => {
+                    localStorage.setItem("loginType", "GOOGLE");
+                    signIn("google");
+                  }}
+                  disabled={socialLogin.isPending}
+                  dir={langDir}
+                  translate="no"
+                >
+                  {socialLogin.isPending && getLoginType() === "GOOGLE" ? (
+                    <span className="flex items-center justify-center gap-2">
                       <Image
-                        src={FacebookIcon}
-                        className="mr-1.5"
-                        alt="google-icon"
-                        height={26}
-                        width={26}
+                        src={LoaderPrimaryIcon}
+                        alt="loading"
+                        width={18}
+                        height={18}
+                        className="animate-spin"
                       />
-                      <span>{t("facebook_sign_up")}</span>
-                    </Button>
-                  </li>
-                  <li className="w-full p-0 sm:w-6/12 sm:pl-3">
-                    <Button
-                      variant="outline"
-                      className="inline-flex w-full items-center justify-center rounded-md border border-solid border-gray-300 px-5 py-6 text-sm font-normal leading-4 text-light-gray"
-                      onClick={() => {
-                        localStorage.setItem("loginType", "GOOGLE");
-                        signIn("google");
-                      }}
-                      dir={langDir}
-                      translate="no"
-                    >
+                      <span>{t("please_wait")}</span>
+                    </span>
+                  ) : (
+                    <span className="flex items-center justify-center gap-2.5">
                       <Image
                         src={GoogleIcon}
-                        className="mr-1.5"
-                        alt="google-icon"
-                        height={26}
-                        width={26}
+                        alt="google"
+                        height={20}
+                        width={20}
+                        className="object-contain sm:h-6 sm:w-6"
                       />
                       <span>{t("google_sign_up")}</span>
-                    </Button>
-                  </li>
-                </ul>
+                    </span>
+                  )}
+                </Button>
               </div>
-              <div className="relative w-full py-5 text-center before:absolute before:bottom-0 before:left-0 before:right-0 before:top-0 before:m-auto before:block before:h-px before:w-full before:bg-gray-200 before:content-['']">
-                <span className="relative z-10 bg-white p-2.5 text-sm font-normal leading-8 text-gray-400">
-                  Or
-                </span>
+
+              {/* Divider */}
+              <div className="relative my-5">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-200"></div>
+                </div>
+                <div className="relative flex justify-center text-xs sm:text-sm">
+                  <span
+                    className="bg-white px-3 font-medium text-gray-500"
+                    dir={langDir}
+                    translate="no"
+                  >
+                    {t("or")}
+                  </span>
+                </div>
               </div>
+
+              {/* Form Section */}
               <div className="w-full">
                 <Form {...form}>
                   <form
-                    className="flex flex-wrap"
+                    className="space-y-3.5"
                     onSubmit={form.handleSubmit(onSubmit)}
                   >
-
-                    <ControlledTextInput
-                      label={t("first_name")}
-                      name="firstName"
-                      placeholder={t("enter_first_name")}
-                      dir={langDir}
-                      translate="no"
-                    />
-
-                    <ControlledTextInput
-                      label={t("last_name")}
-                      name="lastName"
-                      placeholder={t("enter_last_name")}
-                      dir={langDir}
-                      translate="no"
-                    />
-
-                    <ControlledTextInput
-                      label={t("email")}
-                      name="email"
-                      placeholder={t("enter_email")}
-                      disabled={
-                        getLoginType() === "FACEBOOK" ||
-                        getLoginType() === "GOOGLE"
-                          ? !!session?.user?.email
-                          : false
-                      }
-                      dir={langDir}
-                      translate="no"
-                    />
-
-                    <ControlledTextInput
-                      label={t("login_password")}
-                      name="initialPassword"
-                      placeholder={t("enter_login_password")}
-                      type="password"
-                      dir={langDir}
-                      translate="no"
-                    />
-
-                    <ControlledTextInput
-                      label={t("confirm_password")}
-                      name="password"
-                      placeholder={t("enter_login_password_again")}
-                      type="password"
-                      dir={langDir}
-                      className="mb-2"
-                      translate="no"
-                    />
-
-                    <ControlledPhoneInput
-                      label={t("phone_number")}
-                      name="phoneNumber"
-                      countryName="cc"
-                      placeholder={t("enter_phone_number")}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="acceptTerms"
-                      render={({ field }) => (
-                        <FormItem className="mb-4 mt-3 flex flex-row items-start space-x-3 space-y-0">
-                          <FormControl>
-                            <Checkbox
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                              className="border border-solid border-gray-300 data-[state=checked]:bg-dark-orange!"
-                            />
-                          </FormControl>
-                          <div className="flex flex-col leading-none">
-                            <div className="agreeText text-xs text-light-gray md:text-sm">
-                              <span dir={langDir} translate="no">{t("i_agree")}</span>
-                              <Button
-                                onClick={handleToggleTermsModal}
-                                type="button"
-                                className="ml-1 h-auto bg-transparent p-0 shadow-none hover:bg-transparent"
-                                dir={langDir}
-                                translate="no"
-                              >
-                                <span className="text-xs text-light-gray underline md:text-sm">
-                                  {t("terms_of_use")}
-                                </span>
-                              </Button>
-                              <span className="mx-1 text-xs text-light-gray md:text-sm">
-                                &
-                              </span>
-                              <Button
-                                onClick={handleTogglePrivacyModal}
-                                type="button"
-                                className="ml-1 h-auto bg-transparent p-0 text-xs shadow-none hover:bg-transparent md:text-sm"
-                                dir={langDir}
-                                translate="no"
-                              >
-                                <span className="text-light-gray underline">
-                                  {t("privacy_policy")}
-                                </span>
-                              </Button>
-                            </div>
-                            <FormMessage />
-                          </div>
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <div className="mb-4 w-full">
-                      <Button
-                        disabled={register.isPending}
-                        type="submit"
-                        className="theme-primary-btn h-12 w-full rounded text-center text-lg font-bold leading-6"
+                    <div className="space-y-1">
+                      <ControlledTextInput
+                        label={t("first_name")}
+                        name="firstName"
+                        placeholder={t("enter_first_name")}
+                        dir={langDir}
                         translate="no"
-                      >
-                        {register.isPending ? (
-                          <LoaderWithMessage message="Please wait" />
-                        ) : (
-                          t("agree_n_register")
-                        )}
-                      </Button>
+                      />
                     </div>
+
+                    <div className="space-y-1">
+                      <ControlledTextInput
+                        label={t("last_name")}
+                        name="lastName"
+                        placeholder={t("enter_last_name")}
+                        dir={langDir}
+                        translate="no"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <ControlledTextInput
+                        label={t("email")}
+                        name="email"
+                        placeholder={t("enter_email")}
+                        disabled={
+                          getLoginType() === "GOOGLE"
+                            ? !!session?.user?.email
+                            : false
+                        }
+                        dir={langDir}
+                        translate="no"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <ControlledTextInput
+                        label={t("login_password")}
+                        name="initialPassword"
+                        placeholder="**********"
+                        type="password"
+                        dir={langDir}
+                        translate="no"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <ControlledTextInput
+                        label={t("confirm_password")}
+                        name="password"
+                        placeholder="**********"
+                        type="password"
+                        dir={langDir}
+                        translate="no"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <ControlledPhoneInput
+                        label={t("phone_number")}
+                        name="phoneNumber"
+                        countryName="cc"
+                        placeholder={t("enter_phone_number")}
+                      />
+                    </div>
+
+                    {/* Terms and Conditions */}
+                    <div className="pt-1">
+                      <FormField
+                        control={form.control}
+                        name="acceptTerms"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-start space-y-0 space-x-3">
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                                className="data-[state=checked]:bg-dark-orange data-[state=checked]:border-dark-orange h-3.5 w-3.5 rounded border-gray-300 transition-all"
+                              />
+                            </FormControl>
+                            <div className="flex flex-col leading-none">
+                              <div className="text-xs text-gray-700 sm:text-sm">
+                                <span dir={langDir} translate="no">
+                                  {t("i_agree")}{" "}
+                                </span>
+                                <Button
+                                  onClick={handleToggleTermsModal}
+                                  type="button"
+                                  className="text-dark-orange h-auto bg-transparent p-0 text-xs font-semibold underline-offset-2 shadow-none transition-colors duration-200 hover:bg-transparent hover:text-orange-700 hover:underline sm:text-sm"
+                                  dir={langDir}
+                                  translate="no"
+                                >
+                                  {t("terms_of_use")}
+                                </Button>
+                                <span className="mx-1"> & </span>
+                                <Button
+                                  onClick={handleTogglePrivacyModal}
+                                  type="button"
+                                  className="text-dark-orange h-auto bg-transparent p-0 text-xs font-semibold underline-offset-2 shadow-none transition-colors duration-200 hover:bg-transparent hover:text-orange-700 hover:underline sm:text-sm"
+                                  dir={langDir}
+                                  translate="no"
+                                >
+                                  {t("privacy_policy")}
+                                </Button>
+                              </div>
+                              <FormMessage />
+                            </div>
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    {/* Register Button */}
+                    <Button
+                      disabled={register.isPending}
+                      type="submit"
+                      className="from-dark-orange hover:to-dark-orange h-11 w-full transform rounded-lg bg-gradient-to-r to-orange-600 text-sm font-semibold text-white shadow-lg transition-all duration-300 hover:scale-[1.02] hover:from-orange-700 hover:shadow-xl active:scale-[0.98] disabled:transform-none disabled:cursor-not-allowed disabled:opacity-70 sm:h-12 sm:text-base"
+                      dir={langDir}
+                      translate="no"
+                    >
+                      {register.isPending ? (
+                        <LoaderWithMessage message={t("please_wait")} />
+                      ) : (
+                        <span className="flex items-center justify-center gap-2">
+                          {t("agree_n_register")}
+                          <svg
+                            className="h-4 w-4 sm:h-5 sm:w-5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M13 7l5 5m0 0l-5 5m5-5H6"
+                            />
+                          </svg>
+                        </span>
+                      )}
+                    </Button>
                   </form>
                 </Form>
-                <div className="mb-4 w-full text-center">
+
+                {/* Sign In Link */}
+                <div className="mt-4 text-center">
                   <span
-                    className="text-sm font-medium leading-4 text-light-gray"
+                    className="text-xs font-medium text-gray-600 sm:text-sm"
                     dir={langDir}
                     translate="no"
                   >
                     {t("already_have_an_account")}{" "}
                     <Link
                       href="/login"
-                      className="cursor-pointer font-medium text-dark-orange"
+                      className="text-dark-orange font-semibold underline-offset-2 transition-colors duration-200 hover:text-orange-700 hover:underline"
+                      dir={langDir}
                     >
                       {t("sign_in")}
                     </Link>
@@ -449,7 +573,7 @@ export default function RegisterPage() {
 
         <Dialog open={isTermsModalOpen} onOpenChange={handleToggleTermsModal}>
           <DialogContent className="max-h-[93vh] max-w-[90%] gap-0 p-0 md:max-w-[90%]! lg:max-w-5xl!">
-            <DialogHeader className="border-b border-light-gray py-4">
+            <DialogHeader className="border-light-gray border-b py-4">
               <DialogTitle
                 className="text-center text-xl font-bold"
                 dir={langDir}
@@ -458,7 +582,7 @@ export default function RegisterPage() {
                 {t("terms_of_use")}
               </DialogTitle>
             </DialogHeader>
-            <DialogDescription className="term-policy-modal-content max-h-[82vh] overflow-y-scroll p-4 text-sm font-normal leading-7 text-color-dark">
+            <DialogDescription className="term-policy-modal-content text-color-dark max-h-[82vh] overflow-y-scroll p-4 text-sm leading-7 font-normal">
               <TermsContent />
             </DialogDescription>
           </DialogContent>
@@ -469,7 +593,7 @@ export default function RegisterPage() {
           onOpenChange={handleTogglePrivacyModal}
         >
           <DialogContent className="max-h-[93vh] max-w-[90%] gap-0 p-0 md:max-w-[90%]! lg:max-w-5xl!">
-            <DialogHeader className="border-b border-light-gray py-4">
+            <DialogHeader className="border-light-gray border-b py-4">
               <DialogTitle
                 className="text-center text-xl font-bold"
                 dir={langDir}
@@ -478,7 +602,7 @@ export default function RegisterPage() {
                 {t("privacy_policy")}
               </DialogTitle>
             </DialogHeader>
-            <DialogDescription className="term-policy-modal-content max-h-[82vh] overflow-y-scroll p-4 text-sm font-normal leading-7 text-color-dark">
+            <DialogDescription className="term-policy-modal-content text-color-dark max-h-[82vh] overflow-y-scroll p-4 text-sm leading-7 font-normal">
               <PolicyContent />
             </DialogDescription>
           </DialogContent>

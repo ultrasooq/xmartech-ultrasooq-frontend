@@ -104,8 +104,8 @@ export default async function RootLayout({
 
   return (
     <SessionWrapper>
-      <html lang={locale}>
-        <body className={`${inter.className}`}>
+      <html lang={locale} className="h-full overflow-x-hidden">
+        <body className={`${inter.className} h-full overflow-x-hidden`}>
           {/* <DisableRouteAnnouncer /> */}
           <ReactQueryProvider>
             <AuthProvider
@@ -119,7 +119,7 @@ export default async function RootLayout({
               <SocketProvider>
                 <SidebarProvider>
                   <TitleProtection />
-                  <main className="overflow-x-visible">
+                  <main className="overflow-x-hidden">
                     <LocaleProvider messages={messages} initialLocale={locale}>
                       <NotificationProvider>
                         <NextTopLoader color="#DB2302" showSpinner={false} />

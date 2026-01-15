@@ -148,7 +148,8 @@ const CompleteOrderPage = () => {
             data.rfqQuotesId = parsedRfqData.rfqQuotesId;
             data.sellerId = parsedRfqData.sellerId;
             data.buyerId = parsedRfqData.buyerId;
-            data.rfqQuoteProducts = parsedRfqData.quoteProducts;
+            data.rfqQuoteProducts = parsedRfqData.quoteProducts || [];
+            data.rfqSuggestedProducts = parsedRfqData.suggestedProducts || []; // NEW: Include selected suggested products
             // For RFQ orders, set empty arrays for cartIds
             data.cartIds = [];
             data.serviceCartIds = [];
