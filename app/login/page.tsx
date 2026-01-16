@@ -64,6 +64,7 @@ export default function LoginPage() {
   const { data: session } = useSession();
   const { setUser, setPermissions } = useAuth();
   const [rememberMe, setRememberMe] = useState<CheckedState>(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   const defaultValues = {
     email: "",
@@ -149,41 +150,55 @@ export default function LoginPage() {
     email?: string | null | undefined;
     image?: string | null | undefined;
   }) => {
-    if (!userData?.email) return;
+    if (!userData?.email) {
+      setIsGoogleLoading(false);
+      return;
+    }
 
-    const response = await socialLogin.mutateAsync({
-      firstName: userData.name?.split(" ")[0] || "User",
-      lastName: userData.name?.split(" ")[1] || "",
-      email: userData.email,
-      tradeRole: "BUYER",
-      loginType: getLoginType() || "GOOGLE",
-    });
-    if (response?.status && response?.data) {
-      toast({
-        title: t("login_successful"),
-        description: t("you_have_successfully_logged_in"),
-        variant: "success",
+    try {
+      const response = await socialLogin.mutateAsync({
+        firstName: userData.name?.split(" ")[0] || "User",
+        lastName: userData.name?.split(" ")[1] || "",
+        email: userData.email,
+        tradeRole: "BUYER",
+        loginType: getLoginType() || "GOOGLE",
       });
-      setCookie(PUREMOON_TOKEN_KEY, response.accessToken);
+      if (response?.status && response?.data) {
+        toast({
+          title: t("login_successful"),
+          description: t("you_have_successfully_logged_in"),
+          variant: "success",
+        });
+        setCookie(PUREMOON_TOKEN_KEY, response.accessToken);
 
-      // TODO: delete cart for trade role freelancer and company if logged in using device id
-      // update cart
-      await updateCart.mutateAsync({ deviceId });
-      form.reset();
-      localStorage.removeItem("loginType");
-      router.push("/home");
-    } else {
+        // TODO: delete cart for trade role freelancer and company if logged in using device id
+        // update cart
+        await updateCart.mutateAsync({ deviceId });
+        form.reset();
+        localStorage.removeItem("loginType");
+        setIsGoogleLoading(false);
+        router.push("/home");
+      } else {
+        toast({
+          title: t("login_failed"),
+          description: response?.message,
+          variant: "danger",
+        });
+        setIsGoogleLoading(false);
+        const data = await signOut({
+          redirect: false,
+          callbackUrl: "/login",
+        });
+
+        router.push(data.url);
+      }
+    } catch (error) {
+      setIsGoogleLoading(false);
       toast({
         title: t("login_failed"),
-        description: response?.message,
+        description: t("something_went_wrong"),
         variant: "danger",
       });
-      const data = await signOut({
-        redirect: false,
-        callbackUrl: "/login",
-      });
-
-      router.push(data.url);
     }
   };
 
@@ -192,6 +207,9 @@ export default function LoginPage() {
       if (session?.user?.email && session?.user?.name) {
         handleSocialLogin(session.user);
       }
+    } else {
+      // Reset loading state if no session (user cancelled or error)
+      setIsGoogleLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session]);
@@ -385,14 +403,15 @@ export default function LoginPage() {
                   variant="outline"
                   className="h-10 w-full rounded-lg border-2 border-gray-200 text-xs font-semibold text-gray-700 shadow-sm transition-all duration-200 hover:border-red-500 hover:bg-red-50 hover:text-red-700 hover:shadow-md sm:h-11 sm:text-sm"
                   onClick={() => {
+                    setIsGoogleLoading(true);
                     localStorage.setItem("loginType", "GOOGLE");
                     signIn("google");
                   }}
-                  disabled={socialLogin.isPending}
+                  disabled={socialLogin.isPending || isGoogleLoading}
                   dir={langDir}
                   translate="no"
                 >
-                  {socialLogin.isPending && getLoginType() === "GOOGLE" ? (
+                  {(socialLogin.isPending || isGoogleLoading) && getLoginType() === "GOOGLE" ? (
                     <span className="flex items-center justify-center gap-2">
                       <Image
                         src={LoaderPrimaryIcon}

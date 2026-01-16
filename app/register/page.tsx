@@ -118,6 +118,7 @@ export default function RegisterPage() {
   const { data: session } = useSession();
   const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
   const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const deviceId = getOrCreateDeviceId() || "";
 
   const form = useForm({
@@ -214,64 +215,79 @@ export default function RegisterPage() {
     email?: string | null | undefined;
     image?: string | null | undefined;
   }) => {
-    if (!userData?.email) return;
+    if (!userData?.email) {
+      setIsGoogleLoading(false);
+      return;
+    }
 
-    const response = await socialLogin.mutateAsync({
-      firstName: userData.name?.split(" ")[0] || "User",
-      lastName: userData.name?.split(" ")[1] || "",
-      email: userData.email,
-      tradeRole: "BUYER",
-      loginType: getLoginType() || "GOOGLE",
-    });
-
-    if (response?.status && response?.data) {
-      toast({
-        title: t("registration_successful"),
-        description: t("you_have_successfully_registered") || response.message,
-        variant: "success",
-      });
-      setCookie(PUREMOON_TOKEN_KEY, response.accessToken, {
-        expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    try {
+      const response = await socialLogin.mutateAsync({
+        firstName: userData.name?.split(" ")[0] || "User",
+        lastName: userData.name?.split(" ")[1] || "",
+        email: userData.email,
+        tradeRole: "BUYER",
+        loginType: getLoginType() || "GOOGLE",
       });
 
-      // Update cart
-      await updateCart.mutateAsync({ deviceId });
+      if (response?.status && response?.data) {
+        toast({
+          title: t("registration_successful"),
+          description:
+            t("you_have_successfully_registered") || response.message,
+          variant: "success",
+        });
+        setCookie(PUREMOON_TOKEN_KEY, response.accessToken, {
+          expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        });
 
-      // Fetch user data
-      try {
-        const userRes = await fetchMe();
-        if (userRes?.data?.data?.id) {
-          setUser({
-            id: userRes.data.data.id,
-            firstName: userRes.data.data.firstName || "",
-            lastName: userRes.data.data.lastName || "",
-            tradeRole: userRes.data.data.tradeRole || "",
-          });
+        // Update cart
+        await updateCart.mutateAsync({ deviceId });
+
+        // Fetch user data
+        try {
+          const userRes = await fetchMe();
+          if (userRes?.data?.data?.id) {
+            setUser({
+              id: userRes.data.data.id,
+              firstName: userRes.data.data.firstName || "",
+              lastName: userRes.data.data.lastName || "",
+              tradeRole: userRes.data.data.tradeRole || "",
+            });
+          }
+        } catch (e) {
+          console.error("Failed to fetch user after registration:", e);
         }
-      } catch (e) {
-        console.error("Failed to fetch user after registration:", e);
+
+        // Fetch permissions
+        try {
+          const permissions = await fetchUserPermissions();
+          setPermissions([
+            ...(permissions?.data?.data?.userRoleDetail?.userRolePermission ||
+              []),
+          ]);
+        } catch (e) {}
+
+        localStorage.removeItem("loginType");
+        setIsGoogleLoading(false);
+        router.push("/profile");
+      } else {
+        toast({
+          title: t("registration_failed"),
+          description: response?.message || t("something_went_wrong"),
+          variant: "danger",
+        });
+        setIsGoogleLoading(false);
+        await signOut({
+          redirect: false,
+          callbackUrl: "/register",
+        });
       }
-
-      // Fetch permissions
-      try {
-        const permissions = await fetchUserPermissions();
-        setPermissions([
-          ...(permissions?.data?.data?.userRoleDetail?.userRolePermission ||
-            []),
-        ]);
-      } catch (e) {}
-
-      localStorage.removeItem("loginType");
-      router.push("/profile");
-    } else {
+    } catch (error) {
+      setIsGoogleLoading(false);
       toast({
         title: t("registration_failed"),
-        description: response?.message || t("something_went_wrong"),
+        description: t("something_went_wrong"),
         variant: "danger",
-      });
-      await signOut({
-        redirect: false,
-        callbackUrl: "/register",
       });
     }
   };
@@ -292,6 +308,9 @@ export default function RegisterPage() {
           email: session?.user?.email || "",
         });
       }
+    } else {
+      // Reset loading state if no session (user cancelled or error)
+      setIsGoogleLoading(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session]);
@@ -349,14 +368,16 @@ export default function RegisterPage() {
                   variant="outline"
                   className="h-10 w-full rounded-lg border-2 border-gray-200 text-xs font-semibold text-gray-700 shadow-sm transition-all duration-200 hover:border-red-500 hover:bg-red-50 hover:text-red-700 hover:shadow-md sm:h-11 sm:text-sm"
                   onClick={() => {
+                    setIsGoogleLoading(true);
                     localStorage.setItem("loginType", "GOOGLE");
                     signIn("google");
                   }}
-                  disabled={socialLogin.isPending}
+                  disabled={socialLogin.isPending || isGoogleLoading}
                   dir={langDir}
                   translate="no"
                 >
-                  {socialLogin.isPending && getLoginType() === "GOOGLE" ? (
+                  {(socialLogin.isPending || isGoogleLoading) &&
+                  getLoginType() === "GOOGLE" ? (
                     <span className="flex items-center justify-center gap-2">
                       <Image
                         src={LoaderPrimaryIcon}
