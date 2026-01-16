@@ -1,5 +1,17 @@
 "use client";
 import React, { useEffect, useState } from "react";
+
+// Declare SmartBox global type
+declare global {
+  interface Window {
+    SmartBox: {
+      Checkout: {
+        configure: any;
+        showSmartBox: () => void;
+      };
+    };
+  }
+}
 import {
   useCartListByDevice,
   useCartListByUserId,
@@ -16,6 +28,7 @@ import {
   useCreateOrderUnAuth,
   useCreatePaymentIntent,
   useCreatePaymentLink,
+  useCreateAmwalPayConfig,
 } from "@/apis/queries/orders.queries";
 import { useRouter } from "next/navigation";
 import { loadStripe } from "@stripe/stripe-js";
@@ -48,12 +61,36 @@ const CompleteOrderPage = () => {
   const createPaymentIntent = useCreatePaymentIntent();
   const createPaymentLink = useCreatePaymentLink();
   const createEMIPayment = useCreateEMIPayment();
+  const createAmwalPayConfig = useCreateAmwalPayConfig();
   const [paymentType, setPaymentType] = useState<string>("DIRECT");
   const [advanceAmount, setAdvanceAmount] = useState(0);
   const [isRedirectingToPaymob, setIsRedirectingToPaymob] = useState<boolean>(false);
   const [paymentLink, setPaymentLink] = useState<string>();
   const [emiPeriod, setEmiPeriod] = useState<number>(6);
   const [emiAmount, setEmiAmount] = useState<number>(0);
+
+  // Load AmwalPay Smartbox script
+  useEffect(() => {
+    // Load AmwalPay Smartbox script (UAT environment for testing)
+    const script = document.createElement('script');
+    script.src = 'https://test.amwalpg.com:7443/js/SmartBox.js?v=1.1';
+    script.async = true;
+    script.onload = () => {
+      console.log('AmwalPay Smartbox loaded successfully');
+    };
+    script.onerror = () => {
+      console.error('Failed to load AmwalPay Smartbox');
+    };
+    document.body.appendChild(script);
+
+    return () => {
+      // Cleanup script on unmount
+      const existingScript = document.querySelector('script[src*="SmartBox.js"]');
+      if (existingScript && existingScript.parentNode) {
+        existingScript.parentNode.removeChild(existingScript);
+      }
+    };
+  }, []);
 
   // useEffect(() => {
   //   if (paymentType == "EMI") {
@@ -219,8 +256,15 @@ const CompleteOrderPage = () => {
   };
 
   const handleCreatePaymentIntent = async (orderId: number) => {
+    // For DIRECT payment, use AmwalPay instead of Paymob
+    if (paymentType === "DIRECT") {
+      await handleAmwalPayPayment(orderId);
+      return;
+    }
+
+    // For ADVANCE payment, continue with Paymob
     let data: { [key: string]: any } = {
-      amount: paymentType == "ADVANCE" ? advanceAmount * 1000 : orderStore.total * 1000,
+      amount: advanceAmount * 1000,
       billing_data: {
         first_name: orderStore.orders.firstName,
         last_name: orderStore.orders.lastName,
@@ -252,6 +296,136 @@ const CompleteOrderPage = () => {
       toast({
         title: t("something_went_wrong"),
         description: response.message,
+        variant: "danger",
+      });
+    }
+  };
+
+  // Add new function for AmwalPay payment
+  const handleAmwalPayPayment = async (orderId: number) => {
+    try {
+      const amount = orderStore.total; // Full amount for DIRECT payment
+      const currentLang = langDir === 'rtl' ? 'ar' : 'en';
+      
+      setIsRedirectingToPaymob(true); // Reuse loading state
+
+      // Get AmwalPay configuration from backend
+      const response = await createAmwalPayConfig.mutateAsync({
+        amount: amount,
+        orderId: orderId,
+        languageId: currentLang
+      });
+
+      if (response?.status && response?.data) {
+        const config = response.data;
+
+        // Check if SmartBox is loaded
+        if (!window.SmartBox || !window.SmartBox.Checkout) {
+          setIsRedirectingToPaymob(false);
+          toast({
+            title: t("payment_error"),
+            description: "Payment gateway not loaded. Please refresh the page.",
+            variant: "danger",
+          });
+          return;
+        }
+
+        // Configure Smartbox according to AmwalPay documentation
+        window.SmartBox.Checkout.configure = {
+          MID: config.MID,
+          TID: config.TID,
+          CurrencyId: config.CurrencyId,
+          AmountTrxn: config.AmountTrxn,
+          MerchantReference: config.MerchantReference,
+          LanguageId: config.LanguageId,
+          PaymentViewType: config.PaymentViewType,
+          TrxDateTime: config.TrxDateTime,
+          SessionToken: config.SessionToken || '', // Empty if not using recurring
+          SecureHash: config.SecureHash,
+          completeCallback: function(data: any) {
+            console.log('AmwalPay Payment Complete - Full Data:', JSON.stringify(data, null, 2));
+            setIsRedirectingToPaymob(false);
+            
+            // Check multiple possible success indicators
+            // AmwalPay might return success in different formats
+            // Note: Some responses may have isSuccess: false even with responseCode: "00"
+            // So we prioritize responseCode and success fields over isSuccess
+            const isSuccess = 
+              (data.responseCode === '00' && data.success === true) ||
+              (data.responseCode === '00' && data.isSuccess !== false) || // responseCode "00" is success unless explicitly false
+              (data.responseCode === '00') ||
+              (data.success === true) ||
+              (data.data?.responseCode === '00') ||
+              (data.data?.success === true) ||
+              (data.data?.auth === 'AUTHORIZED') ||
+              (data.auth === 'AUTHORIZED');
+            
+            if (isSuccess) {
+              toast({
+                title: t("payment_successful") || "Payment Successful",
+                description: t("payment_processed_successfully") || "Your payment has been processed successfully",
+                variant: "success",
+              });
+              
+              // Extract transaction ID from various possible locations
+              const transactionId = 
+                data.transactionId || 
+                data.data?.transactionId || 
+                data.data?.paymentId ||
+                data.paymentId ||
+                data.trackId ||
+                config.MerchantReference;
+              
+              // Redirect to success page with small delay to ensure toast shows
+              setTimeout(() => {
+                router.push(`/checkout-complete?success=true&id=${transactionId}&order=${orderId}`);
+              }, 500);
+            } else {
+              // Log the actual data structure for debugging
+              console.error('Payment not successful. Response data:', data);
+              toast({
+                title: t("payment_failed") || "Payment Failed",
+                description: data.message || data.ResponseMessage || data.data?.message || t("payment_was_not_successful") || "Payment was not successful",
+                variant: "danger",
+              });
+            }
+          },
+          errorCallback: function(data: any) {
+            console.error('AmwalPay Payment Error:', data);
+            setIsRedirectingToPaymob(false);
+            toast({
+              title: t("payment_failed") || "Payment Failed",
+              description: data.ResponseMessage || data.message || t("something_went_wrong") || "Something went wrong",
+              variant: "danger",
+            });
+          },
+          cancelCallback: function() {
+            console.log('AmwalPay Payment Cancelled');
+            setIsRedirectingToPaymob(false);
+            toast({
+              title: t("payment_cancelled") || "Payment Cancelled",
+              description: t("payment_was_cancelled") || "Payment was cancelled",
+              variant: "default",
+            });
+          }
+        };
+
+        // Show Smartbox popup
+        window.SmartBox.Checkout.showSmartBox();
+      } else {
+        setIsRedirectingToPaymob(false);
+        toast({
+          title: t("something_went_wrong"),
+          description: response.message || 'Failed to initialize payment',
+          variant: "danger",
+        });
+      }
+    } catch (error: any) {
+      setIsRedirectingToPaymob(false);
+      console.error('AmwalPay Payment Error:', error);
+      toast({
+        title: t("something_went_wrong"),
+        description: error.message || 'Failed to process payment',
         variant: "danger",
       });
     }

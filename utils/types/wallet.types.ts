@@ -53,8 +53,9 @@ export interface IWalletSettings {
 // Request/Response types
 export interface IWalletDepositRequest {
   amount: number;
-  paymentMethod: 'CARD' | 'BANK_TRANSFER' | 'PAYPAL' | 'STRIPE';
+  paymentMethod: 'CARD' | 'BANK_TRANSFER' | 'PAYPAL' | 'STRIPE' | 'AMWALPAY';
   paymentIntentId?: string;
+  transactionId?: string; // For AmwalPay transaction ID
 }
 
 export interface IWalletWithdrawRequest {

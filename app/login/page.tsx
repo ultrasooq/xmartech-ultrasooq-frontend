@@ -24,7 +24,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import { useUpdateUserCartByDeviceId } from "@/apis/queries/cart.queries";
 import { getLoginType, getOrCreateDeviceId } from "@/utils/helper";
-import FacebookIcon from "@/public/images/facebook-icon.png";
 import GoogleIcon from "@/public/images/google-icon.png";
 import LoaderPrimaryIcon from "@/public/images/load-primary.png";
 import { useSession, signIn, signOut } from "next-auth/react";
@@ -190,7 +189,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (session && session?.user) {
-      if (session?.user?.email && session?.user?.name && session?.user?.image) {
+      if (session?.user?.email && session?.user?.name) {
         handleSocialLogin(session.user);
       }
     }
@@ -382,42 +381,6 @@ export default function LoginPage() {
 
               {/* Social Login Buttons */}
               <div className="space-y-2.5">
-                <Button
-                  variant="outline"
-                  className="h-10 w-full rounded-lg border-2 border-gray-200 text-xs font-semibold text-gray-700 shadow-sm transition-all duration-200 hover:border-blue-500 hover:bg-blue-50 hover:text-blue-700 hover:shadow-md sm:h-11 sm:text-sm"
-                  onClick={() => {
-                    localStorage.setItem("loginType", "FACEBOOK");
-                    signIn("facebook");
-                  }}
-                  disabled={socialLogin.isPending}
-                  dir={langDir}
-                  translate="no"
-                >
-                  {socialLogin.isPending && getLoginType() === "FACEBOOK" ? (
-                    <span className="flex items-center justify-center gap-2">
-                      <Image
-                        src={LoaderPrimaryIcon}
-                        alt="loading"
-                        width={18}
-                        height={18}
-                        className="animate-spin"
-                      />
-                      <span>{t("please_wait")}</span>
-                    </span>
-                  ) : (
-                    <span className="flex items-center justify-center gap-2.5">
-                      <Image
-                        src={FacebookIcon}
-                        alt="facebook"
-                        height={20}
-                        width={20}
-                        className="object-contain sm:h-6 sm:w-6"
-                      />
-                      <span>{t("facebook_sign_in")}</span>
-                    </span>
-                  )}
-                </Button>
-
                 <Button
                   variant="outline"
                   className="h-10 w-full rounded-lg border-2 border-gray-200 text-xs font-semibold text-gray-700 shadow-sm transition-all duration-200 hover:border-red-500 hover:bg-red-50 hover:text-red-700 hover:shadow-md sm:h-11 sm:text-sm"

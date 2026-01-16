@@ -195,8 +195,9 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
   const [selectedLocale, setSelectedLocale] = useState<string>(locale || "en");
   const languages = [...LANGUAGES];
 
-  const [selectedCurrency, setSelectedCurrency] = useState<string>("USD");
-  const currencies = [...CURRENCIES];
+  const [selectedCurrency, setSelectedCurrency] = useState<string>("OMR");
+  // const currencies = [...CURRENCIES];
+  const currencies = CURRENCIES.filter((currency) => currency.code === "OMR");
 
   // Force refresh current account data when pathname changes (account switching)
   useEffect(() => {
@@ -1240,12 +1241,12 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                       className="cursor-pointer rounded border-0 bg-transparent px-1 py-1 text-white/90 transition-colors hover:text-white focus:outline-none"
                       value={selectedCurrency}
                       onChange={(e: any) => {
-                        setSelectedCurrency(e.target?.value || "USD");
+                        setSelectedCurrency(e.target?.value || "OMR");
                         window.localStorage.setItem(
                           "currency",
-                          e.target?.value || "USD",
+                          e.target?.value || "OMR",
                         );
-                        changeCurrency(e.target.value || "USD");
+                        changeCurrency(e.target.value || "OMR");
                       }}
                     >
                       {currencies.map((item: { code: string }) => {

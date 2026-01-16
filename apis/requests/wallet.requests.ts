@@ -165,3 +165,29 @@ export const fetchAllWalletTransactions = (payload: {
     },
   });
 };
+
+export const createAmwalPayWalletConfig = (payload: any) => {
+  return axios({
+    method: "POST",
+    url: `${getApiUrl()}/payment/create-amwalpay-wallet-config`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
+export const verifyAmwalPayWalletPayment = (payload: any) => {
+  return axios({
+    method: "POST",
+    url: `${getApiUrl()}/payment/verify-amwalpay-wallet-payment`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};

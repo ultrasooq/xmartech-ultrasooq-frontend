@@ -12,6 +12,8 @@ import {
   fetchAllWallets,
   updateWalletStatus,
   fetchAllWalletTransactions,
+  createAmwalPayWalletConfig,
+  verifyAmwalPayWalletPayment,
 } from "../requests/wallet.requests";
 
 export const useWalletBalance = (enabled = true) =>
@@ -112,6 +114,43 @@ export const useDepositToWallet = () => {
       queryClient.invalidateQueries({ queryKey: ["wallet", "transactions"] });
     },
     onError: (error: APIResponseError) => {
+    },
+  });
+};
+
+export const useCreateAmwalPayWalletConfig = () => {
+  return useMutation<
+    { data: any; message: string; status: boolean },
+    APIResponseError,
+    {}
+  >({
+    mutationFn: async (payload) => {
+      const res = await createAmwalPayWalletConfig(payload);
+      return res.data;
+    },
+    onSuccess: () => {
+    },
+    onError: (err: APIResponseError) => {
+    },
+  });
+};
+
+export const useVerifyAmwalPayWalletPayment = () => {
+  const queryClient = useQueryClient();
+  return useMutation<
+    { data: any; message: string; status: boolean },
+    APIResponseError,
+    {}
+  >({
+    mutationFn: async (payload) => {
+      const res = await verifyAmwalPayWalletPayment(payload);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["wallet", "balance"] });
+      queryClient.invalidateQueries({ queryKey: ["wallet", "transactions"] });
+    },
+    onError: (err: APIResponseError) => {
     },
   });
 };

@@ -22,7 +22,7 @@ import { getOrCreateDeviceId } from "@/utils/helper";
 import { useTranslations, useLocale } from "next-intl"; // Import useLocale
 import { useAuth } from "@/context/AuthContext";
 import { useClickOutside } from "use-events";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogHeader } from "@/components/ui/dialog";
 import { IoCloseSharp } from "react-icons/io5";
 import { useVendorBusinessCategories } from "@/hooks/useVendorBusinessCategories";
 import { checkCategoryConnection } from "@/utils/categoryConnection";
@@ -240,6 +240,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
     [confirmDialogRef],
     () => onCancelRemove(),
   );
+  const [isBuygroupDisclaimerOpen, setIsBuygroupDisclaimerOpen] = useState(false);
+  const [hasSeenBuygroupDisclaimer, setHasSeenBuygroupDisclaimer] = useState(false);
 
   useEffect(() => {
     setQuantity(productQuantity || 0);
@@ -274,7 +276,14 @@ const ProductCard: React.FC<ProductCardProps> = ({
     newQuantity: number,
     actionType: "add" | "remove",
     variant?: any,
+    skipDisclaimer: boolean = false,
   ) => {
+    // For buygroup products, show disclaimer first when adding (unless skipping)
+    if (isBuygroup && actionType === "add" && !skipDisclaimer && !hasSeenBuygroupDisclaimer) {
+      setIsBuygroupDisclaimerOpen(true);
+      return;
+    }
+
     const minQuantity = item.productPrices?.length
       ? item.productPrices[0]?.minQuantityPerCustomer
       : null;
@@ -443,6 +452,14 @@ const ProductCard: React.FC<ProductCardProps> = ({
     }
     // If item is NOT in cart, just update the quantity state
     // Don't show minimum quantity error here - let it show when they click "Add to Cart"
+  };
+
+  // Handler to proceed with booking after disclaimer
+  const handleProceedWithBooking = () => {
+    setIsBuygroupDisclaimerOpen(false);
+    setHasSeenBuygroupDisclaimer(true);
+    // Call handleAddToCart again, this time skipping the disclaimer check
+    handleAddToCart(quantity, "add", undefined, true);
   };
 
   const handleQuantityChange = () => {
@@ -933,7 +950,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               dir={langDir}
               translate="no"
             >
-              {saleNotStarted ? t("coming_soon") : saleExpired ? t("expired") : outOfStockActive ? t("out_of_stock") : t("add_to_cart")}
+              {saleNotStarted ? t("coming_soon") : saleExpired ? t("expired") : outOfStockActive ? t("out_of_stock") : isBuygroup ? "Book" : t("add_to_cart")}
             </button>
           ) : null}
         </div>
@@ -1007,6 +1024,61 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 {t("remove")}
               </Button>
             </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Buygroup Disclaimer Dialog */}
+      <Dialog open={isBuygroupDisclaimerOpen} onOpenChange={setIsBuygroupDisclaimerOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-gray-900 mb-4">
+              How Buygroups Work
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 text-gray-700">
+            <div>
+              <h3 className="font-semibold text-gray-900 mb-2">What is a Buygroup?</h3>
+              <p className="text-sm leading-relaxed">
+                A buygroup is a collective purchasing system where multiple customers come together to purchase products at better prices. When you book a product in a buygroup, you're reserving your spot for that item.
+              </p>
+            </div>
+            
+            <div>
+              <h3 className="font-semibold text-gray-900 mb-2">How It Works:</h3>
+              <ul className="list-disc list-inside space-y-2 text-sm leading-relaxed">
+                <li>Select the quantity you want to book</li>
+                <li>Click "Book" to reserve your items</li>
+                <li>Wait for the buygroup to reach the required number of participants</li>
+                <li>Once the buygroup is complete, you'll be notified and can proceed with payment</li>
+                <li>Your booking is confirmed only after the buygroup reaches its target</li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="font-semibold text-gray-900 mb-2">Important Notes:</h3>
+              <ul className="list-disc list-inside space-y-2 text-sm leading-relaxed">
+                <li>Your booking is a reservation, not an immediate purchase</li>
+                <li>You can cancel your booking before the buygroup closes</li>
+                <li>If the buygroup doesn't reach its target, your booking will be automatically cancelled</li>
+                <li>You'll receive notifications about the buygroup status</li>
+              </ul>
+            </div>
+          </div>
+          
+          <div className="flex items-center justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
+            <button
+              onClick={() => setIsBuygroupDisclaimerOpen(false)}
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-50 transition-colors"
+            >
+              {t("cancel") || "Cancel"}
+            </button>
+            <button
+              onClick={handleProceedWithBooking}
+              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded hover:bg-blue-700 transition-colors"
+            >
+              I Understand, Proceed
+            </button>
           </div>
         </DialogContent>
       </Dialog>

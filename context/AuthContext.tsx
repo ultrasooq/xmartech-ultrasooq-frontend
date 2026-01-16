@@ -4,7 +4,14 @@ import { setUserLocale } from "@/src/services/locale";
 import { CURRENCIES, LANGUAGES, PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import { fetchMe } from "@/apis/requests/user.requests";
 import { getCookie } from "cookies-next";
-import React, { createContext, startTransition, useContext, useState, useEffect, useMemo } from "react";
+import React, {
+  createContext,
+  startTransition,
+  useContext,
+  useState,
+  useEffect,
+  useMemo,
+} from "react";
 
 interface User {
   id: number;
@@ -23,7 +30,7 @@ interface AuthContextType {
   applyTranslation: (locale: string) => Promise<void>;
   selectedLocale: string;
   langDir: string;
-  currency: typeof CURRENCIES[0];
+  currency: (typeof CURRENCIES)[0];
   changeCurrency: (code: string) => void;
 }
 
@@ -34,7 +41,12 @@ export const AuthProvider: React.FC<{
   permissions: any[];
   children: React.ReactNode;
   locale?: string;
-}> = ({ user: initialUser, permissions: initialPermissions, children, locale }) => {
+}> = ({
+  user: initialUser,
+  permissions: initialPermissions,
+  children,
+  locale,
+}) => {
   const [user, setUser] = useState<User | null>(initialUser);
 
   const [permissions, setPermissions] = useState<any[]>(initialPermissions);
@@ -49,9 +61,9 @@ export const AuthProvider: React.FC<{
             if (res?.data?.data?.id) {
               setUser({
                 id: res.data.data.id,
-                firstName: res.data.data.firstName || '',
-                lastName: res.data.data.lastName || '',
-                tradeRole: res.data.data.tradeRole || '',
+                firstName: res.data.data.firstName || "",
+                lastName: res.data.data.lastName || "",
+                tradeRole: res.data.data.tradeRole || "",
               });
             }
           })
@@ -68,62 +80,63 @@ export const AuthProvider: React.FC<{
     setUser(null);
   };
 
-  const [selectedLocale, setSelectedLocale] = useState<string>(locale || 'en');
+  const [selectedLocale, setSelectedLocale] = useState<string>(locale || "en");
 
   const applyTranslation = async (locale: string): Promise<void> => {
     await setUserLocale(locale);
-    window.localStorage.setItem('locale', locale);
+    window.localStorage.setItem("locale", locale);
     startTransition(() => {
       setSelectedLocale(locale);
     });
   };
 
-  const [currency, setCurrency] = useState<typeof CURRENCIES[0]>(CURRENCIES.find(item => item.code == 'USD') || CURRENCIES[0]);
+  const [currency, setCurrency] = useState<(typeof CURRENCIES)[0]>(
+    CURRENCIES.find((item) => item.code == "OMR") || CURRENCIES[0],
+  );
 
   const changeCurrency = (code: string) => {
-    setCurrency(CURRENCIES.find(item => item.code == code) || CURRENCIES[0]);
-    startTransition(() => {
-      
-    })
+    setCurrency(CURRENCIES.find((item) => item.code == code) || CURRENCIES[0]);
+    startTransition(() => {});
   };
 
   // Compute currency symbol based on locale (for OMR: Arabic vs English)
   const currencyWithLocale = useMemo(() => {
     let symbol = currency.symbol;
-    
-    if (currency.code === 'OMR') {
+
+    if (currency.code === "OMR") {
       // Check if currency has symbolAr property and locale is Arabic
-      const currencyWithAr = currency as typeof CURRENCIES[0] & { symbolAr?: string };
-      symbol = selectedLocale === 'ar' && currencyWithAr.symbolAr 
-        ? currencyWithAr.symbolAr 
-        : currency.symbol;
+      const currencyWithAr = currency as (typeof CURRENCIES)[0] & {
+        symbolAr?: string;
+      };
+      symbol =
+        selectedLocale === "ar" && currencyWithAr.symbolAr
+          ? currencyWithAr.symbolAr
+          : currency.symbol;
     }
-    
+
     return {
       ...currency,
       symbol,
     };
   }, [currency, selectedLocale]);
 
-  let data = { 
-    user, 
-    setUser, 
-    isAuthenticated, 
-    clearUser, 
-    permissions, 
-    setPermissions, 
-    applyTranslation, 
-    selectedLocale, 
-    langDir: LANGUAGES.find(language => language.locale == selectedLocale)?.direction || 'ltr', 
-    currency: currencyWithLocale, 
-    changeCurrency
+  let data = {
+    user,
+    setUser,
+    isAuthenticated,
+    clearUser,
+    permissions,
+    setPermissions,
+    applyTranslation,
+    selectedLocale,
+    langDir:
+      LANGUAGES.find((language) => language.locale == selectedLocale)
+        ?.direction || "ltr",
+    currency: currencyWithLocale,
+    changeCurrency,
   };
 
-  return (
-    <AuthContext.Provider value={data}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={data}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {

@@ -10,6 +10,7 @@ import {
   createOrderUnAuth,
   createPaymentIntent,
   createPaymentLink,
+  createAmwalPayConfig,
   fetchOrderById,
   fetchOrderByIdUnAuth,
   fetchOrderBySellerId,
@@ -173,6 +174,23 @@ export const useCreateEMIPayment = () => {
   >({
     mutationFn: async (payload) => {
       const res = await createEMIPayment(payload);
+      return res.data;
+    },
+    onSuccess: () => {
+    },
+    onError: (err: APIResponseError) => {
+    },
+  });
+};
+
+export const useCreateAmwalPayConfig = () => {
+  return useMutation<
+    { data: any; message: string; status: boolean },
+    APIResponseError,
+    {}
+  >({
+    mutationFn: async (payload) => {
+      const res = await createAmwalPayConfig(payload);
       return res.data;
     },
     onSuccess: () => {

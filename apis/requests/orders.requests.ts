@@ -83,6 +83,19 @@ export const createEMIPayment = (payload: any) => {
   });
 };
 
+export const createAmwalPayConfig = (payload: any) => {
+  return axios({
+    method: "POST",
+    url: `${getApiUrl()}/payment/create-amwalpay-config`,
+    data: payload,
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: "Bearer " + getCookie(PUREMOON_TOKEN_KEY),
+    },
+  });
+};
+
 export const fetchOrderById = (payload: { orderProductId: string }) => {
   return axios({
     method: "GET",
