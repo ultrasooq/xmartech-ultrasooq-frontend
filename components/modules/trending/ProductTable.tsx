@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Table,
@@ -117,6 +117,93 @@ const ProductTable: React.FC<ProductTableProps> = ({
     return totalRating / item.productReview.length;
   };
 
+  // Helper function to get local timestamp from date and time strings
+  const getLocalTimestamp = (dateStr?: string, timeStr?: string) => {
+    if (!dateStr) return 0;
+    try {
+      const date = new Date(dateStr);
+      if (timeStr) {
+        const [hours, minutes] = timeStr.split(":").map(Number);
+        if (!Number.isNaN(hours)) {
+          date.setHours(hours || 0, Number.isNaN(minutes) ? 0 : minutes, 0, 0);
+        }
+      }
+      return date.getTime();
+    } catch {
+      return 0;
+    }
+  };
+
+  // Format time for countdown display
+  const formatTime = (ms: number) => {
+    const totalSeconds = Math.floor(ms / 1000);
+    const days = Math.floor(totalSeconds / 86400);
+    const hours = String(Math.floor((totalSeconds % 86400) / 3600)).padStart(2, "0");
+    const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, "0");
+    const seconds = String(totalSeconds % 60).padStart(2, "0");
+    return `${days} Days; ${hours}:${minutes}:${seconds}`;
+  };
+
+  // Component for Buygroup Timing Display
+  const BuygroupTimingDisplay: React.FC<{ item: TrendingProduct }> = ({ item }) => {
+    const [timeLeft, setTimeLeft] = useState<string | null>(null);
+
+    useEffect(() => {
+      if (
+        !item?.productPrices?.length ||
+        item?.productPrices?.[0]?.sellType !== "BUYGROUP"
+      ) {
+        setTimeLeft(null);
+        return;
+      }
+
+      const product = item.productPrices[0];
+      const startTimestamp = getLocalTimestamp(product.dateOpen, product.startTime);
+      const endTimestamp = getLocalTimestamp(product.dateClose, product.endTime);
+
+      const updateCountdown = () => {
+        const now = Date.now();
+
+        if (now < startTimestamp) {
+          setTimeLeft(t("not_started") || "Not Started");
+          return;
+        }
+
+        const ms = endTimestamp - now;
+        if (ms <= 0) {
+          setTimeLeft(t("expired") || "Expired");
+          return;
+        }
+
+        setTimeLeft(formatTime(ms));
+      };
+
+      updateCountdown();
+      const interval = setInterval(updateCountdown, 1000);
+
+      return () => clearInterval(interval);
+    }, [item?.productPrices]);
+
+    if (!timeLeft) return null;
+
+    const isExpired = timeLeft === (t("expired") || "Expired");
+    const isNotStarted = timeLeft === (t("not_started") || "Not Started");
+
+    return (
+      <div className="mt-1">
+        <span className={`text-xs font-medium px-2 py-1 rounded inline-block ${
+          isExpired 
+            ? "bg-red-100 text-red-700" 
+            : isNotStarted
+            ? "bg-orange-100 text-orange-700"
+            : "bg-red-500 text-white"
+        }`}>
+          {timeLeft}
+        </span>
+      </div>
+    );
+  };
+
   return (
     <CardContent className="main-content w-full p-0">
       <Card className="main-content-card shadow-sm border-0">
@@ -223,6 +310,8 @@ const ProductTable: React.FC<ProductTableProps> = ({
                                 : `${t("out_of_stock") || "Out of Stock"}`}
                             </span>
                           )}
+                          {/* Buygroup Timing */}
+                          <BuygroupTimingDisplay item={item} />
                         </div>
                       </Link>
                     </TableCell>

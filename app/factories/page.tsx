@@ -10,7 +10,7 @@ import {
 import Pagination from "@/components/shared/Pagination";
 import GridIcon from "@/components/icons/GridIcon";
 import ListIcon from "@/components/icons/ListIcon";
-import RfqProductTable from "@/components/modules/rfq/RfqProductTable";
+import ProductTable from "@/components/modules/trending/ProductTable";
 import FilterMenuIcon from "@/components/icons/FilterMenuIcon";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useMe } from "@/apis/queries/user.queries";
@@ -58,12 +58,14 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { ShoppingCart, X, Search } from "lucide-react";
+import { ShoppingCart, X, Search, Building2, Trash2, Minus } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import ReactSlider from "react-slider";
 import { Package } from "lucide-react";
+import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 interface FactoriesPageProps {
   searchParams?: Promise<{ term?: string }>;
@@ -225,6 +227,55 @@ const FactoriesPage = (props: FactoriesPageProps) => {
     );
   }, [factoriesProductsQuery.data?.data]);
 
+  // Transform factories products to TrendingProduct format for ProductTable
+  const memoizedProductListForTable = useMemo(() => {
+    return (
+      memoizedRfqProducts?.map((item: any) => {
+        const activePriceEntry =
+          item?.product_productPrice?.find(
+            (pp: any) => pp?.status === "ACTIVE",
+          ) || item?.product_productPrice?.[0];
+
+        return {
+          id: item.id,
+          productName: item?.productName || "-",
+          productPrice: item?.productPrice || 0,
+          offerPrice: activePriceEntry?.offerPrice || item?.offerPrice || 0,
+          productImage: item?.productImages?.[0]?.image || "-",
+          categoryName: item?.category?.name || "-",
+          skuNo: item?.skuNo,
+          brandName: item?.brand?.brandName || "-",
+          productReview: item?.productReview || [],
+          productWishlist: item?.product_wishlist || [],
+          inWishlist: item?.product_wishlist?.find(
+            (ele: any) => ele?.userId === me?.data?.data?.id,
+          ),
+          shortDescription: item?.product_productShortDescription?.length
+            ? item?.product_productShortDescription?.[0]?.shortDescription
+            : "-",
+          productProductPriceId: activePriceEntry?.id,
+          productProductPrice: activePriceEntry?.offerPrice,
+          consumerDiscount: activePriceEntry?.consumerDiscount,
+          consumerDiscountType: activePriceEntry?.consumerDiscountType,
+          vendorDiscount: activePriceEntry?.vendorDiscount,
+          vendorDiscountType: activePriceEntry?.vendorDiscountType,
+          askForPrice: activePriceEntry?.askForPrice,
+          productPrices: item?.product_productPrice || [],
+          productQuantity: activePriceEntry?.stock !== undefined && activePriceEntry?.stock !== null
+            ? Number(activePriceEntry.stock)
+            : (item?.productQuantity !== undefined && item?.productQuantity !== null
+              ? Number(item.productQuantity)
+              : null),
+          categoryId: item?.categoryId,
+          categoryLocation: item?.categoryLocation,
+          categoryConnections: item?.category?.category_categoryIdDetail || [],
+          consumerType: activePriceEntry?.consumerType,
+          status: item?.status || "ACTIVE",
+        };
+      }) || []
+    );
+  }, [memoizedRfqProducts, me?.data?.data?.id]);
+
   const getProductVariants = async () => {
     let productPriceIds = memoizedRfqProducts
       .filter((item: any) => item.product_productPrice.length > 0)
@@ -346,165 +397,180 @@ const FactoriesPage = (props: FactoriesPageProps) => {
         {t("factories")} | Ultrasooq
       </title>
 
-      {/* Modern Three-Column Layout */}
-      <div className="w-full min-h-screen bg-white px-2 sm:px-4 lg:px-8">
-        <div className="flex flex-col lg:flex-row h-full gap-4">
-        
-        {/* Left Column - Filters (Desktop) */}
-        <div className="hidden lg:block w-64 flex-shrink-0 overflow-y-auto p-4 bg-white">
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <div className="mb-4">
-              <div className="flex gap-2 mb-4">
-                <button 
-                  type="button" 
-                  onClick={selectAll}
-                  className="px-3 py-2 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors text-sm"
+      {/* Full Width Two Column Layout */}
+      <div className="min-h-screen w-full bg-white px-2 sm:px-4 lg:px-8">
+        <div className="flex h-full flex-col gap-4 lg:flex-row">
+          {/* Left Column - Filters (Desktop) - Improved UI */}
+          <div className="hidden flex-shrink-0 overflow-y-auto bg-white p-4 lg:block lg:w-1/4">
+            <div className="sticky top-4 rounded-xl bg-white p-6 shadow-lg">
+              {/* Filter Header */}
+              <div className="mb-6 border-b border-gray-200 pb-4">
+                <h3 className="mb-3 text-lg font-bold text-gray-900">
+                  {t("filters")}
+                </h3>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={selectAll}
+                    className="flex-1 rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+                  >
+                    {t("select_all")}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={clearFilter}
+                    className="flex-1 rounded-lg bg-gray-200 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-300"
+                  >
+                    {t("clean_select")}
+                  </button>
+                </div>
+              </div>
+
+              {/* Brand Filter - Improved */}
+              <div className="mb-6">
+                <Accordion
+                  type="multiple"
+                  defaultValue={["brand"]}
+                  className="overflow-hidden rounded-lg border border-gray-200"
                 >
-                  {t("select_all")}
-                </button>
-                <button 
-                  type="button" 
-                  onClick={clearFilter}
-                  className="px-3 py-2 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors text-sm"
+                  <AccordionItem value="brand" className="border-0">
+                    <AccordionTrigger className="bg-gray-50 px-4 py-3 font-semibold text-gray-900 hover:bg-gray-100">
+                      <div className="flex items-center gap-2">
+                        <Building2 className="h-4 w-4" />
+                        <span>{t("by_brand")}</span>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="bg-white px-4 py-4">
+                      <div className="mb-3">
+                        <div className="flex gap-2">
+                          <Input
+                            type="text"
+                            placeholder={t("search_brand")}
+                            className="h-9 flex-1 border-gray-300 text-sm focus:border-blue-500 focus:ring-blue-500"
+                            value={searchTermBrand}
+                            onChange={handleBrandSearchChange}
+                            dir={langDir}
+                            translate="no"
+                          />
+                          <Button
+                            type="button"
+                            onClick={handleBrandSearch}
+                            disabled={!searchTermBrand.trim()}
+                            size="sm"
+                            className="h-9 bg-blue-600 px-4 text-xs font-medium hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-400"
+                          >
+                            {t("search")}
+                          </Button>
+                        </div>
+                      </div>
+                      <div className="max-h-48 space-y-2 overflow-y-auto">
+                        {!memoizedBrands.length ? (
+                          <p className="py-4 text-center text-sm text-gray-500">
+                            {t("no_data_found")}
+                          </p>
+                        ) : null}
+                        {memoizedBrands.map((item: ISelectOptions) => (
+                          <div
+                            key={item.value}
+                            className="flex items-center space-x-2 rounded px-2 py-1 transition-colors hover:bg-gray-50"
+                          >
+                            <Checkbox
+                              id={item.label}
+                              className="border border-gray-300 data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600"
+                              onCheckedChange={(checked) =>
+                                handleBrandChange(checked, item)
+                              }
+                              checked={selectedBrandIds.includes(item.value)}
+                            />
+                            <label
+                              htmlFor={item.label}
+                              className="flex-1 cursor-pointer text-sm leading-none font-medium"
+                            >
+                              {item.label}
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              </div>
+
+              {/* Price Filter - Improved */}
+              <div>
+                <Accordion
+                  type="multiple"
+                  defaultValue={["price"]}
+                  className="overflow-hidden rounded-lg border border-gray-200"
                 >
-                  {t("clean_select")}
-                </button>
+                  <AccordionItem value="price" className="border-0">
+                    <AccordionTrigger className="bg-gray-50 px-4 py-3 font-semibold text-gray-900 hover:bg-gray-100">
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">💰</span>
+                        <span>{t("price")}</span>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="bg-white px-4 py-4">
+                      <div className="mb-4 px-2">
+                        <ReactSlider
+                          className="horizontal-slider"
+                          thumbClassName="example-thumb"
+                          trackClassName="example-track"
+                          defaultValue={[0, 500]}
+                          ariaLabel={["Lower thumb", "Upper thumb"]}
+                          ariaValuetext={(state) =>
+                            `Thumb value ${state.valueNow}`
+                          }
+                          renderThumb={(props, state) => (
+                            <div {...props} key={props.key}>
+                              {state.valueNow}
+                            </div>
+                          )}
+                          pearling
+                          minDistance={10}
+                          onChange={(value) => handlePriceDebounce(value)}
+                          max={500}
+                          min={0}
+                        />
+                      </div>
+                      <div className="mb-4 flex justify-center">
+                        <Button
+                          variant="outline"
+                          className="h-9 px-4 text-sm"
+                          onClick={() => setPriceRange([])}
+                          dir={langDir}
+                          translate="no"
+                        >
+                          {t("clear")}
+                        </Button>
+                      </div>
+                      <div className="range-price-left-right-info">
+                        <Input
+                          type="number"
+                          placeholder={`${currency.symbol}0`}
+                          className="custom-form-control-s1 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                          value={minPriceInput}
+                          onChange={handleMinPriceChange}
+                          onWheel={(e) => e.currentTarget.blur()}
+                          ref={minPriceInputRef}
+                        />
+                        <div className="center-divider"></div>
+                        <Input
+                          type="number"
+                          placeholder={`${currency.symbol}500`}
+                          className="custom-form-control-s1 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                          value={maxPriceInput}
+                          onChange={handleMaxPriceChange}
+                          onWheel={(e) => e.currentTarget.blur()}
+                          ref={maxPriceInputRef}
+                        />
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
               </div>
             </div>
-
-            {/* Brand Filter */}
-            <Accordion
-              type="multiple"
-              defaultValue={["brand"]}
-              className="mb-4"
-            >
-              <AccordionItem value="brand">
-                <AccordionTrigger className="text-base hover:no-underline!">
-                  {t("by_brand")}
-                </AccordionTrigger>
-                <AccordionContent>
-                  <div className="mb-3">
-                    <div className="flex gap-2">
-                      <Input
-                        type="text"
-                        placeholder={t("search_brand")}
-                        className="flex-1 h-8 text-sm"
-                        value={searchTermBrand}
-                        onChange={handleBrandSearchChange}
-                        dir={langDir}
-                        translate="no"
-                      />
-                      <Button
-                        type="button"
-                        onClick={handleBrandSearch}
-                        disabled={!searchTermBrand.trim()}
-                        size="sm"
-                        className="h-8 px-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-xs"
-                      >
-                        {t("search")}
-                      </Button>
-                    </div>
-                  </div>
-                  <div className="space-y-2 max-h-40 overflow-y-auto">
-                    {!memoizedBrands.length ? (
-                      <p className="text-center text-sm text-gray-500">
-                        {t("no_data_found")}
-                      </p>
-                    ) : null}
-                    {memoizedBrands.map((item: ISelectOptions) => (
-                      <div key={item.value} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={item.label}
-                          className="border border-gray-300 data-[state=checked]:bg-blue-600!"
-                          onCheckedChange={(checked) =>
-                            handleBrandChange(checked, item)
-                          }
-                          checked={selectedBrandIds.includes(item.value)}
-                        />
-                        <label
-                          htmlFor={item.label}
-                          className="text-sm font-medium leading-none cursor-pointer"
-                        >
-                          {item.label}
-                        </label>
-                      </div>
-                    ))}
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-
-            {/* Price Filter */}
-            <Accordion
-              type="multiple"
-              defaultValue={["price"]}
-            >
-              <AccordionItem value="price">
-                <AccordionTrigger className="text-base hover:no-underline!">
-                  {t("price")}
-                </AccordionTrigger>
-                <AccordionContent>
-                  <div className="px-4">
-                    <div className="px-2">
-                      <ReactSlider
-                        className="horizontal-slider"
-                        thumbClassName="example-thumb"
-                        trackClassName="example-track"
-                        defaultValue={[0, 500]}
-                        ariaLabel={["Lower thumb", "Upper thumb"]}
-                        ariaValuetext={(state) =>
-                          `Thumb value ${state.valueNow}`
-                        }
-                        renderThumb={(props, state) => (
-                          <div {...props} key={props.key}>
-                            {state.valueNow}
-                          </div>
-                        )}
-                        pearling
-                        minDistance={10}
-                        onChange={(value) => handlePriceDebounce(value)}
-                        max={500}
-                        min={0}
-                      />
-                    </div>
-                    <div className="flex justify-center">
-                      <Button
-                        variant="outline"
-                        className="mb-4"
-                        onClick={() => setPriceRange([])}
-                        dir={langDir}
-                        translate="no"
-                      >
-                        {t("clear")}
-                      </Button>
-                    </div>
-                    <div className="range-price-left-right-info">
-                      <Input
-                        type="number"
-                        placeholder={`${currency.symbol}0`}
-                        className="custom-form-control-s1 rounded-none"
-                        value={minPriceInput}
-                        onChange={handleMinPriceChange}
-                        onWheel={(e) => e.currentTarget.blur()}
-                        ref={minPriceInputRef}
-                      />
-                      <div className="center-divider"></div>
-                      <Input
-                        type="number"
-                        placeholder={`${currency.symbol}500`}
-                        className="custom-form-control-s1 rounded-none"
-                        value={maxPriceInput}
-                        onChange={handleMaxPriceChange}
-                        onWheel={(e) => e.currentTarget.blur()}
-                        ref={maxPriceInputRef}
-                      />
-                    </div>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
           </div>
-        </div>
 
         {/* Mobile Filter Drawer */}
         <Sheet open={productFilter} onOpenChange={setProductFilter}>
@@ -665,8 +731,13 @@ const FactoriesPage = (props: FactoriesPageProps) => {
           </SheetContent>
         </Sheet>
 
-        {/* Middle Column - Products (MAIN CONTENT) */}
-        <div className="flex-1 bg-white overflow-y-auto w-full lg:w-auto">
+          {/* Main Content Column - Products */}
+          <div
+            className={cn(
+              "w-full flex-1 overflow-y-auto bg-white lg:w-auto",
+              factoriesCartList.length > 0 ? "lg:pr-36" : "lg:pr-0",
+            )}
+          >
           <div className="p-2 sm:p-4 lg:p-6">
             
             {/* Product Header Filter Section */}
@@ -843,10 +914,36 @@ const FactoriesPage = (props: FactoriesPageProps) => {
             ) : null}
 
             {/* List View */}
-            {viewType === "list" && factoriesProductsQuery?.data?.data?.length ? (
-              <div className="overflow-x-auto">
-                <RfqProductTable
-                  list={factoriesProductsQuery?.data?.data}
+            {viewType === "list" && memoizedProductListForTable.length ? (
+              <div className="product-list-s1 overflow-x-auto p-2 sm:p-4">
+                <ProductTable
+                  list={memoizedProductListForTable}
+                  onWishlist={handleAddToWishlist}
+                  onAddToCart={async (item, quantity, action, variant, cartId) => {
+                    // For factories, redirect to add to factory modal instead of regular cart
+                    if (action === "add") {
+                      handleAddToFactories(item.id);
+                      return;
+                    }
+                    // Handle remove if needed
+                    if (action === "remove" && cartId) {
+                      // Could implement remove from factories cart if needed
+                    }
+                  }}
+                  wishlistMap={new Map(
+                    memoizedProductListForTable.map((item: any) => [
+                      item.id,
+                      item?.inWishlist || false,
+                    ])
+                  )}
+                  cartMap={new Map(
+                    factoriesCartList?.map((item: any) => [
+                      item.productId,
+                      { quantity: item.quantity || 0, cartId: item.id },
+                    ]) || []
+                  )}
+                  haveAccessToken={haveAccessToken}
+                  productVariants={productVariants}
                 />
               </div>
             ) : null}
@@ -863,98 +960,101 @@ const FactoriesPage = (props: FactoriesPageProps) => {
           </div>
         </div>
 
-        {/* Right Column - Cart (Desktop Only) */}
-        <div className="hidden lg:block w-64 flex-shrink-0 bg-white">
-          <div className="sticky top-0 h-screen overflow-y-auto">
-            <div className="bg-white rounded-lg shadow-lg m-2 lg:m-4 p-4 lg:p-6">
-              <div className="cart_sidebar">
-                <div className="border-b border-gray-200 pb-4 mb-4">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-gray-900">{t("factory_cart")}</h3>
-                    <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
-                      {factoriesCartList.length} {factoriesCartList.length === 1 ? t("item") : t("items")}
-                    </span>
-                  </div>
-                </div>
-                
-                <div className="max-h-64 overflow-y-auto">
-                  {factoriesCartList.length === 0 ? (
-                    <div className="text-center py-6">
-                      <Package className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-                      <p className="text-gray-500 text-sm">{t("your_cart_is_empty")}</p>
-                      <p className="text-gray-400 text-xs mt-1">{t("add_some_products_to_get_started")}</p>
+          {/* Fixed Right Sidebar Cart - Desktop Only (Amazon Style) */}
+          {factoriesCartList.length > 0 && (
+            <div className="hidden lg:block">
+              <div className="fixed top-0 right-0 z-[60] h-screen w-36 border-l border-gray-200 bg-white shadow-lg">
+                <div className="flex h-full flex-col">
+                  {/* Top sticky header + Go To Cart */}
+                  <div className="sticky top-0 z-10 border-b border-gray-200 bg-white px-4 pt-4 pb-3 text-center">
+                    <div className="flex flex-col items-center">
+                      <span
+                        className="mb-0.5 text-[11px] font-medium text-gray-600"
+                        dir={langDir}
+                        translate="no"
+                      >
+                        {t("factory_cart")}
+                      </span>
+                      <span className="text-sm font-bold text-red-600">
+                        {factoriesCartList.length}
+                      </span>
                     </div>
-                  ) : (
-                    <div className="space-y-3">
-                      {factoriesCartList.slice(0, 3).map((cartItem: any) => {
-                        // Find the product data from our memoized product list
-                        const productData = memoizedRfqProducts.find((product: any) => product.id === cartItem.productId);
-                        
-                        return (
-                          <div key={cartItem.id} className="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded-lg transition-colors">
-                            {/* Product Image */}
-                            <div className="w-12 h-12 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
-                              {productData?.productImages?.[0]?.image ? (
-                                <img
-                                  src={productData.productImages[0].image}
-                                  alt={productData.productName || 'Product'}
-                                  className="w-full h-full object-cover"
-                                />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center">
-                                  <Package className="h-6 w-6 text-gray-400" />
-                                </div>
-                              )}
-                            </div>
-                            
-                            {/* Product Info */}
-                            <div className="flex-1 min-w-0">
-                              <h4 className="text-sm font-medium text-gray-900 truncate">
-                                {productData?.productName || t("product")}
-                              </h4>
-                              <div className="flex items-center justify-between mt-1">
-                                <p className="text-xs text-gray-500">
-                                  Qty: {cartItem.quantity || 1}
-                                </p>
-                                <div className="text-right">
-                                  <p className="text-sm font-semibold text-green-600">
-                                    {t("customized")}
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                      
-                      {/* Show "and X more" if there are more than 3 items */}
-                      {factoriesCartList.length > 3 && (
-                        <div className="text-center py-2">
-                          <p className="text-xs text-gray-500">
-                            {t("and_n_more_items", { n: factoriesCartList.length - 3 })}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-                
-                {/* Go to Cart Button */}
-                {factoriesCartList.length > 0 && (
-                  <div className="p-4 border-t border-gray-200 bg-gray-50">
                     <button
-                      onClick={() => window.location.href = '/factories-cart'}
-                      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2"
+                      onClick={() => {
+                        window.location.href = "/factories-cart";
+                      }}
+                      className="mt-3 flex w-full items-center justify-center space-x-1.5 rounded-lg bg-yellow-400 px-3 py-2 text-xs font-medium text-gray-900 shadow-sm transition-colors duration-200 hover:bg-yellow-500"
                     >
-                      <Package className="h-4 w-4" />
+                      <Package className="h-3 w-3" />
                       <span>{t("go_to_cart")}</span>
                     </button>
                   </div>
-                )}
+
+                  {/* Scrollable product list */}
+                  <div className="scrollbar-hide flex-1 overflow-y-auto px-4 pt-3 pb-4">
+                    <div className="space-y-3">
+                      {factoriesCartList.map((cartItem: any) => {
+                        const productData = memoizedRfqProducts.find(
+                          (product: any) => product.id === cartItem.productId,
+                        );
+                        const quantity = cartItem.quantity || 1;
+
+                        const productImage =
+                          productData?.productImages?.[0]?.image || null;
+
+                        const productName =
+                          productData?.productName || t("product");
+
+                        return (
+                          <div
+                            key={cartItem.id}
+                            className="space-y-2 text-center"
+                          >
+                            {/* Product Image */}
+                            <div className="flex justify-center">
+                              <Link
+                                href={`/factories/${cartItem.productId}`}
+                                className="h-20 w-20 overflow-hidden rounded-lg bg-gray-100 transition-opacity hover:opacity-80"
+                              >
+                                {productImage ? (
+                                  <img
+                                    src={productImage}
+                                    alt={productName}
+                                    className="h-full w-full object-cover"
+                                  />
+                                ) : (
+                                  <div className="flex h-full w-full items-center justify-center">
+                                    <Package className="h-8 w-8 text-gray-400" />
+                                  </div>
+                                )}
+                              </Link>
+                            </div>
+
+                            {/* Quantity */}
+                            <div className="mb-2 text-center">
+                              <p className="text-xs font-medium text-gray-600">
+                                {t("quantity")}: {quantity}
+                              </p>
+                            </div>
+
+                            {/* Customized Badge */}
+                            <div className="mb-2">
+                              <span className="inline-block rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-medium text-green-700">
+                                {t("customized")}
+                              </span>
+                            </div>
+
+                            {/* Divider */}
+                            <div className="mt-3 border-t border-gray-200" />
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
+          )}
         </div>
       </div>
 

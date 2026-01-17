@@ -68,8 +68,9 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { ShoppingCart, Package, X } from "lucide-react";
+import { ShoppingCart, Package, X, Building2, Trash2 } from "lucide-react";
 import FilterMenuIcon from "@/components/icons/FilterMenuIcon";
+import { cn } from "@/lib/utils";
 
 interface RfqPageProps {
   searchParams?: Promise<{ term?: string }>;
@@ -413,125 +414,147 @@ const RfqPage = (props: RfqPageProps) => {
       <title dir={langDir} translate="no">
         {t("rfq")} | Ultrasooq
       </title>
-      <div className="body-content-s1">
-        {/* Full Width Three Column Layout */}
+      <div className="body-content-s1 bg-white">
+        {/* Full Width Two Column Layout */}
         <div className="min-h-screen w-full bg-white px-2 sm:px-4 lg:px-8">
           <div className="flex h-full flex-col gap-4 lg:flex-row">
-            {/* Left Column - Filters (Desktop) */}
+            {/* Left Column - Filters (Desktop) - Improved UI */}
             <div className="hidden flex-shrink-0 overflow-y-auto bg-white p-4 lg:block lg:w-1/4">
               <div className="sticky top-4 rounded-xl bg-white p-6 shadow-lg">
-                <div className="mb-4">
-                  <div className="mb-4 flex gap-2">
+                {/* Filter Header */}
+                <div className="mb-6 border-b border-gray-200 pb-4">
+                  <h3 className="mb-3 text-lg font-bold text-gray-900">
+                    {t("filters")}
+                  </h3>
+                  <div className="flex gap-2">
                     <button
                       type="button"
                       onClick={selectAll}
-                      className="rounded bg-blue-100 px-3 py-2 text-sm text-blue-700 transition-colors hover:bg-blue-200"
+                      className="flex-1 rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
                     >
                       {t("select_all")}
                     </button>
                     <button
                       type="button"
                       onClick={clearFilter}
-                      className="rounded bg-gray-100 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-200"
+                      className="flex-1 rounded-lg bg-gray-200 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-300"
                     >
                       {t("clean_select")}
                     </button>
                   </div>
                 </div>
 
-                {/* Category Filter */}
-                <Accordion
-                  type="multiple"
-                  defaultValue={["category_filter"]}
-                  className="mb-4"
-                >
-                  <AccordionItem value="category_filter">
-                    <AccordionTrigger className="text-base hover:no-underline!">
-                      {t("by_category")}
-                    </AccordionTrigger>
-                    <AccordionContent>
-                      <CategoryFilter
-                        selectedCategoryIds={selectedCategoryIds}
-                        onCategoryChange={handleCategoryChange}
-                        onClear={handleCategoryClear}
-                      />
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
-
-                {/* Brand Filter */}
-                <Accordion
-                  type="multiple"
-                  defaultValue={["brand"]}
-                  className="mb-4"
-                >
-                  <AccordionItem value="brand">
-                    <AccordionTrigger className="text-base hover:no-underline!">
-                      {t("by_brand")}
-                    </AccordionTrigger>
-                    <AccordionContent>
-                      <div className="mb-3">
-                        <div className="flex gap-2">
-                          <Input
-                            type="text"
-                            placeholder={t("search_brand")}
-                            className="h-8 flex-1 text-sm"
-                            onChange={handleBrandSearchChange}
-                            dir={langDir}
-                            translate="no"
-                          />
-                          <Button
-                            type="button"
-                            onClick={handleBrandSearch}
-                            disabled={!searchTermBrand.trim()}
-                            size="sm"
-                            className="h-8 bg-blue-600 px-3 text-xs hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-400"
-                          >
-                            {t("search")}
-                          </Button>
+                {/* Category Filter - Improved */}
+                <div className="mb-6">
+                  <Accordion
+                    type="multiple"
+                    defaultValue={["category_filter"]}
+                    className="overflow-hidden rounded-lg border border-gray-200"
+                  >
+                    <AccordionItem value="category_filter" className="border-0">
+                      <AccordionTrigger className="bg-gray-50 px-4 py-3 font-semibold text-gray-900 hover:bg-gray-100">
+                        <div className="flex items-center gap-2">
+                          <Package className="h-4 w-4" />
+                          <span>{t("by_category")}</span>
                         </div>
-                      </div>
-                      <div className="max-h-40 space-y-2 overflow-y-auto">
-                        {!memoizedBrands.length ? (
-                          <p className="text-center text-sm text-gray-500">
-                            {t("no_data_found")}
-                          </p>
-                        ) : null}
-                        {memoizedBrands.map((item: ISelectOptions) => (
-                          <div
-                            key={item.value}
-                            className="flex items-center space-x-2"
-                          >
-                            <Checkbox
-                              id={item.label}
-                              className="border border-gray-300 data-[state=checked]:bg-blue-600!"
-                              onCheckedChange={(checked) =>
-                                handleBrandChange(checked, item)
-                              }
-                              checked={selectedBrandIds.includes(item.value)}
-                            />
-                            <label
-                              htmlFor={item.label}
-                              className="cursor-pointer text-sm leading-none font-medium"
-                            >
-                              {item.label}
-                            </label>
-                          </div>
-                        ))}
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
+                      </AccordionTrigger>
+                      <AccordionContent className="bg-white px-4 py-4">
+                        <CategoryFilter
+                          selectedCategoryIds={selectedCategoryIds}
+                          onCategoryChange={handleCategoryChange}
+                          onClear={handleCategoryClear}
+                        />
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                </div>
 
-                {/* Price Filter */}
-                <Accordion type="multiple" defaultValue={["price"]}>
-                  <AccordionItem value="price">
-                    <AccordionTrigger className="text-base hover:no-underline!">
-                      {t("price")}
-                    </AccordionTrigger>
-                    <AccordionContent>
-                      <div className="px-4">
-                        <div className="px-2">
+                {/* Brand Filter - Improved */}
+                <div className="mb-6">
+                  <Accordion
+                    type="multiple"
+                    defaultValue={["brand"]}
+                    className="overflow-hidden rounded-lg border border-gray-200"
+                  >
+                    <AccordionItem value="brand" className="border-0">
+                      <AccordionTrigger className="bg-gray-50 px-4 py-3 font-semibold text-gray-900 hover:bg-gray-100">
+                        <div className="flex items-center gap-2">
+                          <Building2 className="h-4 w-4" />
+                          <span>{t("by_brand")}</span>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="bg-white px-4 py-4">
+                        <div className="mb-3">
+                          <div className="flex gap-2">
+                            <Input
+                              type="text"
+                              placeholder={t("search_brand")}
+                              className="h-9 flex-1 border-gray-300 text-sm focus:border-blue-500 focus:ring-blue-500"
+                              value={searchTermBrand}
+                              onChange={handleBrandSearchChange}
+                              dir={langDir}
+                              translate="no"
+                            />
+                            <Button
+                              type="button"
+                              onClick={handleBrandSearch}
+                              disabled={!searchTermBrand.trim()}
+                              size="sm"
+                              className="h-9 bg-blue-600 px-4 text-xs font-medium hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-gray-400"
+                            >
+                              {t("search")}
+                            </Button>
+                          </div>
+                        </div>
+                        <div className="max-h-48 space-y-2 overflow-y-auto">
+                          {!memoizedBrands.length ? (
+                            <p className="py-4 text-center text-sm text-gray-500">
+                              {t("no_data_found")}
+                            </p>
+                          ) : null}
+                          {memoizedBrands.map((item: ISelectOptions) => (
+                            <div
+                              key={item.value}
+                              className="flex items-center space-x-2 rounded px-2 py-1 transition-colors hover:bg-gray-50"
+                            >
+                              <Checkbox
+                                id={item.label}
+                                className="border border-gray-300 data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600"
+                                onCheckedChange={(checked) =>
+                                  handleBrandChange(checked, item)
+                                }
+                                checked={selectedBrandIds.includes(item.value)}
+                              />
+                              <label
+                                htmlFor={item.label}
+                                className="flex-1 cursor-pointer text-sm leading-none font-medium"
+                              >
+                                {item.label}
+                              </label>
+                            </div>
+                          ))}
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                </div>
+
+                {/* Price Filter - Improved */}
+                <div>
+                  <Accordion
+                    type="multiple"
+                    defaultValue={["price"]}
+                    className="overflow-hidden rounded-lg border border-gray-200"
+                  >
+                    <AccordionItem value="price" className="border-0">
+                      <AccordionTrigger className="bg-gray-50 px-4 py-3 font-semibold text-gray-900 hover:bg-gray-100">
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg">💰</span>
+                          <span>{t("price")}</span>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="bg-white px-4 py-4">
+                        <div className="mb-4 px-2">
                           <ReactSlider
                             className="horizontal-slider"
                             thumbClassName="example-thumb"
@@ -553,10 +576,10 @@ const RfqPage = (props: RfqPageProps) => {
                             min={0}
                           />
                         </div>
-                        <div className="flex justify-center">
+                        <div className="mb-4 flex justify-center">
                           <Button
                             variant="outline"
-                            className="mb-4"
+                            className="h-9 px-4 text-sm"
                             onClick={() => setPriceRange([])}
                             dir={langDir}
                             translate="no"
@@ -568,7 +591,7 @@ const RfqPage = (props: RfqPageProps) => {
                           <Input
                             type="number"
                             placeholder={`${currency.symbol}0`}
-                            className="custom-form-control-s1 rounded-none"
+                            className="custom-form-control-s1 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                             onChange={handleMinPriceChange}
                             onWheel={(e) => e.currentTarget.blur()}
                             ref={minPriceInputRef}
@@ -577,21 +600,26 @@ const RfqPage = (props: RfqPageProps) => {
                           <Input
                             type="number"
                             placeholder={`${currency.symbol}500`}
-                            className="custom-form-control-s1 rounded-none"
+                            className="custom-form-control-s1 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                             onChange={handleMaxPriceChange}
                             onWheel={(e) => e.currentTarget.blur()}
                             ref={maxPriceInputRef}
                           />
                         </div>
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                </div>
               </div>
             </div>
 
-            {/* Middle Column - Products (MAIN CONTENT - PRIORITIZED) */}
-            <div className="w-full flex-1 overflow-y-auto bg-white lg:w-auto">
+            {/* Main Content Column - Products */}
+            <div
+              className={cn(
+                "flex-1 overflow-y-auto bg-white",
+                cartList.length > 0 ? "lg:pr-36" : "lg:pr-0",
+              )}
+            >
               <div className="p-2 sm:p-4 lg:p-6">
                 {/* Product Header Filter Section */}
                 <div className="mb-6 flex flex-col items-start justify-between gap-4 rounded-lg border border-gray-200 bg-gray-50 p-4 sm:flex-row sm:items-center">
@@ -604,6 +632,20 @@ const RfqPage = (props: RfqPageProps) => {
                       onClick={() => setProductFilter(true)}
                     >
                       <FilterMenuIcon />
+                    </button>
+
+                    {/* Mobile Cart Button - Hidden on desktop, floating button shows instead */}
+                    <button
+                      type="button"
+                      className="relative rounded-lg border border-gray-300 bg-white p-2.5 transition-colors hover:bg-gray-100 lg:hidden"
+                      onClick={() => setShowCartDrawer(true)}
+                    >
+                      <ShoppingCart className="h-5 w-5" />
+                      {cartList.length > 0 && (
+                        <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
+                          {cartList.length > 99 ? "99+" : cartList.length}
+                        </span>
+                      )}
                     </button>
 
                     {/* Title */}
@@ -1003,25 +1045,170 @@ const RfqPage = (props: RfqPageProps) => {
           </SheetContent>
         </Sheet>
 
-        {/* Floating Cart Button - Only show when cart has items */}
+        {/* Fixed Right Sidebar Cart - Desktop Only (Amazon Style) */}
         {cartList.length > 0 && (
-          <button
-            onClick={() => setShowCartDrawer(true)}
-            className="group fixed right-6 bottom-6 z-50 flex h-11 w-11 items-center justify-center rounded-full bg-blue-600 text-white shadow-2xl transition-all duration-300 hover:scale-110 hover:bg-blue-700 lg:h-12 lg:w-12"
-            aria-label={t("my_cart")}
-          >
-            <ShoppingCart className="h-4 w-4 lg:h-5 lg:w-5" />
-            <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full border-2 border-white bg-red-500 text-xs font-bold text-white shadow-lg lg:h-5 lg:w-5">
-              {cartList.length > 99 ? "99+" : cartList.length}
-            </span>
-          </button>
-        )}
+            <div className="hidden lg:block">
+              <div className="fixed top-0 right-0 z-[60] h-screen w-36 border-l border-gray-200 bg-white shadow-lg">
+                <div className="flex h-full flex-col">
+                  {/* Top sticky header + Go To Cart */}
+                  <div className="sticky top-0 z-10 border-b border-gray-200 bg-white px-4 pt-4 pb-3 text-center">
+                    <div className="flex flex-col items-center">
+                      <span
+                        className="mb-0.5 text-[11px] font-medium text-gray-600"
+                        dir={langDir}
+                        translate="no"
+                      >
+                        {t("rfq_cart") || t("my_cart")}
+                      </span>
+                      <span className="text-sm font-bold text-red-600">
+                        {cartList.length}
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => {
+                        window.location.href = "/rfq-cart";
+                      }}
+                      className="mt-3 flex w-full items-center justify-center space-x-1.5 rounded-lg bg-yellow-400 px-3 py-2 text-xs font-medium text-gray-900 shadow-sm transition-colors duration-200 hover:bg-yellow-500"
+                    >
+                      <Package className="h-3 w-3" />
+                      <span>{t("go_to_cart")}</span>
+                    </button>
+                  </div>
 
-        {/* Desktop & Mobile Cart Drawer - Enhanced */}
+                  {/* Scrollable product list */}
+                  <div className="scrollbar-hide flex-1 overflow-y-auto px-4 pt-3 pb-4">
+                    <div className="space-y-3">
+                      {cartList.map((cartItem: any) => {
+                        const productData = memoizedRfqProducts.find(
+                          (product: any) => product.id === cartItem.productId,
+                        );
+                        const quantity = cartItem.quantity || 1;
+
+                        const productImage =
+                          productData?.productImages?.[0]?.image || null;
+
+                        const productName =
+                          productData?.productName || t("product");
+
+                        return (
+                          <div
+                            key={cartItem.id}
+                            className="space-y-2 text-center"
+                          >
+                            {/* Product Image */}
+                            <div className="flex justify-center">
+                              <Link
+                                href={`/rfq/${cartItem.productId}`}
+                                className="h-20 w-20 overflow-hidden rounded-lg bg-gray-100 transition-opacity hover:opacity-80"
+                              >
+                                {productImage ? (
+                                  <img
+                                    src={productImage}
+                                    alt={productName}
+                                    className="h-full w-full object-cover"
+                                  />
+                                ) : (
+                                  <div className="flex h-full w-full items-center justify-center">
+                                    <Package className="h-8 w-8 text-gray-400" />
+                                  </div>
+                                )}
+                              </Link>
+                            </div>
+
+                            {/* Quantity Selector - Amazon Style */}
+                            <div className="mb-2 flex items-center justify-center">
+                              <div className="flex items-center overflow-hidden rounded-md border-2 border-yellow-400">
+                                {/* Trash/Remove Button */}
+                                <button
+                                  onClick={() => {
+                                    if (quantity > 1) {
+                                      handleAddToCart(
+                                        quantity - 1,
+                                        cartItem.productId,
+                                        "remove",
+                                        cartItem.offerPriceFrom,
+                                        cartItem.offerPriceTo,
+                                        cartItem.note,
+                                      );
+                                    } else {
+                                      handleRemoveItemFromCart(cartItem.id);
+                                    }
+                                  }}
+                                  disabled={updateRfqCartWithLogin.isPending || deleteRfqCartItem.isPending}
+                                  className="px-1.5 py-1 transition-colors hover:bg-yellow-50 disabled:cursor-not-allowed disabled:opacity-50"
+                                  aria-label={t("decrease_quantity")}
+                                >
+                                  <Trash2 className="h-3 w-3 text-gray-600" />
+                                </button>
+
+                                {/* Quantity Number */}
+                                <span className="min-w-[2rem] border-x border-yellow-400 bg-white px-2 py-1 text-center text-xs font-medium text-gray-900">
+                                  {quantity}
+                                </span>
+
+                                {/* Plus Button */}
+                                <button
+                                  onClick={() => {
+                                    handleAddToCart(
+                                      quantity + 1,
+                                      cartItem.productId,
+                                      "add",
+                                      cartItem.offerPriceFrom,
+                                      cartItem.offerPriceTo,
+                                      cartItem.note,
+                                    );
+                                  }}
+                                  disabled={updateRfqCartWithLogin.isPending}
+                                  className="px-1.5 py-1 transition-colors hover:bg-yellow-50 disabled:cursor-not-allowed disabled:opacity-50"
+                                  aria-label={t("increase_quantity")}
+                                >
+                                  <span className="text-sm font-semibold text-gray-600">
+                                    +
+                                  </span>
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Remove Button */}
+                            <div className="flex justify-center">
+                              <button
+                                onClick={() =>
+                                  handleRemoveItemFromCart(cartItem.id)
+                                }
+                                disabled={deleteRfqCartItem.isPending}
+                                className="text-xs text-blue-600 underline hover:text-blue-800 disabled:cursor-not-allowed disabled:opacity-50"
+                                aria-label={t("remove_from_cart")}
+                              >
+                                {t("remove")}
+                              </button>
+                            </div>
+
+                            {/* Note if exists */}
+                            {cartItem.note && (
+                              <div className="mb-2">
+                                <span className="inline-block max-w-full truncate rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-700">
+                                  {cartItem.note}
+                                </span>
+                              </div>
+                            )}
+
+                            {/* Divider */}
+                            <div className="mt-3 border-t border-gray-200" />
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+        {/* Mobile Cart Drawer - Only for mobile devices */}
         <Sheet open={showCartDrawer} onOpenChange={setShowCartDrawer}>
           <SheetContent
             side="right"
-            className="w-full overflow-y-auto sm:w-[400px] lg:w-[450px]"
+            className="w-full overflow-y-auto sm:w-[400px] lg:hidden"
           >
             <SheetHeader className="mb-4 border-b border-gray-200 pb-4">
               <SheetTitle className="flex items-center justify-between">
@@ -1059,7 +1246,11 @@ const RfqPage = (props: RfqPageProps) => {
                         key={cartItem.id}
                         className="group flex items-center space-x-4 rounded-lg border border-gray-100 p-3 transition-colors hover:bg-gray-50"
                       >
-                        <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100">
+                        <Link
+                          href={`/rfq/${cartItem.productId}`}
+                          className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100 transition-opacity hover:opacity-80"
+                          onClick={() => setShowCartDrawer(false)}
+                        >
                           {productData?.productImages?.[0]?.image ? (
                             <img
                               src={productData.productImages[0].image}
@@ -1071,7 +1262,7 @@ const RfqPage = (props: RfqPageProps) => {
                               <Package className="h-8 w-8 text-gray-400" />
                             </div>
                           )}
-                        </div>
+                        </Link>
 
                         <div className="min-w-0 flex-1">
                           <h4 className="mb-1 truncate text-sm font-semibold text-gray-900">

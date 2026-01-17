@@ -139,6 +139,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
   const [menuId, setMenuId] = useState<string | number>();
   const [categoryId, setCategoryId] = useState();
   const [assignedToId, setAssignedToId] = useState();
+  const [isCategorySidebarOpen, setIsCategorySidebarOpen] = useState(false);
   // const [subCategoryId, setSubCategoryId] = useState();
   const [subCategoryIndex, setSubCategoryIndex] = useState(0);
   const [subSubCategoryIndex, setSubSubCategoryIndex] = useState(0);
@@ -297,8 +298,26 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
       );
     }
 
+    // Sort menu items for Arabic (RTL) in the desired order: Store, Buygroup, Factories, RFQ
+    if (langDir === "rtl" && tempArr.length > 0) {
+      const getOrder = (itemName: string): number => {
+        const normalized = itemName.toLowerCase().trim();
+        if (normalized.includes("store")) return 1;
+        if (normalized.includes("buy group") || normalized.includes("buygroup"))
+          return 2;
+        if (normalized.includes("factories") || normalized.includes("factory"))
+          return 3;
+        if (normalized.includes("rfq")) return 4;
+        return 999; // Default order for unknown items
+      };
+
+      tempArr.sort((a: any, b: any) => {
+        return getOrder(a.name) - getOrder(b.name);
+      });
+    }
+
     return tempArr || [];
-  }, [categoryQuery.data?.data]);
+  }, [categoryQuery.data?.data, langDir]);
 
   const memoizedCategory = useMemo(() => {
     let tempArr: any = [];
@@ -664,15 +683,28 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
       {/* Mobile Header - Only visible on mobile screens */}
       <header
         className={`bg-dark-cyan sticky top-0 z-50 block w-full shadow-md transition-all duration-300 md:hidden ${showHeader ? "translate-y-0" : "-translate-y-full"}`}
+        dir={langDir}
         style={{
-          paddingLeft: `${sidebarWidth}px`,
+          ...(langDir === "rtl"
+            ? { paddingRight: `${sidebarWidth}px` }
+            : { paddingLeft: `${sidebarWidth}px` }),
         }}
       >
         <div className="w-full px-3 py-2 sm:px-4 sm:py-2.5">
           {/* Mobile Top Row */}
-          <div className="mb-2 flex items-center justify-between sm:mb-2.5">
+          <div
+            className={cn(
+              "mb-2 flex items-center justify-between sm:mb-2.5",
+              langDir === "rtl" && "flex-row-reverse",
+            )}
+          >
             {/* Logo and Menu */}
-            <div className="flex items-center gap-1.5 sm:gap-2">
+            <div
+              className={cn(
+                "flex items-center gap-1.5 sm:gap-2",
+                langDir === "rtl" && "flex-row-reverse",
+              )}
+            >
               {isLoggedIn && (
                 <button
                   onClick={openSidebar}
@@ -710,7 +742,12 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                   className="h-5 min-h-[20px] w-5 min-w-[20px] object-contain sm:h-6 sm:w-6"
                 />
                 {wishlistCount.data?.data > 0 && (
-                  <div className="absolute top-0 right-0 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-lg sm:h-5 sm:w-5 sm:text-xs">
+                  <div
+                    className={cn(
+                      "absolute top-0 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-lg sm:h-5 sm:w-5 sm:text-xs",
+                      langDir === "rtl" ? "left-0" : "right-0",
+                    )}
+                  >
                     {wishlistCount.data?.data > 99
                       ? "99+"
                       : wishlistCount.data?.data}
@@ -736,7 +773,12 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                   (!hasAccessToken &&
                     !isArray(cartCountWithoutLogin.data?.data) &&
                     cartCountWithoutLogin.data?.data > 0)) && (
-                  <div className="absolute top-0 right-0 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-lg sm:h-5 sm:w-5 sm:text-xs">
+                  <div
+                    className={cn(
+                      "absolute top-0 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-lg sm:h-5 sm:w-5 sm:text-xs",
+                      langDir === "rtl" ? "left-0" : "right-0",
+                    )}
+                  >
                     {hasAccessToken
                       ? !isArray(cartCountWithLogin.data?.data) &&
                         cartCountWithLogin.data?.data > 99
@@ -1002,27 +1044,60 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                 />
               </svg>
             </div>
-            {/* Search Icon Button */}
-            <button
-              type="button"
-              className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg transition-all hover:from-orange-600 hover:to-orange-700 active:scale-95 sm:h-10 sm:w-10"
-              onClick={() => updateURL(searchTerm)}
-            >
-              <Search className="h-5 w-5" />
-            </button>
-            {/* All Categories Icon Button - Clickable on mobile, hoverable on desktop */}
-            <button
-              type="button"
-              className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg transition-all hover:from-orange-600 hover:to-orange-700 active:scale-95 sm:h-10 sm:w-10 md:hidden"
-              onClick={() => {
-                // On mobile, open the category sidebar
-                if (typeof window !== "undefined") {
-                  window.dispatchEvent(new CustomEvent("openCategorySidebar"));
-                }
-              }}
-            >
-              <LayoutGrid className="h-5 w-5 text-white" />
-            </button>
+            {/* Conditionally render buttons based on language - swap positions in Arabic */}
+            {langDir === "rtl" ? (
+              <>
+                {/* All Categories Icon Button - First in Arabic */}
+                <button
+                  type="button"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg transition-all hover:from-orange-600 hover:to-orange-700 active:scale-95 sm:h-10 sm:w-10 md:hidden"
+                  onClick={() => {
+                    // On mobile, open the category sidebar
+                    if (typeof window !== "undefined") {
+                      window.dispatchEvent(
+                        new CustomEvent("openCategorySidebar"),
+                      );
+                    }
+                  }}
+                >
+                  <LayoutGrid className="h-5 w-5 text-white" />
+                </button>
+                {/* Search Icon Button - Second in Arabic */}
+                <button
+                  type="button"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg transition-all hover:from-orange-600 hover:to-orange-700 active:scale-95 sm:h-10 sm:w-10"
+                  onClick={() => updateURL(searchTerm)}
+                >
+                  <Search className="h-5 w-5" />
+                </button>
+              </>
+            ) : (
+              <>
+                {/* Search Icon Button - First in English */}
+                <button
+                  type="button"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg transition-all hover:from-orange-600 hover:to-orange-700 active:scale-95 sm:h-10 sm:w-10"
+                  onClick={() => updateURL(searchTerm)}
+                >
+                  <Search className="h-5 w-5" />
+                </button>
+                {/* All Categories Icon Button - Second in English */}
+                <button
+                  type="button"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg transition-all hover:from-orange-600 hover:to-orange-700 active:scale-95 sm:h-10 sm:w-10 md:hidden"
+                  onClick={() => {
+                    // On mobile, open the category sidebar
+                    if (typeof window !== "undefined") {
+                      window.dispatchEvent(
+                        new CustomEvent("openCategorySidebar"),
+                      );
+                    }
+                  }}
+                >
+                  <LayoutGrid className="h-5 w-5 text-white" />
+                </button>
+              </>
+            )}
           </div>
 
           {/* Mobile Navigation Menu - Home, Store, Buygroup, etc. */}
@@ -1181,12 +1256,17 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
 
       {/* Desktop/Tablet Header - Hidden on mobile */}
       <header
-        className={`bg-dark-cyan relative sticky top-0 z-50 hidden w-full ${!isLoggedIn ? "border-b border-solid border-gray-300 shadow-xl" : ""} transition-all duration-300 md:block ${
-          (pathname === "/trending" || pathname === "/buygroup") && hasCartItems
-            ? "lg:pr-36"
-            : ""
-        } ${showHeader ? "translate-y-0" : "-translate-y-full"}`}
+        className={cn(
+          "bg-dark-cyan relative sticky top-0 z-50 hidden w-full",
+          !isLoggedIn && "border-b border-solid border-gray-300 shadow-xl",
+          "transition-all duration-300 md:block",
+          (pathname === "/trending" || pathname === "/buygroup") &&
+            hasCartItems &&
+            (langDir === "rtl" ? "lg:pl-36" : "lg:pr-36"),
+          showHeader ? "translate-y-0" : "-translate-y-full",
+        )}
         key={`header-${currentTradeRole}-${currentAccount?.data?.data?.account?.id}`}
+        dir={langDir}
         style={{
           ...(langDir === "rtl"
             ? { paddingRight: `${sidebarWidth}px` }
@@ -1195,26 +1275,35 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
       >
         <div className="bg-dark-cyan w-full">
           <div className="w-full px-6 pt-1.5 pb-1.5 md:px-8 md:pt-2 md:pb-2 lg:px-12 lg:pt-1.5 lg:pb-1">
-            <div className="hidden md:flex md:gap-x-2.5">
-              <div className="py-1 text-xs font-normal text-white/90 md:w-4/12 md:py-1.5 md:text-sm lg:w-4/12 lg:py-2">
-                <p
-                  dir="ltr"
-                  translate="no"
-                  className="transition-colors hover:text-white"
-                >
-                  {currentLocale === "ar" ? (
-                    <>
-                      Ultrasooq <span dir="rtl">مرحبًا بك في</span>
-                    </>
-                  ) : (
-                    t("welcome")
+            <div
+              className={cn(
+                "hidden md:flex md:gap-x-2.5",
+                langDir === "rtl" && "flex-row-reverse",
+              )}
+            >
+              <div
+                className={cn(
+                  "flex py-1 text-xs font-normal text-white/90 md:w-full md:py-1.5 md:text-sm lg:py-2",
+                  langDir === "rtl" ? "justify-start" : "justify-end",
+                )}
+              >
+                <ul
+                  className={cn(
+                    "flex items-center gap-1",
+                    langDir === "rtl"
+                      ? "flex-row-reverse justify-start"
+                      : "justify-end",
                   )}
-                </p>
-              </div>
-              <div className="flex justify-end py-1 text-xs font-normal text-white/90 md:w-8/12 md:py-1.5 md:text-sm lg:w-8/12 lg:py-2">
-                <ul className="flex items-center justify-end gap-1">
+                >
                   {currentTradeRole != "BUYER" ? (
-                    <li className="border-r border-solid border-white/30 px-3 text-xs font-normal text-white/90 md:text-sm">
+                    <li
+                      className={cn(
+                        "px-3 text-xs font-normal text-white/90 md:text-sm",
+                        langDir === "rtl"
+                          ? "border-l border-solid border-white/30"
+                          : "border-r border-solid border-white/30",
+                      )}
+                    >
                       <a
                         href="#"
                         dir={langDir}
@@ -1225,7 +1314,14 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                       </a>
                     </li>
                   ) : null}
-                  <li className="border-r border-solid border-white/30 px-3 text-xs font-normal text-white/90 md:text-sm">
+                  <li
+                    className={cn(
+                      "px-3 text-xs font-normal text-white/90 md:text-sm",
+                      langDir === "rtl"
+                        ? "border-l border-solid border-white/30"
+                        : "border-r border-solid border-white/30",
+                    )}
+                  >
                     <Link
                       href="/my-orders"
                       dir={langDir}
@@ -1235,7 +1331,14 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                       {t("track_your_order")}
                     </Link>
                   </li>
-                  <li className="border-r border-solid border-white/30 px-3 text-xs font-normal text-white/90 md:text-sm">
+                  <li
+                    className={cn(
+                      "px-3 text-xs font-normal text-white/90 md:text-sm",
+                      langDir === "rtl"
+                        ? "border-l border-solid border-white/30"
+                        : "border-r border-solid border-white/30",
+                    )}
+                  >
                     <select
                       dir={langDir}
                       className="cursor-pointer rounded border-0 bg-transparent px-1 py-1 text-white/90 transition-colors hover:text-white focus:outline-none"
@@ -1262,7 +1365,12 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                       })}
                     </select>
                   </li>
-                  <li className="google_translate px-3 pr-0 text-xs font-normal text-white/90 md:text-sm">
+                  <li
+                    className={cn(
+                      "google_translate px-3 text-xs font-normal text-white/90 md:text-sm",
+                      langDir === "rtl" ? "pl-0" : "pr-0",
+                    )}
+                  >
                     {/* <GoogleTranslate /> */}
                     <select
                       dir={langDir}
@@ -1669,9 +1777,24 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center">
-              <div className="order-1 flex w-5/12 flex-1 items-center py-1.5 md:w-2/12 md:py-2 lg:w-1/6">
-                <div className="flex items-center gap-2">
+            <div
+              className={cn(
+                "flex flex-wrap items-center",
+                langDir === "rtl" && "flex-row-reverse",
+              )}
+            >
+              <div
+                className={cn(
+                  "flex w-5/12 flex-1 items-center py-1.5 md:w-2/12 md:py-2 lg:w-1/6",
+                  langDir === "rtl" ? "order-3" : "order-1",
+                )}
+              >
+                <div
+                  className={cn(
+                    "flex items-center gap-2",
+                    langDir === "rtl" ? "justify-end" : "justify-start",
+                  )}
+                >
                   <Link
                     href="/home"
                     className="flex items-center transition-opacity hover:opacity-90"
@@ -1685,83 +1808,186 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                   </Link>
                 </div>
               </div>
-              <div className="order-3 flex w-[80%] items-center gap-2 py-1.5 md:order-2 md:w-7/12 md:px-3 md:py-2 lg:w-4/6">
-                {/* Category icon and text placed to the left of the search bar */}
-                {mounted && (
-                  <div
-                    className="group relative hidden items-center gap-2 rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 px-3 transition-all hover:from-orange-600 hover:to-orange-700 active:scale-95 md:flex md:h-10 md:px-4"
-                    onMouseEnter={() => {
-                      if (typeof window !== "undefined") {
-                        window.dispatchEvent(
-                          new CustomEvent("openCategorySidebar"),
-                        );
-                      }
-                    }}
-                    onMouseLeave={() => {
-                      if (typeof window !== "undefined") {
-                        window.dispatchEvent(
-                          new CustomEvent("closeCategorySidebar"),
-                        );
-                      }
-                    }}
-                  >
-                    <LayoutGrid className="h-5 w-5 text-white md:h-6 md:w-6" />
-                    <span className="text-sm font-semibold text-white md:text-base">
-                      {t("categories") || "Categories"}
-                    </span>
-                  </div>
+              <div
+                className={cn(
+                  "flex w-[80%] items-center gap-2 py-1.5 md:w-7/12 md:px-3 md:py-2 lg:w-4/6",
+                  langDir === "rtl"
+                    ? "order-2 flex-row-reverse"
+                    : "order-3 md:order-2",
                 )}
-                {!mounted && (
-                  <div className="group relative hidden h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 transition-all hover:from-orange-600 hover:to-orange-700 active:scale-95 md:flex md:h-10 md:w-10">
-                    <LayoutGrid className="h-6 w-6 text-white" />
-                  </div>
+              >
+                {/* In Arabic: Search button first, then search input, then category button */}
+                {langDir === "rtl" ? (
+                  <>
+                    {/* Search button - first in Arabic */}
+                    <button
+                      type="button"
+                      className="h-9 rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 px-4 text-sm font-semibold whitespace-nowrap text-white shadow-lg transition-all hover:from-orange-600 hover:to-orange-700 active:scale-95 md:h-10 md:px-6 md:text-base lg:px-8"
+                      onClick={() => updateURL(searchTerm)}
+                      dir={langDir}
+                      translate="no"
+                    >
+                      {t("search")}
+                    </button>
+                    {/* Search input - middle */}
+                    <div className="relative max-w-[55%] flex-1 md:max-w-[50%] lg:max-w-[65%] xl:max-w-[75%]">
+                      <input
+                        type="text"
+                        className={`form-control h-9 w-full rounded-lg border-2 border-white/20 text-sm text-black transition-all placeholder:text-gray-400 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none md:h-10 md:text-base ${
+                          currentLocale === "ar" ? "pr-4 pl-12" : "pr-12 pl-4"
+                        }`}
+                        placeholder={t("global_search_placeholder")}
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                        dir={langDir}
+                        translate="no"
+                      />
+                      <svg
+                        className={`pointer-events-none absolute top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400 ${
+                          currentLocale === "ar" ? "left-4" : "right-4"
+                        }`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                        />
+                      </svg>
+                    </div>
+                    {/* Category button - last in Arabic */}
+                    {mounted && (
+                      <button
+                        type="button"
+                        className="group relative hidden cursor-pointer items-center gap-2 rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 px-3 transition-all hover:from-orange-600 hover:to-orange-700 active:scale-95 md:flex md:h-10 md:px-4"
+                        onClick={() => {
+                          const newState = !isCategorySidebarOpen;
+                          setIsCategorySidebarOpen(newState);
+                          if (typeof window !== "undefined") {
+                            if (newState) {
+                              window.dispatchEvent(
+                                new CustomEvent("openCategorySidebar"),
+                              );
+                            } else {
+                              window.dispatchEvent(
+                                new CustomEvent("closeCategorySidebar"),
+                              );
+                            }
+                          }
+                        }}
+                      >
+                        <LayoutGrid className="h-5 w-5 text-white md:h-6 md:w-6" />
+                        <span className="text-sm font-semibold text-white md:text-base">
+                          {t("categories") || "Categories"}
+                        </span>
+                      </button>
+                    )}
+                    {!mounted && (
+                      <div className="group relative hidden h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 transition-all hover:from-orange-600 hover:to-orange-700 active:scale-95 md:flex md:h-10 md:w-10">
+                        <LayoutGrid className="h-6 w-6 text-white" />
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    {/* Category button - first in English */}
+                    {mounted && (
+                      <button
+                        type="button"
+                        className="group relative hidden cursor-pointer items-center gap-2 rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 px-3 transition-all hover:from-orange-600 hover:to-orange-700 active:scale-95 md:flex md:h-10 md:px-4"
+                        onClick={() => {
+                          const newState = !isCategorySidebarOpen;
+                          setIsCategorySidebarOpen(newState);
+                          if (typeof window !== "undefined") {
+                            if (newState) {
+                              window.dispatchEvent(
+                                new CustomEvent("openCategorySidebar"),
+                              );
+                            } else {
+                              window.dispatchEvent(
+                                new CustomEvent("closeCategorySidebar"),
+                              );
+                            }
+                          }
+                        }}
+                      >
+                        <LayoutGrid className="h-5 w-5 text-white md:h-6 md:w-6" />
+                        <span className="text-sm font-semibold text-white md:text-base">
+                          {t("categories") || "Categories"}
+                        </span>
+                      </button>
+                    )}
+                    {!mounted && (
+                      <div className="group relative hidden h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 transition-all hover:from-orange-600 hover:to-orange-700 active:scale-95 md:flex md:h-10 md:w-10">
+                        <LayoutGrid className="h-6 w-6 text-white" />
+                      </div>
+                    )}
+                    {/* Search input - middle */}
+                    <div className="relative max-w-[55%] flex-1 md:max-w-[50%] lg:max-w-[65%] xl:max-w-[75%]">
+                      <input
+                        type="text"
+                        className={`form-control h-9 w-full rounded-lg border-2 border-white/20 text-sm text-black transition-all placeholder:text-gray-400 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none md:h-10 md:text-base ${
+                          currentLocale === "ar" ? "pr-4 pl-12" : "pr-12 pl-4"
+                        }`}
+                        placeholder={t("global_search_placeholder")}
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                        dir={langDir}
+                        translate="no"
+                      />
+                      <svg
+                        className={`pointer-events-none absolute top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400 ${
+                          currentLocale === "ar" ? "left-4" : "right-4"
+                        }`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                        />
+                      </svg>
+                    </div>
+                    {/* Search button - last in English */}
+                    <button
+                      type="button"
+                      className="h-9 rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 px-4 text-sm font-semibold whitespace-nowrap text-white shadow-lg transition-all hover:from-orange-600 hover:to-orange-700 active:scale-95 md:h-10 md:px-6 md:text-base lg:px-8"
+                      onClick={() => updateURL(searchTerm)}
+                      dir={langDir}
+                      translate="no"
+                    >
+                      {t("search")}
+                    </button>
+                  </>
                 )}
-                <div className="relative max-w-[55%] flex-1 md:max-w-[50%] lg:max-w-[65%] xl:max-w-[75%]">
-                  <input
-                    type="text"
-                    className={`form-control h-9 w-full rounded-lg border-2 border-white/20 text-sm text-black transition-all placeholder:text-gray-400 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none md:h-10 md:text-base ${
-                      currentLocale === "ar" ? "pr-4 pl-12" : "pr-12 pl-4"
-                    }`}
-                    placeholder={t("global_search_placeholder")}
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    dir={langDir}
-                    translate="no"
-                  />
-                  <svg
-                    className={`pointer-events-none absolute top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400 ${
-                      currentLocale === "ar" ? "left-4" : "right-4"
-                    }`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                    />
-                  </svg>
-                </div>
-                <button
-                  type="button"
-                  className="h-9 rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 px-4 text-sm font-semibold whitespace-nowrap text-white shadow-lg transition-all hover:from-orange-600 hover:to-orange-700 active:scale-95 md:h-10 md:px-6 md:text-base lg:px-8"
-                  onClick={() => updateURL(searchTerm)}
-                  dir={langDir}
-                  translate="no"
-                >
-                  {t("search")}
-                </button>
               </div>
-              <div className="order-2 flex w-7/12 justify-end sm:order-2 sm:w-7/12 md:order-3 md:w-3/12 md:py-1.5 lg:w-1/6 lg:py-2">
-                <ul className="flex items-center justify-end gap-x-3 md:gap-x-4">
-                  {isLoggedIn && (
+              <div
+                className={cn(
+                  "flex w-7/12 sm:w-7/12 md:w-3/12 md:py-1.5 lg:w-1/6 lg:py-2",
+                  langDir === "rtl"
+                    ? "order-1 justify-start"
+                    : "order-2 justify-end sm:order-2 md:order-3",
+                )}
+              >
+                <ul
+                  className={cn(
+                    "flex items-center gap-x-3 md:gap-x-4",
+                    langDir === "rtl" ? "justify-start" : "justify-end",
+                  )}
+                >
+                  {isLoggedIn ? (
                     <li className="relative flex">
                       <NotificationBell />
                     </li>
-                  )}
+                  ) : null}
                   <li className="relative">
                     <Link
                       href="/wishlist"
@@ -1775,7 +2001,12 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                         className="h-6 min-h-[24px] w-6 min-w-[24px] object-contain md:h-7 md:w-7"
                       />
                       {wishlistCount.data?.data > 0 && (
-                        <div className="absolute -top-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-lg">
+                        <div
+                          className={cn(
+                            "absolute -top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-lg",
+                            langDir === "rtl" ? "-left-0.5" : "-right-0.5",
+                          )}
+                        >
                           {wishlistCount.data?.data > 99
                             ? "99+"
                             : wishlistCount.data?.data}
@@ -1801,7 +2032,12 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                         (!hasAccessToken &&
                           !isArray(cartCountWithoutLogin.data?.data) &&
                           cartCountWithoutLogin.data?.data > 0)) && (
-                        <div className="absolute -top-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-lg">
+                        <div
+                          className={cn(
+                            "absolute -top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-lg",
+                            langDir === "rtl" ? "-left-0.5" : "-right-0.5",
+                          )}
+                        >
                           {hasAccessToken
                             ? !isArray(cartCountWithLogin.data?.data) &&
                               cartCountWithLogin.data?.data > 99
@@ -2153,7 +2389,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
               </div>
               <div
                 className="flex w-full flex-col flex-wrap items-start justify-start gap-x-1 py-1 md:flex-row md:justify-between"
-                dir="ltr"
+                dir={langDir}
               >
                 <ButtonLink
                   key={0}

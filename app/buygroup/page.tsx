@@ -80,7 +80,8 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { ShoppingCart, Package, Trash2, Plus, Minus } from "lucide-react";
+import { ShoppingCart, Package, Trash2, Plus, Minus, Building2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface TrendingPageProps {
   searchParams?: Promise<{ term?: string }>;
@@ -325,15 +326,18 @@ const TrendingPage = (props0: TrendingPageProps) => {
           });
         }
 
+        const activePriceEntry =
+          item?.product_productPrice?.find(
+            (pp: any) => pp?.status === "ACTIVE",
+          ) || item?.product_productPrice?.[0];
+
         return {
           id: item.id,
           productName: item?.productName || "-",
           productPrice: item?.productPrice || 0,
-          offerPrice: item?.offerPrice || 0,
-          productImage: item?.product_productPrice?.[0]
-            ?.productPrice_productSellerImage?.length
-            ? item?.product_productPrice?.[0]
-                ?.productPrice_productSellerImage?.[0]?.image
+          offerPrice: activePriceEntry?.offerPrice || item?.offerPrice || 0,
+          productImage: activePriceEntry?.productPrice_productSellerImage?.length
+            ? activePriceEntry?.productPrice_productSellerImage?.[0]?.image
             : item?.productImages?.[0]?.image,
           categoryName: item?.category?.name || "-",
           skuNo: item?.skuNo,
@@ -346,17 +350,25 @@ const TrendingPage = (props0: TrendingPageProps) => {
           shortDescription: item?.product_productShortDescription?.length
             ? item?.product_productShortDescription?.[0]?.shortDescription
             : "-",
-          productProductPriceId: item?.product_productPrice?.[0]?.id,
-          productProductPrice: item?.product_productPrice?.[0]?.offerPrice,
-          consumerDiscount: item?.product_productPrice?.[0]?.consumerDiscount,
-          consumerDiscountType:
-            item?.product_productPrice?.[0]?.consumerDiscountType,
-          vendorDiscount: item?.product_productPrice?.[0]?.vendorDiscount,
-          vendorDiscountType:
-            item?.product_productPrice?.[0]?.vendorDiscountType,
-          askForPrice: item?.product_productPrice?.[0]?.askForPrice,
-          productPrices: item?.product_productPrice,
+          productProductPriceId: activePriceEntry?.id,
+          productProductPrice: activePriceEntry?.offerPrice,
+          consumerDiscount: activePriceEntry?.consumerDiscount,
+          consumerDiscountType: activePriceEntry?.consumerDiscountType,
+          vendorDiscount: activePriceEntry?.vendorDiscount,
+          vendorDiscountType: activePriceEntry?.vendorDiscountType,
+          askForPrice: activePriceEntry?.askForPrice,
+          productPrices: item?.product_productPrice || [],
           sold: sold,
+          productQuantity: activePriceEntry?.stock !== undefined && activePriceEntry?.stock !== null
+            ? Number(activePriceEntry.stock)
+            : (item?.productQuantity !== undefined && item?.productQuantity !== null
+              ? Number(item.productQuantity)
+              : null),
+          categoryId: item?.categoryId,
+          categoryLocation: item?.categoryLocation,
+          categoryConnections: item?.category?.category_categoryIdDetail || [],
+          consumerType: activePriceEntry?.consumerType,
+          status: item?.status || "ACTIVE",
         };
       }) || []
     );
@@ -690,121 +702,141 @@ const TrendingPage = (props0: TrendingPageProps) => {
           <Carousel list={comingSoonProducts} />
         </div>
 
-        {/* Full Width Three Column Layout */}
+        {/* Full Width Two Column Layout */}
         <div className="min-h-screen w-full bg-white px-2 sm:px-4 lg:px-8">
           <div className="flex h-full flex-col gap-4 lg:flex-row">
-            {/* Left Column - Filters (Desktop) */}
-            <div className="hidden w-64 flex-shrink-0 overflow-y-auto bg-white p-4 lg:block">
-              <div className="rounded-lg bg-white p-6 shadow-lg">
-                <div className="mb-4">
-                  <div className="mb-4 flex gap-2">
+            {/* Left Column - Filters (Desktop) - Improved UI */}
+            <div className="hidden flex-shrink-0 overflow-y-auto bg-white p-4 lg:block lg:w-1/4">
+              <div className="sticky top-4 rounded-xl bg-white p-6 shadow-lg">
+                {/* Filter Header */}
+                <div className="mb-6 border-b border-gray-200 pb-4">
+                  <h3 className="mb-3 text-lg font-bold text-gray-900">
+                    {t("filters")}
+                  </h3>
+                  <div className="flex gap-2">
                     <button
                       type="button"
                       onClick={selectAll}
-                      className="rounded bg-blue-100 px-3 py-2 text-sm text-blue-700 transition-colors hover:bg-blue-200"
+                      className="flex-1 rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
                     >
                       {t("select_all")}
                     </button>
                     <button
                       type="button"
                       onClick={clearFilter}
-                      className="rounded bg-gray-100 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-200"
+                      className="flex-1 rounded-lg bg-gray-200 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-300"
                     >
                       {t("clean_select")}
                     </button>
                   </div>
                 </div>
 
-                {/* Category Filter */}
-                <Accordion
-                  type="multiple"
-                  defaultValue={["category_filter"]}
-                  className="mb-4"
-                >
-                  <AccordionItem value="category_filter">
-                    <AccordionTrigger className="text-base hover:no-underline!">
-                      {t("by_category")}
-                    </AccordionTrigger>
-                    <AccordionContent>
-                      <CategoryFilter
-                        selectedCategoryIds={
-                          category.categoryIds
-                            ? category.categoryIds.split(",").map(Number)
-                            : []
-                        }
-                        onCategoryChange={(categoryIds) =>
-                          category.setCategoryIds(categoryIds.join(","))
-                        }
-                        onClear={() => category.setCategoryIds("")}
-                      />
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
+                {/* Category Filter - Improved */}
+                {/* Commented out for now */}
+                {/* <div className="mb-6">
+                  <Accordion
+                    type="multiple"
+                    defaultValue={["category_filter"]}
+                    className="overflow-hidden rounded-lg border border-gray-200"
+                  >
+                    <AccordionItem value="category_filter" className="border-0">
+                      <AccordionTrigger className="bg-gray-50 px-4 py-3 font-semibold text-gray-900 hover:bg-gray-100">
+                        <div className="flex items-center gap-2">
+                          <Package className="h-4 w-4" />
+                          <span>{t("by_category")}</span>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="bg-white px-4 py-4">
+                        <CategoryFilter
+                          selectedCategoryIds={
+                            category.categoryIds
+                              ? category.categoryIds.split(",").map(Number)
+                              : []
+                          }
+                          onCategoryChange={(categoryIds) =>
+                            category.setCategoryIds(categoryIds.join(","))
+                          }
+                          onClear={() => category.setCategoryIds("")}
+                        />
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                </div> */}
 
-                {/* Brand Filter */}
-                <Accordion
-                  type="multiple"
-                  defaultValue={["brand"]}
-                  className="mb-4"
-                >
-                  <AccordionItem value="brand">
-                    <AccordionTrigger className="text-base hover:no-underline!">
-                      {t("by_brand")}
-                    </AccordionTrigger>
-                    <AccordionContent>
-                      <div className="mb-3">
-                        <div className="flex gap-2">
+                {/* Brand Filter - Improved */}
+                <div className="mb-6">
+                  <Accordion
+                    type="multiple"
+                    defaultValue={["brand"]}
+                    className="overflow-hidden rounded-lg border border-gray-200"
+                  >
+                    <AccordionItem value="brand" className="border-0">
+                      <AccordionTrigger className="bg-gray-50 px-4 py-3 font-semibold text-gray-900 hover:bg-gray-100">
+                        <div className="flex items-center gap-2">
+                          <Building2 className="h-4 w-4" />
+                          <span>{t("by_brand")}</span>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="bg-white px-4 py-4">
+                        <div className="mb-3">
                           <Input
                             type="text"
                             placeholder={t("search_brand")}
-                            className="h-8 flex-1 text-sm"
+                            className="h-9 w-full border-gray-300 text-sm focus:border-blue-500 focus:ring-blue-500"
                             onChange={handleDebounce}
                             dir={langDir}
                             translate="no"
                           />
                         </div>
-                      </div>
-                      <div className="max-h-40 space-y-2 overflow-y-auto">
-                        {!memoizedBrands.length ? (
-                          <p className="text-center text-sm text-gray-500">
-                            {t("no_data_found")}
-                          </p>
-                        ) : null}
-                        {memoizedBrands.map((item: ISelectOptions) => (
-                          <div
-                            key={item.value}
-                            className="flex items-center space-x-2"
-                          >
-                            <Checkbox
-                              id={item.label}
-                              className="border border-gray-300 data-[state=checked]:bg-blue-600!"
-                              onCheckedChange={(checked) =>
-                                handleBrandChange(checked, item)
-                              }
-                              checked={selectedBrandIds.includes(item.value)}
-                            />
-                            <label
-                              htmlFor={item.label}
-                              className="cursor-pointer text-sm leading-none font-medium"
+                        <div className="max-h-48 space-y-2 overflow-y-auto">
+                          {!memoizedBrands.length ? (
+                            <p className="py-4 text-center text-sm text-gray-500">
+                              {t("no_data_found")}
+                            </p>
+                          ) : null}
+                          {memoizedBrands.map((item: ISelectOptions) => (
+                            <div
+                              key={item.value}
+                              className="flex items-center space-x-2 rounded px-2 py-1 transition-colors hover:bg-gray-50"
                             >
-                              {item.label}
-                            </label>
-                          </div>
-                        ))}
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
+                              <Checkbox
+                                id={item.label}
+                                className="border border-gray-300 data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600"
+                                onCheckedChange={(checked) =>
+                                  handleBrandChange(checked, item)
+                                }
+                                checked={selectedBrandIds.includes(item.value)}
+                              />
+                              <label
+                                htmlFor={item.label}
+                                className="flex-1 cursor-pointer text-sm leading-none font-medium"
+                              >
+                                {item.label}
+                              </label>
+                            </div>
+                          ))}
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                </div>
 
-                {/* Price Filter */}
-                <Accordion type="multiple" defaultValue={["price"]}>
-                  <AccordionItem value="price">
-                    <AccordionTrigger className="text-base hover:no-underline!">
-                      {t("price")}
-                    </AccordionTrigger>
-                    <AccordionContent>
-                      <div className="px-4">
-                        <div className="px-2">
+                {/* Price Filter - Improved */}
+                <div>
+                  <Accordion
+                    type="multiple"
+                    defaultValue={["price"]}
+                    className="overflow-hidden rounded-lg border border-gray-200"
+                  >
+                    <AccordionItem value="price" className="border-0">
+                      <AccordionTrigger className="bg-gray-50 px-4 py-3 font-semibold text-gray-900 hover:bg-gray-100">
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg">💰</span>
+                          <span>{t("price")}</span>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="bg-white px-4 py-4">
+                        <div className="mb-4 px-2">
                           <ReactSlider
                             className="horizontal-slider"
                             thumbClassName="example-thumb"
@@ -826,10 +858,10 @@ const TrendingPage = (props0: TrendingPageProps) => {
                             min={0}
                           />
                         </div>
-                        <div className="flex justify-center">
+                        <div className="mb-4 flex justify-center">
                           <Button
                             variant="outline"
-                            className="mb-4"
+                            className="h-9 px-4 text-sm"
                             onClick={() => setPriceRange([])}
                             dir={langDir}
                             translate="no"
@@ -841,7 +873,7 @@ const TrendingPage = (props0: TrendingPageProps) => {
                           <Input
                             type="number"
                             placeholder={`${currency.symbol}0`}
-                            className="custom-form-control-s1 rounded-none"
+                            className="custom-form-control-s1 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                             onChange={handleMinPriceChange}
                             onWheel={(e) => e.currentTarget.blur()}
                             ref={minPriceInputRef}
@@ -850,21 +882,26 @@ const TrendingPage = (props0: TrendingPageProps) => {
                           <Input
                             type="number"
                             placeholder={`${currency.symbol}500`}
-                            className="custom-form-control-s1 rounded-none"
+                            className="custom-form-control-s1 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                             onChange={handleMaxPriceChange}
                             onWheel={(e) => e.currentTarget.blur()}
                             ref={maxPriceInputRef}
                           />
                         </div>
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                </div>
               </div>
             </div>
 
-            {/* Middle Column - Products (MAIN CONTENT - PRIORITIZED) */}
-            <div className="w-full flex-1 overflow-y-auto bg-white lg:w-auto lg:pr-36">
+            {/* Main Content Column - Products */}
+            <div
+              className={cn(
+                "w-full flex-1 overflow-y-auto bg-white lg:w-auto",
+                cartList.length > 0 ? "lg:pr-36" : "lg:pr-0",
+              )}
+            >
               <div className="p-2 sm:p-4 lg:p-6">
                 {/* Product Header Filter Section */}
                 <div className="mb-6 flex flex-col items-start justify-between gap-4 rounded-lg border border-gray-200 bg-gray-50 p-4 sm:flex-row sm:items-center">
@@ -1029,8 +1066,70 @@ const TrendingPage = (props0: TrendingPageProps) => {
 
                 {/* List View */}
                 {viewType === "list" && memoizedProductList.length ? (
-                  <div className="rounded-lg bg-white shadow">
-                    <ProductTable list={memoizedProductList} />
+                  <div className="product-list-s1 overflow-x-auto p-2 sm:p-4">
+                    <ProductTable
+                      list={memoizedProductList}
+                      onWishlist={handleAddToWishlist}
+                      onAddToCart={async (item, quantity, action, variant, cartId) => {
+                        if (!item?.productProductPriceId) {
+                          toast({
+                            title: t("something_went_wrong"),
+                            description: t("product_price_id_not_found"),
+                            variant: "danger",
+                          });
+                          return;
+                        }
+
+                        if (haveAccessToken) {
+                          const response = await updateCartWithLogin.mutateAsync({
+                            productPriceId: item.productProductPriceId,
+                            quantity: action === "add" ? quantity : 0,
+                            productVariant: variant,
+                          });
+                          if (response.status) {
+                            toast({
+                              title:
+                                action === "add"
+                                  ? t("item_added_to_cart")
+                                  : t("item_removed_from_cart"),
+                              description: t("check_your_cart_for_more_details"),
+                              variant: "success",
+                            });
+                          }
+                        } else {
+                          const response = await updateCartByDevice.mutateAsync({
+                            productPriceId: item.productProductPriceId,
+                            quantity: action === "add" ? quantity : 0,
+                            deviceId,
+                            productVariant: variant,
+                          });
+                          if (response.status) {
+                            toast({
+                              title:
+                                action === "add"
+                                  ? t("item_added_to_cart")
+                                  : t("item_removed_from_cart"),
+                              description: t("check_your_cart_for_more_details"),
+                              variant: "success",
+                            });
+                          }
+                        }
+                      }}
+                      wishlistMap={new Map(
+                        memoizedProductList.map((item: any) => [
+                          item.id,
+                          item?.inWishlist || false,
+                        ])
+                      )}
+                      cartMap={new Map(
+                        cartList?.map((item: any) => [
+                          item.productId,
+                          { quantity: item.quantity, cartId: item.id },
+                        ]) || []
+                      )}
+                      haveAccessToken={haveAccessToken}
+                      productVariants={productVariants}
+                    />
                   </div>
                 ) : null}
 

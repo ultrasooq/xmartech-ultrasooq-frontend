@@ -127,25 +127,25 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
     return () => window.removeEventListener("resize", calculateHeaderHeight);
   }, []);
 
-  // Handle hover state with delay
-  useEffect(() => {
-    if (isHovered) {
-      if (closeTimeoutRef.current) {
-        clearTimeout(closeTimeoutRef.current);
-        closeTimeoutRef.current = null;
-      }
-    } else {
-      closeTimeoutRef.current = setTimeout(() => {
-        onClose();
-      }, 300);
-    }
+  // Disabled: Handle hover state with delay - removed auto-close on mouse leave
+  // useEffect(() => {
+  //   if (isHovered) {
+  //     if (closeTimeoutRef.current) {
+  //       clearTimeout(closeTimeoutRef.current);
+  //       closeTimeoutRef.current = null;
+  //     }
+  //   } else {
+  //     closeTimeoutRef.current = setTimeout(() => {
+  //       onClose();
+  //     }, 300);
+  //   }
 
-    return () => {
-      if (closeTimeoutRef.current) {
-        clearTimeout(closeTimeoutRef.current);
-      }
-    };
-  }, [isHovered, onClose]);
+  //   return () => {
+  //     if (closeTimeoutRef.current) {
+  //       clearTimeout(closeTimeoutRef.current);
+  //     }
+  //   };
+  // }, [isHovered, onClose]);
 
   // Fetch main categories
   const mainCategoriesQuery = useCategory(PRODUCT_CATEGORY_ID.toString());
@@ -967,17 +967,22 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
             : "pointer-events-none opacity-0",
         )}
         onClick={(e) => {
-          // Close on click (mobile) or when not hovering (desktop)
-          if (window.innerWidth < 768 || !isHovered) {
-            onClose();
+          // Only close if clicking directly on backdrop, not on children
+          // Check if the click target is the backdrop itself
+          if (e.target === e.currentTarget) {
+            // Close on click (mobile) or when not hovering (desktop)
+            if (window.innerWidth < 768 || !isHovered) {
+              onClose();
+            }
           }
         }}
-        onMouseEnter={() => {
-          // Only use hover on desktop
-          if (window.innerWidth >= 768) {
-            setIsHovered(false);
-          }
-        }}
+        // Disabled: Remove auto-close on mouse leave
+        // onMouseEnter={() => {
+        //   // Only use hover on desktop
+        //   if (window.innerWidth >= 768) {
+        //     setIsHovered(false);
+        //   }
+        // }}
         onTouchStart={(e) => {
           // Close on touch for mobile
           if (window.innerWidth < 768) {
@@ -1003,18 +1008,23 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
           transformOrigin: "top center",
           "--header-height": `${headerHeight}px`,
         } as React.CSSProperties & { "--header-height": string }}
+        onClick={(e) => {
+          // Prevent clicks inside the panel from bubbling to backdrop
+          e.stopPropagation();
+        }}
         onMouseEnter={() => {
           // Only use hover on desktop
           if (window.innerWidth >= 768) {
             setIsHovered(true);
           }
         }}
-        onMouseLeave={() => {
-          // Only use hover on desktop
-          if (window.innerWidth >= 768) {
-            setIsHovered(false);
-          }
-        }}
+        // Disabled: Remove auto-close on mouse leave
+        // onMouseLeave={() => {
+        //   // Only use hover on desktop
+        //   if (window.innerWidth >= 768) {
+        //     setIsHovered(false);
+        //   }
+        // }}
         onWheel={(e) => {
           // Prevent scroll propagation to body when scrolling within sidebar
           const target = e.currentTarget;
@@ -1160,7 +1170,30 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
           </div>
 
           {/* Desktop View - Multi-column layout */}
-          <div className="hidden md:flex h-full w-full">
+          <div className="hidden md:flex h-full w-full relative">
+            {/* Close Button - Top Right */}
+            <button
+              onClick={(e) => {
+                // Stop all event propagation immediately
+                e.stopPropagation();
+                e.preventDefault();
+                e.nativeEvent.stopImmediatePropagation();
+                // Reset hover state and close in one action
+                setIsHovered(false);
+                onClose();
+              }}
+              onMouseDown={(e) => {
+                // Prevent mouse down from triggering backdrop onClick
+                e.stopPropagation();
+                e.preventDefault();
+                e.nativeEvent.stopImmediatePropagation();
+              }}
+              className="absolute top-3 right-3 flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-600 transition-colors hover:bg-gray-200 active:scale-95 z-[101] pointer-events-auto"
+              aria-label="Close categories"
+              type="button"
+            >
+              <X className="h-5 w-5" />
+            </button>
             {/* Column 1: Main Categories (Left Sidebar) */}
             {categoriesWithSubcategoriesFiltered.length > 0 && (
               <ScrollableMainColumn>
