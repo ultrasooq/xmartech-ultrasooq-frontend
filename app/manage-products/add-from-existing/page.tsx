@@ -1,16 +1,22 @@
 "use client";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 import { useExistingProduct } from "@/apis/queries/product.queries";
 import { useMe } from "@/apis/queries/user.queries";
+import { useCategory } from "@/apis/queries/category.queries";
 import { useToast } from "@/components/ui/use-toast";
+import { PRODUCT_CATEGORY_ID } from "@/utils/constants";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Plus, Copy, ArrowLeft, Eye, X } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Search, Plus, Copy, ArrowLeft, Eye, X, Camera, Link as LinkIcon, Sparkles, Loader2, CheckCircle2, RefreshCw } from "lucide-react";
 import { withActiveUserGuard } from "@/components/shared/withRouteGuard";
+import { getApiUrl } from "@/config/api";
+import { getCookie } from "cookies-next";
+import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 
 const AddFromExistingProductPage = () => {
   const t = useTranslations();
@@ -26,15 +32,106 @@ const AddFromExistingProductPage = () => {
   const [showProductPopup, setShowProductPopup] = useState(false);
   const [shouldSearch, setShouldSearch] = useState(false);
 
+  // AI Generation States
+  const [isAIGenerating, setIsAIGenerating] = useState(false);
+  const [aiGeneratedData, setAiGeneratedData] = useState<any>(null);
+  const [aiProductSuggestions, setAiProductSuggestions] = useState<any[]>([]);
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
+  const [previewData, setPreviewData] = useState<any>(null);
+  const [processingProductIndex, setProcessingProductIndex] = useState<number | null>(null);
+  const [autoAISearchTriggered, setAutoAISearchTriggered] = useState(false);
+  const [aiSearchSkipped, setAiSearchSkipped] = useState(false);
+  const aiAbortControllerRef = useRef<AbortController | null>(null);
+
+  // Image Recognition States
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  // URL Import States
+  const [productUrl, setProductUrl] = useState("");
+
+  // Store the search term that was used for the query (only updated on button click)
+  const [querySearchTerm, setQuerySearchTerm] = useState("");
+
   const { data: searchData, refetch: searchProducts, isError, error } = useExistingProduct(
     {
       page: 1,
       limit: 10,
-      term: searchTerm,
+      term: querySearchTerm, // Use querySearchTerm instead of searchTerm
       brandAddedBy: me.data?.data?.id,
     },
-    shouldSearch && searchTerm.trim().length >= 3
+    shouldSearch && querySearchTerm.trim().length >= 3
   );
+
+  // Fetch categories for matching
+  const categoriesQuery = useCategory(PRODUCT_CATEGORY_ID.toString());
+
+  // Helper function to find category path in hierarchy
+  const findCategoryPathInHierarchy = (
+    categories: any[], 
+    targetId: number | string, 
+    currentPath: number[] = []
+  ): number[] | null => {
+    for (const category of categories) {
+      const newPath = [...currentPath, category.id];
+      
+      // If this category matches, return the path
+      if (category.id?.toString() === targetId?.toString() || 
+          Number(category.id) === Number(targetId)) {
+        return newPath;
+      }
+      
+      // Search in children
+      if (category.children && category.children.length > 0) {
+        const found = findCategoryPathInHierarchy(category.children, targetId, newPath);
+        if (found) {
+          return found;
+        }
+      }
+    }
+    return null;
+  };
+
+  // AI-based category matching function
+  const findMatchingCategoryWithAI = async (aiCategoryName: string): Promise<{ matchedCategoryId: number | null; confidence: string }> => {
+    if (!categoriesQuery?.data?.data?.children || !aiCategoryName) {
+      return { matchedCategoryId: null, confidence: 'low' };
+    }
+    
+    const categories = categoriesQuery.data.data.children.map((cat: any) => ({
+      id: cat.id,
+      name: cat.name,
+    }));
+
+    try {
+      const token = getCookie(PUREMOON_TOKEN_KEY);
+      const response = await fetch(`${getApiUrl()}/product/ai-match-category`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          aiCategoryName: aiCategoryName,
+          availableCategories: categories,
+        }),
+      });
+
+      const data = await response.json();
+      
+      if (data.status && data.data) {
+        return {
+          matchedCategoryId: data.data.matchedCategoryId || null,
+          confidence: data.data.confidence || 'low',
+        };
+      }
+      
+      return { matchedCategoryId: null, confidence: 'low' };
+    } catch (error) {
+      console.error('AI category matching error:', error);
+      return { matchedCategoryId: null, confidence: 'low' };
+    }
+  };
 
   const handleAddNewProduct = () => {
     router.push("/product");
@@ -59,6 +156,12 @@ const AddFromExistingProductPage = () => {
       return;
     }
 
+    // Clear previous AI suggestions and reset auto-trigger flag
+    setAiProductSuggestions([]);
+    setAutoAISearchTriggered(false);
+    setAiSearchSkipped(false); // Reset skip flag when user searches again
+    // Set the query search term (this will trigger the query)
+    setQuerySearchTerm(searchTerm.trim());
     // Enable search and trigger the query
     setShouldSearch(true);
     setIsSearching(true);
@@ -78,6 +181,349 @@ const AddFromExistingProductPage = () => {
     setSelectedProduct(null);
   };
 
+  // Unified AI Generation Function (works for text, image, or URL)
+  const handleAIGenerate = useCallback(async (input: string | File, type: 'text' | 'image' | 'url') => {
+    // Cancel any existing AI generation
+    if (aiAbortControllerRef.current) {
+      aiAbortControllerRef.current.abort();
+    }
+    
+    // Create new AbortController for this request
+    const abortController = new AbortController();
+    aiAbortControllerRef.current = abortController;
+    setIsAIGenerating(true);
+    
+    try {
+      const token = getCookie(PUREMOON_TOKEN_KEY);
+      
+      // For text queries, use the new lightweight list endpoint
+      if (type === 'text' && typeof input === 'string') {
+        const response = await fetch(`${getApiUrl()}/product/ai-generate-list`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            type: 'text',
+            query: input,
+          }),
+          signal: abortController.signal,
+        });
+        
+        // Check if request was aborted before processing response
+        if (abortController.signal.aborted) {
+          return;
+        }
+        
+        const data = await response.json();
+        
+        // Check again after parsing JSON (in case abort happened during parsing)
+        if (abortController.signal.aborted) {
+          return;
+        }
+        
+        // Check again before processing data
+        if (abortController.signal.aborted) {
+          return;
+        }
+        
+        if (data.status && data.data && Array.isArray(data.data) && data.data.length > 0) {
+          // Check again before state updates
+          if (abortController.signal.aborted) {
+            return;
+          }
+          // Lightweight product list (name, category, price, variants)
+          setAiProductSuggestions(data.data);
+          setAiGeneratedData(data.data);
+          toast({
+            title: t("search_successful") || "Search Successful",
+            description: t("found_products_from_web", { n: data.data.length }) || `Found ${data.data.length} product suggestions`,
+          });
+        } else {
+          // Check again before showing toast
+          if (abortController.signal.aborted) {
+            return;
+          }
+          toast({
+            title: t("no_results_found") || "No Results",
+            description: data.message || t("no_products_found_from_web") || "No products found from web search",
+            variant: "destructive",
+          });
+        }
+      } else {
+        // For image/URL, use the existing flow
+        const formData = new FormData();
+        
+        if (type === 'image' && input instanceof File) {
+          formData.append('image', input);
+          formData.append('type', 'image');
+        } else if (type === 'url' && typeof input === 'string') {
+          formData.append('url', input);
+          formData.append('type', 'url');
+        }
+
+        const response = await fetch(`${getApiUrl()}/product/ai-generate`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+          body: formData,
+          signal: abortController.signal,
+        });
+        
+        // Check if request was aborted before processing response
+        if (abortController.signal.aborted) {
+          return;
+        }
+        
+        const data = await response.json();
+        
+        // Check again after parsing JSON (in case abort happened during parsing)
+        if (abortController.signal.aborted) {
+          return;
+        }
+        
+        // Check again before processing data
+        if (abortController.signal.aborted) {
+          return;
+        }
+        
+        if (data.status && data.data) {
+          // Check if data is an array (multiple suggestions) or single object
+          const isArray = Array.isArray(data.data);
+          
+          if (isArray && data.data.length > 0) {
+            // Check before state updates
+            if (abortController.signal.aborted) {
+              return;
+            }
+            // Multiple product suggestions from web search
+            setAiProductSuggestions(data.data);
+            setAiGeneratedData(data.data);
+            toast({
+              title: t("search_successful") || "Search Successful",
+              description: t("found_products_from_web", { n: data.data.length }) || `Found ${data.data.length} product suggestions from web`,
+            });
+          } else if (!isArray && data.data) {
+            // Check before state updates
+            if (abortController.signal.aborted) {
+              return;
+            }
+            // Single product (for image/URL)
+            setPreviewData(data.data);
+            setShowPreviewModal(true);
+            toast({
+              title: t("generation_successful") || "Success",
+              description: t("ai_generated_product_data") || "AI generated product data",
+            });
+          } else {
+            // Check before showing toast
+            if (abortController.signal.aborted) {
+              return;
+            }
+            toast({
+              title: t("no_results_found") || "No Results",
+              description: t("no_products_found_from_web") || "No products found from web search",
+              variant: "destructive",
+            });
+          }
+        } else {
+          // Check before showing toast
+          if (abortController.signal.aborted) {
+            return;
+          }
+          toast({
+            title: t("generation_failed") || "Failed",
+            description: data.message || t("ai_generation_error") || "AI generation error",
+            variant: "destructive",
+          });
+        }
+      }
+    } catch (error: any) {
+      // Don't show error toast if request was aborted
+      if (error.name === 'AbortError' || abortController.signal.aborted) {
+        console.log('Request was aborted, skipping error handling');
+        return;
+      }
+      toast({
+        title: t("generation_failed") || "Failed",
+        description: error.message || t("ai_generation_error") || "AI generation error",
+        variant: "destructive",
+      });
+    } finally {
+      // Always clear the loading state if this request was aborted
+      if (abortController.signal.aborted) {
+        console.log('Finally: Request was aborted, clearing state');
+        setIsAIGenerating(false);
+        // Only clear ref if it's still pointing to this controller
+        if (aiAbortControllerRef.current === abortController) {
+          aiAbortControllerRef.current = null;
+        }
+      } else if (aiAbortControllerRef.current === abortController) {
+        // Normal completion - only clear if this is still the current request
+        setIsAIGenerating(false);
+        aiAbortControllerRef.current = null;
+      }
+    }
+  }, [toast, t]);
+
+  const handleSkipLoading = () => {
+    console.log('Skip loading clicked, aborting request...');
+    if (aiAbortControllerRef.current) {
+      console.log('Aborting controller:', aiAbortControllerRef.current);
+      aiAbortControllerRef.current.abort();
+      aiAbortControllerRef.current = null;
+    } else {
+      console.log('No abort controller found');
+    }
+    setIsAIGenerating(false);
+    setAutoAISearchTriggered(false);
+    setAiSearchSkipped(true); // Mark that user skipped AI search
+    console.log('Skip loading completed');
+  };
+
+  // Handle Image Selection
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: t("invalid_file_type") || "Invalid file type",
+        description: t("please_select_an_image_file") || "Please select an image file",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setSelectedImage(file);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Handle Image Recognition
+  const handleImageRecognition = async () => {
+    if (!selectedImage) {
+      toast({
+        title: t("please_select_image") || "Please select image",
+        variant: "destructive",
+      });
+      return;
+    }
+    await handleAIGenerate(selectedImage, 'image');
+  };
+
+  // Handle URL Import
+  const handleImportFromUrl = async () => {
+    if (!productUrl.trim()) {
+      toast({
+        title: t("please_enter_url") || "Please enter URL",
+        variant: "destructive",
+      });
+      return;
+    }
+    await handleAIGenerate(productUrl, 'url');
+  };
+
+  // Handle using preview data
+  const handleUsePreviewData = () => {
+    if (previewData) {
+      // Build categoryLocation string from path
+      const categoryLocation = previewData.categoryPath?.join(',') || '';
+      
+      // Encode the data properly for URL
+      const encodedData = encodeURIComponent(JSON.stringify({
+        ...previewData,
+        matchedCategoryId: previewData.matchedCategoryId || null,
+        categoryConfidence: previewData.categoryConfidence || 'low',
+        categoryPath: previewData.categoryPath || [],
+        categoryLocation: categoryLocation,
+      }));
+      
+      // Build URL with category path if available
+      const url = new URL('/product', window.location.origin);
+      url.searchParams.set('autoFill', 'true');
+      url.searchParams.set('data', encodedData);
+      if (previewData.categoryPath?.length) {
+        url.searchParams.set('selectedCategoryIds', previewData.categoryPath.join(','));
+      }
+      
+      router.push(url.pathname + url.search);
+      setShowPreviewModal(false);
+    }
+  };
+
+  // Handle selecting a product suggestion
+  const handleSelectSuggestion = async (product: any, index: number) => {
+    setProcessingProductIndex(index);
+    try {
+      // First, generate full product details
+      const token = getCookie(PUREMOON_TOKEN_KEY);
+      const response = await fetch(`${getApiUrl()}/product/ai-generate-details`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          productName: product.productName,
+          category: product.category,
+          brand: product.brand,
+        }),
+      });
+      
+      const detailsData = await response.json();
+      
+      if (!detailsData.status || !detailsData.data) {
+        toast({
+          title: t("generation_failed") || "Failed",
+          description: detailsData.message || t("failed_to_generate_details") || "Failed to generate product details",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Use AI to find matching category if category string is provided
+      let matchedCategoryId = null;
+      let categoryConfidence = 'low';
+      let categoryPath: number[] | null = null;
+      
+      if (detailsData.data.category) {
+        const matchResult = await findMatchingCategoryWithAI(detailsData.data.category);
+        matchedCategoryId = matchResult.matchedCategoryId;
+        categoryConfidence = matchResult.confidence;
+        
+        // If category matched, find the full path in hierarchy
+        if (matchedCategoryId && categoriesQuery?.data?.data?.children) {
+          categoryPath = findCategoryPathInHierarchy(
+            categoriesQuery.data.data.children, 
+            matchedCategoryId
+          );
+        }
+      }
+      
+      setPreviewData({
+        ...detailsData.data,
+        matchedCategoryId: matchedCategoryId,
+        categoryConfidence: categoryConfidence,
+        categoryPath: categoryPath, // Add full path
+      });
+      setShowPreviewModal(true);
+    } catch (error: any) {
+      toast({
+        title: t("generation_failed") || "Failed",
+        description: error.message || t("ai_generation_error") || "AI generation error",
+        variant: "destructive",
+      });
+    } finally {
+      setProcessingProductIndex(null);
+    }
+  };
+
   // Handle search results from the query
   useEffect(() => {
     if (isError) {
@@ -88,14 +534,30 @@ const AddFromExistingProductPage = () => {
       });
       setIsSearching(false);
       setSearchResults([]);
+      // Auto-trigger AI search if no existing products found (and user hasn't skipped)
+      if (querySearchTerm.trim().length >= 3 && !autoAISearchTriggered && !isAIGenerating && !aiSearchSkipped) {
+        setAutoAISearchTriggered(true);
+        handleAIGenerate(querySearchTerm, 'text');
+      }
     } else if (searchData?.data) {
-      setSearchResults(searchData.data);
+      const results = searchData.data;
+      setSearchResults(results);
       setIsSearching(false);
-    } else if (searchTerm.trim().length >= 3) {
+      // Auto-trigger AI search if no existing products found (and user hasn't skipped)
+      if (results.length === 0 && querySearchTerm.trim().length >= 3 && !autoAISearchTriggered && !isAIGenerating && !aiSearchSkipped) {
+        setAutoAISearchTriggered(true);
+        handleAIGenerate(querySearchTerm, 'text');
+      }
+    } else if (querySearchTerm.trim().length >= 3 && shouldSearch && searchData && !searchData.data) {
       setIsSearching(false);
       setSearchResults([]);
+      // Auto-trigger AI search if no existing products found (and user hasn't skipped)
+      if (!autoAISearchTriggered && !isAIGenerating && !aiSearchSkipped) {
+        setAutoAISearchTriggered(true);
+        handleAIGenerate(querySearchTerm, 'text');
+      }
     }
-  }, [searchData, searchTerm, isError, error, toast, t]);
+  }, [searchData, querySearchTerm, shouldSearch, isError, error, toast, t, autoAISearchTriggered, isAIGenerating, handleAIGenerate, aiSearchSkipped]);
 
 
   return (
@@ -128,34 +590,51 @@ const AddFromExistingProductPage = () => {
           </div>
         </div>
 
-        {/* Search Section */}
+        {/* Enhanced Search Section with Tabs */}
         <div className="bg-white rounded-lg shadow-xs p-6 mb-6">
+          <Tabs defaultValue="search" className="w-full">
+            <TabsList className="grid w-full grid-cols-3 mb-6">
+              <TabsTrigger value="search">
+                <Search className="h-4 w-4 mr-2" />
+                {t("search")}
+              </TabsTrigger>
+              <TabsTrigger value="image">
+                <Camera className="h-4 w-4 mr-2" />
+                {t("image")}
+              </TabsTrigger>
+              <TabsTrigger value="url">
+                <LinkIcon className="h-4 w-4 mr-2" />
+                {t("url")}
+              </TabsTrigger>
+            </TabsList>
+
+            {/* Search Tab - Existing Functionality */}
+            <TabsContent value="search" className="mt-0">
           <div className="mb-4">
             <p className="text-sm text-gray-600 mb-3" dir={langDir}>
               {t("search_existing_product_description")}
             </p>
-            <div className="flex gap-2">
+            <div className="flex gap-2 w-full">
               <Input
                 type="text"
                 placeholder={t("enter_product_name")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                className="flex-1"
+                className="flex-1 min-w-[600px]"
                 dir={langDir}
               />
-              <Button onClick={handleSearch} disabled={isSearching}>
+              <Button onClick={handleSearch} disabled={isSearching || !searchTerm.trim()}>
                 <Search className="h-4 w-4 mr-2" />
-                {isSearching ? t("searching") : t("search")}
+                {isSearching ? t("searching") : t("search") || "Search"}
               </Button>
             </div>
           </div>
 
-          {/* Search Results */}
+              {/* Search Results - Existing */}
           {searchResults.length > 0 && (
-            <div className="space-y-3">
+                <div className="space-y-3 mb-6">
               <h4 className="font-medium text-gray-900" dir={langDir}>
-                {t("search_results")}
+                {t("product_suggestion_from_ultrasooq") || "Product suggestion from Ultrasooq"}
               </h4>
               <div className="max-h-60 overflow-y-auto space-y-2">
                 {searchResults.map((product) => (
@@ -205,22 +684,162 @@ const AddFromExistingProductPage = () => {
                   </div>
                 ))}
               </div>
+              
+              {/* Load More with AI Button - Show below existing results */}
+              {!isAIGenerating && aiProductSuggestions.length === 0 && (
+                <div className="flex justify-center pt-4 border-t border-gray-200">
+                  <Button
+                    onClick={() => handleAIGenerate(searchTerm || '', 'text')}
+                    className="bg-purple-600 hover:bg-purple-700 text-white"
+                    disabled={!searchTerm.trim()}
+                  >
+                    <Sparkles className="h-4 w-4 mr-2" />
+                    {t("load_more_with_ai") || "Load More with AI"}
+                  </Button>
+                </div>
+              )}
+              
+              {/* Show loading state if AI is generating */}
+              {isAIGenerating && (
+                <div className="flex flex-col items-center gap-2 pt-4 border-t border-gray-200">
+                  <Button disabled className="bg-purple-600 text-white">
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    {t("generating") || "Generating..."}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={handleSkipLoading}
+                    className="text-gray-600 hover:text-gray-900"
+                  >
+                    {t("skip_loading") || "Skip loading"}
+                  </Button>
+                </div>
+              )}
             </div>
           )}
 
-          {/* No Results Found */}
-          {searchTerm && searchResults.length === 0 && !isSearching && (
+              {/* AI Product Suggestions List - Show below existing results */}
+              {aiProductSuggestions.length > 0 && (
+                <div className="space-y-3 mt-6">
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-medium text-gray-900 flex items-center gap-2" dir={langDir}>
+                      <Sparkles className="h-5 w-5 text-purple-600" />
+                      {t("product_suggestions_from_web") || "Product Suggestions from Web"}
+                    </h4>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleAIGenerate(searchTerm || '', 'text')}
+                      disabled={isAIGenerating || !searchTerm.trim()}
+                      className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+                    >
+                      {isAIGenerating ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <RefreshCw className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
+                  <div className="space-y-3 max-h-96 overflow-y-auto">
+                    {aiProductSuggestions.map((product, idx) => (
+                      <div
+                        key={idx}
+                        className="bg-white border border-gray-200 rounded-lg p-4 hover:border-purple-400 hover:shadow-md transition-all"
+                      >
+                        <div className="flex items-start gap-4">
+                          <div className="flex-1">
+                            <div className="flex items-start justify-between mb-2">
+                              <h5 className="font-semibold text-gray-900" dir={langDir}>
+                                {product.productName || product.name}
+                              </h5>
+                              <Button
+                                size="sm"
+                                onClick={() => handleSelectSuggestion(product, idx)}
+                                disabled={processingProductIndex === idx}
+                                className="bg-purple-600 hover:bg-purple-700 text-white"
+                              >
+                                {processingProductIndex === idx ? (
+                                  <>
+                                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                    {t("generating") || "Generating..."}
+                                  </>
+                                ) : (
+                                  t("use") || "Use"
+                                )}
+                              </Button>
+                            </div>
+                            
+                            {/* Source Information */}
+                            <div className="flex items-center gap-2 mb-2">
+                              <LinkIcon className="h-4 w-4 text-gray-400" />
+                              <span className="text-xs font-medium text-purple-600">
+                                {product.sourceName || "Unknown Source"}
+                              </span>
+                            </div>
+
+                            {/* Product Details */}
+                            <div className="space-y-1 text-sm text-gray-600">
+                              {product.category && (
+                                <p className="font-medium text-gray-900">
+                                  {t("category")}: {product.category}
+                                </p>
+                              )}
+                              {product.brand && (
+                                <p>
+                                  {t("brand")}: {product.brand}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* No Results Found - Only show if no AI suggestions either */}
+              {shouldSearch && querySearchTerm && searchResults.length === 0 && !isSearching && aiProductSuggestions.length === 0 && (
             <div className="text-center py-8">
-              <p className="text-gray-500 mb-2" dir={langDir}>
+                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Search className="h-8 w-8 text-gray-400" />
+                  </div>
+                  <p className="text-lg font-medium text-gray-900 mb-2" dir={langDir}>
                 {t("no_products_found")}
               </p>
-              <p className="text-sm text-gray-400" dir={langDir}>
-                {t("try_different_search_term")}
+                  <p className="text-sm text-gray-500 mb-4" dir={langDir}>
+                    {t("no_matching_products_in_catalog") || t("try_different_search_term")}
               </p>
+                  {/* Load More with AI Button - Show when no existing results */}
+                  {!isAIGenerating && (
+                    <Button
+                      onClick={() => handleAIGenerate(searchTerm || '', 'text')}
+                      className="bg-purple-600 hover:bg-purple-700 text-white"
+                      disabled={!searchTerm.trim()}
+                    >
+                      <Sparkles className="h-4 w-4 mr-2" />
+                      {t("load_more_with_ai") || "Load More with AI"}
+                    </Button>
+                  )}
+                  {isAIGenerating && (
+                    <div className="flex flex-col items-center gap-2">
+                      <Button disabled className="bg-purple-600 text-white">
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        {t("generating") || "Generating..."}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={handleSkipLoading}
+                        className="text-gray-600 hover:text-gray-900"
+                      >
+                        {t("skip_loading") || "Skip loading"}
+                      </Button>
+                    </div>
+                  )}
             </div>
           )}
 
-          {/* Initial State */}
+              {/* Initial State - Existing */}
           {!searchTerm && searchResults.length === 0 && (
             <div className="text-center py-8">
               <div className="bg-gray-50 rounded-lg p-8 border-2 border-dashed border-gray-200">
@@ -236,6 +855,228 @@ const AddFromExistingProductPage = () => {
               </div>
             </div>
           )}
+            </TabsContent>
+
+            {/* Image Tab - New Feature */}
+            <TabsContent value="image" className="mt-0">
+              <div className="space-y-4">
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-2" dir={langDir}>
+                    {t("scan_product_image") || "Scan Product Image"}
+                  </h4>
+                  <p className="text-sm text-gray-600 mb-4" dir={langDir}>
+                    {t("upload_product_photo_ai_will_analyze_and_fill_details") || "Upload product photo, AI will analyze and fill details"}
+                  </p>
+                </div>
+
+                {/* Image Upload Area */}
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-purple-400 transition-colors">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageSelect}
+                    className="hidden"
+                    id="image-recognition"
+                  />
+                  <label
+                    htmlFor="image-recognition"
+                    className="cursor-pointer flex flex-col items-center"
+                  >
+                    {imagePreview ? (
+                      <div className="relative w-48 h-48 mx-auto mb-4">
+                        <img
+                          src={imagePreview}
+                          alt="Preview"
+                          className="w-full h-full object-cover rounded-lg"
+                        />
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          className="absolute top-2 right-2"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedImage(null);
+                            setImagePreview(null);
+                          }}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <>
+                        <Camera className="h-10 w-10 text-gray-400 mb-2" />
+                        <span className="text-sm text-gray-600 mb-2">
+                          {t("click_to_upload_or_drag_drop") || "Click to upload or drag & drop"}
+                        </span>
+                      </>
+                    )}
+                    {!imagePreview && (
+                      <Button variant="outline" size="sm" asChild>
+                        <span>{t("choose_file") || "Choose File"}</span>
+                      </Button>
+                    )}
+                  </label>
+                </div>
+
+                {/* Process Button */}
+                {imagePreview && (
+                  <Button
+                    onClick={handleImageRecognition}
+                    disabled={isAIGenerating}
+                    className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                  >
+                    {isAIGenerating ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        {t("analyzing_with_ai") || "Analyzing with AI..."}
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="h-4 w-4 mr-2" />
+                        {t("analyze_with_ai") || "Analyze with AI"}
+                      </>
+                    )}
+                  </Button>
+                )}
+
+                {/* AI Product Suggestions List - Show after image analysis */}
+                {aiProductSuggestions.length > 0 && (
+                  <div className="space-y-3 mt-6">
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-medium text-gray-900 flex items-center gap-2" dir={langDir}>
+                        <Sparkles className="h-5 w-5 text-purple-600" />
+                        {t("product_suggestions_from_web") || "Product Suggestions from Web"}
+                      </h4>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          if (selectedImage) {
+                            handleAIGenerate(selectedImage, 'image');
+                          } else if (searchTerm) {
+                            handleAIGenerate(searchTerm, 'text');
+                          }
+                        }}
+                        disabled={isAIGenerating || (!selectedImage && !searchTerm.trim())}
+                        className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+                      >
+                        {isAIGenerating ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <RefreshCw className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
+                    <div className="space-y-3 max-h-96 overflow-y-auto">
+                      {aiProductSuggestions.map((product, idx) => (
+                        <div
+                          key={idx}
+                          className="bg-white border border-gray-200 rounded-lg p-4 hover:border-purple-400 hover:shadow-md transition-all"
+                        >
+                          <div className="flex items-start gap-4">
+                            <div className="flex-1">
+                              <div className="flex items-start justify-between mb-2">
+                                <h5 className="font-semibold text-gray-900" dir={langDir}>
+                                  {product.productName || product.name}
+                                </h5>
+                                <Button
+                                  size="sm"
+                                  onClick={() => handleSelectSuggestion(product, idx)}
+                                  disabled={processingProductIndex === idx}
+                                  className="bg-purple-600 hover:bg-purple-700 text-white"
+                                >
+                                  {processingProductIndex === idx ? (
+                                    <>
+                                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                      {t("generating") || "Generating..."}
+                                    </>
+                                  ) : (
+                                    t("use") || "Use"
+                                  )}
+                                </Button>
+                              </div>
+                              
+                              {/* Source Information */}
+                              <div className="flex items-center gap-2 mb-2">
+                                <LinkIcon className="h-4 w-4 text-gray-400" />
+                                <span className="text-xs font-medium text-purple-600">
+                                  {product.sourceName || "Unknown Source"}
+                                </span>
+                              </div>
+
+                              {/* Product Details */}
+                              <div className="space-y-1 text-sm text-gray-600">
+                                {product.category && (
+                                  <p className="font-medium text-gray-900">
+                                    {t("category")}: {product.category}
+                                  </p>
+                                )}
+                                {product.brand && (
+                                  <p>
+                                    {t("brand")}: {product.brand}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </TabsContent>
+
+            {/* URL Tab - New Feature */}
+            <TabsContent value="url" className="mt-0">
+              <div className="space-y-4">
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-2" dir={langDir}>
+                    {t("import_from_url") || "Import from URL"}
+                  </h4>
+                  <p className="text-sm text-gray-600 mb-4" dir={langDir}>
+                    {t("paste_product_link_ai_will_extract_product_data") || "Paste product link, AI will extract product data"}
+                  </p>
+                </div>
+
+                {/* URL Input */}
+                <div className="flex gap-2">
+                  <Input
+                    type="url"
+                    placeholder="https://amazon.com/product/..."
+                    value={productUrl}
+                    onChange={(e) => setProductUrl(e.target.value)}
+                    className="flex-1"
+                    dir={langDir}
+                  />
+                  <Button
+                    onClick={handleImportFromUrl}
+                    disabled={!productUrl || isAIGenerating}
+                    className="bg-purple-600 hover:bg-purple-700 text-white"
+                  >
+                    {isAIGenerating ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        {t("extracting") || "Extracting..."}
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="h-4 w-4 mr-2" />
+                        {t("extract_with_ai") || "Extract with AI"}
+                      </>
+                    )}
+                  </Button>
+                </div>
+
+                {/* Info */}
+                <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                  <p className="text-xs text-purple-700" dir={langDir}>
+                    {t("ai_will_scrape_url_and_extract_product_information") || "AI will scrape URL and extract product information"}
+                  </p>
+                </div>
+              </div>
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
 
@@ -419,6 +1260,125 @@ const AddFromExistingProductPage = () => {
               >
                 <Copy className="h-4 w-4 mr-2" />
                 {t("select")}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* AI Preview Modal - New */}
+      {showPreviewModal && previewData && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={() => setShowPreviewModal(false)}>
+          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-xl" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <h3 className="text-xl font-semibold text-gray-900" dir={langDir}>
+                {t("review_product_data") || "Review Product Data"}
+              </h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowPreviewModal(false)}
+                className="p-2 hover:bg-gray-100"
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+
+            <div className="p-6 space-y-6">
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-gray-600">
+                    {t("suggested_product_name") || "Suggested Product Name"}
+                  </label>
+                  <p className="text-gray-900 mt-1">{previewData.productName || previewData.name || t("not_specified")}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-600">
+                    {t("approx_price_use_your_own") || "Approx price(use your own price)"}
+                  </label>
+                  <p className="text-gray-900 mt-1">{previewData.price || previewData.estimatedPrice || t("not_specified")}</p>
+                </div>
+                {previewData.description && (
+                  <div className="col-span-2">
+                    <label className="text-sm font-medium text-gray-600">
+                      {t("description")}
+                    </label>
+                    <p className="text-gray-900 mt-1">{previewData.description}</p>
+                  </div>
+                )}
+                {previewData.category && (
+                  <div className="col-span-2">
+                    <label className="text-sm font-medium text-gray-600">
+                      {t("category")}
+                    </label>
+                    <div className="mt-1">
+                      <p className="text-gray-900">{previewData.category}</p>
+                      {previewData.matchedCategoryId ? (
+                        <p className={`text-xs mt-1 flex items-center gap-1 ${
+                          previewData.categoryConfidence === 'high' 
+                            ? 'text-green-600' 
+                            : previewData.categoryConfidence === 'medium'
+                            ? 'text-blue-600'
+                            : 'text-yellow-600'
+                        }`}>
+                          <CheckCircle2 className="h-3 w-3" />
+                          {previewData.categoryConfidence === 'high' 
+                            ? (t("category_matched") || "Category matched - will be auto-selected")
+                            : previewData.categoryConfidence === 'medium'
+                            ? (t("category_suggested") || "Category suggested - please verify")
+                            : (t("category_low_confidence") || "Category match uncertain - please verify")
+                          }
+                        </p>
+                      ) : (
+                        <p className="text-xs text-yellow-600 mt-1 flex items-center gap-1">
+                          <X className="h-3 w-3" />
+                          {t("category_not_matched") || "Category not found - please select manually"}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
+                {previewData.brand && (
+                  <div>
+                    <label className="text-sm font-medium text-gray-600">
+                      {t("brand")}
+                    </label>
+                    <p className="text-gray-900 mt-1">{previewData.brand}</p>
+                  </div>
+                )}
+                {previewData.shortDescription && (
+                  <div className="col-span-2">
+                    <label className="text-sm font-medium text-gray-600">
+                      {t("short_description")}
+                    </label>
+                    <p className="text-gray-900 mt-1">{previewData.shortDescription}</p>
+                  </div>
+                )}
+                {previewData.specifications && Array.isArray(previewData.specifications) && previewData.specifications.length > 0 && (
+                  <div className="col-span-2">
+                    <label className="text-sm font-medium text-gray-600">
+                      {t("specifications")}
+                    </label>
+                    <div className="mt-1 space-y-2">
+                      {previewData.specifications.map((spec: any, idx: number) => (
+                        <div key={idx} className="flex gap-2 text-sm">
+                          <span className="font-medium text-gray-700">{spec.label}:</span>
+                          <span className="text-gray-900">{spec.specification}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200">
+              <Button variant="outline" onClick={() => setShowPreviewModal(false)}>
+                {t("cancel")}
+              </Button>
+              <Button onClick={handleUsePreviewData} className="bg-purple-600 hover:bg-purple-700 text-white">
+                {t("use_this_data") || "Use This Data"}
               </Button>
             </div>
           </div>

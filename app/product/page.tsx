@@ -1147,6 +1147,119 @@ const CreateProductPage = () => {
     }
   }, [existingProductQueryById?.data?.data, searchParams]);
 
+  // Handle AI-generated product data (autoFill)
+  useEffect(() => {
+    if (isClient && searchParams) {
+      // Check for selectedCategoryIds from URL (for AI matching)
+      const categoryIdsParam = searchParams.get('selectedCategoryIds');
+      if (categoryIdsParam) {
+        const categoryIds = categoryIdsParam.split(',').filter(Boolean);
+        setSelectedCategoryIds(categoryIds);
+      }
+      
+      // Handle autoFill parameter and data
+      if (searchParams.get("autoFill") === "true") {
+        const dataParam = searchParams.get("data");
+        if (dataParam) {
+          try {
+            const aiData = JSON.parse(decodeURIComponent(dataParam));
+            populateFormWithAIData(aiData);
+          } catch (error) {
+            console.error("Error parsing AI data:", error);
+            toast({
+              title: t("error") || "Error",
+              description: t("failed_to_load_ai_data") || "Failed to load AI-generated data",
+              variant: "destructive",
+            });
+          }
+        }
+      }
+    }
+  }, [isClient, searchParams, toast, t]);
+
+  const populateFormWithAIData = (aiData: any) => {
+    // Set product name
+    if (aiData.productName || aiData.name) {
+      form.setValue("productName", aiData.productName || aiData.name);
+    }
+
+    // Set description
+    if (aiData.description) {
+      form.setValue("description", aiData.description);
+      
+      // Also set descriptionJson for the rich text editor
+      // Try to parse as JSON first, if it fails, create proper Slate format
+      try {
+        const descriptionJson = JSON.parse(aiData.description);
+        if (Array.isArray(descriptionJson) && descriptionJson.length > 0) {
+          form.setValue("descriptionJson", descriptionJson);
+        } else {
+          // If it's not a proper Slate format, create one
+          form.setValue("descriptionJson", [
+            {
+              type: "p",
+              children: [{ text: aiData.description }]
+            }
+          ]);
+        }
+      } catch (e) {
+        // If parsing fails, treat as plain text and create proper Slate format
+        form.setValue("descriptionJson", [
+          {
+            type: "p",
+            children: [{ text: aiData.description }]
+          }
+        ]);
+      }
+    }
+
+    // Set short description
+    if (aiData.shortDescription) {
+      form.setValue("productShortDescriptionList", [
+        {
+          shortDescription: aiData.shortDescription,
+        },
+      ]);
+    }
+
+    // Set specifications
+    if (aiData.specifications && Array.isArray(aiData.specifications)) {
+      form.setValue(
+        "productSpecificationList",
+        aiData.specifications.map((spec: any) => ({
+          label: spec.label || "",
+          specification: spec.specification || "",
+        }))
+      );
+    }
+
+    // Set estimated price if available
+    if (aiData.estimatedPrice || aiData.price) {
+      const price = aiData.estimatedPrice || aiData.price;
+      form.setValue("productPrice", price.toString());
+    }
+
+    // Set matched category with full path if available (only if confidence is high or medium)
+    if (aiData.matchedCategoryId && (aiData.categoryConfidence === 'high' || aiData.categoryConfidence === 'medium')) {
+      form.setValue("categoryId", Number(aiData.matchedCategoryId));
+      
+      // Set category path if available
+      if (aiData.categoryPath && Array.isArray(aiData.categoryPath)) {
+        setSelectedCategoryIds(aiData.categoryPath.map((id: any) => id.toString()));
+      }
+      
+      // Set categoryLocation if available
+      if (aiData.categoryLocation) {
+        form.setValue("categoryLocation", aiData.categoryLocation);
+      }
+    }
+
+    toast({
+      title: t("product_data_loaded") || "Product Data Loaded",
+      description: t("ai_data_loaded_successfully") || "AI-generated data loaded successfully. Please review and complete the form.",
+    });
+  };
+
   const populateFormWithProductData = (product: any) => {
     setActiveProductType(product.productType);
 
