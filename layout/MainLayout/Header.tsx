@@ -4,6 +4,7 @@ import {
   useCartCountWithLogin,
   useCartCountWithoutLogin,
 } from "@/apis/queries/cart.queries";
+import { useRfqCartListByUserId } from "@/apis/queries/rfq.queries";
 import { useCategory } from "@/apis/queries/category.queries";
 import { useMe } from "@/apis/queries/user.queries";
 import { useWishlistCount } from "@/apis/queries/wishlist.queries";
@@ -140,6 +141,19 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
   const [categoryId, setCategoryId] = useState();
   const [assignedToId, setAssignedToId] = useState();
   const [isCategorySidebarOpen, setIsCategorySidebarOpen] = useState(false);
+
+  // Sync Header's state with CategorySidebar close events
+  useEffect(() => {
+    const handleCloseCategorySidebar = () => {
+      setIsCategorySidebarOpen(false);
+    };
+
+    window.addEventListener("closeCategorySidebar", handleCloseCategorySidebar);
+
+    return () => {
+      window.removeEventListener("closeCategorySidebar", handleCloseCategorySidebar);
+    };
+  }, []);
   // const [subCategoryId, setSubCategoryId] = useState();
   const [subCategoryIndex, setSubCategoryIndex] = useState(0);
   const [subSubCategoryIndex, setSubSubCategoryIndex] = useState(0);
@@ -169,6 +183,15 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
     (!hasAccessToken &&
       !isArray(cartCountWithoutLogin.data?.data) &&
       (cartCountWithoutLogin.data?.data || 0) > 0);
+
+  // Check RFQ cart items for RFQ pages
+  const rfqCartQuery = useRfqCartListByUserId(
+    { page: 1, limit: 1 },
+    hasAccessToken && pathname?.startsWith("/rfq"),
+  );
+  // Check if RFQ cart has items - response structure is rfqCartQuery.data.data (array)
+  const hasRfqCartItems = 
+    Array.isArray(rfqCartQuery.data?.data) && rfqCartQuery.data.data.length > 0;
   const category = useCategoryStore();
   const me = useMe(!!accessToken);
   const currentAccount = useCurrentAccount();
@@ -1260,9 +1283,12 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
           "bg-dark-cyan relative sticky top-0 z-50 hidden w-full",
           !isLoggedIn && "border-b border-solid border-gray-300 shadow-xl",
           "transition-all duration-300 md:block",
-          (pathname === "/trending" || pathname === "/buygroup") &&
+          ((pathname === "/trending" || pathname === "/buygroup") &&
             hasCartItems &&
-            (langDir === "rtl" ? "lg:pl-36" : "lg:pr-36"),
+            (langDir === "rtl" ? "lg:pl-36" : "lg:pr-36")) ||
+          (pathname?.startsWith("/rfq") &&
+            hasRfqCartItems &&
+            (langDir === "rtl" ? "lg:pl-36" : "lg:pr-36")),
           showHeader ? "translate-y-0" : "-translate-y-full",
         )}
         key={`header-${currentTradeRole}-${currentAccount?.data?.data?.account?.id}`}
@@ -1685,9 +1711,13 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                                 300,
                               );
                             } else {
-                              console.error(
-                                "[Header] Google Translate combo box not found after multiple attempts",
-                              );
+                              // In production we silently fail; in development we log a warning
+                              if (process.env.NODE_ENV === "development") {
+                                // eslint-disable-next-line no-console
+                                console.warn(
+                                  "[Header] Google Translate combo box not found after multiple attempts",
+                                );
+                              }
                             }
                             return false;
                           };

@@ -37,8 +37,7 @@ export default function ConditionalLayout({
     };
 
     const handleCloseCategorySidebar = () => {
-      // Don't immediately close, let the CategorySidebar handle the delay
-      // setIsCategorySidebarOpen(false);
+      setIsCategorySidebarOpen(false);
     };
 
     window.addEventListener("openCategorySidebar", handleOpenCategorySidebar);

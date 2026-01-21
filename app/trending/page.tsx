@@ -134,6 +134,11 @@ const TrendingPage = (props0: TrendingPageProps) => {
   const minPriceInputRef = useRef<HTMLInputElement>(null);
   const maxPriceInputRef = useRef<HTMLInputElement>(null);
 
+  // Layout helpers for RTL/LTR
+  const isRTL = langDir === "rtl";
+  const filterSheetSide: "left" | "right" = isRTL ? "right" : "left";
+  const cartSheetSide: "left" | "right" = isRTL ? "left" : "right";
+
   // const [searchUrlTerm, setSearchUrlTerm] = useState("");
   const searchUrlTerm = searchParams?.term || "";
 
@@ -1179,8 +1184,13 @@ const TrendingPage = (props0: TrendingPageProps) => {
 
         {/* Full Width Two Column Layout */}
         <div className="min-h-screen w-full bg-white px-2 sm:px-4 lg:px-8">
-          <div className="flex h-full flex-col gap-4 lg:flex-row">
-            {/* Left Column - Filters (Desktop) - Improved UI */}
+          <div
+            className={cn(
+              "flex h-full flex-col gap-4",
+              isRTL ? "lg:flex-row-reverse" : "lg:flex-row",
+            )}
+          >
+            {/* Sidebar - Filters (Desktop) */}
             <div className="hidden flex-shrink-0 overflow-y-auto bg-white p-4 lg:block lg:w-1/4">
               <div className="sticky top-4 rounded-xl bg-white p-6 shadow-lg">
                 {/* Filter Header */}
@@ -1379,7 +1389,13 @@ const TrendingPage = (props0: TrendingPageProps) => {
             <div
               className={cn(
                 "w-full flex-1 overflow-y-auto bg-white lg:w-auto",
-                cartList.length > 0 ? "lg:pr-36" : "lg:pr-0",
+                cartList.length > 0
+                  ? isRTL
+                    ? "lg:pl-36"
+                    : "lg:pr-36"
+                  : isRTL
+                    ? "lg:pl-0"
+                    : "lg:pr-0",
               )}
             >
               <div className="p-2 sm:p-4 lg:p-6">
@@ -1674,10 +1690,17 @@ const TrendingPage = (props0: TrendingPageProps) => {
           </div>
         </div>
 
-        {/* Fixed Right Sidebar Cart - Desktop Only (Amazon Style) */}
+        {/* Fixed Sidebar Cart - Desktop Only (Amazon Style) */}
         {cartList.length > 0 && (
           <div className="hidden lg:block">
-            <div className="fixed top-0 right-0 z-[60] h-screen w-36 border-l border-gray-200 bg-white shadow-lg">
+            <div
+              className={cn(
+                "fixed top-0 z-[60] h-screen w-36 bg-white shadow-lg",
+                isRTL
+                  ? "left-0 border-r border-gray-200"
+                  : "right-0 border-l border-gray-200",
+              )}
+            >
               <div className="flex h-full flex-col">
                 {/* Top sticky subtotal + Go To Cart */}
                 <div className="sticky top-0 z-10 border-b border-gray-200 bg-white px-4 pt-4 pb-3 text-center">
@@ -1845,7 +1868,7 @@ const TrendingPage = (props0: TrendingPageProps) => {
         {/* Mobile Filter Drawer */}
         <Sheet open={productFilter} onOpenChange={setProductFilter}>
           <SheetContent
-            side="left"
+            side={filterSheetSide}
             className="w-[300px] overflow-y-auto sm:w-[400px]"
           >
             <SheetHeader>
@@ -2025,7 +2048,7 @@ const TrendingPage = (props0: TrendingPageProps) => {
         {/* Mobile Cart Drawer - Only for mobile devices */}
         <Sheet open={showCartDrawer} onOpenChange={setShowCartDrawer}>
           <SheetContent
-            side="right"
+            side={cartSheetSide}
             className="w-full overflow-y-auto sm:w-[400px] lg:hidden"
           >
             <SheetHeader className="mb-4 border-b border-gray-200 pb-4">

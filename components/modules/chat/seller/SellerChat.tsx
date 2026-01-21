@@ -70,6 +70,7 @@ interface SellerChatProps {
   selectedCustomerId?: number | null;
   onSelectRfq?: (rfq: any, rfqGroup?: any[]) => void;
   onSelectCustomer?: (customer: any) => void;
+  displayMode?: "card" | "list"; // New prop to control card vs list display
 }
 
 const SellerChat: React.FC<SellerChatProps> = ({
@@ -79,6 +80,7 @@ const SellerChat: React.FC<SellerChatProps> = ({
   selectedCustomerId = null,
   onSelectRfq,
   onSelectCustomer,
+  displayMode = "card", // Default to card view
 }) => {
   const t = useTranslations();
   const { langDir, currency } = useAuth();
@@ -2150,9 +2152,9 @@ const SellerChat: React.FC<SellerChatProps> = ({
 
       {/* Loading State */}
       {allRfqQuotesQuery?.isLoading ? (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className={displayMode === "list" ? "space-y-0 border border-gray-200 rounded-lg bg-white overflow-hidden divide-y divide-gray-200" : "grid gap-4 md:grid-cols-2 lg:grid-cols-3"}>
           {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} className="h-64 w-full rounded-xl" />
+            <Skeleton key={i} className={displayMode === "list" ? "h-24 w-full rounded-none" : "h-64 w-full rounded-xl"} />
           ))}
         </div>
       ) : null}
@@ -2203,9 +2205,26 @@ const SellerChat: React.FC<SellerChatProps> = ({
         </div>
       ) : null}
 
-      {/* RFQ Request Cards Grid */}
+      {/* RFQ Request Cards Grid or List */}
       {!allRfqQuotesQuery?.isLoading && groupedRfqQuotes.length > 0 && (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className={displayMode === "list" ? "space-y-0 border border-gray-200 rounded-lg bg-white overflow-hidden shadow-sm" : "grid gap-4 md:grid-cols-2 lg:grid-cols-3"}>
+          {/* List View Header */}
+          {displayMode === "list" && (
+            <div className={cn(
+              "hidden lg:grid gap-6 px-6 py-3 bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200 sticky top-0 z-10",
+              isSelectMode 
+                ? "grid-cols-[auto_120px_auto_300px_160px_220px_auto]" 
+                : "grid-cols-[120px_auto_300px_160px_220px_auto]"
+            )}>
+              {isSelectMode && <div></div>}
+              <div className="text-xs font-semibold uppercase tracking-wide text-gray-600">RFQ ID</div>
+              <div className="text-xs font-semibold uppercase tracking-wide text-gray-600">Products</div>
+              <div className="text-xs font-semibold uppercase tracking-wide text-gray-600">Product Details</div>
+              <div className="text-xs font-semibold uppercase tracking-wide text-gray-600">Buyer</div>
+              <div className="text-xs font-semibold uppercase tracking-wide text-gray-600">Latest Message</div>
+              <div className="text-xs font-semibold uppercase tracking-wide text-gray-600 text-right">Actions</div>
+            </div>
+          )}
           {groupedRfqQuotes.map((rfqGroup, groupIndex) => {
             // Get the first quote from the group to display main info
             const mainQuote = rfqGroup[0];
@@ -2282,15 +2301,227 @@ const SellerChat: React.FC<SellerChatProps> = ({
                   }
                 }}
                 className={cn(
-                  "group overflow-hidden rounded-xl border-2 bg-white shadow-sm transition-all",
+                  displayMode === "list"
+                    ? cn(
+                        "group border-b border-gray-200 bg-white px-4 py-4 lg:px-6 lg:py-5 transition-all hover:bg-gray-50/50 last:border-b-0 flex flex-col lg:grid gap-4 lg:gap-6 items-start lg:items-center",
+                        isSelectMode 
+                          ? "lg:grid-cols-[auto_120px_auto_300px_160px_220px_auto]" 
+                          : "lg:grid-cols-[120px_auto_300px_160px_220px_auto]"
+                      )
+                    : "group overflow-hidden rounded-xl border-2 bg-white shadow-sm transition-all",
                   isSelectMode
                     ? "cursor-default"
-                    : "hover:border-dark-orange cursor-pointer hover:shadow-md",
-                  isSelected
-                    ? "border-dark-orange bg-orange-50"
-                    : "border-gray-200",
+                    : displayMode === "list"
+                      ? "cursor-pointer"
+                      : "hover:border-dark-orange cursor-pointer hover:shadow-md",
+                  isSelected && displayMode === "list"
+                    ? "bg-orange-50 border-l-4 border-l-dark-orange"
+                    : isSelected
+                      ? "border-dark-orange bg-orange-50"
+                      : displayMode === "list"
+                        ? ""
+                        : "border-gray-200",
                 )}
               >
+                {displayMode === "list" ? (
+                  /* List View Layout - Improved UI */
+                  <>
+                    {/* Checkbox */}
+                    {isSelectMode && (
+                      <div
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleToggleSelect(mainQuote.id);
+                        }}
+                        className={cn(
+                          "flex h-5 w-5 cursor-pointer items-center justify-center rounded border-2 transition-all",
+                          isSelected
+                            ? "border-dark-orange bg-dark-orange"
+                            : "border-gray-300 hover:border-dark-orange"
+                        )}
+                      >
+                        {isSelected && (
+                          <svg
+                            className="h-3.5 w-3.5 text-white"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={3}
+                              d="M5 13l4 4L19 7"
+                            />
+                          </svg>
+                        )}
+                      </div>
+                    )}
+
+                    {/* RFQ ID Section - Only show ID text, no icon */}
+                    <div className="flex items-center">
+                      <p className="text-dark-orange text-base font-bold leading-tight" translate="no">
+                        RFQ{String(rfqId || "").padStart(5, "0")}
+                      </p>
+                    </div>
+
+                    {/* Product Images Section */}
+                    <div className="flex gap-2">
+                      {allProductImages.slice(0, 3).map((img: any, idx: number) => (
+                        <div
+                          key={idx}
+                          className="relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-lg border-2 border-gray-200 bg-gray-100 shadow-sm transition-all group-hover:border-dark-orange/30"
+                        >
+                          <Image
+                            src={
+                              img?.image && validator.isURL(img.image)
+                                ? img.image
+                                : PlaceholderImage
+                            }
+                            fill
+                            alt={`Product ${idx + 1}`}
+                            className="object-cover"
+                          />
+                        </div>
+                      ))}
+                      {allProductImages.length > 3 && (
+                        <div className="relative flex h-14 w-14 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg border-2 border-gray-200 bg-gradient-to-br from-gray-100 to-gray-200 shadow-sm">
+                          <span className="text-xs font-bold text-gray-600">
+                            +{allProductImages.length - 3}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Product Details Section */}
+                    <div className="min-w-0">
+                      {allProductDetails.length > 0 && (
+                        <div className="space-y-1.5">
+                          {allProductDetails.slice(0, 2).map((product: any, idx: number) => (
+                            <div key={idx} className="flex items-center gap-3">
+                              <span className="truncate text-sm font-medium text-gray-900">
+                                {product.productName}
+                              </span>
+                              <span className="flex-shrink-0 rounded-full bg-gray-100 px-2 py-0.5 text-xs font-semibold text-gray-600">
+                                Qty: {product.quantity}
+                              </span>
+                            </div>
+                          ))}
+                          {allProductDetails.length > 2 && (
+                            <div className="text-xs font-medium text-gray-500">
+                              +{allProductDetails.length - 2} more product{allProductDetails.length - 2 > 1 ? "s" : ""}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Buyer Info Section */}
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="relative h-10 w-10 overflow-hidden rounded-full border-2 border-white ring-2 ring-gray-100 shadow-sm flex-shrink-0">
+                        <Image
+                          src={buyerInfo?.profilePicture || PlaceholderImage}
+                          alt={buyerName}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-semibold text-gray-900 truncate">
+                          {buyerName}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {rfqGroup.length} {rfqGroup.length === 1 ? "request" : "requests"}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Latest Message Section */}
+                    <div className="min-w-0">
+                      {latestMessage?.content ? (
+                        <div className="rounded-lg bg-gray-50 px-3 py-2 border border-gray-200">
+                          <p className="line-clamp-1 text-xs text-gray-700 truncate font-medium">
+                            {latestMessage.content}
+                          </p>
+                          {latestMessage.createdAt && (
+                            <p className="mt-1 text-[10px] text-gray-400 font-medium">
+                              {moment(latestMessage.createdAt).fromNow()}
+                            </p>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-xs text-gray-400">-</span>
+                      )}
+                    </div>
+
+                    {/* Unread Count & Actions Section */}
+                    <div className="flex items-center gap-3 justify-start lg:justify-end w-full lg:w-auto">
+                      {totalUnreadMessages > 0 && !showHiddenRequests && (
+                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-xs font-bold text-white shadow-lg ring-2 ring-blue-100">
+                          {totalUnreadMessages > 9 ? "9+" : totalUnreadMessages}
+                        </div>
+                      )}
+                      {!isSelectMode && (
+                        <>
+                          {showHiddenRequests ? (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleUnhideRequest(e, mainQuote.id);
+                              }}
+                              disabled={hideRfqRequestMutation.isPending}
+                              className="flex items-center gap-1.5 rounded-lg border border-green-300 bg-green-50 px-3 py-1.5 text-xs font-medium text-green-700 transition-all hover:bg-green-100 hover:border-green-400 disabled:cursor-not-allowed disabled:opacity-50 shadow-sm"
+                              title="Unhide Request"
+                              type="button"
+                            >
+                              {hideRfqRequestMutation.isPending ? (
+                                <svg className="h-3.5 w-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+                                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                  <path className="opacity-75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" fill="currentColor" />
+                                </svg>
+                              ) : (
+                                <>
+                                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                  </svg>
+                                  <span>Unhide</span>
+                                </>
+                              )}
+                            </button>
+                          ) : (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleHideRequest(e, mainQuote.id);
+                              }}
+                              disabled={hideRfqRequestMutation.isPending}
+                              className="flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 transition-all hover:bg-gray-50 hover:border-gray-400 disabled:cursor-not-allowed disabled:opacity-50 shadow-sm"
+                              title="Hide Request"
+                              type="button"
+                            >
+                              {hideRfqRequestMutation.isPending ? (
+                                <svg className="h-3.5 w-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+                                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                  <path className="opacity-75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" fill="currentColor" />
+                                </svg>
+                              ) : (
+                                <>
+                                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                                  </svg>
+                                  <span>Hide</span>
+                                </>
+                              )}
+                            </button>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  /* Card View Layout (Original) */
+                  <>
                 {/* Card Header */}
                 <div className="flex items-center justify-between border-b border-gray-200 bg-gray-50 px-4 py-3">
                   <div className="flex items-center gap-2">
@@ -2582,6 +2813,8 @@ const SellerChat: React.FC<SellerChatProps> = ({
                     </div>
                   )}
                 </div>
+                  </>
+                )}
               </div>
             );
           })}

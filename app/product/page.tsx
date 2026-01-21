@@ -241,6 +241,7 @@ const formSchemaForTypeP = (t: any) => {
       sellCityIds: z.any().optional(),
       skuNo: z.string().trim().optional(),
       productCondition: z.string().trim().optional(),
+      // Tags are optional; when provided, map them to backend structure
       productTagList: z
         .array(
           z.object({
@@ -248,9 +249,7 @@ const formSchemaForTypeP = (t: any) => {
             value: z.number(),
           }),
         )
-        .refine((value) => value && value.length > 0, {
-          message: t("tag_is_required"),
-        })
+        .optional()
         .transform((value) => {
           if (!value || value.length === 0) {
             return [];
@@ -267,30 +266,39 @@ const formSchemaForTypeP = (t: any) => {
             .string()
             .trim()
             .min(2, { message: t("short_description_is_required") })
-            .max(20, {
-              message: t("short_description_must_be_less_than_20_characters"),
+            .max(200, {
+              message: t("short_description_must_be_less_than_200_characters"),
             }),
         }),
       ),
-      productSpecificationList: z.array(
-        z.object({
-          label: z
-            .string()
-            .trim()
-            .min(2, { message: t("label_is_required") })
-            .max(20, { message: t("label_must_be_less_than_20_characters") }),
-          specification: z
-            .string()
-            .trim()
-            .min(1, { message: t("specification_is_required") })
-            .max(20, {
-              message: t("specification_must_be_less_than_20_characters"),
-            })
-            .refine((val) => ALPHANUMERIC_REGEX.test(val), {
-              message: t("specification_must_contain_only_letters_or_digits"),
-            }),
-        }),
-      ),
+      // Specifications are optional; when provided, enforce basic validation
+      productSpecificationList: z
+        .array(
+          z.object({
+            // Label is optional; empty label is allowed
+            label: z
+              .string()
+              .trim()
+              .optional()
+              .or(z.literal("")),
+            // Specification is optional; if non-empty, must be alphanumeric
+            specification: z
+              .string()
+              .trim()
+              .optional()
+              .or(z.literal(""))
+              .refine(
+                (val) =>
+                  !val || val === "" || ALPHANUMERIC_REGEX.test(val),
+                {
+                  message: t(
+                    "specification_must_contain_only_letters_or_digits",
+                  ),
+                },
+              ),
+          }),
+        )
+        .optional(),
       description: z.string().trim().optional(),
       descriptionJson: z.array(z.any()).optional(),
       productPriceList: z.array(baseProductPriceItemSchema(t)).optional(),
@@ -437,27 +445,28 @@ const formSchemaForTypeR = (t: any) => {
             .string()
             .trim()
             .min(2, { message: t("short_description_is_required") })
-            .max(20, {
-              message: t("short_description_must_be_less_than_20_characters"),
+            .max(200, {
+              message: t("short_description_must_be_less_than_200_characters"),
             }),
         }),
       ),
-      productSpecificationList: z.array(
-        z.object({
-          label: z
-            .string()
-            .trim()
-            .min(2, { message: t("label_is_required") })
-            .max(20, { message: t("label_must_be_less_than_20_characters") }),
-          specification: z
-            .string()
-            .trim()
-            .min(2, { message: t("specification_is_required") })
-            .max(20, {
-              message: t("specification_must_be_less_than_20_characters"),
-            }),
-        }),
-      ),
+      // Specifications are optional for R-type products as well
+      productSpecificationList: z
+        .array(
+          z.object({
+            label: z
+              .string()
+              .trim()
+              .optional()
+              .or(z.literal("")),
+            specification: z
+              .string()
+              .trim()
+              .optional()
+              .or(z.literal("")),
+          }),
+        )
+        .optional(),
       description: z.string().trim().optional(),
       descriptionJson: z.array(z.any()).optional(),
       setUpPrice: z.boolean(),
@@ -570,8 +579,8 @@ const defaultValues: { [key: string]: any } = {
   productImages: [],
   productPriceList: [
     {
-      consumerType: "",
-      sellType: "",
+      consumerType: "CONSUMER",
+      sellType: "NORMALSELL",
       consumerDiscount: "",
       vendorDiscount: "",
       consumerDiscountType: "",

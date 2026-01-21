@@ -68,8 +68,8 @@ const formSchema = (t: any) => {
           .min(2, {
             message: t("short_description_is_required"),
           })
-          .max(20, {
-            message: t("short_description_must_be_less_than_20_characters"),
+          .max(200, {
+            message: t("short_description_must_be_less_than_200_characters"),
           }),
       }),
     ),

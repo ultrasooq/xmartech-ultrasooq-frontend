@@ -6,7 +6,7 @@ import { PRODUCT_CATEGORY_ID } from "@/utils/constants";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
-import { X, ChevronLeft } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useCategoryStore } from "@/lib/categoryStore";
@@ -586,7 +586,7 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
     });
   };
 
-  // Listen for open/close events from header
+  // Listen for open/close events from header (for hover-based opening)
   useEffect(() => {
     const handleOpenCategorySidebar = () => {
       setIsHovered(true);
@@ -607,6 +607,20 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
 
   // Show sidebar when hovered or explicitly opened
   const shouldShow = isOpen || isHovered;
+
+  // Reset isHovered when drawer closes (from any source)
+  useEffect(() => {
+    if (!shouldShow) {
+      setIsHovered(false);
+    }
+  }, [shouldShow]);
+
+  // Dispatch close event when isOpen becomes false (to sync header button state)
+  useEffect(() => {
+    if (!isOpen && typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("closeCategorySidebar"));
+    }
+  }, [isOpen]);
 
   // Reset mobile nav stack when sidebar closes
   useEffect(() => {
@@ -970,10 +984,8 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
           // Only close if clicking directly on backdrop, not on children
           // Check if the click target is the backdrop itself
           if (e.target === e.currentTarget) {
-            // Close on click (mobile) or when not hovering (desktop)
-            if (window.innerWidth < 768 || !isHovered) {
-              onClose();
-            }
+            // Close on backdrop click
+            onClose();
           }
         }}
         // Disabled: Remove auto-close on mouse leave
@@ -1091,19 +1103,6 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
               ) : (
                 <div></div>
               )}
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  setIsHovered(false);
-                  onClose();
-                }}
-                className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-100 text-gray-600 transition-colors hover:bg-gray-200 active:scale-95 z-10"
-                aria-label="Close categories"
-                type="button"
-              >
-                <X className="h-4 w-4" />
-              </button>
             </div>
 
             {/* Category Name Section */}
@@ -1171,29 +1170,6 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
 
           {/* Desktop View - Multi-column layout */}
           <div className="hidden md:flex h-full w-full relative">
-            {/* Close Button - Top Right */}
-            <button
-              onClick={(e) => {
-                // Stop all event propagation immediately
-                e.stopPropagation();
-                e.preventDefault();
-                e.nativeEvent.stopImmediatePropagation();
-                // Reset hover state and close in one action
-                setIsHovered(false);
-                onClose();
-              }}
-              onMouseDown={(e) => {
-                // Prevent mouse down from triggering backdrop onClick
-                e.stopPropagation();
-                e.preventDefault();
-                e.nativeEvent.stopImmediatePropagation();
-              }}
-              className="absolute top-3 right-3 flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-600 transition-colors hover:bg-gray-200 active:scale-95 z-[101] pointer-events-auto"
-              aria-label="Close categories"
-              type="button"
-            >
-              <X className="h-5 w-5" />
-            </button>
             {/* Column 1: Main Categories (Left Sidebar) */}
             {categoriesWithSubcategoriesFiltered.length > 0 && (
               <ScrollableMainColumn>

@@ -1043,6 +1043,7 @@
   "place_of_origin_is_required": "Place of Origin is required",
   "short_description_is_required": "Short Description is required",
   "short_description_must_be_less_than_20_characters": "Short Description must be less than 20 characters",
+  "short_description_must_be_less_than_200_characters": "Short Description must be less than 200 characters",
   "label_is_required": "Label is required",
   "label_must_be_less_than_20_characters": "Label must be less than 20 characters",
   "value_is_required": "Value is required",

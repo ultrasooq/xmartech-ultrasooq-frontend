@@ -56,7 +56,7 @@ const DescriptionSection = () => {
                   key={field.id}
                   label=""
                   name={`productShortDescriptionList.${index}.shortDescription`}
-                  maxLength={20}
+                  maxLength={200}
                   height={200}
                 />
                 <p className="text-[13px] font-medium text-red-500" dir={langDir}>

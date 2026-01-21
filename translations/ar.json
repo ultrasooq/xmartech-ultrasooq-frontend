@@ -1054,6 +1054,7 @@
   "place_of_origin_is_required": "مكان المنشأ مطلوب",
   "short_description_is_required": "وصف قصير مطلوب",
   "short_description_must_be_less_than_20_characters": "يجب أن يكون الوصف القصير أقل من 20 حرفًا",
+  "short_description_must_be_less_than_200_characters": "يجب أن يكون الوصف القصير أقل من 200 حرف",
   "label_is_required": "الملصق مطلوب",
   "label_must_be_less_than_20_characters": "يجب أن تكون التسمية أقل من 20 حرفًا",
   "value_is_required": "القيمة مطلوبة",

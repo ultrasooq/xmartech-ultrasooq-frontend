@@ -775,7 +775,8 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
         </div>
       </div>
 
-      {/* Tags Section */}
+      {/* Tags Section - temporarily disabled */}
+      {/*
       <div className="space-y-6">
         <div className="flex items-center gap-3 border-b border-gray-100 pb-4">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-yellow-500">
@@ -798,6 +799,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
           }
         />
       </div>
+      */}
 
       {/* Product Images Section */}
       <div className="space-y-6">

@@ -32,6 +32,7 @@ const SellerRfqListPage = () => {
         <SellerChat
           layoutMode="grid"
           viewMode="rfqRequests"
+          displayMode="list"
           onSelectRfq={(rfq, rfqGroup) => {
             // Navigate to seller-rfq-request page with selected RFQ
             router.push(`/seller-rfq-request?rfqId=${rfq.rfqQuotesId}&tab=rfq`);

@@ -968,7 +968,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                   </Label>
                 </div>
 
-                <div className="flex flex-row items-center gap-x-3">
+                {/* <div className="flex flex-row items-center gap-x-3">
                   <Controller
                     name="isOfferPriceRequired"
                     control={formContext.control}
@@ -983,9 +983,9 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                   <Label dir={langDir} translate="no">
                     {t("ask_for_the_price")}
                   </Label>
-                </div>
+                </div> */}
 
-                <div className="flex flex-row items-center gap-x-3">
+                {/* <div className="flex flex-row items-center gap-x-3">
                   <Controller
                     name="isStockRequired"
                     control={formContext.control}
@@ -1000,7 +1000,7 @@ const PriceSection: React.FC<PriceSectionProps> = ({ activeProductType }) => {
                   <Label dir={langDir} translate="no">
                     {t("ask_for_the_stock")}
                   </Label>
-                </div>
+                </div> */}
               </>
             </div>
           ) : null}
