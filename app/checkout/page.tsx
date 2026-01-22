@@ -42,6 +42,7 @@ import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { useAddToWishList } from "@/apis/queries/wishlist.queries";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import { useDynamicTranslation } from "@/hooks/useDynamicTranslation";
 import { useCurrentAccount } from "@/apis/queries/auth.queries";
 import { useVendorBusinessCategories } from "@/hooks/useVendorBusinessCategories";
 import { checkCategoryConnection } from "@/utils/categoryConnection";
@@ -1290,7 +1291,7 @@ const CheckoutPage = () => {
                             )}
                             <div className="flex-1">
                               <h4 className="font-semibold text-gray-900 mb-1">
-                                {product?.rfqProductDetails?.productName || "Product"}
+                                {translate(product?.rfqProductDetails?.productName || "Product")}
                               </h4>
                               <p className="text-sm text-gray-600 mb-2">
                                 {t("quantity")}: {quoteProduct?.quantity || product.quantity || 1}

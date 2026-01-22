@@ -15,6 +15,7 @@ import Link from "next/link";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import { useDynamicTranslation } from "@/hooks/useDynamicTranslation";
 import { useVendorBusinessCategories } from "@/hooks/useVendorBusinessCategories";
 import { useCurrentAccount } from "@/apis/queries/auth.queries";
 import { Button } from "@/components/ui/button";
@@ -44,6 +45,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
 }) => {
   const t = useTranslations();
   const { user, langDir, currency } = useAuth();
+  const { translate } = useDynamicTranslation();
   const currentAccount = useCurrentAccount();
   const vendorBusinessCategoryIds = useVendorBusinessCategories();
 
@@ -279,7 +281,7 @@ const ProductTable: React.FC<ProductTableProps> = ({
                         </div>
                         <div className="flex-1 min-w-0">
                           <h3 className="font-semibold text-gray-900 text-sm sm:text-base mb-1 line-clamp-2 group-hover/link:text-blue-600 transition-colors">
-                            {item?.productName}
+                            {translate(item?.productName)}
                           </h3>
                           {/* Rating */}
                           {rating > 0 && (

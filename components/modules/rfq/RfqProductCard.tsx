@@ -10,6 +10,7 @@ import { FaHeart, FaRegHeart, FaStar, FaRegStar } from "react-icons/fa";
 import { FiEye } from "react-icons/fi";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import { useDynamicTranslation } from "@/hooks/useDynamicTranslation";
 
 type RfqProductCardProps = {
   id: number;
@@ -67,6 +68,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
 }) => {
   const t = useTranslations();
   const { langDir, currency } = useAuth();
+  const { translate } = useDynamicTranslation();
   const [quantity, setQuantity] = useState(0);
 
   useEffect(() => {
@@ -155,7 +157,7 @@ const RfqProductCard: React.FC<RfqProductCardProps> = ({
       <div className="p-2 sm:p-4 space-y-1 sm:space-y-3 flex-1 flex flex-col">
         <Link href={`/rfq/${id}`} className="block group flex-1">
           <h3 className="font-semibold text-gray-900 text-xs sm:text-base leading-tight line-clamp-2 group-hover:text-blue-600 transition-colors duration-200 mb-1 sm:mb-2" dir={langDir}>
-            {productName}
+            {translate(productName)}
           </h3>
           <p className="text-gray-600 text-xs sm:text-sm line-clamp-1 mb-1 sm:mb-2" title={shortDescription}>
             {shortDescription}

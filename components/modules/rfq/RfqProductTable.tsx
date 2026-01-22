@@ -14,6 +14,7 @@ import { TrendingProduct } from "@/utils/types/common.types";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import { useDynamicTranslation } from "@/hooks/useDynamicTranslation";
 
 type ProducTableProps = {
   list: TrendingProduct[];
@@ -22,6 +23,7 @@ type ProducTableProps = {
 const RfqProductTable: React.FC<ProducTableProps> = ({ list }) => {
   const t = useTranslations();
   const { langDir } = useAuth();
+  const { translate } = useDynamicTranslation();
 
   return (
     <CardContent className="main-content w-full">
@@ -57,7 +59,7 @@ const RfqProductTable: React.FC<ProducTableProps> = ({ list }) => {
                           width={80}
                         />
                       </div>
-                      <figcaption>{item?.productName}</figcaption>
+                      <figcaption>{translate(item?.productName)}</figcaption>
                     </figure>
                     {/* </Link> */}
                   </TableCell>

@@ -5768,67 +5768,6 @@
   /* end: responsive */
 }
 
-@utility google_translate {
-  & .m-2 {
-    @apply m-0;
-  }
-
-  & .m-2 .goog-te-gadget-simple {
-    @apply flex flex-wrap bg-transparent border-none;
-  }
-
-  & .m-2 .goog-te-gadget-simple a {
-    @apply flex;
-  }
-
-  & .m-2 .goog-te-gadget-simple a span {
-    @apply text-white;
-  }
-
-  /* start: responsive */
-
-  /* end: responsive */
-}
-
-@utility m-2 {
-  .google_translate & {
-    @apply m-0;
-  }
-
-  .google_translate & .goog-te-gadget-simple {
-    @apply flex flex-wrap bg-transparent border-none;
-  }
-
-  .google_translate & .goog-te-gadget-simple a {
-    @apply flex;
-  }
-
-  .google_translate & .goog-te-gadget-simple a span {
-    @apply text-white;
-  }
-
-  /* start: responsive */
-
-  /* end: responsive */
-}
-
-@utility goog-te-gadget-simple {
-  .google_translate .m-2 & {
-    @apply flex flex-wrap bg-transparent border-none;
-  }
-
-  .google_translate .m-2 & a {
-    @apply flex;
-  }
-
-  .google_translate .m-2 & a span {
-    @apply text-white;
-  }
-
-  /* start: responsive */
-
-  /* end: responsive */
-}
 
 @utility qty-up-down-s1 {
   @apply relative w-[113px];

@@ -29,6 +29,7 @@ import { useAuth } from "@/context/AuthContext";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
 import { generateUniqueNumber } from "@/utils/helper";
 import { useTranslations } from "next-intl";
+import { useDynamicTranslation } from "@/hooks/useDynamicTranslation";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { useOrderStore } from "@/lib/orderStore";
@@ -73,6 +74,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({
 }) => {
   const t = useTranslations();
   const { langDir, currency } = useAuth();
+  const { translate } = useDynamicTranslation();
   const [activeSellerId, setActiveSellerId] = useState<number>();
   const [selectedChatHistory, setSelectedChatHistory] = useState<any>([]);
   const [rfqQuotesUserId, setRfqQuotesUserId] = useState<number>();
@@ -1478,7 +1480,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({
                               </div>
                               <div className="min-w-0">
                                 <p className="truncate text-xs font-semibold text-gray-900">
-                                  {item?.rfqProductDetails?.productName || "-"}
+                                  {translate(item?.rfqProductDetails?.productName || "-")}
                                 </p>
                                 <p className="text-[10px] text-gray-500">
                                   {item?.deliveryDate ||
@@ -1597,7 +1599,7 @@ const RfqRequestChat: React.FC<RfqRequestChatProps> = ({
                                       </div>
                                       <div className="min-w-0 flex-1">
                                         <span className="truncate block text-[11px]">
-                                          {p?.productName || "-"}
+                                          {translate(p?.productName || "-")}
                                         </span>
                                         {s.quantity && s.quantity > 0 && (
                                           <span className="text-[9px] text-gray-500">

@@ -15,6 +15,7 @@ import { FiEye } from "react-icons/fi";
 import ShoppingIcon from "@/components/icons/ShoppingIcon";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import { useDynamicTranslation } from "@/hooks/useDynamicTranslation";
 import { useVendorBusinessCategories } from "@/hooks/useVendorBusinessCategories";
 import { checkCategoryConnection } from "@/utils/categoryConnection";
 import { useCategory } from "@/apis/queries/category.queries";
@@ -67,6 +68,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 }) => {
   const t = useTranslations();
   const { user, langDir, currency } = useAuth();
+  const { translate } = useDynamicTranslation();
   const currentAccount = useCurrentAccount();
   const vendorBusinessCategoryIds = useVendorBusinessCategories();
 
@@ -227,7 +229,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <Link href={`/trending/${id}`}>
           <div>
             <h4 className="mb-2 line-clamp-2 text-sm text-gray-900" title={productName}>
-              {productName}
+              {translate(productName)}
             </h4>
             
             {/* Rating */}

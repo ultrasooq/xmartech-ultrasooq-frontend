@@ -3,6 +3,7 @@ import React from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import { useDynamicTranslation } from "@/hooks/useDynamicTranslation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -37,13 +38,14 @@ const DropshipProductCard: React.FC<DropshipProductCardProps> = ({
 }) => {
   const t = useTranslations();
   const { langDir } = useAuth();
+  const { translate } = useDynamicTranslation();
 
   const productImage = product?.productImages?.[0]?.image;
-  const productName = product?.productName || t("no_name");
+  const productName = translate(product?.productName) || t("no_name");
   const productPrice = Number(product?.productPrice) || 0;
   const productDescription = product?.productDescription || "";
-  const brandName = product?.brand?.brandName || t("no_brand");
-  const categoryName = product?.category?.name || t("no_category");
+  const brandName = translate(product?.brand?.brandName) || t("no_brand");
+  const categoryName = translate(product?.category?.name) || t("no_category");
   const vendorName = product?.userBy?.companyName || 
     `${product?.userBy?.firstName || ""} ${product?.userBy?.lastName || ""}`.trim() ||
     product?.userBy?.email ||

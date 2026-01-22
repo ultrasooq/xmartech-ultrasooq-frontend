@@ -67,6 +67,7 @@ import { getOrCreateDeviceId } from "@/utils/helper";
 import { useQueryClient } from "@tanstack/react-query";
 import { getCookie } from "cookies-next";
 import { useTranslations } from "next-intl";
+import { useDynamicTranslation } from "@/hooks/useDynamicTranslation";
 import CategoryFilter from "@/components/modules/manageProducts/CategoryFilter";
 import { useCurrentAccount } from "@/apis/queries/auth.queries";
 import Link from "next/link";
@@ -91,6 +92,7 @@ const TrendingPage = (props0: TrendingPageProps) => {
   const searchParams = use(props0.searchParams || Promise.resolve({}));
   const t = useTranslations();
   const { langDir, currency, user } = useAuth();
+  const { translate } = useDynamicTranslation();
   const currentAccount = useCurrentAccount();
   const currentTradeRole =
     currentAccount?.data?.data?.account?.tradeRole || user?.tradeRole;
@@ -254,7 +256,7 @@ const TrendingPage = (props0: TrendingPageProps) => {
                   <div className="absolute right-2 bottom-2 left-2 flex flex-col items-start justify-between gap-2 sm:right-4 sm:bottom-4 sm:left-4 sm:flex-row sm:items-center">
                     <div className="text-white">
                       <h3 className="mb-1 line-clamp-1 text-sm font-semibold sm:text-lg md:text-xl">
-                        {p.productName}
+                        {translate(p.productName)}
                       </h3>
                       <div className="flex items-center gap-1.5 sm:gap-2">
                         <span className="rounded-full bg-orange-500 px-1.5 py-0.5 text-[9px] font-bold text-white shadow sm:px-2 sm:text-[10px] md:text-xs">
@@ -1219,11 +1221,12 @@ const TrendingPage = (props0: TrendingPageProps) => {
                             null;
 
                           // Get product name from cart item if not found in productData
-                          const productName =
+                          const productNameRaw =
                             productData?.productName ||
                             cartItem.productPriceDetails?.productPrice_product
                               ?.productName ||
                             t("product");
+                          const productName = translate(productNameRaw);
 
                           return (
                             <div
@@ -1566,11 +1569,12 @@ const TrendingPage = (props0: TrendingPageProps) => {
                         null;
 
                       // Get product name from cart item if not found in productData
-                      const productName =
+                      const productNameRaw =
                         productData?.productName ||
                         cartItem.productPriceDetails?.productPrice_product
                           ?.productName ||
                         t("product");
+                      const productName = translate(productNameRaw);
 
                       return (
                         <div
@@ -1597,7 +1601,7 @@ const TrendingPage = (props0: TrendingPageProps) => {
 
                           <div className="min-w-0 flex-1">
                             <h4 className="truncate text-sm font-medium text-gray-900">
-                              {productName}
+                              {translate(productName)}
                             </h4>
                             <div className="mt-1 flex items-center justify-between">
                               <p className="text-xs text-gray-500">

@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 
 /**
  * Component to protect the site name "Ultrasooq" in the browser tab title
- * from being translated by Google Translate
+ * from being translated
  */
 export default function TitleProtection() {
   const lastGoodTitleRef = useRef<string | null>(null);
@@ -60,7 +60,7 @@ export default function TitleProtection() {
       });
     }
 
-    // Monitor periodically (Google Translate may bypass MutationObserver)
+    // Monitor periodically
     const intervalId = setInterval(protectTitle, 500);
 
     return () => {

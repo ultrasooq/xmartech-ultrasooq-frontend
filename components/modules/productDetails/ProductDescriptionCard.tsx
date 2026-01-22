@@ -21,6 +21,7 @@ import PlusIcon from "@/public/images/upDownBtn-plus.svg";
 import { useTranslations } from "next-intl";
 import { toast } from "@/components/ui/use-toast";
 import { useAuth } from "@/context/AuthContext";
+import { useDynamicTranslation } from "@/hooks/useDynamicTranslation";
 import { useProductVariant } from "@/apis/queries/product.queries";
 import { Label } from "@/components/ui/label";
 import { Select, SelectItem } from "@/components/ui/select";
@@ -148,6 +149,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
 }) => {
   const t = useTranslations();
   const { user, langDir, currency } = useAuth();
+  const { translate } = useDynamicTranslation();
   const currentAccount = useCurrentAccount();
   const vendorBusinessCategoryIds = useVendorBusinessCategories();
   const me = useMe();
@@ -511,7 +513,7 @@ const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
       ) : (
         <div>
           <h1 className="text-2xl font-semibold text-gray-900 leading-relaxed" dir={langDir} translate="no">
-            {productName}
+            {translate(productName)}
           </h1>
         </div>
       )}

@@ -11,9 +11,16 @@ import TrashIcon from "@/public/images/social-delete-icon.svg";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 import ProductVariantTypes from "./ProductVariantTypes";
+import ProductLocationAndCustomizationSection from "./ProductLocationAndCustomizationSection";
 import { usePathname } from "next/navigation";
 
-const DescriptionAndSpecificationSection = () => {
+type DescriptionAndSpecificationSectionProps = {
+  activeProductType?: string;
+};
+
+const DescriptionAndSpecificationSection: React.FC<
+  DescriptionAndSpecificationSectionProps
+> = ({ activeProductType }) => {
   const t = useTranslations();
   const { langDir } = useAuth();
   const pathname = usePathname();
@@ -156,6 +163,28 @@ const DescriptionAndSpecificationSection = () => {
           
           <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
             <ProductVariantTypes />
+          </div>
+        </div>
+      )}
+
+      {/* Product Location and Customization Section */}
+      {pathname == "/product" && (
+        <div className="space-y-6">
+          <div className="flex items-center gap-3 pb-4 border-b border-gray-100">
+            <div className="w-8 h-8 bg-teal-500 rounded-lg flex items-center justify-center">
+              <span className="text-white text-sm font-semibold">4</span>
+            </div>
+            <div>
+              <h4 className="text-lg font-semibold text-gray-900">
+                {t("product_location_and_customization")}
+              </h4>
+            </div>
+          </div>
+          
+          <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
+            <ProductLocationAndCustomizationSection
+              activeProductType={activeProductType}
+            />
           </div>
         </div>
       )}

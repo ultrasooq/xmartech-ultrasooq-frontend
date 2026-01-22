@@ -26,6 +26,7 @@ import { CartItem } from "@/utils/types/cart.types";
 import { getCookie } from "cookies-next";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
+import { useDynamicTranslation } from "@/hooks/useDynamicTranslation";
 import React, { useEffect, useMemo, useState } from "react";
 import { ShoppingBag, ChevronLeft, ChevronRight } from "lucide-react";
 import { useCurrentAccount } from "@/apis/queries/auth.queries";
@@ -48,6 +49,7 @@ import { FaStar } from "react-icons/fa";
 const CartListPage = () => {
   const t = useTranslations();
   const { user, langDir, currency } = useAuth();
+  const { translate } = useDynamicTranslation();
   const currentAccount = useCurrentAccount();
   const currentTradeRole =
     currentAccount?.data?.data?.account?.tradeRole || user?.tradeRole;
@@ -1191,7 +1193,7 @@ const CartListPage = () => {
                                           router.push(`/trending/${product.id}`)
                                         }
                                       >
-                                        {product.productName}
+                                        {translate(product.productName)}
                                       </h3>
 
                                       {/* Rating with Stars - Always reserve space */}

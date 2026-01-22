@@ -1773,5 +1773,8 @@
   "approx_price_use_your_own": "السعر التقريبي (استخدم سعرك الخاص)",
   "load_more_with_ai": "تحميل المزيد مع الذكاء الاصطناعي",
   "product_suggestion_from_ultrasooq": "اقتراحات المنتجات من Ultrasooq",
-  "skip_loading": "تخطي التحميل"
+  "skip_loading": "تخطي التحميل",
+  "product_data_loaded": "تم تحميل بيانات المنتج",
+  "ai_data_loaded_successfully": "تم تحميل البيانات التي تم إنشاؤها بواسطة الذكاء الاصطناعي بنجاح. يرجى مراجعتها وإكمال النموذج.",
+  "product_location_and_customization": "موقع المنتج والتخصيص"
 }

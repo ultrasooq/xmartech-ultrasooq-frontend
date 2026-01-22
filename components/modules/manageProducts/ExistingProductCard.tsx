@@ -6,6 +6,7 @@ import Image from "next/image";
 import validator from "validator";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import { useDynamicTranslation } from "@/hooks/useDynamicTranslation";
 import { useRouter } from "next/navigation";
 import { IoMdAdd } from "react-icons/io";
 
@@ -44,6 +45,7 @@ const ExistingProductCard: React.FC<ExistingProductCardProps> = ({
 }) => {
   const t = useTranslations();
   const { langDir } = useAuth();
+  const { translate } = useDynamicTranslation();
   const router = useRouter();
 
   const handleAddToMyProducts = () => {
@@ -119,7 +121,7 @@ const ExistingProductCard: React.FC<ExistingProductCardProps> = ({
 
           {/* Product Details */}
           <div className="flex flex-col space-y-2">
-            <h3 className="text-lg font-semibold text-gray-900">{productName || "-"}</h3>
+            <h3 className="text-lg font-semibold text-gray-900">{translate(productName) || "-"}</h3>
             
             {/* Price Info */}
             <div className="flex space-x-6 text-sm text-gray-600">
@@ -135,11 +137,11 @@ const ExistingProductCard: React.FC<ExistingProductCardProps> = ({
             <div className="flex space-x-6 text-sm text-gray-500">
               <div className="flex items-center space-x-2">
                 <span>{t("category")}:</span>
-                <span className="font-medium">{categoryName || "-"}</span>
+                <span className="font-medium">{translate(categoryName) || "-"}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <span>{t("brand")}:</span>
-                <span className="font-medium">{brandName || "-"}</span>
+                <span className="font-medium">{translate(brandName) || "-"}</span>
               </div>
             </div>
 

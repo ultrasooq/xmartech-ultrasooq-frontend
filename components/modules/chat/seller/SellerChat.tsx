@@ -26,6 +26,7 @@ import { useAuth } from "@/context/AuthContext";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
 import { generateUniqueNumber } from "@/utils/helper";
 import { useTranslations } from "next-intl";
+import { useDynamicTranslation } from "@/hooks/useDynamicTranslation";
 import moment from "moment";
 import validator from "validator";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
@@ -84,6 +85,7 @@ const SellerChat: React.FC<SellerChatProps> = ({
 }) => {
   const t = useTranslations();
   const { langDir, currency } = useAuth();
+  const { translate } = useDynamicTranslation();
   const [activeSellerId, setActiveSellerId] = useState<number | undefined>();
   const [quoteProducts, setQuoteProducts] = useState<any[]>([]);
   const [rfqQuotes, setRfqQuotes] = useState<any[]>([]);
@@ -1127,11 +1129,12 @@ const SellerChat: React.FC<SellerChatProps> = ({
                     )
                     .filter(Boolean)[0];
                   
-                  // Create a display text from product names
-                  const productDisplayText = allProductNames.length > 0
-                    ? allProductNames.length === 1
-                      ? allProductNames[0]
-                      : `${allProductNames[0]}${allProductNames.length > 1 ? ` +${allProductNames.length - 1} more` : ""}`
+                  // Create a display text from product names (translate each name)
+                  const translatedProductNames = allProductNames.map(name => translate(name));
+                  const productDisplayText = translatedProductNames.length > 0
+                    ? translatedProductNames.length === 1
+                      ? translatedProductNames[0]
+                      : `${translatedProductNames[0]}${translatedProductNames.length > 1 ? ` +${translatedProductNames.length - 1} more` : ""}`
                     : "No products";
                   
                   return (
@@ -1505,7 +1508,7 @@ const SellerChat: React.FC<SellerChatProps> = ({
                             </div>
                             <div className="min-w-0">
                               <p className="truncate text-xs font-semibold text-gray-900">
-                                {item?.rfqProductDetails?.productName || "-"}
+                                {translate(item?.rfqProductDetails?.productName || "-")}
                               </p>
                               <p className="text-[10px] text-gray-500">
                                 {item?.deliveryDate || "-"}
@@ -1896,8 +1899,8 @@ const SellerChat: React.FC<SellerChatProps> = ({
                 mainProduct={{
                   id: suggestingForProductId,
                   name:
-                    quoteProducts.find((p) => p.id === suggestingForProductId)
-                      ?.rfqProductDetails?.productName || "",
+                    translate(quoteProducts.find((p) => p.id === suggestingForProductId)
+                      ?.rfqProductDetails?.productName || ""),
                   image:
                     quoteProducts.find((p) => p.id === suggestingForProductId)
                       ?.rfqProductDetails?.productImages?.[0]?.image,
@@ -2248,7 +2251,7 @@ const SellerChat: React.FC<SellerChatProps> = ({
                   quote.rfqQuotesUser_rfqQuotes?.rfqQuotesProducts?.map(
                     (product: any) => ({
                       productName:
-                        product?.rfqProductDetails?.productName || "Product",
+                        translate(product?.rfqProductDetails?.productName || "Product"),
                       quantity: product?.quantity || 1,
                       productType: product?.productType || "SAME",
                     }),
@@ -2400,7 +2403,7 @@ const SellerChat: React.FC<SellerChatProps> = ({
                           {allProductDetails.slice(0, 2).map((product: any, idx: number) => (
                             <div key={idx} className="flex items-center gap-3">
                               <span className="truncate text-sm font-medium text-gray-900">
-                                {product.productName}
+                                {translate(product.productName)}
                               </span>
                               <span className="flex-shrink-0 rounded-full bg-gray-100 px-2 py-0.5 text-xs font-semibold text-gray-600">
                                 Qty: {product.quantity}
@@ -2736,7 +2739,7 @@ const SellerChat: React.FC<SellerChatProps> = ({
                             className="flex items-center justify-between rounded-md bg-gray-50 px-2 py-1.5 text-xs"
                           >
                             <span className="flex-1 truncate font-medium text-gray-700">
-                              {product.productName}
+                              {translate(product.productName)}
                             </span>
                             <span className="ml-2 flex-shrink-0 text-gray-500">
                               Qty: {product.quantity}

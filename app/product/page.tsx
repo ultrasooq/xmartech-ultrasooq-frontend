@@ -29,7 +29,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { useUploadMultipleFile } from "@/apis/queries/upload.queries";
 import {
-  ALPHANUMERIC_REGEX,
   BUYGROUP_MENU_ID,
   FACTORIES_MENU_ID,
   RFQ_MENU_ID,
@@ -271,7 +270,7 @@ const formSchemaForTypeP = (t: any) => {
             }),
         }),
       ),
-      // Specifications are optional; when provided, enforce basic validation
+      // Specifications are optional
       productSpecificationList: z
         .array(
           z.object({
@@ -281,21 +280,12 @@ const formSchemaForTypeP = (t: any) => {
               .trim()
               .optional()
               .or(z.literal("")),
-            // Specification is optional; if non-empty, must be alphanumeric
+            // Specification is optional; no format restrictions
             specification: z
               .string()
               .trim()
               .optional()
-              .or(z.literal(""))
-              .refine(
-                (val) =>
-                  !val || val === "" || ALPHANUMERIC_REGEX.test(val),
-                {
-                  message: t(
-                    "specification_must_contain_only_letters_or_digits",
-                  ),
-                },
-              ),
+              .or(z.literal("")),
           }),
         )
         .optional(),
@@ -2323,7 +2313,9 @@ const CreateProductPage = () => {
                       </div>
                     </div>
                     <div className="p-6">
-                      <DescriptionAndSpecificationSection />
+                      <DescriptionAndSpecificationSection
+                        activeProductType={activeProductType}
+                      />
                     </div>
                   </div>
 

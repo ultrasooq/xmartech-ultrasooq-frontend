@@ -5,6 +5,7 @@ import { fetchCategory } from "@/apis/requests/category.requests";
 import { PRODUCT_CATEGORY_ID } from "@/utils/constants";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import { useDynamicTranslation } from "@/hooks/useDynamicTranslation";
 import { useRouter } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -66,6 +67,7 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
 }) => {
   const t = useTranslations();
   const { langDir } = useAuth();
+  const { translate } = useDynamicTranslation();
   const router = useRouter();
   const categoryStore = useCategoryStore();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -829,7 +831,7 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
       >
         <div className="p-4">
           <h3 className="text-sm font-semibold text-gray-900 mb-3 sticky top-0 bg-white pb-2 border-b border-gray-200 z-10 -mx-4 -mt-4 px-4 pt-4">
-            {title}
+            {translate(title)}
           </h3>
           <div className="space-y-1">
             {categories.map((item: any) => {
@@ -904,7 +906,7 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
                     <div className="h-5 w-5 flex-shrink-0 rounded bg-gray-200" />
                   )}
                   <span className="text-sm flex-1 text-left line-clamp-1">
-                    {item.name}
+                    {translate(item.name)}
                   </span>
                   {hasChildren && (
                     <svg
@@ -957,7 +959,7 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
       const selectedCategory = categoriesWithSubcategoriesFiltered.find(
         ({ category }) => category.id === selectedLevels[0],
       );
-      return selectedCategory?.category.name || "Categories";
+      return translate(selectedCategory?.category.name) || t("categories");
     }
     
     // For deeper levels, show the parent category name (the one selected at the previous level)
@@ -967,7 +969,7 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
     
     const categories = getCategoriesForLevel(prevLevel);
     const selectedCategory = categories.find((c: any) => c.id === selectedId);
-    return selectedCategory?.name || `Level ${level + 1}`;
+    return translate(selectedCategory?.name) || `Level ${level + 1}`;
   };
 
   return (
@@ -1096,7 +1098,7 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
                   <ChevronLeft className={cn("h-5 w-5", langDir === "rtl" ? "rotate-180" : "")} />
                   <span className="text-sm font-medium">
                     {mobileNavStack.length > 1 
-                      ? mobileNavStack[mobileNavStack.length - 2].categoryName
+                      ? translate(mobileNavStack[mobileNavStack.length - 2].categoryName)
                       : t("all_categories")}
                   </span>
                 </button>
@@ -1109,7 +1111,7 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
             {mobileNavStack.length > 0 && (
               <div className="px-4 py-3 border-b border-gray-200 bg-white">
                 <span className="text-base font-semibold text-gray-900">
-                  {mobileNavStack[mobileNavStack.length - 1].categoryName}
+                  {translate(mobileNavStack[mobileNavStack.length - 1].categoryName)}
                 </span>
               </div>
             )}
@@ -1155,7 +1157,7 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
                           <div className="h-6 w-6 flex-shrink-0 rounded bg-gray-200" />
                         )}
                         <span className="text-base flex-1 text-left text-gray-900">
-                          {category.name}
+                          {translate(category.name)}
                         </span>
                         {hasChildren && (
                           <ChevronLeft className={cn("h-5 w-5 text-gray-400 flex-shrink-0", langDir === "rtl" ? "" : "rotate-180")} />
@@ -1211,7 +1213,7 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
                                 : "text-gray-700",
                             )}
                           >
-                            {category.name}
+                            {translate(category.name)}
                           </span>
                         </div>
                       );

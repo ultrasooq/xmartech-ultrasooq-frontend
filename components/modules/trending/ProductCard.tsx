@@ -21,6 +21,7 @@ import {
 import { getOrCreateDeviceId } from "@/utils/helper";
 import { useTranslations, useLocale } from "next-intl"; // Import useLocale
 import { useAuth } from "@/context/AuthContext";
+import { useDynamicTranslation } from "@/hooks/useDynamicTranslation";
 import { useClickOutside } from "use-events";
 import { Dialog, DialogContent, DialogTitle, DialogHeader } from "@/components/ui/dialog";
 import { IoCloseSharp } from "react-icons/io5";
@@ -71,6 +72,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 }) => {
   const t = useTranslations();
   const { user, langDir, currency } = useAuth();
+  const { translate } = useDynamicTranslation();
   const language = useLocale(); // Get the current locale (e.g., "en" or "ar")
   const currentAccount = useCurrentAccount();
   const vendorBusinessCategoryIds = useVendorBusinessCategories();
@@ -770,7 +772,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       <div className="p-2 sm:p-4 space-y-1 sm:space-y-3 flex-1 flex flex-col">
         <Link href={`/trending/${item.id}`} className="block group">
           <h3 className="font-semibold text-gray-900 text-sm sm:text-base leading-tight line-clamp-2 group-hover:text-blue-600 transition-colors duration-200 mb-1 sm:mb-2" dir={langDir}>
-            {item.productName}
+            {translate(item.productName)}
           </h3>
           
           {/* Rating */}

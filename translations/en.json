@@ -1998,5 +1998,8 @@
   "approx_price_use_your_own": "Approx price(use your own price)",
   "load_more_with_ai": "Load More with AI",
   "product_suggestion_from_ultrasooq": "Product suggestion from Ultrasooq",
-  "skip_loading": "Skip loading"
+  "skip_loading": "Skip loading",
+  "product_data_loaded": "Product Data Loaded",
+  "ai_data_loaded_successfully": "AI-generated data loaded successfully. Please review and complete the form.",
+  "product_location_and_customization": "Product Location and Customization"
 }

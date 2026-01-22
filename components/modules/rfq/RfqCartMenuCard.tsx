@@ -6,6 +6,7 @@ import validator from "validator";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
+import { useDynamicTranslation } from "@/hooks/useDynamicTranslation";
 
 type RfqCartMenuCardProps = {
   id: number;
@@ -43,6 +44,7 @@ const RfqCartMenuCard: React.FC<RfqCartMenuCardProps> = ({
 }) => {
   const t = useTranslations();
   const { langDir } = useAuth();
+  const { translate } = useDynamicTranslation();
   // const cart = useCartStore();
   const [quantity, setQuantity] = useState(1);
 
@@ -66,7 +68,7 @@ const RfqCartMenuCard: React.FC<RfqCartMenuCardProps> = ({
       </div>
       <div className="rfq_cart_wrap_content">
         <div className="rfq_cart_wrap_content_top">
-          <p>{productName}</p>
+          <p>{translate(productName)}</p>
         </div>
         <div className="rfq_cart_wrap_content_top_bottom flex-wrap gap-3">
           <div className="qty-up-down-s1-with-rgMenuAction">
