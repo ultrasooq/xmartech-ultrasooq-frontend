@@ -47,6 +47,7 @@ import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 import { v4 as uuidv4 } from "uuid";
+import { fetchSubCategoriesById } from "@/apis/requests/category.requests";
 
 const baseProductPriceItemSchema = (t: any) => {
   return z.object({
@@ -1142,7 +1143,118 @@ const CreateProductPage = () => {
       searchParams?.get("fromExisting") === "true"
     ) {
       const existingProduct = existingProductQueryById?.data?.data;
-      populateFormWithExistingProductData(existingProduct);
+      console.log("🔵 [DEBUG] Existing product data received:", {
+        productName: existingProduct.productName,
+        categoryId: existingProduct.categoryId,
+        categoryLocation: existingProduct.categoryLocation,
+        brandId: existingProduct.brandId,
+        typeOfProduct: existingProduct.typeOfProduct,
+        brand: existingProduct.brand,
+        category: existingProduct.category,
+      });
+      
+      // Determine if categoryLocation is already a valid numeric path (e.g. "1,2,4,99,101")
+      const hasValidCategoryLocation =
+        typeof existingProduct.categoryLocation === "string" &&
+        existingProduct.categoryLocation.trim().length > 0 &&
+        /^[0-9]+(,[0-9]+)*$/.test(existingProduct.categoryLocation.trim());
+
+      // Fetch category path if categoryLocation is missing or invalid (e.g. contains names like "Electronics/Laptops")
+      if (!hasValidCategoryLocation && existingProduct.categoryId) {
+        console.log(
+          "🔵 [DEBUG] categoryLocation is missing/invalid, building full category path for categoryId:",
+          {
+            categoryId: existingProduct.categoryId,
+            rawCategoryLocation: existingProduct.categoryLocation,
+          },
+        );
+
+        // Function to build full category path (root -> ... -> leaf) by traversing parent chain
+        const buildCategoryPath = async (
+          categoryId: number,
+        ): Promise<number[]> => {
+          try {
+            const res = await fetchSubCategoriesById({
+              categoryId: String(categoryId),
+            });
+            const categoryData = res.data?.data;
+
+            console.log("🔵 [DEBUG] Fetched category:", {
+              categoryId,
+              categoryData: {
+                id: categoryData?.id,
+                name: categoryData?.name,
+                parentId: categoryData?.parentId,
+                categoryLocation: categoryData?.categoryLocation,
+              },
+            });
+
+            // If categoryLocation exists in the data, we can trust it and just split it
+            if (categoryData?.categoryLocation) {
+              console.log(
+                "🔵 [DEBUG] Found categoryLocation in data:",
+                categoryData.categoryLocation,
+              );
+              return categoryData.categoryLocation
+                .split(",")
+                .map((id: string) => Number(id.trim()))
+                .filter((id: number) => !Number.isNaN(id));
+            }
+
+            // If no parentId (or parentId equals id), this is the root category
+            if (!categoryData?.parentId || categoryData.parentId === categoryId) {
+              console.log("🔵 [DEBUG] Reached root category:", categoryId);
+              return [categoryId];
+            }
+
+            // Recursively fetch parent path, then append current categoryId
+            console.log(
+              "🔵 [DEBUG] Fetching parent category:",
+              categoryData.parentId,
+            );
+            const parentPath = await buildCategoryPath(categoryData.parentId);
+            const fullPath = [...parentPath, categoryId];
+            console.log("🔵 [DEBUG] Built partial path:", fullPath);
+            return fullPath;
+          } catch (error) {
+            console.error("🔵 [DEBUG] Error fetching category:", error);
+            // Fallback: return just this categoryId
+            return [categoryId];
+          }
+        };
+
+        // Build the full path and convert to comma-separated string
+        buildCategoryPath(existingProduct.categoryId)
+          .then((pathIds) => {
+            const categoryLocation = pathIds.join(",");
+            console.log("🔵 [DEBUG] Built full category path:", categoryLocation);
+
+            const updatedProduct = {
+              ...existingProduct,
+              categoryLocation,
+            };
+
+            setTimeout(() => {
+              populateFormWithExistingProductData(updatedProduct);
+            }, 100);
+          })
+          .catch((err) => {
+            console.error("🔵 [DEBUG] Error building category path:", err);
+            // Fallback: use categoryId as categoryLocation
+            const updatedProduct = {
+              ...existingProduct,
+              categoryLocation: String(existingProduct.categoryId),
+            };
+            setTimeout(() => {
+              populateFormWithExistingProductData(updatedProduct);
+            }, 100);
+          });
+      } else {
+        // categoryLocation exists, proceed normally
+        setTimeout(() => {
+          populateFormWithExistingProductData(existingProduct);
+        }, 100);
+      }
     }
   }, [existingProductQueryById?.data?.data, searchParams]);
 
@@ -1336,22 +1448,64 @@ const CreateProductPage = () => {
   };
 
   const populateFormWithExistingProductData = (existingProduct: any) => {
+    console.log("🟢 [DEBUG] populateFormWithExistingProductData called with:", {
+      categoryId: existingProduct.categoryId,
+      categoryLocation: existingProduct.categoryLocation,
+      brandId: existingProduct.brandId,
+      typeOfProduct: existingProduct.typeOfProduct,
+      brandName: existingProduct.brand?.brandName,
+    });
+
+    // 1) Type of product (needed for brand query)
+    // Prefer the value coming from backend; if missing, infer from presence of brandId:
+    // - If brandId exists -> "BRAND"
+    // - Otherwise -> "OWNBRAND"
+    const inferredTypeOfProduct =
+      existingProduct.typeOfProduct ||
+      (existingProduct.brandId ? "BRAND" : "OWNBRAND");
+
+    const typeOfProduct = inferredTypeOfProduct;
+    form.setValue("typeOfProduct", typeOfProduct);
+    console.log("🟢 [DEBUG] Set typeOfProduct:", typeOfProduct);
     setActiveProductType(existingProduct.productType);
 
-    form.setValue("categoryId", existingProduct.categoryId);
-    form.setValue("categoryLocation", existingProduct.categoryLocation);
-    setSelectedCategoryIds(
-      existingProduct.categoryLocation
-        ? existingProduct.categoryLocation
-            .split(",")
-            .filter((item: string) => item)
-        : [],
-    );
+    // 2) Category path
+    // Backend sometimes returns categoryLocation as null; fall back to single-level path from categoryId.
+    const rawCategoryLocation =
+      existingProduct.categoryLocation ||
+      (existingProduct.categoryId ? String(existingProduct.categoryId) : "");
 
+    const categoryIds = rawCategoryLocation
+      ? rawCategoryLocation.split(",").filter((item: string) => item.trim())
+      : [];
+
+    form.setValue("categoryId", existingProduct.categoryId || 0);
+    form.setValue("categoryLocation", rawCategoryLocation || "");
+
+    console.log("🟢 [DEBUG] Set categoryId:", existingProduct.categoryId);
+    console.log(
+      "🟢 [DEBUG] Set categoryLocation (with fallback if needed):",
+      rawCategoryLocation,
+    );
+    console.log("🟢 [DEBUG] Setting selectedCategoryIds:", categoryIds);
+
+    setSelectedCategoryIds(categoryIds);
+
+    // 3) Basic fields
     form.setValue("productName", existingProduct.productName);
 
-    form.setValue("typeOfProduct", existingProduct.typeOfProduct);
-    form.setValue("brandId", existingProduct.brandId);
+    // 4) Brand
+    // Store brandId and brandName in form so BrandSelect can always build an option
+    if (existingProduct.brandId) {
+      form.setValue("brandId", existingProduct.brandId);
+      form.setValue("brandName", existingProduct.brand?.brandName || "");
+      console.log("🟢 [DEBUG] Prefilling brand:", {
+        brandId: existingProduct.brandId,
+        brandName: existingProduct.brand?.brandName,
+      });
+    } else {
+      console.log("🟢 [DEBUG] No brandId found in existing product");
+    }
     form.setValue("productCondition", "New"); // Default for existing products
     const productTagList =
       existingProduct.existingProductTags

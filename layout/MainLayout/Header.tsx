@@ -1158,9 +1158,10 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                 )}
               </Link>
               {memoizedMenu
-                .filter(
-                  (item: any) => !item.name.toLowerCase().includes("service"),
-                )
+                .filter((item: any) => {
+                  const name = item.name.toLowerCase();
+                  return !name.includes("service") && !name.includes("factories");
+                })
                 .map((item: any) => {
                   const getHref = () => {
                     if (item.name.toLowerCase().includes("store"))
@@ -1168,13 +1169,19 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                     if (item.name.toLowerCase().includes("buy group"))
                       return "/buygroup";
                     if (item.name.toLowerCase().includes("rfq")) return "/rfq";
-                    if (item.name.toLowerCase().includes("factories"))
-                      return "/factories";
+                    // Factories button - commented out
+                    // if (item.name.toLowerCase().includes("factories"))
+                    //   return "/factories";
                     // Service button - Commented out
                     // if (item.name.toLowerCase().includes("service"))
                     //   return "/services";
                     return "/trending";
                   };
+
+                  // Extra safety: skip factories menu entirely
+                  if (item.name.toLowerCase().includes("factories")) {
+                    return null;
+                  }
 
                   const href = getHref();
                   const isActiveNav =
@@ -1183,9 +1190,10 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                       href === "/trending") ||
                     (pathname?.startsWith("/buygroup") &&
                       href === "/buygroup") ||
-                    (pathname?.startsWith("/rfq") && href === "/rfq") ||
-                    (pathname?.startsWith("/factories") &&
-                      href === "/factories");
+                    (pathname?.startsWith("/rfq") && href === "/rfq");
+                    // Factories button - commented out
+                    // (pathname?.startsWith("/factories") &&
+                    //   href === "/factories");
                   // Service button - Commented out
                   // (pathname?.startsWith("/services") && href === "/services");
 
@@ -1203,11 +1211,11 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                           router.push("/buygroup");
                         } else if (item.name.toLowerCase().includes("rfq")) {
                           router.push("/rfq");
-                        } else if (
-                          item.name.toLowerCase().includes("factories")
-                        ) {
-                          router.push("/factories");
                         }
+                        // Factories button - commented out
+                        // else if (item.name.toLowerCase().includes("factories")) {
+                        //   router.push("/factories");
+                        // }
                         // Service button - Commented out
                         // else if (item.name.toLowerCase().includes("service")) {
                         //   router.push("/services");
@@ -2097,13 +2105,19 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                         return "/buygroup";
                       if (item.name.toLowerCase().includes("rfq"))
                         return "/rfq";
-                      if (item.name.toLowerCase().includes("factories"))
-                        return "/factories";
+                      // Factories button - commented out
+                      // if (item.name.toLowerCase().includes("factories"))
+                      //   return "/factories";
                       // Service button - Commented out
                       // if (item.name.toLowerCase().includes("service"))
                       //   return "/services";
                       return "/trending";
                     };
+
+                    // Extra safety: skip factories menu entirely
+                    if (item.name.toLowerCase().includes("factories")) {
+                      return null;
+                    }
 
                     const href = getHref();
                     const isActive =
@@ -2112,9 +2126,10 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                         href === "/trending") ||
                       (pathname?.startsWith("/buygroup") &&
                         href === "/buygroup") ||
-                      (pathname?.startsWith("/rfq") && href === "/rfq") ||
-                      (pathname?.startsWith("/factories") &&
-                        href === "/factories");
+                      (pathname?.startsWith("/rfq") && href === "/rfq");
+                      // Factories button - commented out
+                      // (pathname?.startsWith("/factories") &&
+                      //   href === "/factories");
                     // Service button - Commented out
                     // (pathname?.startsWith("/services") && href === "/services");
 
@@ -2138,9 +2153,10 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                           if (item.name.toLowerCase().includes("rfq")) {
                             router.push("/rfq");
                           }
-                          if (item.name.toLowerCase().includes("factories")) {
-                            router.push("/factories");
-                          }
+                          // Factories button - commented out
+                          // if (item.name.toLowerCase().includes("factories")) {
+                          //   router.push("/factories");
+                          // }
                           // Service button - Commented out
                           // if (item.name.toLowerCase().includes("service")) {
                           //   router.push("/services");

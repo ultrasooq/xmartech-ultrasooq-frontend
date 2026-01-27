@@ -3,7 +3,7 @@ import { IBrands, IOption } from "@/utils/types/common.types";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import CreatableSelect from "react-select/creatable";
 import { useToast } from "../ui/use-toast";
-import { Controller, useFormContext } from "react-hook-form";
+import { Controller, useFormContext, useWatch } from "react-hook-form";
 import { Label } from "../ui/label";
 import { useAuth } from "@/context/AuthContext";
 import Select from "react-select/dist/declarations/src/Select";
@@ -35,7 +35,20 @@ const ReactSelectInput: React.FC<{
   const { toast } = useToast();
   const [, setValue] = useState<IOption | null>();
 
-  const [brandType, setBrandType] = useState<string>(selectedBrandType);
+  // Watch typeOfProduct from form to update brandType
+  const typeOfProduct = useWatch({
+    control: formContext.control,
+    name: "typeOfProduct",
+  });
+  const brandNameFromForm = useWatch({
+    control: formContext.control,
+    name: "brandName",
+  });
+
+  // Use typeOfProduct from form if available, otherwise use selectedBrandType
+  const [brandType, setBrandType] = useState<string>(
+    typeOfProduct || selectedBrandType || "OWNBRAND"
+  );
 
   const { user } = useAuth();
 
@@ -43,21 +56,65 @@ const ReactSelectInput: React.FC<{
   const createBrand = useCreateBrand();
 
   const memoizedBrands = useMemo(() => {
-    return brandType
-      ? brandsQuery?.data?.data.map((item: IBrands) => ({
-          label: item.brandName,
-          value: item.id,
-        })) || []
-      : [];
-  }, [brandsQuery?.data?.data, brandType]);
+    let base: IOption[] =
+      brandType && brandsQuery?.data?.data
+        ? brandsQuery.data.data.map((item: IBrands) => ({
+            label: item.brandName,
+            value: item.id,
+          }))
+        : [];
 
-  // Set default product type in the form
-  useEffect(() => {
-    if (selectedBrandType) {
-      formContext.setValue("typeOfProduct", selectedBrandType);
-      setBrandType(selectedBrandType);
+    const currentBrandId = formContext.getValues("brandId");
+
+    // If we have a prefilled brand (from existing product) that isn't in the fetched list,
+    // inject it so the dropdown can display it.
+    if (
+      currentBrandId &&
+      brandNameFromForm &&
+      !base.some((b) => b.value === currentBrandId)
+    ) {
+      base = [
+        ...base,
+        {
+          label: brandNameFromForm,
+          value: currentBrandId,
+        },
+      ];
     }
-  }, [selectedBrandType]);
+
+    return base;
+  }, [brandsQuery?.data?.data, brandType, formContext, brandNameFromForm]);
+
+  // Update brandType when typeOfProduct changes
+  useEffect(() => {
+    console.log("🟣 [DEBUG] BrandSelect - typeOfProduct changed:", {
+      typeOfProduct,
+      selectedBrandType,
+      currentBrandType: brandType,
+      brandId: formContext.getValues("brandId"),
+    });
+
+    if (typeOfProduct) {
+      console.log("🟣 [DEBUG] Setting brandType to typeOfProduct:", typeOfProduct);
+      setBrandType(typeOfProduct);
+    } else if (selectedBrandType) {
+      console.log("🟣 [DEBUG] Setting brandType to selectedBrandType:", selectedBrandType);
+      setBrandType(selectedBrandType);
+      formContext.setValue("typeOfProduct", selectedBrandType);
+    }
+  }, [typeOfProduct, selectedBrandType, formContext]);
+
+  // Debug brand query
+  useEffect(() => {
+    console.log("🟣 [DEBUG] Brand query status:", {
+      brandType,
+      isLoading: brandsQuery.isLoading,
+      isSuccess: brandsQuery.isSuccess,
+      brandsCount: brandsQuery?.data?.data?.length || 0,
+      brandId: formContext.getValues("brandId"),
+      memoizedBrands: memoizedBrands.length,
+    });
+  }, [brandType, brandsQuery.isLoading, brandsQuery.isSuccess, brandsQuery?.data?.data, formContext.getValues("brandId")]);
 
   const handleCreate = async (inputValue: string) => {
     const response = await createBrand.mutateAsync({ brandName: inputValue });
@@ -138,28 +195,41 @@ const ReactSelectInput: React.FC<{
         <Controller
           name="brandId"
           control={formContext.control}
-          render={({ field }) => (
+          render={({ field }) => {
+            const selectedBrand = memoizedBrands.find(
+              (item: IOption) => item.value === field.value,
+            );
+            
+            console.log("🟣 [DEBUG] Brand dropdown render:", {
+              fieldValue: field.value,
+              brandType,
+              brandsCount: memoizedBrands.length,
+              selectedBrand,
+              isLoading: brandsQuery.isLoading,
+            });
+
+            return (
             <CreatableSelect
               // {...field}
               name={field.name}
               ref={brandSelect}
               isClearable
               isDisabled={createBrand.isPending}
-              isLoading={createBrand.isPending}
+              isLoading={createBrand.isPending || brandsQuery.isLoading}
               onChange={(newValue) => {
+                console.log("🟣 [DEBUG] Brand changed:", newValue);
                 field.onChange(newValue?.value);
                 setValue(newValue);
               }}
               onCreateOption={handleCreate}
               options={memoizedBrands}
-              value={memoizedBrands.find(
-                (item: IOption) => item.value === field.value,
-              )}
+              value={selectedBrand}
               styles={customStyles}
               instanceId="brandId"
               placeholder={t("select")}
             />
-          )}
+            );
+          }}
         />
         <p className="text-[13px] text-red-500" dir={langDir}>
           {formContext.formState.errors["brandId"]?.message as string}

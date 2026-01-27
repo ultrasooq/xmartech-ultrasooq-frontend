@@ -8,17 +8,14 @@ import Image from "next/image";
 import { useToast } from "@/components/ui/use-toast";
 import { v4 as uuidv4 } from "uuid";
 import { ISelectOptions } from "@/utils/types/common.types";
-import {
-  useCategory,
-  useSubCategoryById,
-} from "@/apis/queries/category.queries";
+import { useCategory } from "@/apis/queries/category.queries";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
 import AddImageContent from "../profile/AddImageContent";
 import CloseWhiteIcon from "@/public/images/close-white.svg";
 import BrandSelect from "@/components/shared/BrandSelect";
 import { PRODUCT_CATEGORY_ID, PRODUCT_CONDITION_LIST } from "@/utils/constants";
+import { fetchSubCategoriesById } from "@/apis/requests/category.requests";
 import ReactSelect from "react-select";
-import PriceSection from "./PriceSection";
 import DescriptionSection from "./DescriptionSection";
 import { isImage, isVideo } from "@/utils/helper";
 import { useCreateTag } from "@/apis/queries/tags.queries";
@@ -105,12 +102,10 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
   const formContext = useFormContext();
   const { toast } = useToast();
   const photosRef = useRef<HTMLInputElement>(null);
-  const [currentId, setCurrentId] = useState<string>("");
-  const [currentIndex, setCurrentIndex] = useState<number>(0);
-  const [catList, setCatList] = useState<any[]>([]);
-  const [listIds, setListIds] = useState<string[]>([]);
-  const [hasInitializedCategories, setHasInitializedCategories] =
-    useState(false);
+  const [categoryLevels, setCategoryLevels] = useState<
+    { categories: any[]; selectedId: number | null }[]
+  >([]);
+  const [isCategoryPrefilled, setIsCategoryPrefilled] = useState(false);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const createTag = useCreateTag();
   const t = useTranslations();
@@ -167,15 +162,114 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
   const watchProductImages = formContext.watch("productImages");
 
   const categoryQuery = useCategory(PRODUCT_CATEGORY_ID.toString());
-  const subCategoryById = useSubCategoryById(currentId.toString());
 
-  const memoizedCategories = useMemo(() => {
-    return (
-      categoryQuery?.data?.data?.children?.map((item: any) => {
-        return { label: item.name, value: item.id };
-      }) || []
-    );
-  }, [categoryQuery?.data?.data?.children?.length]);
+  // Load top-level categories when category query is ready
+  useEffect(() => {
+    const rootChildren = categoryQuery?.data?.data?.children;
+    if (!rootChildren || !Array.isArray(rootChildren)) return;
+
+    setCategoryLevels((prev) => {
+      if (prev.length > 0) return prev; // keep existing (e.g., after prefill)
+      return [{ categories: rootChildren, selectedId: null }];
+    });
+  }, [categoryQuery?.data?.data?.children]);
+
+  // Prefill category levels from selectedCategoryIds (root -> ... -> leaf)
+  useEffect(() => {
+    const initFromPath = async () => {
+      if (
+        !selectedCategoryIds?.length ||
+        !categoryQuery?.data?.data?.children ||
+        isCategoryPrefilled
+      ) {
+        return;
+      }
+
+      try {
+        const pathIds = selectedCategoryIds.map((id) => Number(id));
+        let levels: { categories: any[]; selectedId: number | null }[] = [];
+        let currentCategories = categoryQuery.data.data.children;
+
+        for (let i = 0; i < pathIds.length; i++) {
+          const id = pathIds[i];
+          levels.push({
+            categories: currentCategories,
+            selectedId: id,
+          });
+
+          if (i < pathIds.length - 1) {
+            const res = await fetchSubCategoriesById({
+              categoryId: String(id),
+            });
+            const children = res.data?.data?.children || [];
+            if (!children.length) break;
+            currentCategories = children;
+          }
+        }
+
+        if (levels.length) {
+          setCategoryLevels(levels);
+          const leafId = pathIds[pathIds.length - 1];
+          formContext.setValue("categoryId", leafId);
+          formContext.setValue("categoryLocation", pathIds.join(","));
+          setIsCategoryPrefilled(true);
+        }
+      } catch (error) {
+        console.error("Failed to prefill categories:", error);
+      }
+    };
+
+    initFromPath();
+  }, [
+    selectedCategoryIds,
+    categoryQuery?.data?.data?.children,
+    isCategoryPrefilled,
+    formContext,
+  ]);
+
+  const handleCategoryChange = async (levelIndex: number, value: string) => {
+    if (!value) return;
+    const id = Number(value);
+
+    let pathIds: number[] = [];
+
+    // Update selected id for this level and clear deeper levels
+    setCategoryLevels((prev) => {
+      const updated = prev.slice(0, levelIndex + 1);
+      const currentLevel = updated[levelIndex] || { categories: [], selectedId: null };
+      updated[levelIndex] = { ...currentLevel, selectedId: id };
+
+      pathIds = [];
+      updated.forEach((lvl) => {
+        if (lvl.selectedId != null) {
+          pathIds.push(lvl.selectedId);
+        }
+      });
+
+      return updated;
+    });
+
+    formContext.setValue("categoryId", id);
+    formContext.setValue("categoryLocation", pathIds.join(","));
+
+    // Load children for next level
+    try {
+      const res = await fetchSubCategoriesById({ categoryId: String(id) });
+      const children = res.data?.data?.children || [];
+      if (children.length) {
+        setCategoryLevels((prev) => {
+          const base = prev.slice(0, levelIndex + 1);
+          base.push({ categories: children, selectedId: null });
+          return base;
+        });
+      } else {
+        // No more children - trim deeper levels
+        setCategoryLevels((prev) => prev.slice(0, levelIndex + 1));
+      }
+    } catch (error) {
+      console.error("Failed to load subcategories:", error);
+    }
+  };
 
   const productConditions = () => {
     return PRODUCT_CONDITION_LIST.map((item) => {
@@ -205,207 +299,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
     }
   };
 
-  useEffect(() => {
-    if (catList[currentIndex]) {
-      let tempList = catList;
-      if (subCategoryById.data?.data?.children) {
-        tempList[currentIndex] = subCategoryById.data?.data;
-        tempList = tempList.slice(0, currentIndex + 1);
-      }
-      setCatList([...tempList]);
-      return;
-    }
-
-    if (subCategoryById.data?.data?.children) {
-      setCatList([...catList, subCategoryById.data?.data]);
-    }
-    // Remove listIds update logic from here - let the progression useEffect handle it
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentId, subCategoryById.data?.data?.children, currentIndex]);
-
-  useEffect(
-    () => formContext.setValue("categoryId", Number(currentId)),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [currentId],
-  );
-
-  // Reset state when selectedCategoryIds changes (for edit mode)
-  useEffect(() => {
-    if (selectedCategoryIds?.length && !hasInitializedCategories) {
-      setListIds([]);
-      setCurrentIndex(0);
-      setCatList([]);
-      setCurrentId("");
-    } else if (!selectedCategoryIds?.length) {
-      setHasInitializedCategories(false);
-    }
-  }, [selectedCategoryIds, hasInitializedCategories]);
-
-  // Mark as initialized after catList is set
-  useEffect(() => {
-    if (
-      catList.length > 0 &&
-      selectedCategoryIds?.length &&
-      !hasInitializedCategories
-    ) {
-      setHasInitializedCategories(true);
-    }
-  }, [catList.length, selectedCategoryIds, hasInitializedCategories]);
-
-  // Initialize catList with first category when selectedCategoryIds are provided
-  useEffect(() => {
-    // Check if we should initialize
-    const shouldInitialize =
-      selectedCategoryIds?.length &&
-      memoizedCategories.length > 0 &&
-      catList.length === 0 &&
-      !hasInitializedCategories;
-
-    if (shouldInitialize) {
-      const firstCategoryId = selectedCategoryIds[0];
-
-      // Find the category from memoizedCategories
-      const firstCategory = memoizedCategories.find(
-        (cat: any) => cat.value?.toString() === firstCategoryId,
-      );
-
-      // First, try to find it directly in top-level categories
-      let categoryFromQuery = null;
-      if (categoryQuery?.data?.data?.children) {
-        categoryFromQuery = categoryQuery.data.data.children.find(
-          (item: any) =>
-            item.id?.toString() === firstCategoryId ||
-            Number(item.id) === Number(firstCategoryId),
-        );
-      }
-
-      // If not found directly, search in the hierarchy (subcategories)
-      if (!categoryFromQuery && categoryQuery?.data?.data?.children) {
-        // Find the root category that contains this target category
-        const rootCategory = findRootCategoryForTarget(
-          categoryQuery.data.data.children,
-          firstCategoryId,
-        );
-
-        if (rootCategory) {
-          // If the root category itself matches, use it
-          if (rootCategory.id?.toString() === firstCategoryId?.toString()) {
-            categoryFromQuery = rootCategory;
-          } else {
-            // Otherwise, we need to load the root category and then navigate to the target
-            categoryFromQuery = rootCategory;
-          }
-        }
-      }
-
-      if (categoryFromQuery) {
-        setCatList([categoryFromQuery]);
-        setCurrentId(firstCategoryId);
-        setCurrentIndex(0);
-        // Initialize listIds with first category
-        setListIds([firstCategoryId.toString()]);
-        formContext.setValue("categoryId", Number(firstCategoryId));
-      } else if (firstCategory) {
-        // Fallback: create a minimal category object
-        const minimalCategory = {
-          id: Number(firstCategoryId),
-          name: firstCategory.label,
-          children: [],
-        };
-        setCatList([minimalCategory]);
-        setCurrentId(firstCategoryId);
-        setCurrentIndex(0);
-        // Initialize listIds with first category
-        setListIds([firstCategoryId.toString()]);
-        formContext.setValue("categoryId", Number(firstCategoryId));
-      } else {
-        // Last resort: try to fetch the category directly by ID
-        if (firstCategoryId) {
-          setCurrentId(firstCategoryId);
-          setCurrentIndex(0);
-          // Initialize listIds with first category
-          setListIds([firstCategoryId.toString()]);
-          formContext.setValue("categoryId", Number(firstCategoryId));
-        }
-      }
-    }
-  }, [
-    selectedCategoryIds,
-    memoizedCategories,
-    catList.length,
-    categoryQuery?.data?.data?.children,
-    hasInitializedCategories,
-    formContext,
-  ]);
-
-  // Progress through category hierarchy when selectedCategoryIds is provided
-  // ONLY after children are loaded for each level
-  useEffect(() => {
-    // Only progress if:
-    // 1. We have selectedCategoryIds to progress through
-    // 2. We have a catList (categories loaded)
-    // 3. We haven't reached the end yet
-    // 4. Children are loaded for the current level (subCategoryById has data)
-    if (
-      selectedCategoryIds?.length &&
-      catList?.length &&
-      listIds.length < selectedCategoryIds.length &&
-      subCategoryById.data?.data?.children &&
-      currentId
-    ) {
-      const nextIdIndex = listIds.length; // Next position to fill in listIds
-
-      // Check if currentId matches the last ID in listIds (meaning we've loaded children for a completed position)
-      const lastIdInList =
-        listIds.length > 0 ? listIds[listIds.length - 1] : null;
-
-      if (lastIdInList && currentId?.toString() === lastIdInList?.toString()) {
-        // We've loaded children for the current position, move to next
-        if (nextIdIndex < selectedCategoryIds.length) {
-          const nextCategoryId = selectedCategoryIds[nextIdIndex];
-          setCurrentId(nextCategoryId.toString());
-        }
-      } else if (nextIdIndex < selectedCategoryIds.length) {
-        // Check if currentId matches the next expected ID (children loaded for next position)
-        const expectedNextId = selectedCategoryIds[nextIdIndex];
-        if (currentId?.toString() === expectedNextId?.toString()) {
-          // Add the current category to listIds
-          if (!listIds.includes(expectedNextId.toString())) {
-            setListIds([...listIds, expectedNextId.toString()]);
-          }
-
-          // Move to next category if there is one
-          const nextNextIdIndex = nextIdIndex + 1;
-          if (nextNextIdIndex < selectedCategoryIds.length) {
-            const nextCategoryId = selectedCategoryIds[nextNextIdIndex];
-            setCurrentId(nextCategoryId.toString());
-          }
-        }
-      } else if (
-        nextIdIndex === selectedCategoryIds.length &&
-        listIds.length === selectedCategoryIds.length - 1
-      ) {
-        // We're at the last category - add it to listIds
-        const lastCategoryId =
-          selectedCategoryIds[selectedCategoryIds.length - 1];
-        if (!listIds.includes(lastCategoryId.toString())) {
-          setListIds([...listIds, lastCategoryId.toString()]);
-        }
-      }
-    }
-  }, [
-    selectedCategoryIds,
-    catList?.length,
-    listIds.length,
-    subCategoryById.data?.data?.children,
-    currentId,
-  ]);
-
-  useEffect(
-    () => formContext.setValue("categoryLocation", listIds.join(",")),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [listIds?.length],
-  );
+  // (legacy category cascade logic removed – replaced with categoryLevels system above)
 
   const handleEditPreviewImage = (id: string, item: FileList) => {
     const tempArr = formContext.getValues("productImages") || [];
@@ -442,64 +336,70 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
         </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <div className="space-y-3">
-            <Label
-              className="flex items-center gap-2 text-sm font-medium text-gray-700"
-              dir={langDir}
-              translate="no"
-            >
-              <svg
-                className="h-4 w-4 text-gray-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
-                />
-              </svg>
-              {t("product_category")}
-            </Label>
-            <Controller
-              name="categoryId"
-              control={formContext.control}
-              render={({ field }) => (
+          {categoryLevels.map((level, levelIndex) => {
+            const pathLength = selectedCategoryIds?.length || 0;
+            const hasPrefilledPath = pathLength > 0;
+
+            // When we HAVE a prefilled path (copy/edit), consider the last 2 levels
+            // as vendor-visible (parent + leaf) and hide the prefix.
+            // Example: [1,2,4,99,101] → vendorStartIndex = 3 (99,101)
+            // Example: [10,20,30]      → vendorStartIndex = 1 (20,30)
+            const vendorStartIndex = hasPrefilledPath
+              ? Math.max(0, pathLength - 2)
+              : 0;
+
+            // Hide prefix levels for prefilled paths (admin/internal)
+            if (hasPrefilledPath && levelIndex < vendorStartIndex) return null;
+
+            const relativeIndex = levelIndex - vendorStartIndex; // 0 = parent, >0 = subs
+            const isParentLevel = relativeIndex === 0;
+
+            const labelText = isParentLevel
+              ? t("product_category")
+              : `${t("sub_category")} ${relativeIndex}`;
+
+            return (
+              <div key={levelIndex} className="space-y-3">
+                <Label
+                  className="flex items-center gap-2 text-sm font-medium text-gray-700"
+                  dir={langDir}
+                  translate="no"
+                >
+                  <svg
+                    className="h-4 w-4 text-gray-500"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1994 1.994 0 013 12V7a4 4 0 014-4z"
+                    />
+                  </svg>
+                  {labelText}
+                </Label>
                 <div className="relative">
                   <select
-                    {...field}
-                    className="h-12 w-full cursor-pointer appearance-none rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-900 transition-all duration-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-500 disabled:bg-gray-50 disabled:text-gray-500"
-                    onChange={(e) => {
-                      if (e.target.value === "") {
-                        return;
-                      }
-                      setCurrentId(e.target.value);
-                      setCurrentIndex(0);
-
-                      if (listIds[0]) {
-                        let tempIds = listIds;
-                        tempIds[0] = e.target.value;
-                        tempIds = tempIds.slice(0, 1);
-
-                        setListIds([...tempIds]);
-                        return;
-                      }
-                      setListIds([...listIds, e.target.value]);
-                    }}
-                    value={catList[0]?.id || ""}
+                    className="h-12 w-full cursor-pointer appearance-none rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-900 transition-all duration-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-500"
+                    value={level.selectedId?.toString() || ""}
+                    onChange={(e) =>
+                      handleCategoryChange(levelIndex, e.target.value)
+                    }
                   >
                     <option value="" dir={langDir} translate="no">
-                      {t("select_category")}
+                      {isParentLevel
+                        ? t("select_category")
+                        : t("select_sub_category")}
                     </option>
-                    {memoizedCategories.map((item: ISelectOptions) => (
+                    {level.categories.map((item: any) => (
                       <option
-                        value={item.value?.toString()}
-                        key={item.value}
+                        key={item.id}
+                        value={item.id?.toString()}
                         dir={langDir}
                       >
-                        {item.label}
+                        {item.name}
                       </option>
                     ))}
                   </select>
@@ -519,149 +419,30 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
                     </svg>
                   </div>
                 </div>
-              )}
-            />
-            {formContext.formState.errors["categoryId"] && (
-              <p
-                className="mt-1 flex items-center gap-1 text-sm text-red-500"
-                dir={langDir}
+              </div>
+            );
+          })}
+          {formContext.formState.errors["categoryId"] && (
+            <p
+              className="mt-1 flex items-center gap-1 text-sm text-red-500"
+              dir={langDir}
+            >
+              <svg
+                className="h-4 w-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
               >
-                <svg
-                  className="h-4 w-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                {formContext.formState.errors["categoryId"]?.message as string}
-              </p>
-            )}
-          </div>
-
-          {catList.length > 0
-            ? catList
-                .filter((item) => item.children?.length)
-                .map((item, index) => (
-                  <div
-                    key={`category-level-${index}-${item?.id}`}
-                    className="space-y-3"
-                  >
-                    <Label
-                      className="flex items-center gap-2 text-sm font-medium text-gray-700"
-                      dir={langDir}
-                      translate="no"
-                    >
-                      <svg
-                        className="h-4 w-4 text-gray-500"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-                        />
-                      </svg>
-                      {t("sub_category")}
-                    </Label>
-                    <div className="relative">
-                      <select
-                        className="h-12 w-full cursor-pointer appearance-none rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-900 transition-all duration-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-500"
-                        onChange={(e) => {
-                          if (e.target.value === "") {
-                            return;
-                          }
-
-                          setCurrentId(e.target.value);
-                          setCurrentIndex(index + 1);
-
-                          // Index in catList (0 = first subcategory dropdown)
-                          // Position in listIds: index + 1 (because listIds[0] is parent, listIds[1] is first sub)
-                          const listIdsPosition = index + 1;
-
-                          if (listIds[listIdsPosition]) {
-                            // Update existing position
-                            let tempIds = [...listIds];
-                            tempIds[listIdsPosition] = e.target.value;
-                            tempIds = tempIds.slice(0, listIdsPosition + 1);
-                            setListIds(tempIds);
-                            return;
-                          }
-                          // Add new position - make sure we have all previous positions
-                          const newListIds = [...listIds];
-                          while (newListIds.length <= listIdsPosition) {
-                            // Fill in any missing positions (shouldn't happen, but just in case)
-                            newListIds.push("");
-                          }
-                          newListIds[listIdsPosition] = e.target.value;
-                          setListIds(newListIds);
-                        }}
-                        value={listIds[index + 1] || ""}
-                      >
-                        <option value="" dir={langDir} translate="no">
-                          {t("select_sub_category")}
-                        </option>
-                        {item?.children?.map((item: any) => (
-                          <option
-                            value={item.id?.toString()}
-                            key={item.id}
-                            dir={langDir}
-                          >
-                            {item.name}
-                          </option>
-                        ))}
-                      </select>
-                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-                        <svg
-                          className="h-5 w-5 text-gray-400"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 9l-7 7-7-7"
-                          />
-                        </svg>
-                      </div>
-                    </div>
-                    {formContext.formState.errors["categoryLocation"] && (
-                      <p
-                        className="mt-1 flex items-center gap-1 text-sm text-red-500"
-                        dir={langDir}
-                      >
-                        <svg
-                          className="h-4 w-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                          />
-                        </svg>
-                        {
-                          formContext.formState.errors["categoryLocation"]
-                            ?.message as string
-                        }
-                      </p>
-                    )}
-                  </div>
-                ))
-            : null}
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              {formContext.formState.errors["categoryId"]?.message as string}
+            </p>
+          )}
         </div>
       </div>
 
@@ -991,8 +772,7 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
         </div>
       </div>
 
-      {/* Include Price and Description sections */}
-      <PriceSection activeProductType={activeProductType} />
+      {/* Include Description section (Price is rendered in DescriptionAndSpecificationSection) */}
       <DescriptionSection />
     </div>
   );

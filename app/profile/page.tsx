@@ -35,7 +35,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { UsersIcon, ArrowRightIcon } from "lucide-react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -53,6 +53,7 @@ import BackgroundImage from "@/public/images/before-login-bg.png";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 import AccordionMultiSelectV2 from "@/components/shared/AccordionMultiSelectV2";
+import { CreateSubAccountDialog } from "@/components/modules/accounts/CreateSubAccountDialog";
 
 const formSchema = (t: any) => {
   return z.object({
@@ -128,6 +129,7 @@ export default function ProfilePage() {
   const t = useTranslations();
   const { langDir, user } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
   const currentAccount = useCurrentAccount();
   const frontIdentityRef = useRef<HTMLInputElement>(null);
@@ -178,15 +180,17 @@ export default function ProfilePage() {
   const businessCategoriesQuery = useUserBusinessCategories();
   const upload = useUploadFile();
   const updateProfile = useUpdateProfile();
-  const { data: accountsData } = useMyAccounts();
+  const { data: accountsData, refetch: refetchAccounts } = useMyAccounts();
 
   // Check if user has additional accounts (sub-accounts, excluding main account)
   const allAccounts = accountsData?.data?.data?.allAccounts || [];
   const mainAccount = accountsData?.data?.data?.mainAccount;
   const subAccounts = allAccounts.filter(
-    (account: any) => account.id !== mainAccount?.id
+    (account: any) => account.id !== mainAccount?.id,
   );
   const hasAdditionalAccounts = subAccounts.length > 0;
+  const [showSubAccountDialog, setShowSubAccountDialog] = useState(false);
+  const fromRegister = searchParams?.get("fromRegister") === "1";
 
   useEffect(() => {
     if (uniqueUser?.data?.data) {
@@ -473,6 +477,23 @@ export default function ProfilePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [me.data]);
 
+  // Auto-open subaccount dialog once for each user after registration
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const userId = me.data?.data?.id;
+    if (!userId) return;
+
+    const storageKey = `subAccountPopupShown_${userId}`;
+    const alreadyShown = window.localStorage.getItem(storageKey) === "1";
+    if (alreadyShown) return;
+
+    if (fromRegister && accountsData?.data && !hasAdditionalAccounts) {
+      setShowSubAccountDialog(true);
+      window.localStorage.setItem(storageKey, "1");
+    }
+  }, [fromRegister, accountsData?.data, hasAdditionalAccounts, me.data?.data?.id]);
+
   return (
     <section className="relative w-full py-7">
       <div className="absolute top-0 left-0 -z-10 h-full w-full">
@@ -499,36 +520,6 @@ export default function ProfilePage() {
                 {t("update_profile")}
               </p>
             </div>
-
-            {/* Welcome Banner for New Users */}
-            {!hasAdditionalAccounts && (
-              <div className="mb-6 rounded-lg border border-blue-200 bg-gradient-to-r from-blue-50 via-indigo-50 to-blue-50 p-6 shadow-sm">
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-                  <div className="flex-shrink-0">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
-                      <UsersIcon className="h-6 w-6 text-blue-600" />
-                    </div>
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="mb-2 text-lg font-semibold text-gray-900" dir={langDir}>
-                      {t("create_your_business_account")}
-                    </h3>
-                    <p className="mb-4 text-sm text-gray-600" dir={langDir}>
-                      {t("create_business_account_description")}
-                    </p>
-                    <Link href="/my-accounts">
-                      <Button
-                        className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white"
-                        dir={langDir}
-                      >
-                        {t("create_account_now")}
-                        <ArrowRightIcon className="ml-2 h-4 w-4" />
-                      </Button>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            )}
 
             <div className="w-full">
               <Form {...form}>
@@ -1151,6 +1142,14 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
+
+      <CreateSubAccountDialog
+        open={showSubAccountDialog}
+        onOpenChange={setShowSubAccountDialog}
+        onAccountCreated={() => {
+          refetchAccounts();
+        }}
+      />
     </section>
   );
 }

@@ -125,7 +125,7 @@ export default function OtpVerifyPage() {
       form.reset();
       setOtp(new Array(4).fill(""));
       sessionStorage.clear();
-      router.push("/profile");
+      router.push("/profile?fromRegister=1");
     } else {
       setOtp(new Array(4).fill(""));
       toast({

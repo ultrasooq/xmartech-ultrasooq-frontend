@@ -200,7 +200,7 @@ export default function RegisterPage() {
         variant: "success",
       });
       form.reset();
-      router.push("/profile");
+      router.push("/profile?fromRegister=1");
     } else {
       toast({
         title: t("registration_failed"),
@@ -269,7 +269,7 @@ export default function RegisterPage() {
 
         localStorage.removeItem("loginType");
         setIsGoogleLoading(false);
-        router.push("/profile");
+        router.push("/profile?fromRegister=1");
       } else {
         toast({
           title: t("registration_failed"),

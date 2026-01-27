@@ -585,7 +585,8 @@ const AddFromExistingProductPage = () => {
               className="bg-blue-600 hover:bg-blue-700 text-white"
             >
               <Plus className="h-4 w-4 mr-2" />
-              {t("add_new_product")}
+              {/* Updated label per request */}
+              {t("manually_add_new_product") || "Manually add a new product"}
             </Button>
           </div>
         </div>
@@ -593,19 +594,20 @@ const AddFromExistingProductPage = () => {
         {/* Enhanced Search Section with Tabs */}
         <div className="bg-white rounded-lg shadow-xs p-6 mb-6">
           <Tabs defaultValue="search" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 mb-6">
+            <TabsList className="grid w-full grid-cols-2 mb-6">
               <TabsTrigger value="search">
                 <Search className="h-4 w-4 mr-2" />
-                {t("search")}
+                {/* Renamed tab: Add product using AI */}
+                {t("add_product_using_ai") || "Add product using AI"}
               </TabsTrigger>
               <TabsTrigger value="image">
                 <Camera className="h-4 w-4 mr-2" />
                 {t("image")}
               </TabsTrigger>
-              <TabsTrigger value="url">
+              {/* <TabsTrigger value="url">
                 <LinkIcon className="h-4 w-4 mr-2" />
                 {t("url")}
-              </TabsTrigger>
+              </TabsTrigger> */}
             </TabsList>
 
             {/* Search Tab - Existing Functionality */}
@@ -1028,6 +1030,7 @@ const AddFromExistingProductPage = () => {
             </TabsContent>
 
             {/* URL Tab - New Feature */}
+            {false && (
             <TabsContent value="url" className="mt-0">
               <div className="space-y-4">
                 <div>
@@ -1076,6 +1079,7 @@ const AddFromExistingProductPage = () => {
                 </div>
               </div>
             </TabsContent>
+            )}
           </Tabs>
         </div>
       </div>

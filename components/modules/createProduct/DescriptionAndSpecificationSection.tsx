@@ -12,6 +12,7 @@ import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 import ProductVariantTypes from "./ProductVariantTypes";
 import ProductLocationAndCustomizationSection from "./ProductLocationAndCustomizationSection";
+import PriceSection from "./PriceSection";
 import { usePathname } from "next/navigation";
 
 type DescriptionAndSpecificationSectionProps = {
@@ -187,6 +188,11 @@ const DescriptionAndSpecificationSection: React.FC<
             />
           </div>
         </div>
+      )}
+
+      {/* Price Section - positioned after Product Location and Customization */}
+      {pathname == "/product" && (
+        <PriceSection activeProductType={activeProductType} />
       )}
     </div>
   );
