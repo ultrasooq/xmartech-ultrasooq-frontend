@@ -1,3 +1,20 @@
+/**
+ * @file DropdownMenu - Shadcn UI dropdown menu component.
+ * @description Provides a full-featured context/dropdown menu with support for
+ * standard items, checkbox items, radio items, sub-menus, separators,
+ * labels, and keyboard shortcuts. Renders via portal with animated transitions.
+ *
+ * @exports DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem,
+ *   DropdownMenuCheckboxItem, DropdownMenuRadioItem, DropdownMenuLabel,
+ *   DropdownMenuSeparator, DropdownMenuShortcut, DropdownMenuGroup,
+ *   DropdownMenuPortal, DropdownMenuSub, DropdownMenuSubContent,
+ *   DropdownMenuSubTrigger, DropdownMenuRadioGroup.
+ *
+ * @dependencies
+ *   - @radix-ui/react-dropdown-menu - Accessible dropdown menu primitive.
+ *   - @radix-ui/react-icons (CheckIcon, ChevronRightIcon, DotFilledIcon) - Item icons.
+ *   - @/lib/utils (cn) - Tailwind class merging utility.
+ */
 "use client"
 
 import * as React from "react"
@@ -10,6 +27,7 @@ import {
 
 import { cn } from "@/lib/utils"
 
+/** Dropdown menu root managing open/close state. */
 const DropdownMenu = DropdownMenuPrimitive.Root
 
 const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger

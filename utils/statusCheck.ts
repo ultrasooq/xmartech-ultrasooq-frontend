@@ -1,3 +1,17 @@
+/**
+ * @fileoverview User status checking and route protection utilities for
+ * the Ultrasooq marketplace.
+ *
+ * Provides functions for evaluating user account status, checking
+ * authentication, validating status transitions, and enforcing
+ * route-level access control based on user status.
+ *
+ * @module utils/statusCheck
+ * @dependencies
+ * - cookies-next - For reading auth cookies.
+ * - {@link module:utils/constants} - Token keys and status config.
+ */
+
 import { getCookie } from "cookies-next";
 import {
   PUREMOON_TOKEN_KEY,
@@ -5,6 +19,24 @@ import {
   DEFAULT_SUB_ACCOUNT_STATUS,
 } from "@/utils/constants";
 
+/**
+ * Represents the boolean status flags derived from a user's account status.
+ *
+ * @description
+ * Intent: Provides a convenient set of boolean flags for conditional
+ * rendering based on user status, avoiding repeated string comparisons.
+ *
+ * Usage: Returned by {@link getUserStatusInfo} and consumed in
+ * components that need to adapt their UI per user status.
+ *
+ * @property isActive - True if the user's status is "ACTIVE".
+ * @property isInactive - True if the user's status is "INACTIVE".
+ * @property isSuspended - True if the user's status is "SUSPENDED".
+ * @property isWaiting - True if the user's status is "WAITING".
+ * @property isRejected - True if the user's status is "REJECT".
+ * @property isWaitingForSuperAdmin - True if the user's status is "WAITING_FOR_SUPER_ADMIN".
+ * @property status - The raw status string.
+ */
 export interface UserStatus {
   isActive: boolean;
   isInactive: boolean;

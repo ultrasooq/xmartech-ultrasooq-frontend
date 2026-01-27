@@ -9,6 +9,29 @@ import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { IoMdAdd } from "react-icons/io";
 
+/**
+ * Props for the {@link ExistingProductCard} component.
+ *
+ * @property selectedIds    - Array of currently selected product IDs
+ *   (for bulk operations).
+ * @property onSelectedId   - Callback fired when the checkbox state
+ *   changes; receives the checked state and the product ID.
+ * @property id             - Unique product ID.
+ * @property productImage   - URL of the product image, or `null`.
+ * @property productName    - Display name of the product.
+ * @property productPrice   - Base product price.
+ * @property offerPrice     - Offer/discounted price.
+ * @property categoryName   - Name of the product category.
+ * @property brandName      - Name of the product brand.
+ * @property shortDescription - Brief product description.
+ * @property skuNo          - Optional SKU number.
+ * @property productType    - Product type code: `"P"` (regular),
+ *   `"R"` (RFQ), or `"D"` (dropship). Defaults to `"P"`.
+ * @property isDropshipPage - When `true`, renders the dropship-specific
+ *   action button instead of the standard "Add to My Products" button.
+ * @property onAddToDropship - Callback fired when the user clicks
+ *   "Add to Dropshipable Product".
+ */
 type ExistingProductCardProps = {
   selectedIds?: number[];
   onSelectedId?: (args0: boolean | string, args1: number) => void;
@@ -26,6 +49,26 @@ type ExistingProductCardProps = {
   onAddToDropship?: (productId: number) => void;
 };
 
+/**
+ * Compact card component for displaying an existing product in the
+ * "Add from Existing" flow.
+ *
+ * Shows the product image (S3-hosted images use `next/image`, external
+ * URLs fall back to a native `<img>` tag with error handling), name,
+ * price, category, and brand. The right side renders a contextual
+ * action button:
+ * - **Dropship page:** "Add to Dropshipable Product" (purple).
+ * - **RFQ type:**      "Add to RFQ Products" (green), navigates to
+ *   `/product?copy=<id>&productType=R`.
+ * - **Default:**       "Add to My Products" (blue), navigates to
+ *   `/product?copy=<id>&fromExisting=true`.
+ *
+ * A selection checkbox is shown for non-RFQ, non-dropship views when
+ * an `onSelectedId` callback is provided.
+ *
+ * @param props - {@link ExistingProductCardProps}
+ * @returns A bordered card element with product info and action button.
+ */
 const ExistingProductCard: React.FC<ExistingProductCardProps> = ({
   selectedIds,
   onSelectedId,
@@ -46,14 +89,17 @@ const ExistingProductCard: React.FC<ExistingProductCardProps> = ({
   const { langDir } = useAuth();
   const router = useRouter();
 
+  /** Navigates to the product creation form pre-populated with this product's data. */
   const handleAddToMyProducts = () => {
     router.push(`/product?copy=${id}&fromExisting=true`);
   };
 
+  /** Navigates to the RFQ product creation form copying this product's data. */
   const handleAddToRfqProducts = () => {
     router.push(`/product?copy=${id}&productType=R`);
   };
 
+  /** Invokes the parent's onAddToDropship callback with this product's ID. */
   const handleAddToDropship = () => {
     if (onAddToDropship) {
       onAddToDropship(id);

@@ -1,3 +1,18 @@
+/**
+ * @file RFQ Request Page - app/rfq-request/page.tsx
+ * @route /rfq-request (also accepts ?rfqQuotesId=<id> query param)
+ * @description Buyer-side RFQ request communication page. Shows a sidebar listing all
+ *   buyer's RFQ quotes (useAllRfqQuotesByBuyerId) with product images, and a main content
+ *   area displaying the RFQ chat (RfqRequestChat) and general buyer chat (BuyerChat).
+ *   Selecting an RFQ from the sidebar opens its chat thread. Sidebar can collapse to show
+ *   only product thumbnails. Reads rfqQuotesId from URL params for direct navigation.
+ * @authentication Required; uses authenticated RFQ quote and chat queries.
+ * @key_components RfqRequestChat, BuyerChat, Image, PlaceholderImage
+ * @data_fetching
+ *   - useAllRfqQuotesByBuyerId for RFQ quote sidebar list
+ * @state_management Local state for selectedRfqId, selectedVendorId, isSidebarCollapsed,
+ *   selectedRfqData; useSearchParams for direct RFQ navigation.
+ */
 "use client";
 import React, { useEffect, useState } from "react";
 import RfqRequestChat from "@/components/modules/chat/rfqRequest/RfqRequestChat";

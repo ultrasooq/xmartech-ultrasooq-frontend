@@ -1,3 +1,41 @@
+/**
+ * @file RfqRequestChat.tsx
+ * @description Buyer-side RFQ request chat component. Provides a full-featured
+ *   chat interface for buyers to negotiate with vendors about a specific RFQ
+ *   (Request for Quotation). Supports grid and column layout modes with vendor
+ *   list sidebar and detail/chat views.
+ *
+ * @props
+ *   - rfqQuoteId {any} - The RFQ quote ID to load vendor responses for.
+ *   - layoutMode {"grid" | "column"} - Layout mode for the chat interface.
+ *   - viewMode {"vendors" | "details"} - Active view panel.
+ *   - selectedVendorId {number | null} - Currently selected vendor ID.
+ *   - onSelectVendor {(vendor: any) => void} - Callback when a vendor is selected.
+ *
+ * @behavior
+ *   - Fetches vendor responses via `useAllRfqQuotesUsersByBuyerId` and
+ *     `useFindOneRfqQuotesUsersByBuyerID` queries.
+ *   - Manages real-time messaging through SocketContext: creates private rooms,
+ *     sends text/attachment messages, receives new messages and attachments.
+ *   - Supports emoji picker and file attachment uploads.
+ *   - Displays `RfqRequestVendorCard` for vendor list, `OfferPriceCard` for
+ *     pricing, `RequestProductCard` for requested products, and
+ *     `RfqRequestChatHistory` for message history.
+ *   - Opens `BuyerProductSelectionModal` for selecting vendor-suggested products.
+ *   - Supports "Place Order" flow via `useOrderStore` and router navigation.
+ *   - Handles product suggestion selection via `selectSuggestedProducts` API.
+ *   - Renders loading skeletons, empty states, and back navigation for mobile.
+ *
+ * @dependencies
+ *   - useAllRfqQuotesUsersByBuyerId, useFindOneRfqQuotesUsersByBuyerID (TanStack Query).
+ *   - useSocket (SocketContext) - Real-time messaging.
+ *   - findRoomId, getChatHistory, updateUnreadMessages, uploadAttachment,
+ *     selectSuggestedProducts (API requests).
+ *   - useAuth (AuthContext) - Language direction, currency.
+ *   - useOrderStore (Zustand) - Order item storage for checkout flow.
+ *   - useTranslations (next-intl) - i18n.
+ *   - RfqRequestVendorCard, RfqRequestChatHistory, BuyerProductSelectionModal.
+ */
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Skeleton } from "@/components/ui/skeleton";

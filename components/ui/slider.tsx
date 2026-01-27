@@ -1,3 +1,18 @@
+/**
+ * @file Slider - Shadcn UI range slider component.
+ * @description Renders a draggable slider input with a track, range fill, and thumb.
+ * Supports single-value selection with keyboard and pointer interaction.
+ *
+ * @props Accepts all Radix UI Slider.Root props including:
+ *   - value / defaultValue {number[]} - Current or initial slider value(s).
+ *   - min / max / step {number} - Range configuration.
+ *   - onValueChange {(value: number[]) => void} - Change handler.
+ *   - className {string} - Additional CSS classes.
+ *
+ * @dependencies
+ *   - @radix-ui/react-slider - Accessible slider primitive.
+ *   - @/lib/utils (cn) - Tailwind class merging utility.
+ */
 "use client"
 
 import * as React from "react"
@@ -5,6 +20,7 @@ import * as SliderPrimitive from "@radix-ui/react-slider"
 
 import { cn } from "@/lib/utils"
 
+/** Slider with styled track, range indicator, and draggable thumb. */
 const Slider = React.forwardRef<
   React.ElementRef<typeof SliderPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root>

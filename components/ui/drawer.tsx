@@ -1,3 +1,19 @@
+/**
+ * @file Drawer - Shadcn UI drawer (bottom sheet) component.
+ * @description Provides composable drawer primitives for creating slide-up
+ * bottom panels with overlay. Built on the Vaul library for gesture-based
+ * interaction (swipe to dismiss). Includes an optional grab-handle bar.
+ *
+ * @exports Drawer, DrawerPortal, DrawerOverlay, DrawerTrigger, DrawerClose,
+ *   DrawerContent, DrawerHeader, DrawerFooter, DrawerTitle, DrawerDescription.
+ *
+ * @props DrawerContent additionally accepts:
+ *   - showBar {boolean} - Whether to render the drag indicator bar (default: true).
+ *
+ * @dependencies
+ *   - vaul (Drawer) - Gesture-based drawer primitive.
+ *   - @/lib/utils (cn) - Tailwind class merging utility.
+ */
 "use client";
 
 import * as React from "react";
@@ -5,6 +21,7 @@ import { Drawer as DrawerPrimitive } from "vaul";
 
 import { cn } from "@/lib/utils";
 
+/** Root Drawer wrapper with background scaling enabled by default. */
 const Drawer = ({
   shouldScaleBackground = true,
   ...props

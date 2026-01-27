@@ -1,3 +1,12 @@
+/**
+ * @file RfqProductCard.tsx (rfqCart module)
+ * @description Full RFQ cart item card displayed on the dedicated RFQ cart page.
+ * Shows product image, name, quantity controls (+/-), offer price range
+ * (from/to) with currency symbol, a remove button, and an optional note section.
+ * Differs from the sidebar `RfqCartMenuCard` by including price range display
+ * and a more detailed layout.
+ */
+
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
@@ -7,6 +16,7 @@ import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 // import { useCartStore } from "@/lib/rfqStore";
 
+/** Props for the RFQ cart page product card. */
 type RfqProductCardProps = {
   id: number;
   rfqProductId: number;
@@ -29,6 +39,14 @@ type RfqProductCardProps = {
   note: string;
 };
 
+/**
+ * RFQ cart page product card. Displays a detailed view of a cart item with
+ * image, name, quantity controls, offer price range (from/to), remove action,
+ * and an optional vendor note. Syncs local quantity state from `productQuantity`.
+ *
+ * @param props - {@link RfqProductCardProps}
+ * @returns A product card with quantity controls, pricing, and remove/note sections.
+ */
 const RfqProductCard: React.FC<RfqProductCardProps> = ({
   id,
   rfqProductId,

@@ -1,3 +1,12 @@
+/**
+ * @file ReviewSection.tsx
+ * @description Reviews section on the freelancer/vendor profile page. Fetches
+ * product price reviews for the seller via `useAllProductPriceReviewBySellerId`,
+ * with sort options (newest, highest rating, lowest rating). Renders review cards
+ * in a grid and provides a write-review modal dialog (conditional on URL params
+ * `productPriceId` and `productId`). Uses the shared `SellerReviewForm` component.
+ */
+
 import React, { useEffect, useState } from "react";
 import { useAllProductPriceReviewBySellerId } from "@/apis/queries/review.queries";
 import { Button } from "@/components/ui/button";
@@ -8,6 +17,7 @@ import SellerReviewForm from "@/components/shared/SellerReviewForm";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 
+/** Props for the ReviewSection component. */
 type ReviewSectionProps = {
   sellerId?: string;
 };

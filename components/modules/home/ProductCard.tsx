@@ -1,9 +1,19 @@
+/**
+ * @file ProductCard.tsx (home module)
+ * @description Compact product card used in the home page product sections.
+ * Displays product image, discount badge, star rating, product name, and
+ * pricing (original + discounted). Uses the auth context for currency symbol.
+ * Differs from the trending/ProductCard by being a simpler, non-interactive
+ * display card without cart/wishlist actions.
+ */
+
 import React from "react";
 import Image from "next/image";
 import StarIcon from "@/public/images/star.png";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 
+/** Props for the home page ProductCard component. */
 type ProductCardProps = {
   item: any;
 };

@@ -1,3 +1,32 @@
+/**
+ * @file ProductDetailsSection.tsx
+ * @description Custom field builder section for product creation. Allows sellers to
+ *   add custom product detail fields with various input types (text, textarea,
+ *   dropdown, checkbox, radio, date) through a dialog-based field creation flow.
+ *
+ * @props None (empty ProductDetailsSectionProps)
+ *
+ * @behavior
+ *   - Opens a Dialog (modal) for creating new custom fields. The user selects a
+ *     field type from INPUT_TYPE_LIST (text, textarea, dropdown, checkbox, radio,
+ *     date) and a field size from SIZE_LIST.
+ *   - Each created field is assigned a unique UUID key and stored in local state.
+ *   - Renders each custom field using its corresponding Controlled*Input component:
+ *     ControlledTextInput, ControlledTextareaInput, ControlledDatePicker,
+ *     ControlledSelectInput, ControlledRadioInput, ControlledCheckboxInput.
+ *   - Custom fields are displayed within a card grid with optional required
+ *     checkbox toggle.
+ *   - Includes a CustomFieldContent preview component inside the creation dialog.
+ *
+ * @dependencies
+ *   - Controlled*Input components (shared forms) - Various input type renderers.
+ *   - CustomFieldContent (shared) - Field preview in dialog.
+ *   - SelectInput - Field type/size selector.
+ *   - Dialog, DialogContent (shadcn) - Modal for field creation.
+ *   - uuid - Unique key generation for fields.
+ *   - useTranslations (next-intl) - i18n translations.
+ *   - useAuth (AuthContext) - Language direction.
+ */
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";

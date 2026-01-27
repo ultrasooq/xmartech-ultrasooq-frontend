@@ -1,3 +1,31 @@
+/**
+ * @file Cart Page - app/cart/page.tsx
+ * @route /cart
+ * @description Shopping cart page. Displays all cart items (products and services) with
+ *   quantity controls, remove/wishlist actions, and an order summary sidebar showing
+ *   subtotal and total. Implements role-aware discount logic: consumer vs vendor discounts
+ *   based on consumerType (CONSUMER/VENDOR/EVERYONE) and category connection matching.
+ *   Shows a "Recommended products" carousel (useCartRecommendations) for cross-selling.
+ *   Supports both authenticated (useCartListByUserId) and guest (useCartListByDevice) flows.
+ *   Proceed to Checkout navigates to /checkout.
+ * @authentication Optional; supports guest cart via deviceId and authenticated cart.
+ *   Checks PUREMOON_TOKEN_KEY cookie.
+ * @key_components CartProductCardWrapper, ServiceCard, ProductCard (for recommendations),
+ *   Carousel (shadcn), Button, Skeleton (loading state), ShoppingBag icon (empty state)
+ * @data_fetching
+ *   - useCartListByDevice / useCartListByUserId for cart items
+ *   - useCartRecommendations for product suggestions
+ *   - useAllProducts for product pricing metadata (category connections, discounts)
+ *   - useCategory for fresh category connection data
+ *   - useDeleteCartItem / useDeleteServiceFromCart mutations
+ *   - useUpdateCartWithLogin / useUpdateCartByDevice for recommended product add-to-cart
+ *   - useAddToWishList / useDeleteFromWishList for wishlist toggle
+ *   - useCurrentAccount for trade role detection
+ *   - useMe() for user ID
+ * @state_management Local state for haveAccessToken, loading, totalAmount, cartList;
+ *   productPricingInfoMap (useMemo) for discount calculations;
+ *   useVendorBusinessCategories() hook for category matching.
+ */
 "use client";
 import {
   useCartListByDevice,

@@ -4,6 +4,19 @@ import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import urlcat from "urlcat";
 import { getApiUrl } from "@/config/api";
 
+/**
+ * Fetches the cart items for the currently authenticated user with pagination.
+ *
+ * @param payload - Pagination parameters.
+ * @param payload.page - The page number to retrieve.
+ * @param payload.limit - The number of records per page.
+ * @returns Axios promise resolving to the paginated list of cart items.
+ *
+ * @remarks
+ * - **HTTP Method:** `GET`
+ * - **Endpoint:** `/cart/list`
+ * - **Auth:** Bearer token required.
+ */
 export const fetchCartByUserId = (payload: { page: number; limit: number }) => {
   return axios({
     method: "GET",
@@ -16,6 +29,20 @@ export const fetchCartByUserId = (payload: { page: number; limit: number }) => {
   });
 };
 
+/**
+ * Fetches the cart items for an unauthenticated user identified by device ID.
+ *
+ * @param payload - Device identification and pagination parameters.
+ * @param payload.page - The page number to retrieve.
+ * @param payload.limit - The number of records per page.
+ * @param payload.deviceId - The unique device identifier for the guest user.
+ * @returns Axios promise resolving to the paginated list of cart items.
+ *
+ * @remarks
+ * - **HTTP Method:** `GET`
+ * - **Endpoint:** `/cart/listUnAuth`
+ * - **Auth:** None required.
+ */
 export const fetchCartByDevice = (payload: {
   page: number;
   limit: number;
@@ -27,6 +54,17 @@ export const fetchCartByDevice = (payload: {
   });
 };
 
+/**
+ * Updates the cart for the authenticated user (e.g., add/change product quantity).
+ *
+ * @param payload - The cart update data (untyped).
+ * @returns Axios promise resolving to the updated cart.
+ *
+ * @remarks
+ * - **HTTP Method:** `PATCH`
+ * - **Endpoint:** `/cart/update`
+ * - **Auth:** Bearer token required.
+ */
 export const updateCartWithLogin = (payload: any) => {
   return axios({
     method: "PATCH",
@@ -40,6 +78,22 @@ export const updateCartWithLogin = (payload: any) => {
   });
 };
 
+/**
+ * Updates the cart for a guest user identified by device ID.
+ *
+ * @param payload - The cart update data for a guest session.
+ * @param payload.productPriceId - The product price entry ID.
+ * @param payload.quantity - The desired quantity.
+ * @param payload.deviceId - The unique device identifier.
+ * @param payload.sharedLinkId - Optional shared link ID for referral tracking.
+ * @param payload.productVariant - Optional product variant details.
+ * @returns Axios promise resolving to the updated cart.
+ *
+ * @remarks
+ * - **HTTP Method:** `PATCH`
+ * - **Endpoint:** `/cart/updateUnAuth`
+ * - **Auth:** None required.
+ */
 export const updateCartByDevice = (payload: {
   productPriceId: number;
   quantity: number;
@@ -54,6 +108,17 @@ export const updateCartByDevice = (payload: {
   });
 };
 
+/**
+ * Updates the cart with a service product for the authenticated user.
+ *
+ * @param payload - The service cart update data (untyped).
+ * @returns Axios promise resolving to the updated cart with service.
+ *
+ * @remarks
+ * - **HTTP Method:** `PATCH`
+ * - **Endpoint:** `/cart/updateservice/product`
+ * - **Auth:** Bearer token required.
+ */
 export const updateCartWithService = (payload: any) => {
   return axios({
     method: "PATCH",
@@ -67,6 +132,18 @@ export const updateCartWithService = (payload: any) => {
   });
 };
 
+/**
+ * Deletes a specific item from the authenticated user's cart.
+ *
+ * @param payload - The deletion parameters.
+ * @param payload.cartId - The numeric cart item ID to remove.
+ * @returns Axios promise resolving to the deletion confirmation.
+ *
+ * @remarks
+ * - **HTTP Method:** `DELETE`
+ * - **Endpoint:** `/cart/delete`
+ * - **Auth:** Bearer token required.
+ */
 export const deleteCartItem = (payload: { cartId: number }) => {
   return axios({
     method: "DELETE",
@@ -79,6 +156,18 @@ export const deleteCartItem = (payload: { cartId: number }) => {
   });
 };
 
+/**
+ * Deletes a service (or specific service feature) from a cart item.
+ *
+ * @param cartId - The numeric cart item ID containing the service.
+ * @param serviceFeatureId - Optional service feature ID to remove a specific feature.
+ * @returns Axios promise resolving to the deletion confirmation.
+ *
+ * @remarks
+ * - **HTTP Method:** `DELETE`
+ * - **Endpoint:** `/cart/deleteService/:cartId`
+ * - **Auth:** Bearer token required.
+ */
 export const deleteServiceFromCart = (
   cartId: number,
   serviceFeatureId?: number,
@@ -98,6 +187,18 @@ export const deleteServiceFromCart = (
   });
 };
 
+/**
+ * Migrates a guest cart (by device ID) to the authenticated user's account upon login.
+ *
+ * @param payload - The device identification data.
+ * @param payload.deviceId - The unique device identifier whose cart to merge.
+ * @returns Axios promise resolving to the migration confirmation.
+ *
+ * @remarks
+ * - **HTTP Method:** `PATCH`
+ * - **Endpoint:** `/cart/updateUserIdBydeviceId`
+ * - **Auth:** Bearer token required.
+ */
 export const updateUserCartByDeviceId = (payload: { deviceId: string }) => {
   return axios({
     method: "PATCH",
@@ -111,6 +212,16 @@ export const updateUserCartByDeviceId = (payload: { deviceId: string }) => {
   });
 };
 
+/**
+ * Retrieves the total number of items in the authenticated user's cart.
+ *
+ * @returns Axios promise resolving to the cart item count.
+ *
+ * @remarks
+ * - **HTTP Method:** `POST`
+ * - **Endpoint:** `/cart/cartCount`
+ * - **Auth:** Bearer token required.
+ */
 export const fetchCartCountWithLogin = () => {
   return axios({
     method: "POST",
@@ -123,6 +234,18 @@ export const fetchCartCountWithLogin = () => {
   });
 };
 
+/**
+ * Retrieves the total number of items in a guest user's cart by device ID.
+ *
+ * @param payload - The device identification data.
+ * @param payload.deviceId - The unique device identifier.
+ * @returns Axios promise resolving to the cart item count.
+ *
+ * @remarks
+ * - **HTTP Method:** `POST`
+ * - **Endpoint:** `/cart/cartCountUnAuth`
+ * - **Auth:** None required.
+ */
 export const fetchCartCountByDeviceId = (payload: { deviceId: string }) => {
   return axios({
     method: "POST",
@@ -131,6 +254,17 @@ export const fetchCartCountByDeviceId = (payload: { deviceId: string }) => {
   });
 };
 
+/**
+ * Adds a service to a cart item that already contains a product.
+ *
+ * @param payload - The service-to-cart data (key-value object, untyped).
+ * @returns Axios promise resolving to the updated cart item with the added service.
+ *
+ * @remarks
+ * - **HTTP Method:** `PATCH`
+ * - **Endpoint:** `/cart/updateCartServiceWithProduct`
+ * - **Auth:** Bearer token required.
+ */
 export const addServiceToCartWithProduct = (payload: {
   [key: string]: any;
 }) => {
@@ -146,6 +280,20 @@ export const addServiceToCartWithProduct = (payload: {
   });
 };
 
+/**
+ * Fetches product recommendations based on the current cart contents.
+ *
+ * @param payload - The recommendation request parameters.
+ * @param payload.productIds - Optional comma-separated product IDs in the cart.
+ * @param payload.limit - Optional maximum number of recommendations.
+ * @param payload.deviceId - Optional device identifier for guest users.
+ * @returns Axios promise resolving to the list of recommended products.
+ *
+ * @remarks
+ * - **HTTP Method:** `GET`
+ * - **Endpoint:** `/cart/recommendations`
+ * - **Auth:** Bearer token required.
+ */
 export const fetchCartRecommendations = (payload: {
   productIds?: string;
   limit?: number;

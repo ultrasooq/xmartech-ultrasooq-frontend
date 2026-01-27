@@ -1,3 +1,26 @@
+/**
+ * @file Add From Existing Product Page - app/manage-products/add-from-existing/page.tsx
+ * @route /manage-products/add-from-existing
+ * @description Allows sellers to search existing marketplace products and add them to their
+ *   own catalog. Features three tabs:
+ *   (1) Search -- text-based product search (useExistingProduct) with result cards
+ *   (2) Image Search -- AI-powered image/URL-based product search with camera capture,
+ *       file upload, and URL input; sends to backend AI endpoint for matching
+ *   (3) AI Generate -- generates new products via AI based on image/URL with preview modal
+ *   Selected products can be copied to the seller's catalog via redirect to
+ *   /product?copy=<productId>. Wrapped with withActiveUserGuard HOC.
+ * @authentication Required; checks PUREMOON_TOKEN_KEY cookie for API calls.
+ * @key_components Tabs, Input (search), Button, Dialog (preview modal), Image,
+ *   withActiveUserGuard (HOC), various lucide icons (Search, Plus, Copy, Camera, Sparkles, etc.)
+ * @data_fetching
+ *   - useExistingProduct for text-based product search
+ *   - useCategory for category tree
+ *   - useMe for user context
+ *   - Custom fetch calls to AI search/generate endpoints (getApiUrl)
+ * @state_management Local state for searchTerm, searchResults, selectedProduct, AI generation
+ *   states (isAIGenerating, aiGeneratedData, aiProductSuggestions), preview modal,
+ *   image upload/camera states.
+ */
 "use client";
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";

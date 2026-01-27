@@ -1,3 +1,11 @@
+/**
+ * @file ServiceImagesCard.tsx
+ * @description Left-side image gallery for the service details page.
+ * Renders a carousel with thumbnail navigation for service images.
+ * Supports image validation, placeholder fallback, and skeleton loading states.
+ * Uses the Embla carousel API for slide tracking and thumbnail synchronisation.
+ */
+
 import { Button } from "@/components/ui/button";
 import {
   Carousel,

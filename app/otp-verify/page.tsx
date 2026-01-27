@@ -1,3 +1,22 @@
+/**
+ * @file OTP Verify Page - app/otp-verify/page.tsx
+ * @route /otp-verify
+ * @description OTP verification page for account activation after registration. Displays
+ *   a 4-digit OTP input (individual input boxes with auto-focus advance), a 120-second
+ *   countdown timer, and a "Resend OTP" button. On successful verification (useVerifyOtp),
+ *   sets PUREMOON_TOKEN_KEY cookie, fetches user profile (fetchMe) and permissions
+ *   (fetchUserPermissions), updates AuthContext, and redirects to /profile.
+ *   Email is retrieved from sessionStorage (set during /register).
+ * @authentication Public page; part of the registration flow.
+ * @key_components Form (react-hook-form), Input (OTP digits), Button, LoaderWithMessage,
+ *   Image (background)
+ * @data_fetching
+ *   - useVerifyOtp mutation for OTP verification
+ *   - useResendOtp mutation for OTP resend
+ *   - fetchMe(), fetchUserPermissions() for post-verification user hydration
+ * @state_management AuthContext (setUser, setPermissions); local state for otp array,
+ *   countdown timer (count), refs for input focus; sessionStorage for email persistence.
+ */
 "use client";
 import React, {
   useCallback,

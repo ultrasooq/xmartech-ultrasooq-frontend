@@ -1,3 +1,13 @@
+/**
+ * @fileoverview TanStack React Query hooks for the notifications system.
+ *
+ * Provides query hooks for fetching notifications (paginated) and unread
+ * counts, plus mutation hooks for marking notifications as read and
+ * deleting individual or all notifications.
+ *
+ * @module queries/notifications
+ */
+
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   fetchNotifications,
@@ -15,6 +25,20 @@ import {
   NotificationUnreadCountResponse,
 } from "@/utils/types/notification.types";
 
+/**
+ * Query hook that fetches the authenticated user's notifications with
+ * optional filters and pagination.
+ *
+ * @param payload - Notification filter / pagination options (defaults to `{}`).
+ * @param enabled - Whether the query should execute. Defaults to `true`.
+ * @returns A `useQuery` result whose `data` is {@link NotificationListResponse}.
+ *
+ * @remarks
+ * - Query key: `["notifications", payload]`
+ * - **staleTime**: 30 seconds.
+ * - **refetchOnWindowFocus**: true.
+ * - Endpoint: Delegated to `fetchNotifications` in notifications.requests.
+ */
 export const useNotifications = (
   payload: FetchNotificationsPayload = {},
   enabled = true,
@@ -33,6 +57,18 @@ export const useNotifications = (
   });
 };
 
+/**
+ * Query hook that fetches the total unread notification count for
+ * the authenticated user. Auto-refetches every 30 seconds.
+ *
+ * @param enabled - Whether the query should execute. Defaults to `true`.
+ * @returns A `useQuery` result whose `data` is {@link NotificationUnreadCountResponse}.
+ *
+ * @remarks
+ * - Query key: `["notifications", "unread-count"]`
+ * - **refetchInterval**: 30 000 ms.
+ * - Endpoint: Delegated to `fetchUnreadCount` in notifications.requests.
+ */
 export const useUnreadCount = (enabled = true) => {
   return useQuery<NotificationUnreadCountResponse, APIResponseError>({
     queryKey: ["notifications", "unread-count"],
@@ -47,6 +83,18 @@ export const useUnreadCount = (enabled = true) => {
   });
 };
 
+/**
+ * Mutation hook to mark a single notification as read.
+ *
+ * @returns A `useMutation` result.
+ *
+ * @remarks
+ * - **Payload**: `number` (notification ID).
+ * - **Response**: {@link Notification}
+ * - **Invalidates**: `["notifications"]`, `["notifications", "unread-count"]`
+ *   on success.
+ * - Endpoint: Delegated to `markAsRead` in notifications.requests.
+ */
 export const useMarkAsRead = () => {
   const queryClient = useQueryClient();
   return useMutation<Notification, APIResponseError, number>({
@@ -62,6 +110,18 @@ export const useMarkAsRead = () => {
   });
 };
 
+/**
+ * Mutation hook to mark all notifications as read for the current user.
+ *
+ * @returns A `useMutation` result.
+ *
+ * @remarks
+ * - **Payload**: `void`
+ * - **Response**: `{ count: number }` -- number of notifications marked.
+ * - **Invalidates**: `["notifications"]`, `["notifications", "unread-count"]`
+ *   on success.
+ * - Endpoint: Delegated to `markAllAsRead` in notifications.requests.
+ */
 export const useMarkAllAsRead = () => {
   const queryClient = useQueryClient();
   return useMutation<{ count: number }, APIResponseError, void>({
@@ -77,6 +137,17 @@ export const useMarkAllAsRead = () => {
   });
 };
 
+/**
+ * Mutation hook to delete a single notification.
+ *
+ * @returns A `useMutation` result.
+ *
+ * @remarks
+ * - **Payload**: `number` (notification ID).
+ * - **Invalidates**: `["notifications"]`, `["notifications", "unread-count"]`
+ *   on success.
+ * - Endpoint: Delegated to `deleteNotification` in notifications.requests.
+ */
 export const useDeleteNotification = () => {
   const queryClient = useQueryClient();
   return useMutation<{ success: boolean }, APIResponseError, number>({
@@ -92,6 +163,18 @@ export const useDeleteNotification = () => {
   });
 };
 
+/**
+ * Mutation hook to delete all notifications for the current user.
+ *
+ * @returns A `useMutation` result.
+ *
+ * @remarks
+ * - **Payload**: `void`
+ * - **Response**: `{ success: boolean; count: number }`
+ * - **Invalidates**: `["notifications"]`, `["notifications", "unread-count"]`
+ *   on success.
+ * - Endpoint: Delegated to `deleteAllNotifications` in notifications.requests.
+ */
 export const useDeleteAllNotifications = () => {
   const queryClient = useQueryClient();
   return useMutation<{ success: boolean; count: number }, APIResponseError, void>({

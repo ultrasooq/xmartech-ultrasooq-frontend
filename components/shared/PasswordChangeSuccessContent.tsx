@@ -1,7 +1,17 @@
+/**
+ * @file PasswordChangeSuccessContent - Success confirmation for password change.
+ * @description Renders a centered success icon and "Successful Changed Password"
+ * message. Intended to be displayed inside a dialog after a password reset completes.
+ *
+ * @dependencies
+ *   - next/image - Optimized image for the success SVG icon.
+ *   - @/public/images/successful.svg - Success illustration asset.
+ */
 import Image from "next/image";
 import React from "react";
 import SuccessfulIcon from "@/public/images/successful.svg";
 
+/** Success content displayed after a password change. */
 const PasswordChangeSuccessContent = () => {
   return (
     <div className="flex flex-col items-center">

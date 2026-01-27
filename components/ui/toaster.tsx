@@ -1,3 +1,16 @@
+/**
+ * @file Toaster - Shadcn UI toast notification renderer.
+ * @description Renders all active toast notifications managed by the useToast hook.
+ * Each toast may include a title, description, action slot, and close button.
+ * All toasts are rendered inside a fixed-position viewport via ToastProvider.
+ *
+ * @behavior Reads from the global toast queue via useToast() and maps each toast
+ * to a Toast component with its associated metadata.
+ *
+ * @dependencies
+ *   - @/components/ui/toast - Toast sub-components (Toast, ToastClose, etc.).
+ *   - @/components/ui/use-toast - Toast state management hook.
+ */
 "use client"
 
 import {
@@ -10,6 +23,7 @@ import {
 } from "@/components/ui/toast"
 import { useToast } from "@/components/ui/use-toast"
 
+/** Renders the global toast notification stack. */
 export function Toaster() {
   const { toasts } = useToast()
 

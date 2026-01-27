@@ -10,6 +10,23 @@ import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 
+/**
+ * Props for the buyer-side {@link OrderCard} component.
+ *
+ * @property id               - Order product entry ID.
+ * @property orderProductType  - `"SERVICE"` or product type.
+ * @property productId         - The product ID.
+ * @property purchasePrice     - Final purchase price string.
+ * @property productName       - Display name.
+ * @property produtctImage     - Array of product image objects (note: API typo retained).
+ * @property productColor      - Colour variant string.
+ * @property orderQuantity     - Quantity ordered.
+ * @property orderId           - Human-readable order ID.
+ * @property orderStatus       - Current delivery status string.
+ * @property orderProductDate  - Order placement date string.
+ * @property updatedAt         - Last-updated timestamp.
+ * @property serviceFeature    - Service feature data (for service orders).
+ */
 type OrderCardProps = {
   id: number;
   orderProductType?: string;
@@ -26,6 +43,17 @@ type OrderCardProps = {
   serviceFeature?: any;
 };
 
+/**
+ * Displays a single order item card on the buyer's "My Orders" page.
+ *
+ * Shows product image (with placeholder fallback), name, price with
+ * currency symbol, order ID, quantity, colour variant, delivery status
+ * progress (with filled/unfilled circle icons), and last-updated date.
+ * Links to the order detail page at `/my-orders/<id>`.
+ *
+ * @param props - {@link OrderCardProps}
+ * @returns An order card element for the buyer's order list.
+ */
 const OrderCard: React.FC<OrderCardProps> = ({
   id,
   orderProductType,

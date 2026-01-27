@@ -1,3 +1,13 @@
+/**
+ * @file ProductsSection.tsx
+ * @description Product listing section (~813 lines) on the freelancer/vendor profile page.
+ * Fetches products with brand filter, menu filter (store/buygroup/expired/hidden/discounted),
+ * search, and sort options. Integrates with cart management (add/update/remove),
+ * product variant fetching, wishlist toggling, and the "Add to RFQ" workflow.
+ * Determines product ownership and displays appropriate controls. Manages
+ * complex state: pagination, filtering, variant selection, cart synchronization.
+ */
+
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import ProductCard from "./ProductCard";
 import { useMe } from "@/apis/queries/user.queries";

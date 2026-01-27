@@ -12,6 +12,14 @@ import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 import { Skeleton } from "@/components/ui/skeleton";
 
+/**
+ * Props for the {@link DropshipProductsModal} dialog component.
+ *
+ * @property isOpen              - Whether the dialog is visible.
+ * @property onClose             - Callback to close the dialog.
+ * @property originalProductId   - ID of the original (source) product.
+ * @property originalProductName - Display name of the original product.
+ */
 interface DropshipProductsModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -19,6 +27,23 @@ interface DropshipProductsModalProps {
   originalProductName: string;
 }
 
+/**
+ * Dialog modal that lists all dropship products created from a specific
+ * original product. Fetches data via {@link useDropshipProductsFromOriginal}
+ * (only when the modal is open).
+ *
+ * Displays each dropship product with:
+ * - Product image with placeholder fallback.
+ * - User info (prioritising `accountName`, then `companyName`, then full name).
+ * - Creation date.
+ * - Brand name and offer price.
+ * - "View Product" link to the product detail page.
+ *
+ * Shows loading skeletons, error messages, and empty-state text as needed.
+ *
+ * @param props - {@link DropshipProductsModalProps}
+ * @returns A dialog element with the dropship product list.
+ */
 const DropshipProductsModal: React.FC<DropshipProductsModalProps> = ({
   isOpen,
   onClose,

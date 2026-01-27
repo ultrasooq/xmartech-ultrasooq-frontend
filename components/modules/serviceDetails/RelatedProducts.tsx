@@ -1,3 +1,11 @@
+/**
+ * @file RelatedProducts.tsx
+ * @description Section displaying products related to a service. Fetches products
+ * linked to the current service via `useProductsByService`, maps them to the shared
+ * `ProductCard` component, and supports wishlist add/remove with toast feedback.
+ * Also handles finding the matching cart item and related service cart entries.
+ */
+
 import React, { useEffect, useMemo, useState } from "react";
 import { useProductsByService } from "@/apis/queries/product.queries";
 import { useMe } from "@/apis/queries/user.queries";
@@ -11,6 +19,7 @@ import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import { getCookie } from "cookies-next";
 import { useAuth } from "@/context/AuthContext";
 
+/** Props for the RelatedProducts section. */
 type RelatedProductsProps = {
     serviceId: number;
     serviceCategoryId: string;

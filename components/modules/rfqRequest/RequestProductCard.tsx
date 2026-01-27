@@ -1,3 +1,12 @@
+/**
+ * @file RequestProductCard.tsx
+ * @description RFQ request card component displayed in the vendor/buyer request list.
+ * Shows a formatted RFQ ID (e.g., "RFQ00001"), product images (single image or
+ * grid layout for multiple), and the last unread chat message with an unread count
+ * badge and relative timestamp via moment.js. Supports selection highlighting
+ * with a ring indicator.
+ */
+
 import React from "react";
 import Image from "next/image";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
@@ -7,6 +16,7 @@ import moment from "moment";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 
+/** Props for the RFQ request product card. */
 type RequestProductCardProps = {
   rfqId?: number;
   onClick?: () => void;
@@ -24,6 +34,14 @@ type RequestProductCardProps = {
   };
 };
 
+/**
+ * RFQ request card displaying the RFQ identifier, product images, and latest
+ * unread message information. Validates image URLs with the `validator` library
+ * and falls back to a placeholder. Shows an overlay count for 5+ images.
+ *
+ * @param props - {@link RequestProductCardProps}
+ * @returns A selectable card with RFQ ID, product images, and message info.
+ */
 const RequestProductCard: React.FC<RequestProductCardProps> = ({
   rfqId,
   onClick,

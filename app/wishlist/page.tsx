@@ -1,3 +1,19 @@
+/**
+ * @file Wishlist Page - app/wishlist/page.tsx
+ * @route /wishlist
+ * @description Displays the authenticated user's saved wishlist items in a responsive grid.
+ *   Shows item count stats, supports removing items via useDeleteFromWishList mutation
+ *   (invalidates product-by-id query cache), displays an empty state with a "Browse Products"
+ *   CTA that navigates to /home, and includes pagination for large wishlists.
+ * @authentication Required (implicitly via useWishlist which uses the auth token).
+ * @key_components WishlistCard, Pagination, SkeletonProductCardLoader (loading state),
+ *   Button, Footer
+ * @data_fetching
+ *   - useWishlist({ page, limit }) for paginated wishlist items
+ *   - useDeleteFromWishList mutation for item removal
+ *   - useMe() for user ID (used in query invalidation keys)
+ * @state_management Local state for page number; useQueryClient for cache invalidation.
+ */
 "use client";
 import React, { useState } from "react";
 import Footer from "@/components/shared/Footer";

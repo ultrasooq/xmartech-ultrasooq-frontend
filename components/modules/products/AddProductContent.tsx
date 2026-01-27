@@ -13,11 +13,33 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, Plus, Copy, ArrowLeft } from "lucide-react";
 
+/**
+ * Props for the {@link AddProductContent} dialog component.
+ *
+ * @property productId - Optional product ID context (unused directly but
+ *   available for future extensions).
+ * @property onClose   - Optional callback to close the parent dialog.
+ */
 type AddProductContentProps = {
   productId?: number;
   onClose?: () => void;
 };
 
+/**
+ * Two-step dialog for adding a product to the vendor's catalogue.
+ *
+ * **Step 1 -- Chooser:** Presents two options:
+ * - "Add New Product" -- navigates to `/product` to create from scratch.
+ * - "Add from Existing Product" -- transitions to the search step.
+ *
+ * **Step 2 -- Search:** Displays a search input that queries existing
+ * products via {@link useExistingProductForCopy} (debounced at 500 ms).
+ * Selecting a result navigates to `/product?copy=<id>&fromExisting=true`
+ * so the product creation form pre-populates with the copied data.
+ *
+ * @param props - {@link AddProductContentProps}
+ * @returns Dialog content with product-addition options.
+ */
 const AddProductContent: React.FC<AddProductContentProps> = ({ productId, onClose }) => {
   const t = useTranslations();
   const { langDir } = useAuth();
@@ -39,15 +61,22 @@ const AddProductContent: React.FC<AddProductContentProps> = ({ productId, onClos
     false
   );
 
+  /** Navigates to the new-product creation page and closes the dialog. */
   const handleAddNewProduct = () => {
     router.push("/product");
     onClose?.();
   };
 
+  /** Switches the dialog to the existing-product search view. */
   const handleAddFromExisting = () => {
     setSelectedOption("existing");
   };
 
+  /**
+   * Triggers an existing-product search. Validates that the search
+   * term is at least 3 characters, then calls the query refetch.
+   * Results are stored in local `searchResults` state.
+   */
   const handleSearch = useCallback(async () => {
     if (!searchTerm.trim()) {
       toast({
@@ -87,11 +116,18 @@ const AddProductContent: React.FC<AddProductContentProps> = ({ productId, onClos
     }
   }, [searchTerm, searchProducts, toast, t]);
 
+  /**
+   * Navigates to the product creation form pre-populated with the
+   * selected existing product's data.
+   *
+   * @param product - The product object from search results.
+   */
   const handleSelectProduct = (product: any) => {
     router.push(`/product?copy=${product.id}&fromExisting=true`);
     onClose?.();
   };
 
+  /** Returns from the search view to the initial chooser view and resets search state. */
   const handleBack = () => {
     setSelectedOption(null);
     setSearchTerm("");

@@ -1,3 +1,26 @@
+/**
+ * @file Command - Shadcn UI command palette component.
+ * @description Provides a searchable command menu (combobox) built on the cmdk library.
+ * Includes a dialog variant for modal usage and composable sub-components for
+ * inputs, lists, groups, items, separators, and keyboard shortcuts.
+ *
+ * @exports Command - Root command container with popover styling.
+ * @exports CommandDialog - Modal wrapper combining Dialog and Command.
+ * @exports CommandInput - Search input with magnifying glass icon.
+ * @exports CommandList - Scrollable list container (max 300px height).
+ * @exports CommandEmpty - Message displayed when no results match.
+ * @exports CommandGroup - Labeled group of command items.
+ * @exports CommandItem - Individual selectable command option.
+ * @exports CommandShortcut - Keyboard shortcut hint text.
+ * @exports CommandSeparator - Visual divider between groups.
+ *
+ * @dependencies
+ *   - cmdk (Command) - Composable command menu primitive.
+ *   - @radix-ui/react-dialog - Dialog primitive for modal variant.
+ *   - @radix-ui/react-icons (MagnifyingGlassIcon) - Search icon.
+ *   - @/components/ui/dialog - Dialog UI components.
+ *   - @/lib/utils (cn) - Tailwind class merging utility.
+ */
 "use client"
 
 import * as React from "react"
@@ -8,6 +31,7 @@ import { Command as CommandPrimitive } from "cmdk"
 import { cn } from "@/lib/utils"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 
+/** Root Command container with popover-style background and overflow handling. */
 const Command = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive>,
   React.ComponentPropsWithoutRef<typeof CommandPrimitive>

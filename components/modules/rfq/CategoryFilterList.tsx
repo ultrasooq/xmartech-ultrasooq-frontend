@@ -1,7 +1,20 @@
+/**
+ * @file CategoryFilterList.tsx
+ * @description Static / placeholder category filter sidebar for the RFQ product listing.
+ * Displays hardcoded category links (e.g., "Clothing & Apparel", "Garden & Kitchen").
+ * Not yet connected to dynamic category data from the API.
+ */
+
 import React from "react";
 import SymbolIcon from "@/public/images/symbol.svg";
 import Image from "next/image";
 
+/**
+ * Renders a static list of product category links for filtering RFQ products.
+ * Currently uses hardcoded values; intended to be replaced with dynamic API data.
+ *
+ * @returns A filter box with a "Categories" heading and a list of category links.
+ */
 const CategoryFilterList = () => {
   return (
     <div className="product_filter_box">

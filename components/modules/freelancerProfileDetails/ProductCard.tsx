@@ -1,3 +1,13 @@
+/**
+ * @file ProductCard.tsx (freelancerProfileDetails module)
+ * @description Complex product card (~716 lines) for the freelancer profile products section.
+ * Features discount calculation (consumer/vendor types, category matching, percentage/flat),
+ * variant selection dropdown, cart management (add/update/remove with login and device
+ * cart support), quantity controls with min/max validation, wishlist toggle, and a
+ * remove confirmation dialog. Computes applicable price based on trade role and
+ * discount configuration using `checkCategoryConnection` for vendor category matching.
+ */
+
 import { TrendingProduct } from "@/utils/types/common.types";
 import Image from "next/image";
 import Link from "next/link";

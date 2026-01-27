@@ -1,3 +1,24 @@
+/**
+ * @file VendorInformationSection.tsx
+ * @description Public-facing vendor company information section. Displays the
+ *   vendor's email, phone number, and social media links. Used on the public
+ *   vendor profile page (as opposed to the owner-facing InformationSection).
+ *
+ * @props
+ *   - vendor {any} - Vendor profile object containing email, phoneNumber,
+ *     and userSocialLink array.
+ *
+ * @behavior
+ *   - Renders labeled rows for email and phone number.
+ *   - Memoizes social links rendering from `vendor.userSocialLink` array.
+ *   - Each social link is displayed as a share icon with external link.
+ *   - Shows "N/A" or hides sections when data is missing.
+ *   - Supports RTL layout via `langDir` from AuthContext.
+ *
+ * @dependencies
+ *   - useAuth (AuthContext) - Language direction.
+ *   - useTranslations (next-intl) - i18n translations.
+ */
 import { useAuth } from "@/context/AuthContext";
 import { useTranslations } from "next-intl";
 import Image from "next/image";

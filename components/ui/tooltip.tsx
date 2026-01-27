@@ -1,3 +1,21 @@
+/**
+ * @file Tooltip - Shadcn UI tooltip component.
+ * @description Renders a floating text label on hover/focus for additional context.
+ * Uses portal rendering with animated zoom/fade transitions based on tooltip side.
+ *
+ * @exports TooltipProvider - Context provider managing tooltip delay settings.
+ * @exports Tooltip - Root state manager for a single tooltip instance.
+ * @exports TooltipTrigger - Element that triggers the tooltip on hover/focus.
+ * @exports TooltipContent - Floating label with zoom/fade animation.
+ *
+ * @props TooltipContent accepts:
+ *   - sideOffset {number} - Distance from trigger (default: 4).
+ *   - className {string} - Additional CSS classes.
+ *
+ * @dependencies
+ *   - @radix-ui/react-tooltip - Accessible tooltip primitive.
+ *   - @/lib/utils (cn) - Tailwind class merging utility.
+ */
 "use client"
 
 import * as React from "react"
@@ -5,6 +23,7 @@ import * as TooltipPrimitive from "@radix-ui/react-tooltip"
 
 import { cn } from "@/lib/utils"
 
+/** Tooltip provider establishing shared hover delay configuration. */
 const TooltipProvider = TooltipPrimitive.Provider
 
 const Tooltip = TooltipPrimitive.Root

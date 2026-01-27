@@ -1,3 +1,12 @@
+/**
+ * @file ServiceCard.tsx
+ * @description Checkout cart line item for a service. Displays the service feature
+ * name, its per-unit cost, and quantity controls (+/-). Handles adding services
+ * both as standalone cart items and as product-related service add-ons via
+ * `useAddServiceToCart` and `useAddServiceToCartWithProduct` mutations.
+ * Includes a confirmation dialog before removing the item from the cart.
+ */
+
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
@@ -19,6 +28,7 @@ import { IoCloseSharp } from "react-icons/io5";
 import { useClickOutside } from "use-events";
 import { useAddServiceToCart } from "@/apis/queries/services.queries";
 
+/** Props for the checkout ServiceCard component. */
 type ServiceCardProps = {
     cartId: number;
     serviceId: number;
@@ -31,6 +41,15 @@ type ServiceCardProps = {
     onRemove: () => void;
 };
 
+/**
+ * Displays a service feature as a checkout cart line item.
+ * Provides increment/decrement quantity controls that call the appropriate
+ * cart mutation (standalone vs product-related). Shows a remove confirmation
+ * dialog that dismisses on outside click via `useClickOutside`.
+ *
+ * @param props - {@link ServiceCardProps}
+ * @returns A cart line item with quantity controls, price, and remove dialog.
+ */
 const ServiceCard: React.FC<ServiceCardProps> = ({
     cartId,
     serviceId,

@@ -1,3 +1,21 @@
+/**
+ * @file ConfirmContent - Generic confirmation dialog content with Yes/No actions.
+ * @description Renders a dialog with a "Confirm" header, a dynamic description
+ * asking "Are you sure you want to [description]?", and Yes/No action buttons.
+ * The Yes button shows a spinning loader during async operations. Designed to be
+ * placed inside a Dialog component as its content.
+ *
+ * @props
+ *   - onClose {() => void} - Callback when the No/cancel button is clicked.
+ *   - onConfirm {() => void} - Callback when the Yes/confirm button is clicked.
+ *   - isLoading {boolean} - When true, disables buttons and shows a spinner on Yes.
+ *   - description {string} - Action description inserted into the confirmation message.
+ *
+ * @dependencies
+ *   - @/components/ui/dialog (DialogDescription, DialogFooter, DialogHeader, DialogContent) - Dialog layout.
+ *   - @/components/ui/button (Button) - Action buttons.
+ *   - next/image - Loader icon image rendering.
+ */
 import React from "react";
 import {
   DialogDescription,

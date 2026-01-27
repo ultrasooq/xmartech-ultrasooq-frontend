@@ -22,6 +22,33 @@ import { useCurrentAccount } from "@/apis/queries/auth.queries";
 import { useVendorBusinessCategories } from "@/hooks/useVendorBusinessCategories";
 import { checkCategoryConnection } from "@/utils/categoryConnection";
 
+/**
+ * Props for the cart {@link ProductCard} component.
+ *
+ * @property cartId              - The cart entry ID.
+ * @property productId           - The product ID.
+ * @property productPriceId      - The product price entry ID.
+ * @property productName         - Display name of the product.
+ * @property offerPrice          - Offer price string.
+ * @property productQuantity     - Current quantity in the cart.
+ * @property productVariant      - Variant details (colour, size, etc.).
+ * @property productImages       - Array of product image objects.
+ * @property onRemove            - Callback to remove this item from cart.
+ * @property onWishlist          - Callback to add this product to wishlist.
+ * @property haveAccessToken     - Whether the user is authenticated.
+ * @property consumerDiscount    - Consumer discount value.
+ * @property consumerDiscountType - `"PERCENTAGE"` or `"FLAT"`.
+ * @property vendorDiscount      - Vendor discount value.
+ * @property vendorDiscountType  - `"PERCENTAGE"` or `"FLAT"`.
+ * @property consumerType        - Target audience (`"CONSUMER"`, `"VENDORS"`,
+ *   `"EVERYONE"`).
+ * @property categoryId          - Product category ID for discount matching.
+ * @property categoryLocation    - Category hierarchy location string.
+ * @property categoryConnections - Category connection data for matching.
+ * @property minQuantity         - Minimum order quantity.
+ * @property maxQuantity         - Maximum order quantity.
+ * @property relatedCart         - Related cart data (services, etc.).
+ */
 type ProductCardProps = {
   cartId: number;
   productId: number;
@@ -47,6 +74,18 @@ type ProductCardProps = {
   relatedCart?: any;
 };
 
+/**
+ * Cart product card displaying product image, name, quantity controls
+ * (increment/decrement with min/max validation), discounted price
+ * (calculated via the marketplace discount matrix), variant info,
+ * remove button with confirmation dialog, and wishlist toggle.
+ *
+ * Supports both authenticated (`useUpdateCartWithLogin`) and
+ * guest (`useUpdateCartByDevice`) quantity update flows.
+ *
+ * @param props - {@link ProductCardProps}
+ * @returns A product item row for the cart list.
+ */
 const ProductCard: React.FC<ProductCardProps> = ({
   cartId,
   productId,

@@ -1,3 +1,14 @@
+/**
+ * @file BasicInformationSection.tsx
+ * @description Service creation form section for basic information. Provides:
+ * - Cascading category selection (main category -> sub-categories) via AccordionMultiSelectV2
+ * - Service name input
+ * - Tags management with search and create-new capability
+ * - Image and video upload with drag-and-drop, preview, and removal
+ * Validates file types (images: jpg/png/gif/webp, videos: mp4/avi/mov) and sizes.
+ * Uses react-hook-form context for form state management.
+ */
+
 import AccordionMultiSelectV2 from "@/components/shared/AccordionMultiSelectV2";
 import { FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";

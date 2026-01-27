@@ -1,3 +1,19 @@
+/**
+ * @file My Order Details Page - app/my-orders/[id]/page.tsx
+ * @route /my-orders/:id (dynamic segment = order ID)
+ * @description Buyer-side order detail page. Displays full order information: order status
+ *   timeline (placed, confirmed, shipped, delivered), product details with images,
+ *   other items in the order (OtherItemCard), shipping/billing addresses (MapPin),
+ *   payment info (CreditCard), order dates (Calendar), and action buttons (re-order,
+ *   download invoice, help center). Uses lucide icons throughout for visual status
+ *   indicators (Package, Clock, CheckCircle, Truck, XCircle, Star, etc.).
+ * @authentication Required; uses useOrderById for authenticated order data.
+ * @key_components OtherItemCard, Card, Badge, Skeleton, Button, Footer, Link, Image,
+ *   various lucide icons (Package, Clock, CheckCircle, Truck, etc.)
+ * @data_fetching
+ *   - useOrderById({ orderId }) for order details
+ * @state_management useParams for order ID; no complex local state.
+ */
 "use client";
 import React from "react";
 import {

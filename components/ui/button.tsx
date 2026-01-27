@@ -1,9 +1,30 @@
+/**
+ * @file Button - Shadcn UI button component.
+ * @description A polymorphic button with multiple visual variants and size options.
+ * Supports rendering as a child element via the asChild prop (Radix Slot pattern).
+ *
+ * @props
+ *   - variant {"default" | "destructive" | "outline" | "secondary" | "ghost" | "link"}
+ *     Visual style variant.
+ *   - size {"default" | "xs" | "sm" | "lg" | "icon"} - Button size preset.
+ *   - asChild {boolean} - When true, renders as the child element via Radix Slot.
+ *   - Plus all native button HTML attributes.
+ *
+ * @exports Button - The styled button component with forwarded ref.
+ * @exports buttonVariants - CVA variant configuration for external use.
+ *
+ * @dependencies
+ *   - @radix-ui/react-slot - Polymorphic slot for asChild rendering.
+ *   - class-variance-authority (cva) - Variant-based class generation.
+ *   - @/lib/utils (cn) - Tailwind class merging utility.
+ */
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
 
+/** CVA configuration defining all button variant and size combinations. */
 const buttonVariants = cva(
   "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50",
   {

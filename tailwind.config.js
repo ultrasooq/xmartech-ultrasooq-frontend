@@ -1,3 +1,29 @@
+/**
+ * @file tailwind.config.js — Tailwind CSS configuration for the Ultrasooq frontend.
+ *
+ * @intent
+ *   Configures Tailwind CSS with custom design tokens (colors, radii, animations)
+ *   that integrate with the Shadcn UI component library via CSS custom properties.
+ *
+ * @idea
+ *   All colors are defined as HSL CSS variables (e.g., `--primary`, `--background`)
+ *   set in the global CSS. This allows theme switching by changing the variable values.
+ *   The Radix UI accordion keyframes/animations are included for smooth expand/collapse.
+ *
+ * @usage
+ *   Loaded automatically by PostCSS/Tailwind during build. CSS classes like
+ *   `bg-primary`, `text-muted-foreground`, `rounded-lg` are available in JSX.
+ *
+ * @depends
+ *   - tailwindcss-animate — Plugin for animation utilities (animate-in, animate-out).
+ *   - CSS custom properties defined in global stylesheet (--primary, --border, etc.).
+ *
+ * @notes
+ *   - Content paths scan pages/, components/, and app/ directories for class usage.
+ *   - Color tokens follow the Shadcn UI convention: semantic names mapped to HSL vars.
+ *   - Border radius uses a `--radius` CSS variable for consistent rounding.
+ *   - Accordion animations are for Radix UI Accordion component height transitions.
+ */
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [

@@ -1,3 +1,33 @@
+/**
+ * @file ProfileCard.tsx
+ * @description Company profile card for the owner's profile page. Displays the
+ *   company's profile image, account name, online/offline status (computed from
+ *   working hours), business type tags, annual purchasing volume, company unique
+ *   ID, and an edit button.
+ *
+ * @props
+ *   - userDetails {any} - User/company profile object containing profilePicture,
+ *     accountName, userBranch array (with workingDays, startTime, endTime),
+ *     userBusinessType array, annualPurchasingVolume, and companyUniqueId.
+ *
+ * @behavior
+ *   - Computes online/offline status by:
+ *     1. Checking if today's day name is in any branch's parsed workingDays.
+ *     2. Checking if the current time falls within any branch's startTime-endTime.
+ *     3. Both conditions must be true for "Online" status.
+ *   - Memoizes the online status calculation for performance.
+ *   - Displays a green "Online" or red "Offline" badge.
+ *   - Edit icon links to `/profile` for profile editing.
+ *   - Renders business type tags and company info.
+ *   - Supports RTL layout via `langDir` from AuthContext.
+ *
+ * @dependencies
+ *   - getCurrentDay, getCurrentTime, parsedDays (helpers) - Time/day utilities.
+ *   - COMPANY_UNIQUE_ID (constant) - Label for company ID.
+ *   - cn (utility) - Conditional class name merging.
+ *   - useAuth (AuthContext) - Language direction, currency.
+ *   - useTranslations (next-intl) - i18n translations.
+ */
 import React, { useMemo } from "react";
 import Image from "next/image";
 import { getCurrentDay, getCurrentTime, parsedDays } from "@/utils/helper";

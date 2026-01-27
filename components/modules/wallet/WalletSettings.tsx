@@ -10,6 +10,17 @@ import { Switch } from "@/components/ui/switch";
 import { useWalletSettings, useUpdateWalletSettings } from "@/apis/queries/wallet.queries";
 import { IWalletSettings } from "@/utils/types/wallet.types";
 
+/**
+ * Wallet settings management component. Fetches current settings via
+ * {@link useWalletSettings} and allows the user to configure:
+ * - Auto-withdraw toggle and threshold.
+ * - Daily and monthly withdrawal limits.
+ * - Notification preferences.
+ *
+ * Saves changes via {@link useUpdateWalletSettings} mutation.
+ *
+ * @returns A form section with wallet setting controls.
+ */
 const WalletSettings: React.FC = () => {
   const t = useTranslations();
   const { currency } = useAuth();

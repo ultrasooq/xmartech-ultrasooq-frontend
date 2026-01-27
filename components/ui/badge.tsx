@@ -1,8 +1,26 @@
+/**
+ * @file Badge - Shadcn UI badge component.
+ * @description Renders a small inline label/tag with variant-based styling.
+ * Commonly used for status indicators, counts, and category tags.
+ *
+ * @props
+ *   - variant {"default" | "secondary" | "destructive" | "outline"} - Visual style.
+ *   - className {string} - Additional CSS classes.
+ *   - Plus all native HTMLDivElement attributes.
+ *
+ * @exports Badge - The styled badge component.
+ * @exports badgeVariants - CVA variant configuration for external use.
+ *
+ * @dependencies
+ *   - class-variance-authority (cva) - Variant-based class generation.
+ *   - @/lib/utils (cn) - Tailwind class merging utility.
+ */
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
 
+/** CVA configuration defining badge variant styles. */
 const badgeVariants = cva(
   "inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-hidden focus:ring-2 focus:ring-ring focus:ring-offset-2",
   {

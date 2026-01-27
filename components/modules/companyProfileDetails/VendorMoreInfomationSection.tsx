@@ -1,3 +1,26 @@
+/**
+ * @file VendorMoreInfomationSection.tsx
+ * @description Read-only "More Information" section for the public vendor profile
+ *   page. Displays vendor's year of establishment, number of employees, and "About
+ *   Us" content rendered via PlateEditor in read-only mode.
+ *
+ * @props
+ *   - vendor {any} - Vendor profile object containing yearOfEstablishment,
+ *     numOfEmployees, and aboutUs (rich text JSON string).
+ *
+ * @behavior
+ *   - Renders labeled rows for year of establishment and number of employees.
+ *   - Parses the `aboutUs` field using `handleDescriptionParse` helper and
+ *     renders the result via PlateEditor in read-only mode.
+ *   - No edit button (public view, unlike MoreInformationSection).
+ *   - Supports RTL layout via `langDir` from AuthContext.
+ *
+ * @dependencies
+ *   - PlateEditor (shared) - Rich text display component (read-only mode).
+ *   - handleDescriptionParse (helper) - Parses rich text JSON for display.
+ *   - useAuth (AuthContext) - Language direction.
+ *   - useTranslations (next-intl) - i18n translations.
+ */
 import React from "react";
 import PlateEditor from "@/components/shared/Plate/PlateEditor";
 import { handleDescriptionParse } from "@/utils/helper";

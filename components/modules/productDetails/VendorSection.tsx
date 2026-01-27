@@ -1,3 +1,31 @@
+/**
+ * @file VendorSection.tsx
+ * @description Full vendor profile section for the product detail page. Displays
+ *   the vendor's profile image, account name (linked to profile), email, trust
+ *   indicators, and business type tags. Fetches vendor data based on adminId.
+ *
+ * @props
+ *   - adminId {string} - The vendor's admin user ID for fetching details.
+ *
+ * @behavior
+ *   - Fetches vendor details via `useVendorDetails` query, enabled when adminId
+ *     is provided.
+ *   - Invalidates vendor-details cache on adminId change to ensure fresh data.
+ *   - Displays vendor profile image with fallback placeholder.
+ *   - Renders account name as a clickable link to the vendor's company profile
+ *     page (`/company-profile-details/{adminId}`).
+ *   - Shows email address with email icon.
+ *   - Displays trust indicator badges (verified, trusted, etc.).
+ *   - Renders business type tags as styled badges.
+ *   - Shows the company unique ID if available.
+ *
+ * @dependencies
+ *   - useVendorDetails (TanStack Query) - Vendor profile data.
+ *   - useQueryClient (TanStack React Query) - Cache invalidation.
+ *   - useAuth (AuthContext) - Language direction.
+ *   - useTranslations (next-intl) - i18n translations.
+ *   - COMPANY_UNIQUE_ID (constant) - Key for company ID display.
+ */
 import React, { useEffect } from "react";
 import Image from "next/image";
 import EmailIcon from "@/public/images/email.svg";

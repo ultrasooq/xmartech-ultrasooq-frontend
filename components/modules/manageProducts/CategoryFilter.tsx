@@ -10,6 +10,7 @@ import { useAuth } from "@/context/AuthContext";
 import { PRODUCT_CATEGORY_ID } from "@/utils/constants";
 import { Button } from "@/components/ui/button";
 
+/** Shape of a category node in the hierarchy tree. */
 type CategoryProps = {
   id: number;
   parentId: number;
@@ -18,12 +19,33 @@ type CategoryProps = {
   children: any;
 };
 
+/**
+ * Props for the {@link CategoryFilter} component.
+ *
+ * @property selectedCategoryIds - Array of currently selected category IDs.
+ * @property onCategoryChange    - Callback fired with the updated array
+ *   of selected category IDs.
+ * @property onClear             - Callback to clear all selected categories.
+ */
 type CategoryFilterProps = {
   selectedCategoryIds: number[];
   onCategoryChange: (categoryIds: number[]) => void;
   onClear: () => void;
 };
 
+/**
+ * Three-level cascading category filter for the manage products page.
+ *
+ * Fetches the main product categories, then dynamically loads
+ * sub-categories and sub-sub-categories as the user drills down.
+ * Each level supports checkbox multi-selection. Selecting a category
+ * at any level adds it (and optionally its children) to the
+ * `selectedCategoryIds` array, which is reported back via
+ * `onCategoryChange`.
+ *
+ * @param props - {@link CategoryFilterProps}
+ * @returns A collapsible category tree filter panel.
+ */
 const CategoryFilter: React.FC<CategoryFilterProps> = ({
   selectedCategoryIds,
   onCategoryChange,

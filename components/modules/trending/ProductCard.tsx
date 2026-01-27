@@ -1,3 +1,51 @@
+/**
+ * @file ProductCard.tsx (trending module)
+ * @description The most complex product card component (~1090 lines) in the
+ *   trending page. Full-featured card with discount logic, own-product detection,
+ *   buygroup countdown timer, variant selection, quantity controls, cart
+ *   management, wishlist toggle, and confirmation dialogs.
+ *
+ * @props
+ *   - list item fields from TrendingProduct type (id, productName, productImage,
+ *     productProductPrice, consumerDiscount/Type, vendorDiscount/Type, etc.)
+ *   - onWishlist, onAddToCart - Action callbacks.
+ *   - wishlistMap, cartMap - Maps for state lookup.
+ *   - haveAccessToken - Whether the user is authenticated.
+ *   - productVariants - Available variant options.
+ *
+ * @behavior
+ *   - Discount logic via `getApplicableDiscount`: determines correct discount
+ *     based on trade role, consumer type (CONSUMER/VENDOR/EVERYONE), and
+ *     `checkCategoryConnection` for vendor category matching.
+ *   - Own-product detection: hides cart controls when user owns the product.
+ *   - Buygroup countdown timer: live days:hours:minutes:seconds countdown for
+ *     BUYGROUP sell type with locale-aware Arabic numeral formatting.
+ *   - Variant type/value selection with dynamic button rendering.
+ *   - Quantity controls: +/- buttons with min (minSaleQuantity) / max (stock or
+ *     maxSaleQuantity) validation and toast warnings.
+ *   - Cart operations: add/remove/update via useUpdateCartWithLogin (auth),
+ *     useUpdateCartByDevice (anonymous), useUpdateCartWithService (services),
+ *     and useDeleteCartItem for removal.
+ *   - Confirm removal dialog when removing item from cart.
+ *   - Buygroup disclaimer dialog when adding buygroup items.
+ *   - Wishlist toggle button.
+ *   - Star rating display.
+ *   - Stock status indicator.
+ *   - Ask-for-price button linking to seller RFQ request.
+ *
+ * @dependencies
+ *   - useDeleteCartItem, useUpdateCartByDevice, useUpdateCartWithLogin,
+ *     useUpdateCartWithService (TanStack Query) - Cart mutations.
+ *   - useCartStore (Zustand) - RFQ cart state.
+ *   - useClickOutside (use-events) - Outside click detection for dropdowns.
+ *   - useVendorBusinessCategories (hook) - Vendor business categories.
+ *   - checkCategoryConnection (utility) - Category hierarchy matching.
+ *   - useCurrentAccount (TanStack Query) - Current account trade role.
+ *   - useAuth (AuthContext) - User, currency, language direction.
+ *   - useLocale (next-intl) - Locale for Arabic numeral formatting.
+ *   - Dialog (shadcn) - Confirmation and disclaimer modals.
+ *   - toast (shadcn) - Warning/error notifications.
+ */
 import { TrendingProduct } from "@/utils/types/common.types";
 import Image from "next/image";
 import Link from "next/link";

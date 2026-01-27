@@ -1,3 +1,25 @@
+/**
+ * @file Edit Product Page - app/product/[id]/page.tsx
+ * @route /product/:id (dynamic segment = product ID)
+ * @description Product editing page for sellers. Fetches the existing product by its
+ *   condition ID (useOneProductByProductCondition) and pre-fills a react-hook-form
+ *   (Zod-validated) with product name, brand, category, tags, condition, country,
+ *   warranty, images, pricing details (offerPrice, MRP, variants, discounts, stock),
+ *   and description/specifications. On submit, uploads new/changed media via
+ *   useUploadMultipleFile, then updates the product price via
+ *   useUpdateProductPriceByProductCondition. Redirects to /manage-products on success.
+ * @authentication Required; seller access expected. Uses PUREMOON_TOKEN_KEY cookie check.
+ * @key_components BasicInformationSection (edit variant), ProductDetailsSection,
+ *   DescriptionAndSpecificationSection, Form (react-hook-form + Zod), LoaderWithMessage,
+ *   Footer, Button
+ * @data_fetching
+ *   - useOneProductByProductCondition for existing product data
+ *   - useTags for tag autocomplete
+ *   - useUploadMultipleFile for media uploads
+ *   - useUpdateProductPriceByProductCondition mutation for saving changes
+ * @state_management react-hook-form with Zod resolver; local state for active tab,
+ *   image/video files, isSetUpPrice flag; useSearchParams for query-based context.
+ */
 "use client";
 import React, { useEffect, useMemo } from "react";
 import Image from "next/image";

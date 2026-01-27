@@ -1,3 +1,12 @@
+/**
+ * @file RfqProductCard.tsx (rfq module)
+ * @description Full product card for the RFQ product listing page. Displays product
+ * image, name, star ratings, "Ask for Price" label, quantity controls (input + buttons),
+ * edit/clone button, wishlist toggle, and add-to-cart / already-in-cart state.
+ * Responsive design with compact mobile layout and expanded desktop layout.
+ * Supports both user-owned products (edit) and others' products (edit & add as my RFQ).
+ */
+
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
@@ -11,6 +20,7 @@ import { FiEye } from "react-icons/fi";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 
+/** Props for the RFQ product listing card. */
 type RfqProductCardProps = {
   id: number;
   productType: "R" | "P";
@@ -43,6 +53,14 @@ type RfqProductCardProps = {
   shortDescription?: string;
 };
 
+/**
+ * RFQ product card with image, ratings, quantity controls, cart actions, and wishlist toggle.
+ * Computes average rating and renders filled/empty stars via memoised helpers.
+ * Supports data-image URLs and base64-encoded images in addition to HTTP URLs.
+ *
+ * @param props - {@link RfqProductCardProps}
+ * @returns A responsive product card for the RFQ listing grid.
+ */
 const RfqProductCard: React.FC<RfqProductCardProps> = ({
   id,
   productType,

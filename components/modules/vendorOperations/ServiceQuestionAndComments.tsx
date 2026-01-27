@@ -9,11 +9,30 @@ import { useMe } from "@/apis/queries/user.queries";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 
+/**
+ * Props for the {@link ServiceQuestionAndAnswers} component.
+ *
+ * @property serviceId      - The service ID to fetch questions for.
+ * @property serviceAddedBy - User ID of the service owner (used to
+ *   determine if the current user can answer questions).
+ */
 type QuestionAndAnswersProps = {
   serviceId: number;
   serviceAddedBy: number;
 };
 
+/**
+ * Displays a paginated list of questions and answers for a specific
+ * service within the vendor operations panel. The service owner can
+ * answer unanswered questions via a modal dialog containing
+ * {@link AnswerForm}.
+ *
+ * Fetches questions via {@link useServiceQuestions} with page/limit
+ * pagination and a user-type filter.
+ *
+ * @param props - {@link QuestionAndAnswersProps}
+ * @returns A Q&A section for a service.
+ */
 const ServiceQuestionAndAnswers: React.FC<QuestionAndAnswersProps> = ({
   serviceId,
   serviceAddedBy

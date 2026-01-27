@@ -19,6 +19,17 @@ import {
 } from "@/apis/queries/masters.queries";
 import { useMe } from "@/apis/queries/user.queries";
 
+/**
+ * Props for the {@link BulkEditSidebar} component.
+ *
+ * @property onBulkUpdate    - Callback invoked with the assembled bulk-edit
+ *   payload when the user submits.
+ * @property selectedProducts - Array of product-price IDs to bulk-edit.
+ * @property onUpdate         - Callback fired after a successful update
+ *   to trigger parent refresh.
+ * @property isLoading        - Whether the parent is currently processing
+ *   the update (disables the submit button).
+ */
 interface BulkEditSidebarProps {
   onBulkUpdate: (data: any) => void;
   selectedProducts: number[];
@@ -26,6 +37,27 @@ interface BulkEditSidebarProps {
   isLoading?: boolean;
 }
 
+/**
+ * Large sidebar form for bulk-editing multiple selected products on the
+ * manage products page. Provides controls for:
+ *
+ * - **Status** toggle (Active/Inactive, with confirmation dialog).
+ * - **Price fields** (product price, offer price, stock, delivery days).
+ * - **Sell type**, **consumer type**, and **product condition** selects.
+ * - **Location targeting** via cascading multi-select for countries,
+ *   states, and cities (fetched dynamically via
+ *   {@link useFetchStatesByCountry} and {@link useFetchCitiesByState}).
+ * - **Discount fields** (consumer and vendor discounts with type selects).
+ * - **Quantity limits** (min/max quantity, min/max customers, per-customer
+ *   limits).
+ * - **Ask for Price / Ask for Stock** toggles.
+ *
+ * Builds the final payload and sends it via a direct API call to
+ * `/api/products/bulkUpdate` with the user's auth token.
+ *
+ * @param props - {@link BulkEditSidebarProps}
+ * @returns A comprehensive sidebar form for bulk product editing.
+ */
 const BulkEditSidebar: React.FC<BulkEditSidebarProps> = ({
   onBulkUpdate,
   selectedProducts,

@@ -1,3 +1,22 @@
+/**
+ * @file RFQ Quotes Page - app/rfq-quotes/page.tsx
+ * @route /rfq-quotes
+ * @description Buyer-side RFQ (Request for Quotation) quotes listing. Shows all RFQ quotes
+ *   received by the buyer (useAllRfqQuotesByBuyerId) with expandable rows showing per-seller
+ *   quotes (useAllRfqQuotesUsersByBuyerId). Each quote card displays product image, name,
+ *   quantity, price range, seller info, and expiry date. Supports quote deletion
+ *   (useDeleteRfqQuote) via a DeleteContent confirmation modal. Includes pagination.
+ *   Requires PERMISSION_RFQ_QUOTES; redirects to /home if denied.
+ * @authentication Required; permission-gated via checkPermission(PERMISSION_RFQ_QUOTES).
+ * @key_components Pagination, Dialog (DeleteContent modal), DeleteContent, Skeleton,
+ *   Footer, Image, Link, IoMdArrowDown/IoMdArrowUp icons
+ * @data_fetching
+ *   - useAllRfqQuotesByBuyerId for RFQ quotes list
+ *   - useAllRfqQuotesUsersByBuyerId for per-quote seller details
+ *   - useDeleteRfqQuote mutation for quote deletion
+ * @state_management Local state for page, isDeleteModalOpen, selectedProductId,
+ *   expanded row state.
+ */
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
 import Pagination from "@/components/shared/Pagination";

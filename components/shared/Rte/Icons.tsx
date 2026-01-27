@@ -1,3 +1,24 @@
+/**
+ * @file Rte/Icons - Rich text editor toolbar SVG icon components.
+ * @description Provides a set of lightweight SVG icon components used in the
+ * rich text editor toolbar. Each icon accepts size and color props with
+ * sensible defaults (16px, currentColor). Icons are rendered as inline SVGs
+ * with stroke-based rendering.
+ *
+ * @exports Bold - Bold text formatting icon (B).
+ * @exports Underline - Underline text formatting icon (U).
+ * @exports Italic - Italic text formatting icon (I).
+ * @exports Link - Hyperlink chain icon.
+ * @exports Code - Code brackets icon (</>).
+ * @exports Strikethrough - Strikethrough text formatting icon (S).
+ * @exports RotateLeft - Undo/rotate-left arrow icon.
+ * @exports RotateRight - Redo/rotate-right arrow icon.
+ * @exports X - Close/dismiss cross icon.
+ *
+ * @props (all icons share the same props)
+ *   - size {number} - Icon width and height in pixels (default 16).
+ *   - color {string} - Stroke color (default "currentColor").
+ */
 import React from "react";
 
 export const Bold = ({ size = 16, color = "currentColor" }) => (

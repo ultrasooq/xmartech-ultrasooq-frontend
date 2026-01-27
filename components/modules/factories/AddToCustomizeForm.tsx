@@ -30,6 +30,16 @@ import ReactPlayer from "react-player";
 import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
 
+/**
+ * Props for the {@link AddToCustomizeForm} dialog component.
+ *
+ * @property selectedProductId - ID of the factory product to customise.
+ * @property onClose           - Callback to close the dialog.
+ * @property onAddToFactory    - Optional callback after adding customised
+ *   product to the factories cart.
+ * @property onAddToCart       - Optional callback after adding to the
+ *   regular cart.
+ */
 type AddToCustomizeFormProps = {
   selectedProductId?: number;
   onClose: () => void;
@@ -37,6 +47,14 @@ type AddToCustomizeFormProps = {
   onAddToCart?: () => void;
 };
 
+/**
+ * Builds the Zod validation schema for the customise form.
+ * Validates price range (from < to), quantity, and optional note
+ * with localised error messages.
+ *
+ * @param t - Translation function from `next-intl`.
+ * @returns A Zod schema with cross-field refinement for price range.
+ */
 const addFormSchema = (t: any) => {
   return z
     .object({
@@ -80,6 +98,13 @@ const addFormSchema = (t: any) => {
     );
 };
 
+/**
+ * Simplified Zod schema for editing an existing customised product.
+ * Only validates the note and image list (price is not re-editable).
+ *
+ * @param t - Translation function from `next-intl`.
+ * @returns A Zod object schema for the edit form.
+ */
 const editFormSchema = (t: any) => {
   return z.object({
     note: z
@@ -93,18 +118,39 @@ const editFormSchema = (t: any) => {
   });
 };
 
+/** Default values for the add-customisation form. */
 const addDefaultValues = {
   note: "",
   customizeproductImageList: undefined,
   productImages: [] as { path: File; id: string }[],
 };
 
+/** Default values for the edit-customisation form. */
 const editDefaultValues = {
   note: "",
   customizeproductImageList: undefined,
   productImages: [] as { path: File; id: string }[],
 };
 
+/**
+ * Dialog form for customising a factory product. Operates in two modes:
+ *
+ * **Add mode** (no existing customisation): Shows price range inputs
+ * (from/to), note textarea, and image/video uploader (max 500 MB per
+ * file). On submit, calls {@link useUpdateForCustomize} then
+ * auto-adds the result to the factories cart via
+ * {@link useUpdateFactoriesCartWithLogin}.
+ *
+ * **Edit mode** (existing customisation): Shows only the note and
+ * image uploader. Pre-populates from the existing product data fetched
+ * via {@link useRfqProductById}.
+ *
+ * Supports image/video preview with inline edit and remove, validated
+ * file types and sizes, and UUID-tracked upload entries.
+ *
+ * @param props - {@link AddToCustomizeFormProps}
+ * @returns A dialog form with customisation controls.
+ */
 const AddToCustomizeForm: React.FC<AddToCustomizeFormProps> = ({
   selectedProductId,
   onClose,

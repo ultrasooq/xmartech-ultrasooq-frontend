@@ -1,3 +1,24 @@
+/**
+ * @file Edit Company Branch Page - app/company-profile/edit-branch/page.tsx
+ * @route /company-profile/edit-branch?branchId=<id>
+ * @description Form page for editing an existing company branch. Loads branch data via
+ *   useFetchCompanyBranchById and pre-fills the form with branch name, phone, location,
+ *   address, working hours, logo, categories, and tags. Uses Zod validation. On submit,
+ *   uploads updated logo (useUploadFile), then calls useUpdateCompanyBranch to persist
+ *   changes, and redirects to /company-profile-details.
+ * @authentication Required; uses authenticated branch fetch and update queries.
+ * @key_components Form (react-hook-form + Zod), AccordionMultiSelectV2, MultiSelectCategory,
+ *   ControlledPhoneInput, ControlledTextInput, Checkbox, Switch, Label, Button,
+ *   ReactSelect
+ * @data_fetching
+ *   - useFetchCompanyBranchById for existing branch data
+ *   - useUpdateCompanyBranch mutation for branch update
+ *   - useTags for tag autocomplete
+ *   - useCountries for cascading location selects
+ *   - useUploadFile for logo upload
+ * @state_management react-hook-form with Zod resolver; local state for image file,
+ *   working hours, selected categories; useSearchParams for branchId.
+ */
 "use client";
 import { Button } from "@/components/ui/button";
 import React, { useEffect, useMemo, useState } from "react";

@@ -1,3 +1,33 @@
+/**
+ * @file RelatedServices.tsx
+ * @description Related services grid for a product detail page. Fetches and
+ *   displays services related to the product's category, with pagination and
+ *   an "Add to Cart" modal for service purchases.
+ *
+ * @props
+ *   - productId {number} - The current product's ID.
+ *   - productPriceId {number} - The product price ID for cart association.
+ *   - productCategoryId {string} - Category ID to fetch related services.
+ *   - cartList {any[]} - Current cart items for checking service cart state.
+ *   - isChildCart {boolean} - Whether this is a child cart context.
+ *   - productCartId {number} - Parent product cart ID for service attachment.
+ *
+ * @behavior
+ *   - Fetches services via `useGetServicesByProductCategory` with pagination
+ *     (6 items per page).
+ *   - Renders ServiceCard components in a responsive grid.
+ *   - Opens `AddServiceToCartModal` dialog when a service is selected for
+ *     cart addition.
+ *   - Memoizes service data transformation for the grid display.
+ *   - Includes a Pagination component for navigating between pages.
+ *   - Returns null when the product does not belong to the service category.
+ *
+ * @dependencies
+ *   - useGetServicesByProductCategory (TanStack Query) - Related services data.
+ *   - ServiceCard - Service card renderer.
+ *   - AddServiceToCartModal - Modal for adding services to cart.
+ *   - Pagination (shared) - Page navigation component.
+ */
 import React, { useMemo, useState } from "react";
 import { useGetServicesByProductCategory } from "@/apis/queries/services.queries";
 import ServiceCard from "./ServiceCard";

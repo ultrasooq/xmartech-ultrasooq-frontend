@@ -1,3 +1,13 @@
+/**
+ * @file TermsContent - Static terms and conditions content component.
+ * @description Renders the full Ultrasooq terms and conditions text as
+ * statically-defined JSX. Covers cookies policy, license restrictions,
+ * hyperlinking rules, content liability, reservation of rights,
+ * link removal policy, and legal disclaimer sections. No props accepted;
+ * content is hardcoded for the Ultrasooq marketplace.
+ *
+ * @exports default TermsContent - The terms and conditions content fragment.
+ */
 import React from "react";
 
 const TermsContent = () => {

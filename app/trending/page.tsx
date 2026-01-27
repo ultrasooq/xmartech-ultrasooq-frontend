@@ -1,3 +1,31 @@
+/**
+ * @file Trending Products Page - app/trending/page.tsx
+ * @route /trending (also accepts query params: ?brandIds, ?sort, ?menuId, ?categoryId, etc.)
+ * @description Product browsing / listing page with rich filtering capabilities. Features:
+ *   (1) Sidebar filters: brand checkboxes (useBrands), price range slider (ReactSlider),
+ *       and search-within-results input.
+ *   (2) Tabs for menu types: Store, Buy Group, Factories, Dropship.
+ *   (3) Grid/List view toggle with ProductCard (grid) or ProductTable (list) rendering.
+ *   (4) Sorting dropdown (price low/high, newest, rating).
+ *   (5) Pagination (Pagination component).
+ *   (6) Add-to-cart (useUpdateCartWithLogin / useUpdateCartByDevice) with variant modal
+ *       (useProductVariant) and wishlist toggling (useAddToWishList / useDeleteFromWishList).
+ *   Products are fetched via useAllProducts (store/buygroup/factories tabs) and
+ *   useDropshipProducts (dropship tab).
+ * @authentication Optional; supports guest and authenticated users via PUREMOON_TOKEN_KEY.
+ * @key_components ProductCard, ProductTable, GridIcon, ListIcon, FilterMenuIcon,
+ *   Accordion (filter sections), ReactSlider, Tabs, Select, Pagination, Footer
+ * @data_fetching
+ *   - useAllProducts for store/buygroup/factory product listings
+ *   - useDropshipProducts for dropship products
+ *   - useBrands for brand filter options
+ *   - useProductVariant for variant selection modal
+ *   - useCartListByDevice / useCartListByUserId for cart
+ *   - useAddToWishList / useDeleteFromWishList for wishlist
+ *   - useMe for user identity
+ * @state_management Local state for filters (brandIds, priceRange, sort, search),
+ *   pagination (page, limit), view mode (gridView), active tab, variant modal state.
+ */
 "use client";
 import React, { useEffect, useMemo, useRef, useState, use } from "react";
 import { useSearchParams } from "next/navigation";

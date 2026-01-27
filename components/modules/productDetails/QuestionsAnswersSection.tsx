@@ -1,3 +1,33 @@
+/**
+ * @file QuestionsAnswersSection.tsx
+ * @description Full Q&A section for a product detail page. Displays a list of
+ *   questions with their answers, supports sort order toggling, and provides a
+ *   "Post a Question" modal for authenticated users.
+ *
+ * @props
+ *   - hasAccessToken {boolean} - Whether the user is authenticated (controls
+ *     visibility of the "Ask a Question" button).
+ *   - productId {string} - The product ID to fetch questions for.
+ *
+ * @behavior
+ *   - Fetches questions via `useQuestions` query with page 1 and configurable
+ *     sort type (newest/oldest).
+ *   - Maps `productQuestionAnswerDetail` from each question into the display
+ *     format expected by QuestionCard (answer text, author info).
+ *   - Renders QuestionCard components in a scrollable list with dividers.
+ *   - Sort buttons toggle between "newest" and "oldest" ordering.
+ *   - "Ask a Question" button opens a Dialog containing QuestionForm.
+ *   - Shows empty state when no questions exist.
+ *   - Authenticated users only see the ask button (guarded by hasAccessToken).
+ *
+ * @dependencies
+ *   - useQuestions (TanStack Query) - Fetches product questions.
+ *   - QuestionCard - Renders individual Q&A entries.
+ *   - QuestionForm - Dialog form for posting new questions.
+ *   - Dialog, DialogContent (shadcn) - Modal container.
+ *   - useTranslations (next-intl) - i18n translations.
+ *   - useAuth (AuthContext) - Language direction.
+ */
 import React, { useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";

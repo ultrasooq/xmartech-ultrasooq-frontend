@@ -1,3 +1,12 @@
+/**
+ * @file ProductDescriptionCard.tsx
+ * @description Right-side product detail panel on the RFQ product detail page.
+ * Displays product name, brand, "Sold By" link (to company/freelancer profile),
+ * star rating average, "Ask for Price" action button, short descriptions list,
+ * quantity increment/decrement controls, secure payment icons, and metadata
+ * (SKU, categories, tags). Includes skeleton loading states.
+ */
+
 import React, { useEffect, useMemo, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
@@ -13,6 +22,7 @@ import { useTranslations } from "next-intl";
 import { toast } from "@/components/ui/use-toast";
 import { useAuth } from "@/context/AuthContext";
 
+/** Props for the RFQ product description panel. */
 type ProductDescriptionCardProps = {
   productId: string;
   productName: string;
@@ -44,6 +54,15 @@ type ProductDescriptionCardProps = {
   sellerId?: number;
 };
 
+/**
+ * RFQ product description card component. Computes average rating from review
+ * array, renders filled/empty stars, and provides quantity controls with
+ * "Ask for Price" as the primary CTA. Links seller name to the appropriate
+ * profile page based on trade role (COMPANY or FREELANCER).
+ *
+ * @param props - {@link ProductDescriptionCardProps}
+ * @returns A detail panel with product info, ratings, pricing CTA, and metadata.
+ */
 const ProductDescriptionCard: React.FC<ProductDescriptionCardProps> = ({
   productId,
   productName,

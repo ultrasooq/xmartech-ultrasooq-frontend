@@ -1,3 +1,42 @@
+/**
+ * @file SellerChat.tsx
+ * @description Seller-side RFQ chat component. Provides a full-featured chat
+ *   interface for sellers to communicate with buyers about RFQ (Request for
+ *   Quotation) orders. Supports both grid and column layout modes with
+ *   multiple view states (rfqRequests list, customers list, detail/chat view).
+ *
+ * @props
+ *   - layoutMode {"grid" | "column"} - Layout mode for the chat interface.
+ *   - viewMode {"rfqRequests" | "customers" | "details"} - Active view panel.
+ *   - selectedRfqId {number | null} - Currently selected RFQ quote ID.
+ *   - selectedCustomerId {number | null} - Currently selected customer (buyer) ID.
+ *   - onSelectRfq {(rfq, rfqGroup?) => void} - Callback when an RFQ is selected.
+ *   - onSelectCustomer {(customer) => void} - Callback when a customer is selected.
+ *
+ * @behavior
+ *   - Queries seller's RFQ quote users via `useAllRfqQuotesUsersBySellerId`.
+ *   - Manages real-time messaging through SocketContext: creates private rooms,
+ *     sends text/attachment messages, receives new messages and attachments.
+ *   - Supports emoji picker (EmojiPicker) and file attachment uploads.
+ *   - Opens `ProductSuggestionModal` for suggesting alternative products.
+ *   - Displays `OfferPriceCard` for the current offer, `RequestProductCard` for
+ *     each requested product, and `SellerChatHistory` for message history.
+ *   - Handles RFQ hiding via `useHideRfqRequest` mutation.
+ *   - Supports "Place Order" flow by setting order items in `useOrderStore` and
+ *     navigating to the order page.
+ *   - Renders loading skeletons, empty states, and back-navigation for mobile.
+ *
+ * @dependencies
+ *   - useAllRfqQuotesUsersBySellerId, useHideRfqRequest (TanStack Query) - RFQ data.
+ *   - useSocket (SocketContext) - Real-time messaging (sendMessage, cratePrivateRoom,
+ *     newMessage, newRoom, newAttachment, sendAttachmentMessage).
+ *   - findRoomId, getChatHistory, updateUnreadMessages, uploadAttachment (API requests).
+ *   - useAuth (AuthContext) - Language direction, currency.
+ *   - useOrderStore (Zustand) - Order item storage for checkout flow.
+ *   - useTranslations (next-intl) - i18n.
+ *   - moment - Date formatting.
+ *   - validator - URL validation.
+ */
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Skeleton } from "@/components/ui/skeleton";

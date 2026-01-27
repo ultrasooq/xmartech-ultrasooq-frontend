@@ -9,6 +9,22 @@ import { useToast } from "@/components/ui/use-toast";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 
+/**
+ * Props for the {@link FactoriesCartMenuCard} component.
+ *
+ * @property factoriesCartId      - Cart entry ID for the factories cart.
+ * @property customizeProductId   - ID of the customized product variant.
+ * @property productId            - Parent product ID.
+ * @property productName          - Display name.
+ * @property productQuantity      - Current quantity in the cart.
+ * @property productImages        - Array of original product image objects.
+ * @property customizeProductImages - Array of customized product images.
+ * @property onRemove             - Callback to remove this item from the
+ *   factories cart.
+ * @property fromPrice            - Lower bound of the price range.
+ * @property toPrice              - Upper bound of the price range.
+ * @property note                 - Customization note text.
+ */
 type FactoriesCartMenuCardProps = {
   factoriesCartId: number;
   customizeProductId: number;
@@ -27,6 +43,16 @@ type FactoriesCartMenuCardProps = {
   note: string;
 };
 
+/**
+ * Compact cart menu card for a factory product item. Displays the
+ * customized product image (or original product image fallback),
+ * product name, quantity controls with +/- buttons, and a remove button.
+ *
+ * Quantity updates are sent via {@link useUpdateFactoriesCartWithLogin}.
+ *
+ * @param props - {@link FactoriesCartMenuCardProps}
+ * @returns A cart item row for the factories cart sidebar.
+ */
 const FactoriesCartMenuCard: React.FC<FactoriesCartMenuCardProps> = ({
   factoriesCartId,
   customizeProductId,

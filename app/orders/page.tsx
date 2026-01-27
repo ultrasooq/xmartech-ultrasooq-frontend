@@ -1,3 +1,23 @@
+/**
+ * @file Complete Order / Payment Page - app/orders/page.tsx
+ * @route /complete-order (note: mapped via Next.js routing, the folder may be "orders")
+ * @description Final order placement page with Stripe payment integration. Reads order
+ *   details from useOrderStore (Zustand), creates a payment intent via useCreatePaymentIntent,
+ *   and renders a PaymentForm within a Stripe Elements provider. On successful payment
+ *   confirmation, calls useCreateOrder (authenticated) or useCreateOrderUnAuth (guest)
+ *   to finalize the order, then navigates to /my-orders. Also supports RFQ-based orders
+ *   by passing rfq-specific fields (rfqQuotesUserId, rfqQuotesId, sellerId, etc.).
+ * @authentication Supports both authenticated (PUREMOON_TOKEN_KEY cookie) and guest
+ *   checkout (useCreateOrderUnAuth with deviceId). Stripe public key is loaded at module level.
+ * @key_components PaymentForm, Elements (Stripe), CardElement (Stripe), LoaderWithMessage
+ * @data_fetching
+ *   - useCreatePaymentIntent mutation for Stripe payment intent
+ *   - useCreateOrder mutation for authenticated order creation
+ *   - useCreateOrderUnAuth mutation for guest order creation
+ *   - useCartListByDevice / useCartListByUserId for cart reference
+ * @state_management useOrderStore (Zustand) for order data and total from checkout page;
+ *   Stripe hooks (useStripe, useElements) for payment processing.
+ */
 "use client";
 import React, { useState } from "react";
 import {

@@ -1,3 +1,13 @@
+/**
+ * @file ProductCard.tsx (checkout)
+ * @description Checkout cart line item for a product. Calculates the applicable price
+ * based on the current user's trade role (BUYER vs VENDOR), the product's consumer type
+ * (CONSUMER / VENDOR / EVERYONE), category connection matching, and discount type
+ * (PERCENTAGE / FLAT / FIXED / AMOUNT). Displays product image, name, quantity controls,
+ * remove/wishlist actions, and the computed total price. Shows an error banner for
+ * invalid or location-restricted products.
+ */
+
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import React, { useEffect, useMemo, useState } from "react";
@@ -11,6 +21,7 @@ import { useCurrentAccount } from "@/apis/queries/auth.queries";
 import { useVendorBusinessCategories } from "@/hooks/useVendorBusinessCategories";
 import { checkCategoryConnection } from "@/utils/categoryConnection";
 
+/** Props for the checkout ProductCard component. */
 type ProductCardProps = {
   cartId: number;
   productId: number;
@@ -36,6 +47,21 @@ type ProductCardProps = {
   cannotBuy?: boolean;
 };
 
+/**
+ * Checkout product card component with complex discount calculation logic.
+ * Computes the `applicablePrice` using a memoised function that factors in:
+ * - The user's current trade role (BUYER or VENDOR/MEMBER/COMPANY/FREELANCER)
+ * - The product's `consumerType` (CONSUMER, VENDOR/VENDORS, EVERYONE)
+ * - Category connection matching via `checkCategoryConnection` for vendor discounts
+ * - Discount types: PERCENTAGE (price * discount / 100), FLAT/FIXED/AMOUNT (flat subtraction)
+ *
+ * Renders product image, name, quantity controls, remove/wishlist buttons,
+ * and the computed total price (quantity * applicablePrice). Shows an error
+ * banner when the product is unavailable for the user.
+ *
+ * @param props - {@link ProductCardProps}
+ * @returns A product cart line item with discount-aware pricing.
+ */
 const ProductCard: React.FC<ProductCardProps> = ({
   cartId,
   productId,

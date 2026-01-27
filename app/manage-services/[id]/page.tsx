@@ -1,3 +1,27 @@
+/**
+ * @file Service Detail Page - app/manage-services/[id]/page.tsx
+ * @route /manage-services/:id (dynamic segment = service ID)
+ * @description Service detail page showing full service information: images (ProductImagesCard),
+ *   description (PlateEditor), vendor info (VendorSection), tabs for Description / Reviews /
+ *   Q&A, related products (RelatedProductsSection), and same-brand products (SameBrandSection).
+ *   Supports add-to-cart with variant selection, wishlist toggling, and a mini cart sidebar
+ *   overlay. Similar in structure to the product detail page (trending/[id]).
+ * @authentication Optional; supports guest (device-based) and authenticated flows.
+ * @key_components ProductImagesCard, ProductDescriptionCard, VendorSection, ReviewSection,
+ *   QuestionsAnswersSection, RelatedProductsSection, SameBrandSection, PlateEditor,
+ *   ProductCard, Tabs, Dialog, Skeleton, Footer
+ * @data_fetching
+ *   - useProductById for service/product details
+ *   - useOneWithProductPrice for pricing data
+ *   - useProductVariant for variant attributes
+ *   - useCartListByDevice / useCartListByUserId for cart state
+ *   - useUpdateCartWithLogin / useUpdateCartByDevice for cart operations
+ *   - useDeleteCartItem for item removal
+ *   - useAddToWishList / useDeleteFromWishList for wishlist
+ *   - useMe for user identity
+ * @state_management Local state for cart visibility, variant selection, quantity,
+ *   haveAccessToken, confirm dialog.
+ */
 "use client";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {

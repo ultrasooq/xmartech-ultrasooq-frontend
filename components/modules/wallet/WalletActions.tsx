@@ -19,10 +19,30 @@ declare global {
   }
 }
 
+/**
+ * Props for the {@link WalletActions} component.
+ *
+ * @property wallet - The current wallet data object, or `null`.
+ */
 interface WalletActionsProps {
   wallet: IWallet | null;
 }
 
+/**
+ * Provides deposit, withdrawal, and transfer actions for the wallet.
+ *
+ * Supports:
+ * - **Deposit** via AmwalPay SmartBox integration (loads external script
+ *   and opens the payment widget).
+ * - **Withdrawal** to the user's configured payout method.
+ * - **Transfer** to another user by ID.
+ *
+ * Each action reveals a form section with amount, optional description,
+ * and submit button. Uses React Query mutations for all operations.
+ *
+ * @param props - {@link WalletActionsProps}
+ * @returns A section with deposit/withdraw/transfer action buttons and forms.
+ */
 const WalletActions: React.FC<WalletActionsProps> = ({ wallet }) => {
   const t = useTranslations();
   const { currency, langDir } = useAuth();

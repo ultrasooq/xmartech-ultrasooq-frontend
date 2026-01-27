@@ -1,3 +1,26 @@
+/**
+ * @file CounterTextInputField.tsx
+ * @description A numeric input field with increment (+) and decrement (-) buttons.
+ *   Integrates with React Hook Form via `useFormContext` to read and update form
+ *   values. Commonly used for quantity, stock, and other numeric product fields.
+ *
+ * @props
+ *   - name {string} - The React Hook Form field name to control.
+ *   - label {string} - Optional label displayed above the input.
+ *   - placeholder {string} - Placeholder text for the input.
+ *   - errorMessage {string} - Optional custom error message text.
+ *
+ * @behavior
+ *   - Maintains a local counter state synced with the form value via `watch`.
+ *   - Increment/decrement buttons adjust the counter and update the form field.
+ *   - Decrement is disabled when the counter reaches 0.
+ *   - Renders within React Hook Form's FormField/FormItem/FormControl pattern.
+ *   - Supports RTL layout via `langDir` from AuthContext.
+ *
+ * @dependencies
+ *   - useFormContext (React Hook Form) - Form state and field control.
+ *   - useAuth (AuthContext) - Language direction (RTL support).
+ */
 import React, { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import {

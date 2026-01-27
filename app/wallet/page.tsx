@@ -1,3 +1,19 @@
+/**
+ * @file Wallet Page - app/wallet/page.tsx
+ * @route /wallet
+ * @description User wallet dashboard with three tabs: Overview (recent 5 transactions),
+ *   Transactions (full paginated transaction history), and Settings (wallet configuration).
+ *   Displays available balance (balance - frozenBalance) and frozen balance cards.
+ *   Shows access-denied screen for unauthenticated users, loading skeleton during fetch,
+ *   and error retry screen on failure.
+ * @authentication Required; checks user from AuthContext. Shows login prompt if not authenticated.
+ * @key_components WalletBalanceCard, WalletActions, TransactionHistory, WalletSettings
+ * @data_fetching
+ *   - useWalletBalance for wallet balance data
+ *   - useWalletTransactions({ page, limit }) for paginated transaction list
+ * @state_management useWalletStore (Zustand) for cross-component wallet/transaction state;
+ *   local state for activeTab ("overview" | "transactions" | "settings") and page number.
+ */
 "use client";
 import React, { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";

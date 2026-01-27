@@ -1,3 +1,21 @@
+/**
+ * @file Role Settings Page - app/role-settings/page.tsx
+ * @route /role-settings
+ * @description Role-based access control management page. Displays a paginated table of
+ *   user roles with name, description, and actions (Edit permissions, Copy role, Delete).
+ *   "Add Role" button opens AddToRoleForm modal; clicking a role's permissions link
+ *   opens PermissionForm modal. Supports role copying (useCopyUserRole) and deletion
+ *   (useDeleteMemberRole) with toast notifications.
+ * @authentication Required; uses auth token for role CRUD operations.
+ * @key_components Pagination, Dialog (AddToRoleForm, PermissionForm modals), AddToRoleForm,
+ *   PermissionForm, IoMdAdd icon, Copy/Delete (lucide), TrashIcon, Button
+ * @data_fetching
+ *   - useUserRolesWithPagination({ page, limit }) for paginated role list
+ *   - useDeleteMemberRole mutation for role deletion
+ *   - useCopyUserRole mutation for role duplication
+ * @state_management Local state for page, isAddToRoleModalOpen, isAddToPermissionModalOpen,
+ *   selectedRoleId, selectedRoleInfo.
+ */
 "use client"; // Add this at the top
 import React, { useMemo, useRef, useState } from "react";
 import { IoMdAdd } from "react-icons/io";

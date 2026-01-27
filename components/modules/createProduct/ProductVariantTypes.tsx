@@ -1,3 +1,27 @@
+/**
+ * @file ProductVariantTypes.tsx
+ * @description Variant type manager component for product creation. Manages a
+ *   dynamic list of variant types (e.g., "Color", "Size"), each containing nested
+ *   ProductVariants sub-components for defining variant values with optional images.
+ *
+ * @props None (uses React Hook Form context via `useFormContext`)
+ *
+ * @behavior
+ *   - Manages `productVariants` as a dynamic field array of variant type objects,
+ *     each with a `type` name and a nested `variants` array.
+ *   - "Add Variant Type" button appends a new variant type with one empty value.
+ *   - Each variant type entry shows a ControlledTextInput for the type name and
+ *     a trash icon to remove the entire type with all its values.
+ *   - Embeds ProductVariants component for each type to manage its variant values.
+ *   - Supports RTL layout via `langDir` from AuthContext.
+ *
+ * @dependencies
+ *   - useFormContext, useFieldArray (React Hook Form) - Form state and dynamic fields.
+ *   - ProductVariants - Nested variant value editor component.
+ *   - ControlledTextInput - Text input for variant type names.
+ *   - useTranslations (next-intl) - i18n translations.
+ *   - useAuth (AuthContext) - Language direction.
+ */
 import React from "react";
 import Image from "next/image";
 import { useFieldArray, useFormContext } from "react-hook-form";

@@ -1,3 +1,37 @@
+/**
+ * @file RelatedProductsSection.tsx
+ * @description Related products carousel section for the product detail page.
+ *   Fetches and displays products related to the current product in a horizontal
+ *   scrollable carousel with full cart and wishlist management.
+ *
+ * @props
+ *   - productDetails {any} - The current product details (used to determine
+ *     related product query parameters and exclude current product).
+ *   - isLoading {boolean} - Loading state from parent.
+ *   - adminId {string} - Admin/seller ID for the current product.
+ *
+ * @behavior
+ *   - Fetches related products via `useRelatedProducts` query.
+ *   - Filters out expired buygroup products (endDate + endTime in the past).
+ *   - Renders products in a react-slick Slider carousel with responsive breakpoints.
+ *   - Manages wishlist toggling via `useAddToWishList` / `useDeleteFromWishList`
+ *     mutations, with cache invalidation on success.
+ *   - Manages cart operations via `useUpdateCartWithLogin` (authenticated) or
+ *     `useUpdateCartByDevice` (anonymous, using device ID from cookies).
+ *   - Token presence detected via `getCookie(PUREMOON_TOKEN_KEY)`.
+ *   - Each product rendered as a `ProductCard` with discount data, ratings,
+ *     wishlist state, and action handlers.
+ *
+ * @dependencies
+ *   - useRelatedProducts (TanStack Query) - Related products data.
+ *   - useMe (TanStack Query) - Current user info.
+ *   - useAddToWishList, useDeleteFromWishList (TanStack Query) - Wishlist mutations.
+ *   - useUpdateCartWithLogin, useUpdateCartByDevice (TanStack Query) - Cart mutations.
+ *   - ProductCard - Product card renderer.
+ *   - Slider (react-slick) - Carousel component.
+ *   - useAuth (AuthContext) - Currency, language direction.
+ *   - stripHTML, getOrCreateDeviceId (helpers) - Utilities.
+ */
 import React, { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import Slider from "react-slick";
 import ProductCard from "./ProductCard";

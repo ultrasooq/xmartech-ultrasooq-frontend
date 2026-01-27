@@ -1,3 +1,28 @@
+/**
+ * @file Footer - Site-wide footer with links, newsletter, and help center.
+ * @description Renders the Ultrasooq marketplace footer with brand description,
+ * social media icons (Facebook, Twitter, Instagram, LinkedIn), quick links
+ * (policy, terms, shipping, returns, FAQs), company links (about, affiliate,
+ * career, contact), business links (press, checkout, account, shop), and a
+ * newsletter email subscription form. Includes three Dialog modals: Terms of
+ * Use (TermsContent), Privacy Policy (PolicyContent), and Help Center with
+ * buyer/supplier WhatsApp contact options. Footer bottom bar shows copyright,
+ * payment methods image, and help center button.
+ *
+ * @dependencies
+ *   - @/components/ui/dialog (Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle) - Modals.
+ *   - ./TermsContent - Terms and conditions content component.
+ *   - ./PolicyContent - Privacy policy content component.
+ *   - @/components/ui/button (Button) - Link and action buttons.
+ *   - next/image - Payment methods and loader images.
+ *   - react-hook-form (useForm) / zod - Newsletter email validation.
+ *   - @/utils/constants (EMAIL_REGEX_LOWERCASE, WHATSAPP_SUPPORT_NUMBER) - Validation and config.
+ *   - ./Forms/ControlledTextInput - Email input field.
+ *   - @/components/ui/form (Form) - Form wrapper.
+ *   - next-intl (useTranslations) - Internationalization.
+ *   - @/context/AuthContext (useAuth) - Language direction context.
+ *   - lucide-react (MessageCircle, User, Building2) - Help center icons.
+ */
 "use client";
 import React, { useState } from "react";
 import {

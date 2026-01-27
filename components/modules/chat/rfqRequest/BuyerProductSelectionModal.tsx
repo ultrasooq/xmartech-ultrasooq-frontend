@@ -1,3 +1,34 @@
+/**
+ * @file BuyerProductSelectionModal.tsx
+ * @description A modal dialog for buyers to review and select vendor-suggested
+ *   alternative products during an RFQ negotiation. The buyer can check/uncheck
+ *   suggested products and confirm their selection.
+ *
+ * @props
+ *   - isOpen {boolean} - Controls modal visibility.
+ *   - onClose {() => void} - Callback to close the modal.
+ *   - onSelectProducts {(suggestionIds: number[]) => void} - Callback with the
+ *     array of selected suggestion IDs when the buyer confirms.
+ *   - suggestedProducts {Array<...>} - Array of vendor-suggested products, each
+ *     containing id, suggestedProductId, suggestedProduct (details), offerPrice,
+ *     quantity, and isSelectedByBuyer flag.
+ *   - rfqQuoteProductId {number} - The RFQ quote product being replaced.
+ *   - rfqQuotesUserId {number} - The RFQ quotes user ID for the API call.
+ *
+ * @behavior
+ *   - On open, pre-selects products that are already marked as `isSelectedByBuyer`.
+ *   - Renders a grid of product cards with checkbox, image, name, price, and quantity.
+ *   - Buyer toggles selections via checkbox clicks; the modal tracks selections
+ *     in a Set of suggestion IDs.
+ *   - On confirm, calls `onSelectProducts` with the selected IDs and closes.
+ *   - Resets selection state when the modal closes.
+ *
+ * @dependencies
+ *   - useAuth (AuthContext) - Currency symbol and language direction.
+ *   - useTranslations (next-intl) - i18n translations.
+ *   - validator - URL validation for product images.
+ *   - X (lucide-react) - Close button icon.
+ */
 "use client";
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";

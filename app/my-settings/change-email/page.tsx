@@ -1,3 +1,16 @@
+/**
+ * @file Change Email Page - app/my-settings/change-email/page.tsx
+ * @route /my-settings/change-email
+ * @description Email change initiation page. Provides a single email input with Zod
+ *   validation (lowercase enforcement via EMAIL_REGEX_LOWERCASE). On submit, calls
+ *   useChangeEmail mutation to send OTP to the new email, stores the new email in
+ *   sessionStorage, and redirects to /email-change-verify for OTP verification.
+ * @authentication Required; part of the authenticated settings flow.
+ * @key_components Form (react-hook-form + Zod), Input, Button
+ * @data_fetching
+ *   - useChangeEmail mutation to initiate email change OTP
+ * @state_management react-hook-form for email input; sessionStorage for new email persistence.
+ */
 "use client";
 import React from "react";
 import { useForm } from "react-hook-form";

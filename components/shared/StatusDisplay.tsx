@@ -1,3 +1,21 @@
+/**
+ * @file StatusDisplay - User account status indicator with color-coded badge.
+ * @description Renders the current user's account status as a colored dot and Badge.
+ * Fetches user data via useMe and useCurrentAccount hooks. Displays loading
+ * skeleton while fetching, "Not logged in" when unauthenticated, and a
+ * color-coded status badge (ACTIVE/WAITING/REJECT/INACTIVE/SUSPENDED) with
+ * optional detail text and admin notes for REJECT/INACTIVE statuses.
+ *
+ * @props
+ *   - showDetails {boolean} - When true, shows additional text beside the badge (default false).
+ *   - className {string} - Additional CSS classes for the wrapper (default "").
+ *
+ * @dependencies
+ *   - @/apis/queries/user.queries (useMe) - Fetches current user data.
+ *   - @/apis/queries/auth.queries (useCurrentAccount) - Fetches current account data.
+ *   - @/utils/statusCheck (getUserStatusInfo) - Derives status info from user data.
+ *   - @/components/ui/badge (Badge) - Styled badge component for status label.
+ */
 "use client";
 
 import { useMe } from "@/apis/queries/user.queries";

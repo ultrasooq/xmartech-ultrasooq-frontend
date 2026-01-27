@@ -1,3 +1,18 @@
+/**
+ * @file Switch - Shadcn UI toggle switch component.
+ * @description Renders an accessible on/off toggle switch with a sliding thumb.
+ * The thumb translates horizontally to indicate checked/unchecked states.
+ *
+ * @props Accepts all Radix UI Switch.Root props including:
+ *   - checked {boolean} - Current state.
+ *   - onCheckedChange {(checked: boolean) => void} - State change handler.
+ *   - disabled {boolean} - Disables the switch.
+ *   - className {string} - Additional CSS classes.
+ *
+ * @dependencies
+ *   - @radix-ui/react-switch - Accessible switch primitive.
+ *   - @/lib/utils (cn) - Tailwind class merging utility.
+ */
 "use client";
 
 import * as React from "react";
@@ -5,6 +20,7 @@ import * as SwitchPrimitives from "@radix-ui/react-switch";
 
 import { cn } from "@/lib/utils";
 
+/** Toggle switch with sliding thumb indicator. */
 const Switch = React.forwardRef<
   React.ElementRef<typeof SwitchPrimitives.Root>,
   React.ComponentPropsWithoutRef<typeof SwitchPrimitives.Root>

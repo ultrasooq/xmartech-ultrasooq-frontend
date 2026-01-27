@@ -1,7 +1,22 @@
+/**
+ * @file ChatSection.tsx
+ * @description Static placeholder chat UI for the RFQ request detail page.
+ * Renders hardcoded lorem ipsum chat messages in a scrollable container
+ * with left-aligned (received) and right-aligned (sent) message bubbles.
+ * Not yet connected to real chat data or messaging APIs.
+ */
+
 import Image from "next/image";
 import React from "react";
 import UserChatIcon from "@/public/images/user-chat.png";
 
+/**
+ * Placeholder chat section component. Displays static chat messages with
+ * user avatars and timestamps. Intended to be replaced with a dynamic
+ * chat implementation backed by real-time messaging.
+ *
+ * @returns A scrollable chat container with mock message bubbles.
+ */
 const ChatSection = () => {
   return (
     <div className="h-[300px] w-full overflow-y-auto">

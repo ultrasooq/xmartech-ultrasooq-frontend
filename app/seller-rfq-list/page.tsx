@@ -1,3 +1,16 @@
+/**
+ * @file Seller RFQ List Page - app/seller-rfq-list/page.tsx
+ * @route /seller-rfq-list
+ * @description Seller-side RFQ request listing page. Renders a grid view of all incoming
+ *   RFQ requests via the SellerChat component in "grid" layout and "rfqRequests" view mode.
+ *   Selecting an RFQ navigates to /seller-rfq-request?rfqId=<id>&tab=rfq for detailed
+ *   interaction. Requires PERMISSION_RFQ_SELLER_REQUESTS; redirects to /home if denied.
+ * @authentication Required; permission-gated via checkPermission(PERMISSION_RFQ_SELLER_REQUESTS).
+ * @key_components SellerChat (grid/rfqRequests mode)
+ * @data_fetching
+ *   - SellerChat internally handles RFQ data fetching
+ * @state_management None at page level; SellerChat manages its own state.
+ */
 "use client";
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";

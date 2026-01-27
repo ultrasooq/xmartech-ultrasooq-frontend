@@ -1,3 +1,24 @@
+/**
+ * @file withRouteGuard - Higher-Order Component for route-level access control.
+ * @description Wraps a component with the RouteGuard component, enforcing user
+ * status requirements before rendering. Provides predefined guard variants for
+ * common use cases (active user, any user, limited access, company user).
+ *
+ * @exports withRouteGuard - Generic HOC factory accepting a component and guard options.
+ * @exports withActiveUserGuard - Requires ACTIVE user status.
+ * @exports withAnyUserGuard - Allows any authenticated user status.
+ * @exports withLimitedUserGuard - Requires WAITING user status.
+ * @exports withCompanyUserGuard - Requires ACTIVE status (company context).
+ * @exports withLimitedAccessGuard - Requires WAITING status (limited access).
+ *
+ * @props Options:
+ *   - requiredStatus {"ACTIVE" | "WAITING" | "INACTIVE" | "ANY"} - Required user status.
+ *   - fallback {ReactNode} - Custom fallback when guard blocks access.
+ *   - showLoader {boolean} - Whether to show a loader while checking status.
+ *
+ * @dependencies
+ *   - ./RouteGuard - The actual guard component performing status checks.
+ */
 import { ComponentType } from "react";
 import RouteGuard from "./RouteGuard";
 

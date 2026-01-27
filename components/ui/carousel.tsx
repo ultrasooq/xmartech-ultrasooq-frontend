@@ -1,3 +1,29 @@
+/**
+ * @file Carousel - Shadcn UI carousel/slider component.
+ * @description Provides a set of composable carousel primitives built on the Embla
+ * Carousel library. Supports horizontal/vertical orientation, keyboard navigation
+ * (arrow keys), previous/next buttons, and plugin extensibility.
+ *
+ * @exports Carousel - Root container managing carousel state via context.
+ * @exports CarouselContent - Scrollable flex container for carousel items.
+ * @exports CarouselItem - Individual slide element with ARIA slide role.
+ * @exports CarouselPrevious - Previous slide navigation button.
+ * @exports CarouselNext - Next slide navigation button.
+ * @exports CarouselApi - Type alias for the Embla carousel API instance.
+ * @exports useCarousel - Hook to access carousel context (internal use).
+ *
+ * @props Carousel accepts:
+ *   - orientation {"horizontal" | "vertical"} - Slide direction.
+ *   - opts {CarouselOptions} - Embla carousel configuration.
+ *   - plugins {CarouselPlugin} - Embla carousel plugins.
+ *   - setApi {(api: CarouselApi) => void} - Callback to receive the API instance.
+ *
+ * @dependencies
+ *   - embla-carousel-react - Carousel engine and React bindings.
+ *   - @radix-ui/react-icons (ArrowLeftIcon, ArrowRightIcon) - Navigation icons.
+ *   - @/components/ui/button - Button component for navigation controls.
+ *   - @/lib/utils (cn) - Tailwind class merging utility.
+ */
 "use client"
 
 import * as React from "react"

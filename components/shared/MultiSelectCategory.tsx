@@ -1,3 +1,24 @@
+/**
+ * @file MultiSelectCategory - Three-level category multi-select with checkboxes.
+ * @description Renders a 3-column layout of cascading categories using checkboxes.
+ * Level 1 categories are fetched from the API using BUSINESS_TYPE_CATEGORY_ID.
+ * Selecting a level 1 category populates level 2 (children), and so on for level 3.
+ * Tracks selected categories with form field values including categoryLocation paths.
+ * Integrates with React Hook Form via useFormContext.
+ *
+ * @props
+ *   - name {string} - Form field name for the selected categories array.
+ *   - branchId {string | undefined | null} - Branch ID triggering pre-population of selections.
+ *
+ * @dependencies
+ *   - @/apis/queries/category.queries (useCategory) - Category data fetching hook.
+ *   - react-hook-form (useFormContext) - Form state management.
+ *   - @/components/ui/checkbox (Checkbox) - Styled checkbox component.
+ *   - @/components/ui/label (Label) - Styled label.
+ *   - next/image - Category icon images.
+ *   - react-icons/md (MdOutlineImageNotSupported) - Fallback icon when no image.
+ *   - @/context/AuthContext (useAuth) - Language direction context.
+ */
 import React, { useEffect, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";

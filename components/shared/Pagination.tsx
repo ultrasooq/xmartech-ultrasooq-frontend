@@ -1,3 +1,25 @@
+/**
+ * @file Pagination - Page navigation component with first/prev/next/last controls.
+ * @description Renders a pagination bar with first page, previous, page number
+ * buttons, next, and last page controls. Uses react-paginate for the core page
+ * number rendering with break labels. Automatically scrolls to top on page change.
+ * Hides entirely when total pages is 1 or fewer. Page numbers use 1-based indexing
+ * externally and convert to 0-based for react-paginate. Styled with orange active
+ * page indicator and responsive sizing (smaller on mobile).
+ *
+ * @props
+ *   - totalCount {number} - Total number of items across all pages.
+ *   - page {number} - Current page number (1-based).
+ *   - setPage {(page: number) => void} - Callback to change the current page.
+ *   - limit {number} - Number of items per page.
+ *
+ * @dependencies
+ *   - @/components/ui/button (Button) - First/prev/next/last navigation buttons.
+ *   - lucide-react (ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight) - Navigation icons.
+ *   - react-paginate (ReactPaginate) - Page number button rendering.
+ *   - next-intl (useTranslations) - Internationalization for button labels.
+ *   - @/context/AuthContext (useAuth) - Language direction context.
+ */
 import React from "react";
 import { Button } from "../ui/button";
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";

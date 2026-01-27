@@ -1,3 +1,23 @@
+/**
+ * @file DownloadIconButton.tsx
+ * @description A utility button component for downloading chat file attachments.
+ *   Displays a download arrow icon that transitions to a spinning loader while
+ *   the file download is in progress.
+ *
+ * @props
+ *   - attachmentId {number | null} - Unique identifier of the attachment to download.
+ *   - filePath {string} - Remote URL/path of the file to be downloaded.
+ *
+ * @behavior
+ *   - Tracks the currently selected attachment via local state so the spinner
+ *     only appears on the button instance that was clicked.
+ *   - Disables the button while a download is in progress to prevent duplicate
+ *     requests.
+ *
+ * @dependencies
+ *   - useDownloadFile (custom hook) - Handles the actual file download logic
+ *     and exposes a loading flag.
+ */
 import useDownloadFile from "@/hooks/useDownloadFile";
 import { useState } from "react";
 

@@ -1,3 +1,11 @@
+/**
+ * @file DescriptionSection.tsx
+ * @description Short description field array section for the service creation form.
+ * Uses react-hook-form's `useFieldArray` to manage a dynamic list of short
+ * descriptions, each with a rich text editor (ControlledRichTextEditor).
+ * Supports adding (up to 3) and removing description entries.
+ */
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";
@@ -9,6 +17,12 @@ import ControlledRichTextEditor from "@/components/shared/Forms/ControlledRichTe
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 
+/**
+ * Dynamic short description section with add/remove controls.
+ * Manages a field array of description entries, each rendered as a rich text editor.
+ *
+ * @returns A section with dynamically added/removed description fields.
+ */
 const DescriptionSection = () => {
   const t = useTranslations();
   const { langDir } = useAuth();

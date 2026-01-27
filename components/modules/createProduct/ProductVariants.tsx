@@ -1,3 +1,31 @@
+/**
+ * @file ProductVariants.tsx
+ * @description Variant value editor component for a single variant type (e.g.,
+ *   "Color" or "Size"). Manages a dynamic list of variant values, each with a
+ *   text input for the value name and an optional image upload.
+ *
+ * @props
+ *   - index {number} - The parent variant type index in the `productVariants`
+ *     form field array. Used to construct the nested field path:
+ *     `productVariants.{index}.variants`.
+ *
+ * @behavior
+ *   - Manages `productVariants.{index}.variants` as a dynamic field array
+ *     (value + image pairs) using React Hook Form's `useFieldArray`.
+ *   - Each variant value entry shows a text input (ControlledTextInput) and
+ *     an image upload button. Uploaded images are previewed with a remove (X) button.
+ *   - Image files are validated (must be image/* type, max 5MB) and converted to
+ *     base64 data URLs for form storage.
+ *   - Displays toast errors for invalid file types or sizes.
+ *   - Add (+) button appends a new empty variant; trash icon removes existing ones.
+ *
+ * @dependencies
+ *   - useFormContext, useFieldArray (React Hook Form) - Form state and dynamic fields.
+ *   - ControlledTextInput - Text input for variant value names.
+ *   - useTranslations (next-intl) - i18n translations.
+ *   - useAuth (AuthContext) - Language direction.
+ *   - toast (shadcn) - Error notifications.
+ */
 import React from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";

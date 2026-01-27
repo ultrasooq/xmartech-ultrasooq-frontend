@@ -1,3 +1,35 @@
+/**
+ * @file CreateSellerRewardForm.tsx
+ * @description A dialog form for creating new seller reward programs. Allows
+ *   sellers to configure reward parameters including product selection,
+ *   scheduling, reward percentages, and inventory allocation.
+ *
+ * @props
+ *   - onClose {() => void} - Callback to close the creation form dialog.
+ *   - onSuccess {() => void} - Callback invoked after successful reward creation.
+ *
+ * @behavior
+ *   - Uses Zod schema validation for all fields: productId, startDate/Time,
+ *     endDate/Time, rewardPercentage, rewardFixAmount, minimumOrder, and stock.
+ *   - Fetches the seller's managed products via `useAllManagedProducts` to
+ *     populate the product dropdown selector.
+ *   - Fetches current user info via `useMe` (not directly used in visible logic
+ *     but available for context).
+ *   - Submits via `useAddSellerReward` mutation with formatted date/time payload.
+ *   - Shows success/error toasts and calls `onClose`/`onSuccess` on completion.
+ *   - Date/time pickers use ControlledDatePicker and ControlledTimePicker.
+ *   - Product selector uses ControlledSelectInput with options from managed products.
+ *
+ * @dependencies
+ *   - useForm, zodResolver (React Hook Form + Zod) - Form management and validation.
+ *   - useAddSellerReward (TanStack Query) - Seller reward creation mutation.
+ *   - useMe (TanStack Query) - Current user data.
+ *   - useAllManagedProducts (TanStack Query) - Seller's product list.
+ *   - ControlledTextInput, ControlledSelectInput, ControlledDatePicker,
+ *     ControlledTimePicker - Form input components.
+ *   - useAuth (AuthContext) - Language direction.
+ *   - useTranslations (next-intl) - i18n translations.
+ */
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { DialogTitle } from "@/components/ui/dialog";

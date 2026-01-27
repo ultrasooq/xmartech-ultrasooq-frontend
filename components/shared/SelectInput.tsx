@@ -1,3 +1,18 @@
+/**
+ * @file SelectInput - Standalone select dropdown component (uncontrolled).
+ * @description Renders a simple labeled select dropdown using the Shadcn Select primitive.
+ * Unlike ControlledSelectInput, this is not integrated with React Hook Form
+ * and manages its own state via Radix Select props.
+ *
+ * @props
+ *   - label {string} - Used to generate the placeholder text ("Select {label}").
+ *   - options {{ label: string; value: string }[]} - Available select options.
+ *   - Plus all Radix SelectPrimitive.SelectProps (value, onValueChange, etc.).
+ *
+ * @dependencies
+ *   - @/components/ui/select - Select dropdown primitives.
+ *   - @radix-ui/react-select - Radix select types.
+ */
 import React from "react";
 import {
   Select,

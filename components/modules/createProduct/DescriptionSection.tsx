@@ -1,3 +1,26 @@
+/**
+ * @file DescriptionSection.tsx
+ * @description Product creation form sub-section for entering a short description
+ *   and a full markdown description. Manages a dynamic field array of short
+ *   descriptions that can be added or removed, plus a main markdown editor.
+ *
+ * @props None (uses React Hook Form context via `useFormContext`)
+ *
+ * @behavior
+ *   - Manages `productShortDescriptionList` as a dynamic field array with add
+ *     and remove capabilities.
+ *   - Renders each short description entry as a ControlledTextInput with a
+ *     delete (trash) icon button.
+ *   - Includes a ControlledMarkdownEditor for the main product description.
+ *   - Supports RTL layout via `langDir` from AuthContext.
+ *
+ * @dependencies
+ *   - useFormContext, useFieldArray (React Hook Form) - Form state and dynamic fields.
+ *   - ControlledTextInput - Text input component.
+ *   - ControlledMarkdownEditor - Markdown editor component.
+ *   - useTranslations (next-intl) - i18n translations.
+ *   - useAuth (AuthContext) - Language direction.
+ */
 import React from "react";
 import { Button } from "@/components/ui/button";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";

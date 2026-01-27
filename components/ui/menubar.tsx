@@ -1,3 +1,19 @@
+/**
+ * @file Menubar - Shadcn UI menubar component.
+ * @description Provides a full-featured horizontal menu bar with support for
+ * standard items, checkbox items, radio items, sub-menus, separators,
+ * labels, and keyboard shortcuts. Built on Radix UI Menubar primitives.
+ *
+ * @exports Menubar, MenubarMenu, MenubarTrigger, MenubarContent, MenubarItem,
+ *   MenubarSeparator, MenubarLabel, MenubarCheckboxItem, MenubarRadioGroup,
+ *   MenubarRadioItem, MenubarPortal, MenubarSubContent, MenubarSubTrigger,
+ *   MenubarGroup, MenubarSub, MenubarShortcut.
+ *
+ * @dependencies
+ *   - @radix-ui/react-menubar - Accessible menubar primitive.
+ *   - @radix-ui/react-icons (CheckIcon, ChevronRightIcon, DotFilledIcon) - Item icons.
+ *   - @/lib/utils (cn) - Tailwind class merging utility.
+ */
 "use client"
 
 import * as React from "react"

@@ -12,20 +12,50 @@ import { cn } from "@/lib/utils";
 import EditIcon from "@/public/images/edit-icon.svg";
 import Link from "next/link";
 
+/**
+ * Props for the member {@link ProfileCard} component.
+ *
+ * @property userDetails - Backend user object including `firstName`,
+ *   `lastName`, `email`, `phoneNumber`, `profilePicture`, `uniqueId`,
+ *   `onlineOffline`, `onlineOfflineDateStatus`, and `userBranch` array
+ *   with working-day/time scheduling data.
+ */
 type ProfileCardProps = {
     userDetails: any;
 };
 
+/**
+ * Displays a team-member profile card with avatar, name, contact info,
+ * unique member ID, online/offline status indicator, and an "Edit" link.
+ *
+ * Online status is computed by checking:
+ * 1. Whether today falls within the member's configured working days.
+ * 2. Whether the current time is between `startTime` and `endTime`.
+ * 3. Whether the member's `onlineOffline` flag is "1" and the
+ *    `onlineOfflineDateStatus` matches today's date.
+ *
+ * @param props - {@link ProfileCardProps}
+ * @returns A styled profile card with avatar fallback and status badge.
+ */
 const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails }) => {
+    /** Memoised first-letter initials for the avatar fallback. */
     const memoizedInitials = useMemo(
         () => getInitials(userDetails?.firstName, userDetails?.lastName),
         [userDetails?.firstName, userDetails?.lastName],
     );
 
+    /** Comma-separated working days string from the member's first branch. */
     const workingDays = userDetails?.userBranch?.[0]?.workingDays;
+    /** Branch opening time (HH:mm format). */
     const startTime = userDetails?.userBranch?.[0]?.startTime;
+    /** Branch closing time (HH:mm format). */
     const endTime = userDetails?.userBranch?.[0]?.endTime;
 
+    /**
+     * Memoised boolean indicating whether the member is considered
+     * "online" right now, based on working-day schedule and the
+     * `onlineOfflineDateStatus` flag.
+     */
     const isOnlineToday = useMemo(() => {
         const getActiveDays = parsedDays(workingDays)?.includes(getCurrentDay())
             ? true

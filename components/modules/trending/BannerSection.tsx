@@ -1,3 +1,23 @@
+/**
+ * @file BannerSection.tsx
+ * @description Static promotional banner component for the trending products page.
+ *   Displays a hardcoded hero banner with breadcrumb navigation, heading text,
+ *   date range, description, "Shop Now" button, and a decorative product image.
+ *
+ * @props None
+ *
+ * @behavior
+ *   - Renders a full-width banner with a background image and overlaid content.
+ *   - Breadcrumb: "Home > Trending Products" with chevron separator.
+ *   - Displays fixed text: "Big Deal Days", date "18 Sep 2024 - 20 Sep 2024",
+ *     promotional description, and a "Shop Now" link button.
+ *   - Right side shows a decorative product image.
+ *   - Entirely static with hardcoded content (no props or dynamic data).
+ *
+ * @dependencies
+ *   - Static image imports (trending banner, chevron, inner banner).
+ *   - Link (next/link) - Navigation for breadcrumb and shop button.
+ */
 import React from "react";
 import Image from "next/image";
 import TrendingBannerImage from "@/public/images/trending-product-inner-banner.png";

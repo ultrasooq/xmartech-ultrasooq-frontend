@@ -11,16 +11,35 @@ import { Input } from "@/components/ui/input";
 import { useUploadFile } from "@/apis/queries/upload.queries";
 import { useUpdateOrderShippingStatus } from "@/apis/queries/orders.queries";
 
+/**
+ * Props for the {@link AddReceipt} form component.
+ *
+ * @property orderProductId  - The order-product entry ID.
+ * @property orderShippingId - The shipping entry ID to attach the receipt to.
+ * @property onClose         - Callback to close the modal.
+ */
 type AddReceiptProps = {
     orderProductId: number;
     orderShippingId: number;
     onClose: () => void;
 }
 
+/** Zod schema for the receipt upload form (receipt URL is optional until uploaded). */
 const formSchema = z.object({
     receipt: z.string().trim().optional(),
 });
 
+/**
+ * Form for uploading a delivery/shipping receipt (image or PDF) on the
+ * seller's order detail page. Accepts PNG, JPG, JPEG, and PDF files.
+ *
+ * Uploads the file via {@link useUploadFile}, then updates the order
+ * shipping status via {@link useUpdateOrderShippingStatus} with the
+ * uploaded receipt URL.
+ *
+ * @param props - {@link AddReceiptProps}
+ * @returns A form with file input and submit button.
+ */
 const AddReceipt: React.FC<AddReceiptProps> = ({
     orderProductId,
     orderShippingId,

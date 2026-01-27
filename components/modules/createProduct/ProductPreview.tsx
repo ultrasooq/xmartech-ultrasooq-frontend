@@ -1,3 +1,31 @@
+/**
+ * @file ProductPreview.tsx
+ * @description Visual preview component for a dropshipped product. Displays a
+ *   mock product listing card showing how the final product will appear to buyers,
+ *   combining original product data with the seller's custom content.
+ *
+ * @props
+ *   - originalProduct {any} - The source product object with images, location,
+ *     and original data.
+ *   - customContent {{ productName, description, additionalImages, marketingText }} -
+ *     The seller's customized product content for the dropship listing.
+ *   - finalPrice {number | string | undefined} - The calculated final price
+ *     (original + markup).
+ *
+ * @behavior
+ *   - Displays the product image (first from original product's seller images,
+ *     then product images, or a placeholder gradient).
+ *   - Shows the custom product name, extracted plain text description (HTML/JSON
+ *     stripped), location badge, "New" listing badge, and formatted final price.
+ *   - Renders action buttons: "Add to Cart" and "View Details" (non-functional
+ *     preview-only buttons).
+ *   - Includes an `extractPlainText` helper that parses rich text (HTML or
+ *     Plate/Slate JSON structures) into plain text for preview display.
+ *
+ * @dependencies
+ *   - useTranslations (next-intl) - i18n translations.
+ *   - lucide-react (ShoppingCart, Eye, Star, MapPin) - Preview icons.
+ */
 "use client";
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";

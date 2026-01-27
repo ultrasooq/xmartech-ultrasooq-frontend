@@ -1,3 +1,19 @@
+/**
+ * @file Accordion - Shadcn UI accordion component.
+ * @description Provides collapsible content sections. Can operate in "single"
+ * (one item open at a time) or "multiple" modes. Each item includes a trigger
+ * with an animated chevron icon and animated height transition for content.
+ *
+ * @exports Accordion - Root container (Radix Accordion.Root).
+ * @exports AccordionItem - Individual collapsible section with bottom border.
+ * @exports AccordionTrigger - Clickable header with chevron rotation animation.
+ * @exports AccordionContent - Animated expandable/collapsible content area.
+ *
+ * @dependencies
+ *   - @radix-ui/react-accordion - Accessible accordion primitive.
+ *   - @radix-ui/react-icons (ChevronDownIcon) - Chevron icon for indicator.
+ *   - @/lib/utils (cn) - Tailwind class merging utility.
+ */
 "use client"
 
 import * as React from "react"
@@ -6,6 +22,7 @@ import { ChevronDownIcon } from "@radix-ui/react-icons"
 
 import { cn } from "@/lib/utils"
 
+/** Root Accordion managing expansion state across items. */
 const Accordion = AccordionPrimitive.Root
 
 const AccordionItem = React.forwardRef<

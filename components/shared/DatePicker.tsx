@@ -1,3 +1,20 @@
+/**
+ * @file DatePicker - Standalone date picker component using a popover calendar.
+ * @description Renders a button trigger that opens a popover with a Calendar component.
+ * The selected date is displayed in "PPP" format (e.g., "January 27th, 2026").
+ * Manages its own internal date state.
+ *
+ * @props
+ *   - placeholder {string} - Custom placeholder text (default: "Pick a date").
+ *
+ * @dependencies
+ *   - date-fns (format) - Date formatting utility.
+ *   - lucide-react (Calendar icon) - Calendar trigger icon.
+ *   - @/components/ui/button - Styled button trigger.
+ *   - @/components/ui/calendar - Calendar day picker.
+ *   - @/components/ui/popover - Popover container for the calendar.
+ *   - @/lib/utils (cn) - Tailwind class merging utility.
+ */
 import * as React from "react";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";

@@ -22,6 +22,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { PRODUCT_TYPE_LABELS } from "@/utils/constants";
 import { ConfirmationDialog } from "@/components/shared/ConfirmationDialog";
 
+/**
+ * Props for the manage-products {@link DropshipProductCard} component.
+ * Extends the standard product card props with dropship-specific fields
+ * such as `originalProductName` and admin-controlled status.
+ */
 type DropshipProductCardProps = {
   selectedIds?: number[];
   onSelectedId?: (args0: boolean | string, args1: number) => void;
@@ -30,7 +35,7 @@ type DropshipProductCardProps = {
   productId: number;
   status: string;
   productImage: string | null;
-  productImages?: any[]; // Add this to get all images
+  productImages?: any[];
   productName: string;
   productPrice: string;
   offerPrice: string;
@@ -73,6 +78,20 @@ type DropshipProductCardProps = {
   isDropshipped?: boolean;
 };
 
+/**
+ * Product management card specifically for dropshipped products on the
+ * manage products page. Similar to {@link ManageProductCard} but includes
+ * dropship-specific fields such as original product reference, markup,
+ * and admin-controlled status (status is read-only).
+ *
+ * Features: selection checkbox, product image with S3 detection, product
+ * type badges, stock/price/offer display, brand/category info, status
+ * badge, edit/delete action buttons with confirmation dialog, and
+ * optional original-product metadata display.
+ *
+ * @param props - {@link DropshipProductCardProps}
+ * @returns A bordered card for managing a dropship product.
+ */
 const DropshipProductCard: React.FC<DropshipProductCardProps> = ({
   selectedIds,
   onSelectedId,

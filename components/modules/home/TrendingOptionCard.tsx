@@ -1,9 +1,18 @@
+/**
+ * @file TrendingOptionCard.tsx
+ * @description Category option card used in the trending categories section.
+ * Displays a category image (or fallback icon) with the category name.
+ * Highlights the active/selected category with a background color change.
+ * Clicking triggers the `onActiveCategory` callback.
+ */
+
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 // import Link from "next/link";
 import React from "react";
 import { MdOutlineImageNotSupported } from "react-icons/md";
 
+/** Props for the TrendingOptionCard component. */
 type TrendingOptionCardProps = {
   item: any;
   isActiveIndex?: boolean;

@@ -1,3 +1,11 @@
+/**
+ * @file CounterTextInputField.tsx
+ * @description Reusable counter input component with increment/decrement (+/-)
+ * buttons for numeric form fields. Integrates with react-hook-form context
+ * and supports configurable min/max values, custom label, step size, and
+ * disabled state. Used in service pricing and quantity configuration forms.
+ */
+
 import React, { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import {
@@ -10,6 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/AuthContext";
 
+/** Props for the CounterTextInputField component. */
 type CounterTextInputFieldProps = {
   name: string;
   label?: string;

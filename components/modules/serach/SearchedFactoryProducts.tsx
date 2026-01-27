@@ -1,3 +1,12 @@
+/**
+ * @file SearchedFactoryProducts.tsx
+ * @description Search results section for factory products. Fetches factory-sourced
+ * products by search term via `useFactoriesProducts`, renders them as shared
+ * `ProductCard` components, and supports wishlist toggling with toast feedback.
+ * Maps API response to `TrendingProduct` type. Provides skeleton loading,
+ * empty state handling, and "View All" link to the full factory listing.
+ */
+
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useAddToWishList, useDeleteFromWishList } from "@/apis/queries/wishlist.queries";
@@ -11,6 +20,7 @@ import ProductCard from "../trending/ProductCard";
 import Link from "next/link";
 import { useQueryClient } from "@tanstack/react-query";
 
+/** Props for the SearchedFactoryProducts section. */
 type SearchedFactoryProductsType = {
     searchTerm?: string;
     haveAccessToken: boolean;

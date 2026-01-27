@@ -1,3 +1,11 @@
+/**
+ * @file InformationSection.tsx
+ * @description Editable contact information section on the user's own freelancer profile.
+ * Displays email, phone number, and social media links with an edit icon that
+ * links to the /profile page for modification. Uses the same social link parsing
+ * logic as VendorInformationSection but includes the edit affordance.
+ */
+
 import React, { useMemo } from "react";
 import Image from "next/image";
 import EditIcon from "@/public/images/edit-icon.svg";
@@ -5,6 +13,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 
+/** Props for the InformationSection component. */
 type InformationSectionProps = {
   userDetails: any;
 };

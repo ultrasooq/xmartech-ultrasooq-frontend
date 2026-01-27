@@ -1,3 +1,40 @@
+/**
+ * @file ProductCard.tsx (productDetails module)
+ * @description Product card component for related products and similar product
+ *   sections. Displays product image, name, rating stars, pricing with complex
+ *   discount logic, and action buttons (wishlist, view, add-to-cart).
+ *
+ * @props
+ *   - id, productName, productImages, shortDescription - Product basic info.
+ *   - productProductPrice, offerPrice, productPrice - Pricing data.
+ *   - inWishlist, productReview - Wishlist state and review array.
+ *   - productWishlist - Wishlist detail for toggling.
+ *   - haveAccessToken - Whether the user is authenticated.
+ *   - onWishlist, onAddToCart - Action callbacks.
+ *   - consumerDiscount, consumerDiscountType, vendorDiscount, vendorDiscountType,
+ *     consumerType, categoryId - Discount eligibility data.
+ *   - askForPrice - Whether to show "Ask for Price" instead of price.
+ *
+ * @behavior
+ *   - Implements `getApplicableDiscount` function that determines the correct
+ *     discount based on trade role (BUYER vs vendor roles), category connection
+ *     via `checkCategoryConnection`, and consumer type (CONSUMER/VENDOR/EVERYONE).
+ *   - Vendor discount applies when: user is a vendor, category matches their
+ *     business categories, and vendorDiscount exists.
+ *   - Consumer discount applies when: user is a buyer or no category match, and
+ *     consumerType includes the user.
+ *   - Calculates discounted price (PERCENTAGE or FLAT discount types).
+ *   - Renders star ratings from productReview average.
+ *   - Action buttons: wishlist toggle, view (eye icon), add-to-cart.
+ *
+ * @dependencies
+ *   - useVendorBusinessCategories (hook) - Vendor's business category IDs.
+ *   - checkCategoryConnection (utility) - Category hierarchy matching.
+ *   - useCategory (TanStack Query) - Category data for connection checking.
+ *   - useCurrentAccount (TanStack Query) - Current account trade role.
+ *   - useAuth (AuthContext) - User info, currency, language direction.
+ *   - useTranslations (next-intl) - i18n translations.
+ */
 import Image from "next/image";
 import Link from "next/link";
 import React, { useMemo } from "react";

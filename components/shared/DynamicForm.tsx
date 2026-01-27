@@ -1,3 +1,24 @@
+/**
+ * @file DynamicForm - Dynamic form renderer from JSON configuration.
+ * @description Renders a form dynamically based on a formIdDetail JSON configuration.
+ * Parses the formData JSON string to extract sections with fields. Each field is
+ * rendered as the appropriate UI component based on its type: text (Input), textarea
+ * (Textarea), checkbox (Checkbox group), select (Select dropdown), radio (RadioGroup),
+ * or date (DatePicker). Fields are organized in a 2-column grid within labeled sections.
+ *
+ * @props
+ *   - form {object} - Form configuration containing formIdDetail with JSON formData.
+ *     - form.formIdDetail.formData {string} - JSON string defining sections and fields.
+ *
+ * @dependencies
+ *   - @/components/ui/label (Label) - Field labels.
+ *   - @/components/ui/input (Input) - Text input fields.
+ *   - @/components/ui/textarea (Textarea) - Multi-line text fields.
+ *   - @/components/ui/checkbox (Checkbox) - Checkbox group fields.
+ *   - @/components/ui/select (Select, SelectContent, SelectItem, SelectTrigger, SelectValue) - Dropdown fields.
+ *   - @/components/ui/radio-group (RadioGroup, RadioGroupItem) - Radio button groups.
+ *   - ./DatePicker - Date picker fields.
+ */
 import React, { useState } from "react";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";

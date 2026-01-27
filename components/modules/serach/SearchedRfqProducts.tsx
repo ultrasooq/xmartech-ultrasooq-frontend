@@ -1,3 +1,13 @@
+/**
+ * @file SearchedRfqProducts.tsx
+ * @description Search results section for RFQ products. Fetches RFQ products by
+ * search term via `useRfqProducts`, renders them as `RfqProductCard` components,
+ * and integrates with the RFQ cart (add/remove/update quantity). Supports
+ * wishlist toggling, an "Add to RFQ" / "Edit RFQ" modal form (`AddToRfqForm`),
+ * and a "View All" link to the full RFQ listing. Reports result count to
+ * the parent via `setRecordsCount`.
+ */
+
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useAddToWishList, useDeleteFromWishList } from "@/apis/queries/wishlist.queries";

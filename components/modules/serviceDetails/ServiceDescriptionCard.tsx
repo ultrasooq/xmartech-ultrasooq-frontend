@@ -1,3 +1,13 @@
+/**
+ * @file ServiceDescriptionCard.tsx
+ * @description Right-side service detail panel on the service details page.
+ * Displays service name, seller link, star ratings, service features with
+ * quantity controls, date/time pickers for scheduled features, pricing
+ * (per feature with cost type FLAT/HOURLY), "Add to Cart" button,
+ * secure payment icons, and metadata (SKU, categories, tags).
+ * Includes skeleton loading states and supports RTL layout.
+ */
+
 import React, { useEffect, useMemo, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
@@ -10,6 +20,14 @@ import { useAuth } from "@/context/AuthContext";
 import moment from "moment";
 import { DatePicker, TimePicker } from "./service-features/CommanUtils";
 
+/**
+ * Service description card component with feature-based pricing, quantity controls,
+ * date/time scheduling, and "Add to Cart" functionality.
+ *
+ * @param props - Component props (typed as `any` -- accepts service details, feature
+ *   state management callbacks, rating data, and loading state).
+ * @returns A detail panel with service information, feature selectors, and cart actions.
+ */
 const ServiceDescriptionCard: React.FC<any> = ({
     selectedFeatures,
     decrementQuantity,

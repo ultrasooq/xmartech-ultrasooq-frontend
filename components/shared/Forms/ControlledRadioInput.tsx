@@ -1,3 +1,18 @@
+/**
+ * @file ControlledRadioInput - React Hook Form controlled radio group input.
+ * @description Renders a group of radio buttons integrated with React Hook Form.
+ * Each option renders as a RadioGroupItem with an associated label.
+ *
+ * @props
+ *   - label {string} - Label text displayed above the radio group.
+ *   - name {string} - Form field name (must match schema).
+ *   - options {{ label: string; value: string }[]} - Available radio options.
+ *
+ * @dependencies
+ *   - react-hook-form (useFormContext) - Accesses the parent form context.
+ *   - @/components/ui/form - Form field wrapper components.
+ *   - @/components/ui/radio-group - RadioGroup and RadioGroupItem primitives.
+ */
 import React from "react";
 import { useFormContext } from "react-hook-form";
 import {

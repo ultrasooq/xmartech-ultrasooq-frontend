@@ -1,3 +1,14 @@
+/**
+ * @fileoverview TanStack React Query hooks for the RFQ (Request For
+ * Quotation) and Factories modules.
+ *
+ * Covers RFQ product listings, factories product listings, RFQ / factories
+ * cart operations, quote submission and deletion, customize-product
+ * requests, duplicate-product RFQ creation, and RFQ request visibility.
+ *
+ * @module queries/rfq
+ */
+
 import { APIResponseError } from "@/utils/types/common.types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -27,6 +38,13 @@ import {
 } from "../requests/rfq.requests";
 import { AddRfqQuotesRequest, AddFactoriesQuotesRequest } from "@/utils/types/rfq.types";
 
+/**
+ * Query hook that fetches paginated RFQ products with optional filters.
+ *
+ * @remarks
+ * Query key: `["rfq-products", payload]`
+ * Endpoint: Delegated to `fetchRfqProducts` in rfq.requests.
+ */
 export const useRfqProducts = (
   payload: {
     page: number;
@@ -51,6 +69,13 @@ export const useRfqProducts = (
     enabled,
   });
 
+  /**
+   * Query hook that fetches paginated factories products with optional filters.
+   *
+   * @remarks
+   * Query key: `["factoriesProducts", payload]`
+   * Endpoint: Delegated to `fetchFactoriesProducts` in rfq.requests.
+   */
   export const useFactoriesProducts = (
     payload: {
       page: number;
@@ -76,6 +101,14 @@ export const useRfqProducts = (
       enabled,
     });
 
+    /**
+     * Query hook that fetches factories products filtered by the user's
+     * business category.
+     *
+     * @remarks
+     * Query key: `["factoriesProducts", payload]`
+     * Endpoint: Delegated to `fetchFactoriesProductsByUserBusinessCategory` in rfq.requests.
+     */
     export const useFactoriesProductsByUserBusinessCategory = (
       payload: {
         page: number;
@@ -100,6 +133,13 @@ export const useRfqProducts = (
         enabled,
       });
 
+/**
+ * Query hook that fetches a single RFQ product by its ID.
+ *
+ * @remarks
+ * Query key: `["rfq-product-by-id", id]`
+ * Endpoint: Delegated to `fetchRfqProductById` in rfq.requests.
+ */
 export const useRfqProductById = (id: string, enabled = true) =>
   useQuery({
     queryKey: ["rfq-product-by-id", id],
@@ -113,6 +153,14 @@ export const useRfqProductById = (id: string, enabled = true) =>
     enabled,
   });
 
+/**
+ * Mutation hook to add a new RFQ product.
+ *
+ * @remarks
+ * - **Payload**: `{ productNote, rfqProductName, rfqProductImagesList }`
+ * - **Invalidates**: `["rfq-products"]` on success.
+ * - Endpoint: Delegated to `addRfqProduct` in rfq.requests.
+ */
 export const useAddRfqProduct = () => {
   const queryClient = useQueryClient();
   return useMutation<
@@ -138,6 +186,14 @@ export const useAddRfqProduct = () => {
   });
 };
 
+/**
+ * Mutation hook to update an existing RFQ product.
+ *
+ * @remarks
+ * - **Payload**: `{ rFqProductId, productNote, rfqProductName, rfqProductImagesList }`
+ * - **Invalidates**: `["rfq-products"]` on success.
+ * - Endpoint: Delegated to `updateRfqProduct` in rfq.requests.
+ */
 export const useUpdateRfqProduct = () => {
   const queryClient = useQueryClient();
   return useMutation<
@@ -164,6 +220,13 @@ export const useUpdateRfqProduct = () => {
   });
 };
 
+/**
+ * Query hook that fetches the RFQ cart items for the authenticated user.
+ *
+ * @remarks
+ * Query key: `["rfq-cart-by-user", payload]`
+ * Endpoint: Delegated to `fetchRfqCartByUserId` in rfq.requests.
+ */
 export const useRfqCartListByUserId = (
   payload: {
     page: number;
@@ -183,6 +246,13 @@ export const useRfqCartListByUserId = (
     enabled,
   });
 
+  /**
+   * Query hook that fetches factories cart items for the authenticated user.
+   *
+   * @remarks
+   * Query key: `["factories-cart-by-user", payload]`
+   * Endpoint: Delegated to `fetchFactoriesCartByUserId` in rfq.requests.
+   */
   export const useFactoriesCartListByUserId = (
     payload: {
       page: number;
@@ -202,6 +272,14 @@ export const useRfqCartListByUserId = (
       enabled,
     });
 
+/**
+ * Mutation hook to add or update an RFQ cart item.
+ *
+ * @remarks
+ * - **Payload**: `{ productId, quantity, productType?, offerPriceFrom?, offerPriceTo?, note? }`
+ * - **Invalidates**: `["rfq-cart-by-user"]`, `["rfq-products"]` on success.
+ * - Endpoint: Delegated to `updateRfqCartWithLogin` in rfq.requests.
+ */
 export const useUpdateRfqCartWithLogin = () => {
   const queryClient = useQueryClient();
   return useMutation<
@@ -229,7 +307,15 @@ export const useUpdateRfqCartWithLogin = () => {
   });
 };
 
-export const useUpdateFactoriesCartWithLogin = () => 
+/**
+ * Mutation hook to add or update a factories cart item.
+ *
+ * @remarks
+ * - **Payload**: `{ productId, quantity, customizeProductId }`
+ * - **Invalidates**: `["factories-cart-by-user"]`, `["factoriesProducts"]` on success.
+ * - Endpoint: Delegated to `updateFactoriesCartWithLogin` in rfq.requests.
+ */
+export const useUpdateFactoriesCartWithLogin = () =>
   {
     const queryClient = useQueryClient();
     return useMutation<
@@ -257,6 +343,13 @@ export const useUpdateFactoriesCartWithLogin = () =>
     });
   };
 
+/**
+ * Mutation hook to add a product to the factories module.
+ *
+ * @remarks
+ * - **Payload**: `{ productId: number }`
+ * - Endpoint: Delegated to `addFactoriesProductApi` in rfq.requests.
+ */
 export const useAddFactoriesProduct = () => {
   return useMutation<
     { data: any; message: string; status: boolean },
@@ -273,6 +366,13 @@ export const useAddFactoriesProduct = () => {
   });
 };
 
+/**
+ * Mutation hook to submit a customize-product request with a price range.
+ *
+ * @remarks
+ * - **Payload**: `{ productId, note, fromPrice, toPrice }`
+ * - Endpoint: Delegated to `addCustomizeProductApi` in rfq.requests.
+ */
 export const useAddCustomizeProduct = () => {
   return useMutation<
     { data: any; message: string; status: boolean },
@@ -289,6 +389,14 @@ export const useAddCustomizeProduct = () => {
   });
 };
 
+/**
+ * Mutation hook to delete an RFQ cart item.
+ *
+ * @remarks
+ * - **Payload**: `{ rfqCartId: number }`
+ * - **Invalidates**: `["rfq-cart-by-user"]`, `["rfq-products"]` on success.
+ * - Endpoint: Delegated to `deleteRfqCartItem` in rfq.requests.
+ */
 export const useDeleteRfqCartItem = () => {
   const queryClient = useQueryClient();
   return useMutation<
@@ -322,6 +430,14 @@ export const useDeleteRfqCartItem = () => {
   });
 };
 
+/**
+ * Mutation hook to delete a factories cart item.
+ *
+ * @remarks
+ * - **Payload**: `{ factoriesCartId: number }`
+ * - **Invalidates**: `["factories-cart-by-user"]`, `["factoriesProducts"]` on success.
+ * - Endpoint: Delegated to `deleteFactoriesCartItem` in rfq.requests.
+ */
 export const useDeleteFactoriesCartItem = () => {
   const queryClient = useQueryClient();
   return useMutation<
@@ -347,6 +463,13 @@ export const useDeleteFactoriesCartItem = () => {
 };
 
 
+/**
+ * Query hook that fetches all RFQ quote requests submitted by the buyer.
+ *
+ * @remarks
+ * Query key: `["rfq-quotes-request", payload]`
+ * Endpoint: Delegated to `fetchAllRfqQuotesByBuyerId` in rfq.requests.
+ */
 export const useAllRfqQuotesByBuyerId = (
   payload: {
     page: number;
@@ -366,6 +489,14 @@ export const useAllRfqQuotesByBuyerId = (
     enabled,
   });
 
+/**
+ * Query hook that fetches all RFQ quote users (seller responses)
+ * for a specific quote request owned by the buyer.
+ *
+ * @remarks
+ * Query key: `["rfq-quotes-users", payload]`
+ * Endpoint: Delegated to `fetchAllRfqQuotesUsersByBuyerId` in rfq.requests.
+ */
 export const useAllRfqQuotesUsersByBuyerId = (
   payload: {
     page: number;
@@ -386,6 +517,13 @@ export const useAllRfqQuotesUsersByBuyerId = (
     enabled,
   });
 
+/**
+ * Query hook that fetches a single RFQ quotes-user entry by buyer ID.
+ *
+ * @remarks
+ * Query key: `["rfq-quotes-by-buyer-id", payload]`
+ * Endpoint: Delegated to `fetchOneRfqQuotesUsersByBuyerID` in rfq.requests.
+ */
 export const useFindOneRfqQuotesUsersByBuyerID = (
   payload: {
     rfqQuotesId?: number;
@@ -404,6 +542,14 @@ export const useFindOneRfqQuotesUsersByBuyerID = (
     enabled,
   });
 
+/**
+ * Query hook that fetches all RFQ quote requests visible to the seller,
+ * with optional `showHidden` filter.
+ *
+ * @remarks
+ * Query key: `["rfq-quotes-by-seller-id", payload]`
+ * Endpoint: Delegated to `fetchAllRfqQuotesUsersBySellerId` in rfq.requests.
+ */
 export const useAllRfqQuotesUsersBySellerId = (
   payload: {
     page: number;
@@ -424,6 +570,14 @@ export const useAllRfqQuotesUsersBySellerId = (
     enabled,
   });
 
+/**
+ * Mutation hook to submit a new RFQ quote request as a buyer.
+ *
+ * @remarks
+ * - **Payload**: {@link AddRfqQuotesRequest}
+ * - **Invalidates**: `["rfq-quotes-request"]` on success.
+ * - Endpoint: Delegated to `addRfqQuotes` in rfq.requests.
+ */
 export const useAddRfqQuotes = () => {
   const queryClient = useQueryClient();
   return useMutation<
@@ -445,6 +599,14 @@ export const useAddRfqQuotes = () => {
   });
 };
 
+/**
+ * Mutation hook to submit a factories quote request.
+ *
+ * @remarks
+ * - **Payload**: {@link AddFactoriesQuotesRequest}
+ * - **Invalidates**: `["factories-cart-by-user"]`, `["factories-quotes-request"]` on success.
+ * - Endpoint: Delegated to `addFactoriesQuotes` in rfq.requests.
+ */
 export const useAddFactoriesRequestQuotes = () => {
   const queryClient = useQueryClient();
   return useMutation<
@@ -469,6 +631,13 @@ export const useAddFactoriesRequestQuotes = () => {
   });
 };
 
+/**
+ * Mutation hook to duplicate a product into the RFQ module.
+ *
+ * @remarks
+ * - **Payload**: `{ productId: number }`
+ * - Endpoint: Delegated to `addProductDuplicateRfq` in rfq.requests.
+ */
 export const useAddProductDuplicateRfq = () => {
   return useMutation<
     { data: any; message: string; status: boolean },
@@ -485,6 +654,14 @@ export const useAddProductDuplicateRfq = () => {
   });
 };
 
+/**
+ * Mutation hook to delete an RFQ quote.
+ *
+ * @remarks
+ * - **Payload**: `{ rfqQuotesId: number }`
+ * - **Invalidates**: `["rfq-quotes-request"]` on success.
+ * - Endpoint: Delegated to `deleteRfqQuote` in rfq.requests.
+ */
 export const useDeleteRfqQuote = () => {
   const queryClient = useQueryClient();
   return useMutation<
@@ -508,6 +685,16 @@ export const useDeleteRfqQuote = () => {
   });
 };
 
+/**
+ * Mutation hook to toggle the visibility (hidden state) of an RFQ
+ * request for the seller. Invalidates and force-refetches all seller
+ * RFQ query variants.
+ *
+ * @remarks
+ * - **Payload**: `{ rfqQuotesUserId: number; isHidden: boolean }`
+ * - **Invalidates / refetches**: All queries with key `"rfq-quotes-by-seller-id"`.
+ * - Endpoint: Delegated to `hideRfqRequest` in rfq.requests.
+ */
 export const useHideRfqRequest = () => {
   const queryClient = useQueryClient();
   return useMutation<

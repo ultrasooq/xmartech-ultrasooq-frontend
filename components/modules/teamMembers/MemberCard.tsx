@@ -3,6 +3,16 @@ import Image from "next/image";
 import TeamIcon from "@/public/images/team.png";
 import ReviewDotIcon from "@/public/images/review-dot.svg";
 
+/**
+ * Static/placeholder team member table row card. Displays a hardcoded
+ * member with avatar, name, email, role, employee ID, status badge,
+ * and an action dot menu icon.
+ *
+ * Note: This component currently uses static data and is likely a
+ * placeholder template for dynamic member rows.
+ *
+ * @returns A `<tr>` element for a team members table.
+ */
 const MemberCard = () => {
   return (
     <tr>

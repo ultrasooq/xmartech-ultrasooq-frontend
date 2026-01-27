@@ -1,3 +1,35 @@
+/**
+ * @file BasicInformationSection.tsx
+ * @description Main product creation form section for entering basic product
+ *   information. Handles the core fields required when creating or editing a
+ *   product, including category hierarchy selection, image/video uploads, brand
+ *   selection, product condition, tags, and pricing sub-section.
+ *
+ * @props None (uses React Hook Form context via `useFormContext`)
+ *
+ * @behavior
+ *   - Renders a recursive category hierarchy selector via AccordionMultiSelectV2,
+ *     supporting up to 6 levels of nested categories fetched on demand.
+ *   - Manages product image and video uploads with preview and removal. Uses
+ *     AddImageContent for the upload UI and validates file types (image/video).
+ *   - Integrates BrandSelect for brand selection, ReactSelect for product
+ *     condition, and tag creation via `useCreateTag` mutation.
+ *   - Embeds PriceSection and DescriptionSection sub-components.
+ *   - Watches form values for category changes to dynamically load sub-categories.
+ *   - Generates unique IDs for uploaded images using uuid.
+ *
+ * @dependencies
+ *   - useFormContext (React Hook Form) - Form state management.
+ *   - useCategory, useSubCategoryById (TanStack Query) - Category hierarchy data.
+ *   - useCreateTag (TanStack Query) - Tag creation mutation.
+ *   - useAuth (AuthContext) - Language direction for RTL support.
+ *   - useTranslations (next-intl) - i18n translations.
+ *   - AccordionMultiSelectV2 - Recursive category tree selector.
+ *   - BrandSelect - Brand dropdown selector.
+ *   - PriceSection, DescriptionSection - Embedded sub-sections.
+ *   - AddImageContent - Image/video upload UI.
+ *   - isImage, isVideo (helpers) - File type detection.
+ */
 import React, { memo, useEffect, useMemo, useRef, useState } from "react";
 import AccordionMultiSelectV2 from "@/components/shared/AccordionMultiSelectV2";
 import { Label } from "@/components/ui/label";

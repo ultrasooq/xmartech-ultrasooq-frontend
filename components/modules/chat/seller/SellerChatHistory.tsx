@@ -1,3 +1,42 @@
+/**
+ * @file SellerChatHistory.tsx
+ * @description Scrollable chat message history view for the seller side of RFQ
+ *   negotiations. Renders a chronological list of messages including text, file
+ *   attachments, price request statuses (APPROVED/REJECTED/PENDING), and
+ *   vendor-suggested product displays.
+ *
+ * @props
+ *   - roomId {number | null} - The active chat room ID.
+ *   - selectedChatHistory {any[]} - Array of chat message objects to render.
+ *   - chatHistoryLoading {boolean} - Whether chat history is currently loading.
+ *   - updateRfqMessageCount {() => void} - Callback to refresh unread message
+ *     counts after marking messages as read.
+ *   - buyerId {number | undefined} - The buyer's user ID for identifying
+ *     sender vs receiver alignment.
+ *   - rfqUserId {number} - The RFQ quote user ID for status updates.
+ *   - unreadMsgCount {number} - Number of unread messages to mark as read.
+ *   - isUploadingCompleted {boolean | null} - Flag to scroll to bottom when
+ *     an attachment upload finishes.
+ *
+ * @behavior
+ *   - Auto-scrolls to the bottom of the chat container when new messages arrive
+ *     or when an attachment upload completes.
+ *   - Marks unread messages as read via `updateUnreadMessages` API when the
+ *     component mounts or when buyerId/roomId changes.
+ *   - Renders price request status badges with approve/reject actions through
+ *     `updateRfqRequestStatus` socket event.
+ *   - Displays file attachments with DownloadIconButton for download capability.
+ *   - Shows suggested product cards with images, prices, and quantities.
+ *
+ * @dependencies
+ *   - useSocket (SocketContext) - For updating RFQ request statuses.
+ *   - useAuth (AuthContext) - User info, currency, language direction.
+ *   - updateUnreadMessages (API request) - Marks messages as read.
+ *   - DownloadIconButton - File download component.
+ *   - RfqProductPriceRequestStatus - Enum for price request statuses.
+ *   - moment - Date/time formatting.
+ *   - validator - URL validation for images.
+ */
 import React, { useEffect, useRef } from "react";
 import Image from "next/image";
 import moment from "moment";

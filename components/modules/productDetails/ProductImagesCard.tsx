@@ -1,3 +1,41 @@
+/**
+ * @file ProductImagesCard.tsx
+ * @description Product image gallery component with carousel, thumbnail
+ *   navigation, video support, wishlist button, and action modals (edit,
+ *   customize, seller reward). Displays the main product image area with
+ *   interactive features.
+ *
+ * @props
+ *   - productDetails {any} - Full product details object containing images,
+ *     admin info, dropship data, seller images.
+ *   - isLoading {boolean} - Whether product data is loading (shows skeleton).
+ *   - onWishlist {(productId, wishlistData) => void} - Wishlist toggle callback.
+ *   - inWishlist {boolean} - Current wishlist state.
+ *   - haveAccessToken {boolean} - Whether the user is authenticated.
+ *
+ * @behavior
+ *   - Renders a main image carousel (Embla via shadcn) with thumbnail strip.
+ *   - Combines regular product images with dropship marketing images.
+ *   - Supports video content (detected via isVideo helper, rendered with ReactPlayer).
+ *   - Thumbnail clicks navigate to the corresponding carousel slide.
+ *   - Active thumbnail is highlighted with a border.
+ *   - Wishlist heart button (filled/outlined) toggles wishlist state.
+ *   - Edit button opens ProductEditForm dialog (for product owners).
+ *   - Customize button opens AddToCustomizeForm dialog (for factory products).
+ *   - Seller Reward button fetches rewards via `useSellerRewards` and opens
+ *     SellerRewardDetail dialog.
+ *   - Shows loading skeleton while data is fetching.
+ *
+ * @dependencies
+ *   - Carousel, CarouselApi (shadcn/Embla) - Image carousel.
+ *   - useSellerRewards (TanStack Query) - Seller reward data.
+ *   - useMe (TanStack Query) - Current user data for owner detection.
+ *   - Dialog (shadcn) - Modal containers for edit/customize/reward forms.
+ *   - ReactPlayer - Video playback.
+ *   - ProductEditForm, AddToCustomizeForm, SellerRewardDetail - Action modals.
+ *   - useAuth (AuthContext) - User info, language direction.
+ *   - isImage, isVideo (helpers) - File type detection.
+ */
 import { Button } from "@/components/ui/button";
 import {
   Carousel,

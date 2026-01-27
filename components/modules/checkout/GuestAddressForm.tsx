@@ -1,3 +1,13 @@
+/**
+ * @file GuestAddressForm.tsx
+ * @description Modal form for guest (unauthenticated) users to enter or edit a
+ * shipping or billing address during checkout. Uses react-hook-form with Zod
+ * validation for fields: first name, last name, phone, address, country, state,
+ * city, town, and postcode. Country/state/city selects are cascading -- selecting
+ * a country fetches states, and selecting a state fetches cities. Supports both
+ * "add" and "edit" modes based on whether existing address data is present.
+ */
+
 import React, { useEffect, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -18,6 +28,7 @@ const customStyles = {
   control: (base: any) => ({ ...base, height: 48, minHeight: 48 }),
 };
 
+/** Props for the GuestAddressForm modal component. */
 type GuestAddressFormProps = {
   onClose: () => void;
   addressType?: "shipping" | "billing";
@@ -27,6 +38,12 @@ type GuestAddressFormProps = {
   guestBillingAddress?: any;
 };
 
+/**
+ * Builds a Zod validation schema for guest address fields.
+ * All string fields are trimmed and length-constrained; town must be alphabetic only.
+ * @param t - next-intl translation function for localised error messages.
+ * @returns A Zod object schema matching the address form shape.
+ */
 const formSchema = (t: any) => {
   return z.object({
     firstName: z
@@ -94,6 +111,16 @@ const formSchema = (t: any) => {
   });
 };
 
+/**
+ * Guest address form component rendered inside a modal dialog.
+ * Provides input fields for name, phone, address, and cascading location
+ * selectors (country -> state -> city). On submit, resolves the label names
+ * for selected country/state/city and passes the full data object to the
+ * appropriate setter (shipping or billing) before closing.
+ *
+ * @param props - {@link GuestAddressFormProps}
+ * @returns A form with validated address inputs and a submit button.
+ */
 const GuestAddressForm: React.FC<GuestAddressFormProps> = ({
   onClose,
   addressType,

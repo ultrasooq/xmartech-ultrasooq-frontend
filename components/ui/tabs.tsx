@@ -1,3 +1,17 @@
+/**
+ * @file Tabs - Shadcn UI tabbed interface component.
+ * @description Provides a set of composable tab primitives (Tabs, TabsList, TabsTrigger,
+ * TabsContent) built on Radix UI Tabs for keyboard-accessible, animated tab navigation.
+ *
+ * @exports Tabs - Root container managing tab state (re-export of Radix Tabs.Root).
+ * @exports TabsList - Horizontal container for tab triggers with muted background.
+ * @exports TabsTrigger - Individual clickable tab button with active state styling.
+ * @exports TabsContent - Panel content associated with a specific tab, shown when active.
+ *
+ * @dependencies
+ *   - @radix-ui/react-tabs - Accessible tabs primitive.
+ *   - @/lib/utils (cn) - Tailwind class merging utility.
+ */
 "use client"
 
 import * as React from "react"
@@ -5,6 +19,7 @@ import * as TabsPrimitive from "@radix-ui/react-tabs"
 
 import { cn } from "@/lib/utils"
 
+/** Root Tabs wrapper managing active tab state. */
 const Tabs = TabsPrimitive.Root
 
 const TabsList = React.forwardRef<

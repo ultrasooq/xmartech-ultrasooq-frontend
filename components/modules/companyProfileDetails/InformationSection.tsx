@@ -1,3 +1,25 @@
+/**
+ * @file InformationSection.tsx
+ * @description Owner-facing company information section on the company profile page.
+ *   Displays the company's email, phone number, and social media links, with an
+ *   edit button linking to the profile editing page.
+ *
+ * @props
+ *   - userDetails {any} - User/company profile object containing email,
+ *     phoneNumber, and userSocialLink array.
+ *
+ * @behavior
+ *   - Identical layout to VendorInformationSection but includes an edit icon
+ *     (link to /profile) for the profile owner.
+ *   - Renders labeled rows for email and phone number.
+ *   - Memoizes social links rendering from `userDetails.userSocialLink` array.
+ *   - Each social link displayed as a share icon with external link navigation.
+ *   - Supports RTL layout via `langDir` from AuthContext.
+ *
+ * @dependencies
+ *   - useAuth (AuthContext) - Language direction.
+ *   - useTranslations (next-intl) - i18n translations.
+ */
 import Image from "next/image";
 import React, { useMemo } from "react";
 import EditIcon from "@/public/images/edit-icon.svg";

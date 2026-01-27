@@ -1,3 +1,23 @@
+/**
+ * @file Existing Products Page - app/existing-products/page.tsx
+ * @route /existing-products
+ * @description Browse and add existing marketplace products to the seller's own catalog.
+ *   Displays products with brand filter sidebar (useBrands, Accordion + Checkbox), search
+ *   input with debounce, and a selection mechanism (checkbox per product). Selected products
+ *   can be bulk-added to the seller's catalog via useAddMultiplePriceForProduct mutation.
+ *   Shows ProductCard grid with pagination and loading skeletons.
+ * @authentication Required; checks PUREMOON_TOKEN_KEY cookie.
+ * @key_components ProductCard, Pagination, Accordion (brand filter), Checkbox, Input,
+ *   Button, SkeletonProductCardLoader, Footer
+ * @data_fetching
+ *   - useAllProducts for product listings with search/filter/pagination
+ *   - useExistingProduct for existing product search
+ *   - useBrands for brand filter options
+ *   - useMe for user identity
+ *   - useAddMultiplePriceForProduct mutation for bulk-adding products
+ * @state_management Local state for selectedProducts, brandIds, search, page;
+ *   debounced search via lodash debounce.
+ */
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
 import {

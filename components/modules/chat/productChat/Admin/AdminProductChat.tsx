@@ -1,3 +1,35 @@
+/**
+ * @file AdminProductChat.tsx
+ * @description Admin/seller-side product chat component for managing multiple
+ *   buyer conversations about a single product. Displays a sidebar list of all
+ *   buyers who have messaged about the product alongside the active chat history
+ *   and message input.
+ *
+ * @props
+ *   - productId {number} - The product ID to load conversations for.
+ *   - sellerId {number} - The seller's user ID.
+ *   - productDetails {any} - Product details object for display.
+ *   - roomId {number} - Optional pre-existing room ID to load directly.
+ *
+ * @behavior
+ *   - If a roomId is provided, loads that room's chat directly. Otherwise, fetches
+ *     all product messages via `getProductMessages` and selects the first buyer.
+ *   - Displays a sidebar with `ProductMessage` cards for each buyer conversation.
+ *   - Supports real-time messaging via SocketContext (sendMessage,
+ *     cratePrivateRoom, newMessage, newAttachment).
+ *   - Supports emoji picker and file attachment uploads.
+ *   - Appends new messages to chat history in real-time and auto-selects rooms
+ *     when created.
+ *   - Shows loading states and error toasts for failed operations.
+ *
+ * @dependencies
+ *   - useSocket (SocketContext) - Real-time messaging.
+ *   - getChatHistory, getProductMessages, uploadAttachment (API requests).
+ *   - useAuth (AuthContext) - Current user info.
+ *   - ProductChatHistory - Message history renderer.
+ *   - EmojiPicker - Emoji selection overlay.
+ *   - generateUniqueNumber - Generates unique message IDs.
+ */
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import AttachIcon from "@/public/images/attach.svg";

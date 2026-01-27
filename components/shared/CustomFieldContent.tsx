@@ -1,3 +1,18 @@
+/**
+ * @file CustomFieldContent - Dialog content for selecting a custom field type.
+ * @description Renders a list of available custom field types (Text, Textarea,
+ * Dropdown, Checkbox, Radio Button, Date) as icon-labeled buttons inside a dialog.
+ * Clicking a field type invokes the setFieldType callback and closes the dialog.
+ *
+ * @props
+ *   - setFieldType {(type: string) => void} - Callback receiving the selected field type string.
+ *   - onClose {() => void} - Callback to close the dialog.
+ *
+ * @dependencies
+ *   - @/components/ui/dialog (DialogHeader, DialogTitle) - Dialog layout components.
+ *   - @/components/ui/button (Button) - Styled button component.
+ *   - @radix-ui/react-icons - Field type icons (TextIcon, CalendarIcon, etc.).
+ */
 import React from "react";
 import { DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "../ui/button";

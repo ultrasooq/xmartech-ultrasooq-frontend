@@ -1,3 +1,27 @@
+/**
+ * @file RFQ Product Detail Page - app/rfq/[id]/page.tsx
+ * @route /rfq/:id (dynamic segment = product ID)
+ * @description RFQ-specific product detail page. Displays product images (ProductImagesCard),
+ *   description (PlateEditor), vendor info (VendorSection), tabs for Description / Reviews /
+ *   Q&A, and related products (RelatedProductsSection). Instead of standard add-to-cart,
+ *   provides an "Add to RFQ" flow via AddToRfqForm modal dialog, which adds the product
+ *   to the RFQ cart (useUpdateRfqCartWithLogin). Also shows the current RFQ cart sidebar
+ *   (useRfqCartListByUserId). Supports wishlist toggling.
+ * @authentication Optional; supports guest and authenticated flows.
+ * @key_components ProductImagesCard, ProductDescriptionCard, VendorSection, ReviewSection,
+ *   QuestionsAnswersSection, RelatedProductsSection, PlateEditor, AddToRfqForm, Dialog,
+ *   Button, Footer
+ * @data_fetching
+ *   - useProductById for product details
+ *   - useOneWithProductPrice for pricing data
+ *   - useRfqCartListByUserId for RFQ cart state
+ *   - useUpdateRfqCartWithLogin for RFQ cart operations
+ *   - useDeleteRfqCartItem for RFQ cart item removal
+ *   - useAddToWishList / useDeleteFromWishList for wishlist
+ *   - useMe for user identity
+ * @state_management Local state for RFQ cart visibility, quantity, selectedVariant,
+ *   haveAccessToken, addToRfqForm modal state.
+ */
 "use client";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {

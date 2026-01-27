@@ -1,3 +1,22 @@
+/**
+ * @file Edit Freelancer Branch Page - app/freelancer-profile/edit-branch/page.tsx
+ * @route /freelancer-profile/edit-branch?branchId=<id>
+ * @description Form page for editing an existing freelancer branch. Loads branch data via
+ *   useFetchCompanyBranchById and pre-fills the form with branch name, phone, location
+ *   (country/state/city), address, working hours (per day with AM/PM), logo, categories
+ *   (AccordionMultiSelectV2/MultiSelectCategory), and tags. Uses Zod validation. On submit,
+ *   calls useUpdateFreelancerBranch mutation and redirects to /freelancer-profile-details.
+ * @authentication Required; uses authenticated branch fetch and update queries.
+ * @key_components Form (react-hook-form + Zod), AccordionMultiSelectV2, MultiSelectCategory,
+ *   ControlledPhoneInput, ControlledTextInput, Checkbox, Label, Button, ReactSelect
+ * @data_fetching
+ *   - useFetchCompanyBranchById for existing branch data
+ *   - useUpdateFreelancerBranch mutation for saving changes
+ *   - useTags for tag autocomplete
+ *   - useCountries for cascading location selects
+ * @state_management react-hook-form with Zod resolver; local state for image file,
+ *   working hours, categories; useSearchParams for branchId.
+ */
 "use client";
 import { useUpdateFreelancerBranch } from "@/apis/queries/freelancer.queries";
 import AccordionMultiSelectV2 from "@/components/shared/AccordionMultiSelectV2";

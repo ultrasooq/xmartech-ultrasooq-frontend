@@ -1,3 +1,28 @@
+/**
+ * @file Profile Page - app/profile/page.tsx
+ * @route /profile
+ * @description User profile edit page. Allows updating personal info: profile picture,
+ *   first/last name, gender, date of birth, auto-generated username, email (disabled),
+ *   multiple phone numbers (field array), social media links (accordion with type selector),
+ *   identity proof front/back images (for COMPANY/FREELANCER sub-accounts), and business
+ *   categories (AccordionMultiSelectV2). On submit, uploads images via useUploadFile,
+ *   then calls useUpdateProfile. Redirects post-save based on tradeRole: BUYER -> /home,
+ *   COMPANY -> /company-profile or /company-profile-details, FREELANCER -> /freelancer-profile
+ *   or /freelancer-profile-details, MEMBER -> /member-profile-details.
+ * @authentication Required; reads PUREMOON_TOKEN_KEY cookie. useMe() fetches user data.
+ * @key_components Form (react-hook-form + Zod), ControlledTextInput, ControlledDatePicker,
+ *   ControlledSelectInput, ControlledPhoneInput, AccordionMultiSelectV2, AddImageContent,
+ *   Accordion (social links), RadioGroup (gender), Button
+ * @data_fetching
+ *   - useMe() for current user data to pre-fill form
+ *   - useUniqueUser() for business categories of the user
+ *   - useUserBusinessCategories() for all available business categories
+ *   - useUploadFile() mutation for profile/identity image uploads
+ *   - useUpdateProfile() mutation for form submission
+ *   - useCurrentAccount() / useMyAccounts() for sub-account detection
+ * @state_management useFieldArray for phoneNumberList and socialLinkList;
+ *   local state for image files, username auto-generation tracking, data loaded flag.
+ */
 "use client";
 import {
   useMe,

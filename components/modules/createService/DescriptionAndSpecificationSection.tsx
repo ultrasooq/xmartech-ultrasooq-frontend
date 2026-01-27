@@ -1,3 +1,14 @@
+/**
+ * @file DescriptionAndSpecificationSection.tsx
+ * @description Service creation form section for description and feature specifications.
+ * Provides:
+ * - Markdown description editor (ControlledMarkdownEditor)
+ * - Dynamic service features field array: each feature has a name, cost type
+ *   (FLAT or HOURLY via select), and cost value
+ * - Add/remove feature controls (up to N features)
+ * Uses react-hook-form's `useFieldArray` for dynamic feature management.
+ */
+
 import React from "react";
 import ControlledRichTextEditor from "@/components/shared/Forms/ControlledRichTextEditor";
 import ControlledMarkdownEditor from "@/components/shared/Forms/ControlledMarkdownEditor";
@@ -11,6 +22,12 @@ import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 import ControlledNumberInput from "@/components/shared/Forms/ControlledNumberInput";
 
+/**
+ * Description and specification section with Markdown editor and dynamic service
+ * features (name, cost type, cost) managed via field array.
+ *
+ * @returns A form section with description editor and feature specification controls.
+ */
 const DescriptionAndSpecificationSection = () => {
   const t = useTranslations();
   const { langDir } = useAuth();

@@ -1,3 +1,27 @@
+/**
+ * @file CompactVendorInfo.tsx
+ * @description A compact inline vendor information display component. Shows
+ *   "Sold By" vendor name (linked to profile), email address, and a verified
+ *   badge. Used within the ProductDescriptionCard to show the primary seller.
+ *
+ * @props
+ *   - adminId {string} - The vendor's admin user ID used to fetch vendor details.
+ *
+ * @behavior
+ *   - Fetches vendor details via `useVendorDetails` query, enabled only when
+ *     adminId is provided.
+ *   - Invalidates the vendor-details cache whenever adminId changes to ensure
+ *     fresh data when switching between products/sellers.
+ *   - Renders the vendor's account name as a link to their company profile page
+ *     (`/company-profile-details/{adminId}`).
+ *   - Shows email address and a "Verified" badge indicator.
+ *   - Returns null or minimal content when vendor data is not yet loaded.
+ *
+ * @dependencies
+ *   - useVendorDetails (TanStack Query) - Fetches vendor profile data.
+ *   - useQueryClient (TanStack React Query) - Cache invalidation.
+ *   - Link (next/link) - Client-side navigation to vendor profile.
+ */
 import React, { useEffect } from "react";
 import { useVendorDetails } from "@/apis/queries/product.queries";
 import Link from "next/link";

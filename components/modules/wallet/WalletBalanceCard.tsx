@@ -4,11 +4,25 @@ import { IWallet } from "@/utils/types/wallet.types";
 import { useAuth } from "@/context/AuthContext";
 import { useTranslations } from "next-intl";
 
+/**
+ * Props for the {@link WalletBalanceCard} component.
+ *
+ * @property wallet  - The wallet data object, or `null` when not loaded.
+ * @property loading - When `true`, renders skeleton placeholders.
+ */
 interface WalletBalanceCardProps {
   wallet: IWallet | null;
   loading?: boolean;
 }
 
+/**
+ * Displays the user's wallet balance summary card. Shows total balance,
+ * available balance (total minus frozen), frozen balance, and currency
+ * code. Renders skeleton loaders when `loading` is `true`.
+ *
+ * @param props - {@link WalletBalanceCardProps}
+ * @returns A wallet balance card element.
+ */
 const WalletBalanceCard: React.FC<WalletBalanceCardProps> = ({ wallet, loading = false }) => {
   const { currency } = useAuth();
   const t = useTranslations();

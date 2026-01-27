@@ -1,3 +1,18 @@
+// tsconfig.json — TypeScript configuration for the Ultrasooq Next.js frontend.
+//
+// @intent   Configures TypeScript for a Next.js 15 project with strict mode,
+//           ESNext target, and path aliases.
+// @notes
+//   - "strict": true           — Enables all strict type-checking options.
+//   - "noEmit": true           — Next.js handles compilation; tsc is for type-checking only.
+//   - "module": "esnext"       — ESM module system (Next.js handles bundling).
+//   - "moduleResolution": "node" — Standard Node.js module resolution.
+//   - "jsx": "preserve"        — Next.js handles JSX transformation.
+//   - "paths": { "@/*": ["./*"] } — Enables "@/" alias for root-relative imports.
+//   - "plugins": [{ "name": "next" }] — Next.js TypeScript plugin for enhanced DX.
+//   - "incremental": true      — Speeds up repeated type-checking runs.
+//   - "isolatedModules": true  — Required for compatibility with Next.js SWC compiler.
+//   - "noUnusedLocals" is commented out — would flag unused variables if enabled.
 {
 	"compilerOptions": {
 		"lib": ["dom", "dom.iterable", "esnext"],

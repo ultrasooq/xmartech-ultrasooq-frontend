@@ -1,3 +1,29 @@
+/**
+ * @file ReviewSection - Product reviews listing with rating summary and sorting.
+ * @description Renders a complete product review section with average rating display,
+ * star visualization, sortable review list (newest/highest/lowest), and a "Write a
+ * Review" button for authenticated non-creator users who haven't reviewed yet. Reviews
+ * are displayed in a responsive grid of UserRatingCard components. Opens a ReviewForm
+ * dialog for creating or editing reviews. Calculates average rating from productReview
+ * array and checks if the current user has already reviewed.
+ *
+ * @props
+ *   - productId {string} - Product ID for fetching reviews.
+ *   - hasAccessToken {boolean} - Whether the user is authenticated.
+ *   - productReview {{ rating: number }[]} - Array of rating objects for average calculation.
+ *   - isCreator {boolean} - Whether the current user is the product creator.
+ *
+ * @dependencies
+ *   - ./UserRatingCard - Individual review card component.
+ *   - ./ReviewForm - Review creation/editing form dialog.
+ *   - @/components/ui/dialog (Dialog, DialogContent) - Modal dialog.
+ *   - @/components/ui/button (Button) - Action buttons.
+ *   - @/apis/queries/review.queries (useReviews) - Reviews data fetching.
+ *   - @/apis/queries/user.queries (useMe) - Current user data.
+ *   - react-icons/fa (FaStar, FaRegStar) - Star rating icons.
+ *   - next-intl (useTranslations) - Internationalization.
+ *   - @/context/AuthContext (useAuth) - Language direction context.
+ */
 import React, { useMemo, useState } from "react";
 import Image from "next/image";
 import UserRatingCard from "./UserRatingCard";

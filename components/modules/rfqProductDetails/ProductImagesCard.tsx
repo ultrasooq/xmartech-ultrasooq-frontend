@@ -1,3 +1,13 @@
+/**
+ * @file ProductImagesCard.tsx
+ * @description Left-side image gallery for the RFQ product detail page.
+ * Renders a carousel with thumbnail navigation, supports both images and videos
+ * (via ReactPlayer). Includes a wishlist toggle (heart icon), a "Send to Customize"
+ * button (visible only to the product owner), an "Ask Vendor for Price" link
+ * navigating to the seller RFQ request page, and an "Add to RFQ Cart" button
+ * that transitions to "Added to RFQ Cart" when already in cart.
+ */
+
 import { useMe } from "@/apis/queries/user.queries";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,6 +32,7 @@ import { FaHeart, FaRegHeart } from "react-icons/fa";
 import ReactPlayer from "react-player";
 import validator from "validator";
 
+/** Props for the RFQ product images gallery. */
 type ProductImagesCardProps = {
   productDetails: any;
   onAdd: (
@@ -44,6 +55,15 @@ type ProductImagesCardProps = {
   productNote?: string;
 };
 
+/**
+ * RFQ product image gallery with carousel navigation. Prioritizes seller-specific
+ * images (`productPrice_productSellerImage`) over base product images. Tracks
+ * the current slide index via the Embla carousel API. Shows previous/next arrows
+ * only when multiple images exist.
+ *
+ * @param props - {@link ProductImagesCardProps}
+ * @returns An image carousel with thumbnails, wishlist toggle, and RFQ action buttons.
+ */
 const ProductImagesCard: React.FC<ProductImagesCardProps> = ({
   productDetails,
   onAdd,

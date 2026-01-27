@@ -1,3 +1,12 @@
+/**
+ * @file SearchedBuygroupProducts.tsx
+ * @description Search results section for buy-group products. Fetches buy-group
+ * products by search term via `useAllBuyGroupProducts`, renders them as shared
+ * `ProductCard` components, and supports wishlist add/remove with toast feedback.
+ * Maps API response to `TrendingProduct` type including discount/pricing fields.
+ * Provides skeleton loading, empty state, and "View All" link to full listing.
+ */
+
 import React, { useEffect, useMemo, useState } from "react";
 import { useAllBuyGroupProducts } from "@/apis/queries/product.queries";
 import { useTranslations } from "next-intl";
@@ -11,6 +20,7 @@ import { useMe } from "@/apis/queries/user.queries";
 import Link from "next/link";
 import { useQueryClient } from "@tanstack/react-query";
 
+/** Props for the SearchedBuygroupProducts section. */
 type SearchedBuygroupProductsType = {
     searchTerm?: string;
     haveAccessToken: boolean;

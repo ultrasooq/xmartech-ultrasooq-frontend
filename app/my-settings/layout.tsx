@@ -1,3 +1,16 @@
+/**
+ * @file My Settings Layout - app/my-settings/layout.tsx
+ * @route /my-settings/* (wraps all settings sub-pages: address, change-password, change-email)
+ * @description Client-side layout for the "Account Settings" section. Provides a sidebar
+ *   navigation (user profile card, links to My Orders, Manage Address, Change Password,
+ *   Change Email) alongside the main content area where child settings pages render.
+ * @authentication Requires logged-in user; fetches current user via useMe().
+ *   Sidebar conditionally shows "Change Password" and "Change Email" links only
+ *   when loginType is "MANUAL" (hides for social logins).
+ * @key_components PackageIcon, ChevronDownIcon, UserIcon, Link (Next.js), Image (user avatar)
+ * @data_fetching useMe() -- retrieves user profile for avatar, name, and login type.
+ * @state_management usePathname() for active-link highlighting; useMemo for initials.
+ */
 "use client";
 import React, { useMemo } from "react";
 import Image from "next/image";

@@ -1,3 +1,13 @@
+/**
+ * @file AddServiceToCartModal.tsx
+ * @description Modal dialog for adding a service to the cart. Fetches the full
+ * service details including features via `useServiceById`, then lets users
+ * configure quantity and optionally date/time for each feature.
+ * Supports both standalone service cart additions (`useAddServiceToCart`) and
+ * product-related service additions (`useAddServiceToCartWithProduct`).
+ * Displays per-feature pricing with cost type (FLAT/HOURLY) and computes totals.
+ */
+
 import React, { useEffect, useMemo, useState } from "react";
 import { DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useTranslations } from "next-intl";
@@ -7,8 +17,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useAddServiceToCartWithProduct } from "@/apis/queries/cart.queries";
 import { DatePicker, TimePicker } from "./service-features/CommanUtils";
 
-
-
+/** Props for the AddServiceToCartModal dialog. */
 type AddServiceToCartModalProps = {
     id?: number;
     open: boolean;

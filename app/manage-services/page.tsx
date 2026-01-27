@@ -1,3 +1,21 @@
+/**
+ * @file Manage Services Page - app/manage-services/page.tsx
+ * @route /manage-services
+ * @description Seller service management dashboard. Displays all services owned by the
+ *   current seller in grid or list view (ServiceCard / ServiceTable). Features include:
+ *   search input, sort dropdown (price, newest, rating), pagination, "Add New Service"
+ *   button (navigates to /manage-services/create-service), and wishlist toggling.
+ *   Wrapped with withActiveUserGuard HOC for active user enforcement.
+ * @authentication Required; uses auth-based service queries.
+ * @key_components ServiceCard, ServiceTable, GridIcon, ListIcon, IoMdAdd icon, Select,
+ *   Input, Pagination, SkeletonProductCardLoader, Footer, withActiveUserGuard (HOC)
+ * @data_fetching
+ *   - useGetAllServices for service listing with search/sort/pagination
+ *   - useAddToWishList / useDeleteFromWishList for wishlist
+ *   - useMe for user identity
+ * @state_management Local state for page, search, sort, gridView toggle;
+ *   debounced search input via lodash debounce.
+ */
 "use client";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";

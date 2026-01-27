@@ -1,3 +1,26 @@
+/**
+ * @file RFQ Cart Page - app/rfq-cart/page.tsx
+ * @route /rfq-cart
+ * @description Shopping cart page specifically for RFQ (Request for Quotation) products.
+ *   Displays RFQ cart items (useRfqCartListByUserId) with quantity controls and removal.
+ *   Users select a shipping address (from useAllUserAddress or enter manually with
+ *   country/state/city cascading selects), set a delivery date (ControlledDatePicker),
+ *   and submit the RFQ quote request via useAddRfqQuotes. Shows an order summary with
+ *   item totals. Uses Zod-validated form for address and delivery details.
+ * @authentication Required; uses authenticated RFQ cart and address queries.
+ * @key_components RfqProductCard, ControlledDatePicker, ControlledTextInput, Form
+ *   (react-hook-form + Zod), Button, Footer, ReactSelect, MdOutlineChevronLeft
+ * @data_fetching
+ *   - useRfqCartListByUserId for RFQ cart items
+ *   - useAllUserAddress for saved addresses
+ *   - useAllCountries / useFetchStatesByCountry / useFetchCitiesByState for location selects
+ *   - useMe for user profile
+ *   - useUpdateRfqCartWithLogin for quantity updates
+ *   - useDeleteRfqCartItem for item removal
+ *   - useAddRfqQuotes mutation for submitting the RFQ quote
+ * @state_management react-hook-form with Zod resolver for address/delivery form;
+ *   local state for address mode (saved vs manual), selected country/state/city.
+ */
 "use client";
 import { useAllUserAddress } from "@/apis/queries/address.queries";
 import {

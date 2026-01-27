@@ -14,6 +14,17 @@ import { checkCategoryConnection } from "@/utils/categoryConnection";
 import { useCategory } from "@/apis/queries/category.queries";
 import { useCurrentAccount } from "@/apis/queries/auth.queries";
 
+/**
+ * Props for the {@link WishlistCard} component.
+ *
+ * @property productId          - The product ID for delete operations.
+ * @property wishlistData       - Full product data object from the
+ *   wishlist API including `productImages`, `productName`,
+ *   `product_productPrice`, `productReview`, etc.
+ * @property onDeleteFromWishlist - Callback fired to remove the item
+ *   from the wishlist; receives the `productId`.
+ * @property id                 - Wishlist entry ID (used for keying).
+ */
 type WishlistCardProps = {
   productId: number;
   wishlistData: any;
@@ -21,6 +32,28 @@ type WishlistCardProps = {
   id: number;
 };
 
+/**
+ * Grid-card component for displaying a single wishlist item.
+ *
+ * Features:
+ * - **Product image** with hover zoom effect and placeholder fallback.
+ * - **Discount badge** showing percentage off (hidden for not-yet-started
+ *   buygroup sales).
+ * - **"Not Started" badge** for buygroup products whose sale window has
+ *   not yet opened.
+ * - **Average star rating** computed from `productReview` entries.
+ * - **Price display** with discounted price, original price strikethrough,
+ *   and savings amount.
+ * - **"Ask Vendor for Price"** button when `askForPrice` is `"true"`.
+ * - **"Coming Soon"** state with sale start date for future buygroup items.
+ * - **Trash icon** (appears on hover) to remove from wishlist.
+ *
+ * Discount calculation follows the marketplace discount matrix using
+ * {@link checkCategoryConnection} and the current user's trade role.
+ *
+ * @param props - {@link WishlistCardProps}
+ * @returns A styled card element for the wishlist grid.
+ */
 const WishlistCard: React.FC<WishlistCardProps> = ({
   productId,
   wishlistData,
@@ -48,7 +81,14 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
   
   const categoryConnections = productCategoryQuery?.data?.data?.category_categoryIdDetail || [];
   
-  // Helper function to get local timestamp from date and time strings
+  /**
+   * Converts a date string and optional time string ("HH:mm") into a
+   * Unix timestamp in milliseconds.
+   *
+   * @param dateStr - ISO date string (e.g., "2024-06-01").
+   * @param timeStr - Optional time in "HH:mm" format.
+   * @returns Timestamp in ms, or `0` on missing/invalid input.
+   */
   const getLocalTimestamp = (dateStr?: string, timeStr?: string) => {
     if (!dateStr) return 0;
     try {
@@ -79,7 +119,12 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
   const saleNotStarted = isBuygroup && buygroupStartTime > 0 && now < buygroupStartTime;
   const saleExpired = isBuygroup && buygroupEndTime > 0 && now > buygroupEndTime;
   
-  // Helper function to format sale start date
+  /**
+   * Formats the buygroup sale start date/time as a locale-specific
+   * string (e.g., "Jun 01, 2024, 09:00 AM").
+   *
+   * @returns Formatted date string, or an empty string if unavailable.
+   */
   const getSaleStartLabel = () => {
     try {
       if (!isBuygroup || !wishlistData?.product_productPrice?.[0]) return "";
@@ -103,6 +148,21 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
     }
   };
   
+  /**
+   * Computes the final display price after applying the applicable
+   * discount based on the marketplace discount matrix.
+   *
+   * Logic:
+   * - **Vendor with matching category** -- vendor discount.
+   * - **Vendor, EVERYONE type, non-matching category** -- consumer discount.
+   * - **Vendor, VENDOR type, non-matching category** -- no discount.
+   * - **Buyer** -- consumer discount (only if consumerType is CONSUMER
+   *   or EVERYONE).
+   *
+   * Supports both PERCENTAGE and FLAT discount types.
+   *
+   * @returns The final price as a number rounded to two decimals.
+   */
   const calculateDiscountedPrice = () => {
     const price = wishlistData?.product_productPrice?.[0]?.offerPrice
       ? Number(wishlistData.product_productPrice?.[0]?.offerPrice)
@@ -177,6 +237,7 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
     return price;
   };
 
+  /** Memoised average rating (floored integer 0-5) from product reviews. */
   const calculateAvgRating = useMemo(() => {
     const totalRating = wishlistData?.productReview?.reduce(
       (acc: number, wishlistData: { rating: number }) => {
@@ -190,6 +251,10 @@ const WishlistCard: React.FC<WishlistCardProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wishlistData?.productReview?.length]);
 
+  /**
+   * Memoised function that returns an array of 5 star icons (filled or
+   * outlined) based on the provided rating value.
+   */
   const calculateRatings = useMemo(
     () => (rating: number) => {
       const stars: Array<React.ReactNode> = [];

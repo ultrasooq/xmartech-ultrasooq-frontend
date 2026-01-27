@@ -1,3 +1,35 @@
+/**
+ * @file Create / Edit Product Page - app/product/page.tsx
+ * @route /product (also used for ?edit=<productId> and ?copy=<productId> query params)
+ * @description Comprehensive product creation and editing form for sellers. Handles two
+ *   product types: "P" (Physical) and "R" (RFQ). Features include:
+ *   (1) BasicInformationSection -- product name, brand, category, tags, condition, country,
+ *       warranty, menu type (STORE/BUYGROUP/FACTORIES/RFQ), product images, product videos.
+ *   (2) ProductDetailsSection -- pricing (offerPrice, MRP, productGroup), variant management
+ *       with attribute combinations, stock, SKU, UPC/GTIN, consumerType discounts.
+ *   (3) DescriptionAndSpecificationSection -- rich text description and key/value specs.
+ *   (4) DropshipProductForm -- dropship pricing tab for secondhand/sourced products.
+ *   (5) Edit mode: pre-fills form from useOneProductByProductCondition, handles image
+ *       re-upload and variant re-mapping. Copy mode: duplicates an existing product.
+ *   Validates with Zod schemas (formSchemaForTypeP, formSchemaForTypeR). On submit,
+ *   uploads images via useUploadMultipleFile, then calls useCreateProduct / useUpdateProduct /
+ *   useUpdateSingleProduct. Redirects to /manage-products on success.
+ * @authentication Required; checks PUREMOON_TOKEN_KEY cookie. Uses useCurrentAccount()
+ *   for trade role / account context.
+ * @key_components BasicInformationSection, ProductDetailsSection,
+ *   DescriptionAndSpecificationSection, DropshipProductForm, Form (react-hook-form + Zod),
+ *   LoaderWithMessage, Tabs, Button, Footer
+ * @data_fetching
+ *   - useOneProductByProductCondition for edit/copy pre-fill
+ *   - useExistingProductById, useProductById, useProductVariant for product data
+ *   - useTags for tag autocomplete
+ *   - useCreateProduct, useUpdateProduct, useUpdateSingleProduct mutations
+ *   - useUploadMultipleFile for image/video uploads
+ *   - useCurrentAccount for seller identity
+ * @state_management react-hook-form with useWatch for reactive form fields;
+ *   local state for activeTab, isSetUpPrice, selectedType, image/video files,
+ *   edit/copy mode detection via useSearchParams().
+ */
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
 import Image from "next/image";

@@ -1,3 +1,35 @@
+/**
+ * @file ProductChatHistory.tsx
+ * @description Scrollable chat message history for product-specific one-to-one
+ *   conversations. Renders chronological messages with user avatar initials,
+ *   text content, file attachment downloads, and timestamps.
+ *
+ * @props
+ *   - roomId {number | null} - The active chat room ID for marking messages read.
+ *   - selectedChatHistory {any[]} - Array of chat message objects to display.
+ *   - chatHistoryLoading {boolean} - Loading state for skeleton display.
+ *   - buyerId {number | undefined} - Buyer's user ID for unread message tracking.
+ *   - unreadMsgCount {number} - Count of unread messages to mark as read.
+ *   - updateMessageCount {() => void} - Callback to refresh message counts
+ *     after marking as read.
+ *
+ * @behavior
+ *   - Auto-scrolls to the bottom when new messages are added.
+ *   - Marks unread messages as read via `updateUnreadMessages` API when
+ *     buyerId or roomId changes.
+ *   - Renders user initials as colored avatar circles (first letter of first and
+ *     last names).
+ *   - Aligns sent messages (from current user) to the right and received messages
+ *     to the left.
+ *   - Displays file attachments with DownloadIconButton for download.
+ *   - Shows loading skeleton and empty state when no messages exist.
+ *
+ * @dependencies
+ *   - useAuth (AuthContext) - Current user info, language direction.
+ *   - updateUnreadMessages (API request) - Marks messages as read.
+ *   - DownloadIconButton - File download button component.
+ *   - moment - Timestamp formatting.
+ */
 import React, { useEffect, useRef } from "react";
 import moment from "moment";
 import Image from "next/image";

@@ -1,3 +1,18 @@
+/**
+ * @file ChainedCategoryDropdown - Three-level chained category multi-select.
+ * @description Renders three cascading multi-select dropdowns (react-select).
+ * Selecting categories in level 1 dynamically populates level 2 options,
+ * and level 2 selections populate level 3. Uses dummy data from utils.
+ *
+ * @behavior
+ *   - Level 1 options come from LINK_CATEGORY_ONE_LIST.
+ *   - Level 2 options are filtered based on level 1 selections via LINK_CATEGORY_TWO_LIST.
+ *   - Level 3 options are filtered based on level 2 selections via LINK_CATEGORY_THREE_LIST.
+ *
+ * @dependencies
+ *   - react-select (ReactSelect) - Multi-select dropdown component.
+ *   - @/utils/dummyDatas - Static category list data.
+ */
 import {
   LINK_CATEGORY_ONE_LIST,
   LINK_CATEGORY_THREE_LIST,

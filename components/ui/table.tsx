@@ -1,7 +1,25 @@
+/**
+ * @file Table - Shadcn UI table component family.
+ * @description Provides a set of composable HTML table primitives with consistent
+ * styling, hover states, and responsive overflow handling.
+ *
+ * @exports Table - Root table element wrapped in a scrollable container.
+ * @exports TableHeader - The thead element with bottom-bordered rows.
+ * @exports TableBody - The tbody element with no border on the last row.
+ * @exports TableFooter - The tfoot element with top border and muted background.
+ * @exports TableRow - A tr element with hover highlighting and selected state.
+ * @exports TableHead - A th element with muted foreground text.
+ * @exports TableCell - A td element with padding and checkbox alignment.
+ * @exports TableCaption - A caption element for accessibility.
+ *
+ * @dependencies
+ *   - @/lib/utils (cn) - Tailwind class merging utility.
+ */
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
+/** Root table element inside a scrollable overflow container. */
 const Table = React.forwardRef<
   HTMLTableElement,
   React.HTMLAttributes<HTMLTableElement>

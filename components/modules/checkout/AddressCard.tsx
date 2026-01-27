@@ -1,3 +1,12 @@
+/**
+ * @file AddressCard.tsx
+ * @description Selectable address card component for authenticated users during checkout.
+ * Displays the user's saved address with a radio button for selection, a dropdown
+ * menu with Edit/Delete actions, and formatted contact information (name, phone, address).
+ * Address parts (street, town, city, state, postcode, country) are joined with commas
+ * and empty segments are filtered out.
+ */
+
 import React from "react";
 import {
   DropdownMenu,
@@ -13,6 +22,7 @@ import DropdownIcon from "@/public/images/custom-hover-dropdown-btn.svg";
 import PhoneIcon from "@/public/images/phoneicon.svg";
 import LocationIcon from "@/public/images/locationicon.svg";
 
+/** Props for the AddressCard component. City, state, and country are objects with id and name. */
 type AddressCardProps = {
   id: number;
   firstName: string;
@@ -30,6 +40,14 @@ type AddressCardProps = {
   onSelectAddress: () => void;
 };
 
+/**
+ * Renders a saved address as a selectable card with radio button, contact details,
+ * and an options dropdown (edit/delete). Clicking the card or radio button triggers
+ * `onSelectAddress`.
+ *
+ * @param props - {@link AddressCardProps}
+ * @returns A card with radio selection, contact information, and edit/delete menu.
+ */
 const AddressCard: React.FC<AddressCardProps> = ({
   id,
   firstName,

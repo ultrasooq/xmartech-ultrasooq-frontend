@@ -1,3 +1,24 @@
+/**
+ * @file Register Page - app/register/page.tsx
+ * @route /register
+ * @description User registration page. Collects first name, last name, email (lowercase
+ *   enforced), password + confirm password, and phone number with country code. Includes
+ *   Terms of Use and Privacy Policy modals (PolicyContent, TermsContent), Google OAuth
+ *   sign-up via next-auth, and Zod form validation with superRefine for password matching.
+ *   On successful registration, sets PUREMOON_TOKEN_KEY cookie, fetches user profile
+ *   (fetchMe) and permissions (fetchUserPermissions), updates AuthContext, and redirects
+ *   to /profile. For manual registration with OTP, redirects to /otp-verify.
+ * @authentication Public page; handles both manual and Google social registration.
+ * @key_components Form (react-hook-form + shadcn), ControlledTextInput, ControlledPhoneInput,
+ *   Checkbox, LoaderWithMessage, Dialog (Terms/Privacy modals), PolicyContent, TermsContent
+ * @data_fetching
+ *   - useRegister() mutation for manual registration
+ *   - useSocialLogin() mutation for Google OAuth registration
+ *   - useUpdateUserCartByDeviceId() to merge guest cart post-registration
+ *   - fetchMe(), fetchUserPermissions() for user/permissions hydration
+ * @state_management AuthContext (setUser, setPermissions); local state for modal toggles,
+ *   isGoogleLoading; next-auth useSession for OAuth.
+ */
 "use client";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";

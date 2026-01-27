@@ -1,3 +1,42 @@
+/**
+ * @file RfqRequestChatHistory.tsx
+ * @description Scrollable chat message history for buyer-side RFQ negotiations.
+ *   Renders chronological messages including text, file attachments, price
+ *   negotiation statuses (APPROVED/REJECTED/PENDING), and vendor-suggested
+ *   product cards with selection capability.
+ *
+ * @props
+ *   - roomId {number | null} - The active chat room ID.
+ *   - selectedChatHistory {any[]} - Array of chat message objects to render.
+ *   - chatHistoryLoading {boolean} - Whether chat history is loading.
+ *   - activeSellerId {number | undefined} - The seller's user ID for message
+ *     alignment (sent vs received).
+ *   - unreadMsgCount {number} - Number of unread messages to mark as read.
+ *   - rfqUserId {number} - The RFQ quote user ID for status updates.
+ *   - updateVendorMessageCount {() => void} - Callback to refresh vendor
+ *     message counts after marking as read.
+ *   - isUploadingCompleted {boolean | null} - Scroll trigger for upload completion.
+ *   - onProductSelected {() => void} - Callback to refresh chat after buyer
+ *     selects a suggested product.
+ *
+ * @behavior
+ *   - Auto-scrolls to the bottom on new messages or completed uploads.
+ *   - Marks unread messages as read via `updateUnreadMessages`.
+ *   - Renders price request status badges with approve/reject capability
+ *     via `updateRfqRequestStatus` socket event.
+ *   - Displays suggested product cards from vendors; buyers can select products
+ *     via `selectSuggestedProducts` API with loading state tracking per suggestion.
+ *   - Shows file attachments with DownloadIconButton.
+ *   - Displays loading skeletons and empty state.
+ *
+ * @dependencies
+ *   - useSocket (SocketContext) - For updating RFQ request statuses.
+ *   - useAuth (AuthContext) - User info, currency, language direction.
+ *   - updateUnreadMessages, selectSuggestedProducts (API requests).
+ *   - DownloadIconButton - File download component.
+ *   - RfqProductPriceRequestStatus - Status enum.
+ *   - moment, validator - Date formatting and URL validation.
+ */
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import moment from "moment";

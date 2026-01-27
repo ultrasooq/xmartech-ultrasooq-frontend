@@ -27,6 +27,13 @@ import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 
+/**
+ * Props for the {@link ManageProductCard} component.
+ *
+ * Contains product pricing, inventory, discount, quantity-limit, and
+ * condition fields along with UI-control booleans for hiding various
+ * interactive elements.
+ */
 type ManageProductCardProps = {
   selectedIds?: number[];
   onSelectedId?: (args0: boolean | string, args1: number) => void;
@@ -67,6 +74,23 @@ type ManageProductCardProps = {
   isDropshipped?: boolean;
 };
 
+/**
+ * Primary product management card for the vendor's product listing page.
+ *
+ * Displays product image, name, type badges (Dropshipable / Regular /
+ * Dropship), stock and pricing info, brand/category metadata, and
+ * ACTIVE/INACTIVE status. Action buttons include:
+ * - **Eye icon** to toggle visibility status.
+ * - **Copy** to duplicate the product (navigates to `/product?copy=...`).
+ * - **Edit** (navigates to `/product?edit=true&...`).
+ * - **Delete** with browser confirmation.
+ *
+ * Manages all editable product-price fields as local state to support
+ * inline editing and bulk-edit prefill via the `onSelect` callback.
+ *
+ * @param props - {@link ManageProductCardProps}
+ * @returns A bordered card element for managing a product.
+ */
 const ManageProductCard: React.FC<ManageProductCardProps> = ({
   selectedIds,
   onSelectedId,

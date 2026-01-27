@@ -1,3 +1,38 @@
+/**
+ * @file VendorsSection.tsx
+ * @description Vendor listing section for the trending page (~505 lines). Displays
+ *   a searchable, paginated list of vendors with their products shown in horizontal
+ *   scroll containers.
+ *
+ * @props
+ *   - vendors {Vendor[]} - Array of vendor objects with profile and product data.
+ *   - isLoading {boolean} - Loading state for vendor data.
+ *   - wishlistMap, cartMap - Maps for product wishlist/cart state.
+ *   - haveAccessToken {boolean} - Whether the user is authenticated.
+ *   - onWishlist, onAddToCart - Product action callbacks.
+ *   - productVariants - Available product variants data.
+ *
+ * @behavior
+ *   - Search: debounced (300ms) vendor name filtering via lodash debounce.
+ *   - Pagination: configurable items-per-page (5/10/20/50) with page controls
+ *     (first, prev, next, last) and page number display.
+ *   - Contains internal `VendorWithProducts` sub-component that renders each
+ *     vendor header (avatar, name, business types, product count, profile link)
+ *     with a horizontally-scrollable row of ProductCard components.
+ *   - Vendor header includes view-on-profile link to
+ *     `/company-profile-details/{vendorId}`.
+ *   - Products within each vendor section show all trending module features
+ *     (discount, cart, wishlist, etc.).
+ *   - Shows loading skeletons and empty state.
+ *
+ * @dependencies
+ *   - ProductCard (trending module) - Product card renderer.
+ *   - debounce (lodash) - Search input debouncing.
+ *   - useAuth (AuthContext) - Currency, language direction.
+ *   - useTranslations (next-intl) - i18n translations.
+ *   - lucide-react icons - UI icons for vendor cards.
+ *   - Select (shadcn) - Items-per-page dropdown.
+ */
 "use client";
 import React, { useState, useMemo, useRef } from "react";
 import { useTranslations } from "next-intl";

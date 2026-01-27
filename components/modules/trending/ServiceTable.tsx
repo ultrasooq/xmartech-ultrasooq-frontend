@@ -1,3 +1,27 @@
+/**
+ * @file ServiceTable.tsx
+ * @description Simple service listing table component for the trending page.
+ *   Renders services in a tabular format with image, service name, category,
+ *   and type columns.
+ *
+ * @props
+ *   - services {any[]} - Array of service objects to display in the table.
+ *
+ * @behavior
+ *   - Renders a shadcn Table with header columns: Service (image + name),
+ *     Category, and Type.
+ *   - Each row shows a service image (with URL validation fallback to
+ *     placeholder), service name as a link to `/trending/{id}`, category
+ *     name, and sell type.
+ *   - Image thumbnail is 64x64px with rounded corners.
+ *   - Supports RTL layout via `langDir` from AuthContext.
+ *
+ * @dependencies
+ *   - Table, TableBody, TableCell, TableHead, TableHeader, TableRow (shadcn) - Table UI.
+ *   - validator - URL validation for service images.
+ *   - useAuth (AuthContext) - Language direction.
+ *   - useTranslations (next-intl) - i18n translations.
+ */
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import {

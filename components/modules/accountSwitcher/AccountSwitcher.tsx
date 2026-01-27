@@ -17,6 +17,28 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { ChevronDownIcon, UserIcon, BuildingIcon, ShoppingBagIcon } from "lucide-react";
 
+/**
+ * Dropdown component for switching between the user's multiple accounts
+ * in the multi-account system.
+ *
+ * Fetches all accounts via {@link useMyAccounts} and displays:
+ * - The currently active account (with role icon, name, trade role, and
+ *   optional company name).
+ * - A "Switch Account" section listing all other accounts (including the
+ *   main account when a sub-account is active).
+ * - A "Manage All Accounts" link that navigates to `/my-accounts`.
+ *
+ * Account switching is handled by {@link useSwitchAccount}, which sends
+ * a `userAccountId` (or `0` for the main account) to the backend. On
+ * success the user is redirected to `/home`.
+ *
+ * Icons are mapped by trade role:
+ * - `COMPANY`    -- {@link BuildingIcon}
+ * - `BUYER`      -- {@link ShoppingBagIcon}
+ * - `FREELANCER` -- {@link UserIcon}
+ *
+ * @returns A dropdown menu button for account switching.
+ */
 export default function AccountSwitcher() {
   const t = useTranslations();
   const { langDir } = useAuth();
@@ -27,6 +49,12 @@ export default function AccountSwitcher() {
   const { data: accountsData, isLoading } = useMyAccounts();
   const switchAccount = useSwitchAccount();
 
+  /**
+   * Switches to a specific sub-account by its ID. On success, shows a
+   * toast and redirects to `/home`.
+   *
+   * @param userAccountId - The ID of the user account to switch to.
+   */
   const handleSwitchAccount = async (userAccountId: number) => {
     try {
       await switchAccount.mutateAsync({ userAccountId });
@@ -46,6 +74,10 @@ export default function AccountSwitcher() {
     }
   };
 
+  /**
+   * Switches back to the main (primary) account by passing `userAccountId: 0`.
+   * On success, shows a toast and redirects to `/home`.
+   */
   const handleSwitchToMainAccount = async () => {
     try {
       await switchAccount.mutateAsync({ userAccountId: 0 });
@@ -65,6 +97,7 @@ export default function AccountSwitcher() {
     }
   };
 
+  /** Closes the dropdown and navigates to the account management page. */
   const handleManageAccounts = () => {
     setIsOpen(false);
     router.push("/my-accounts");
@@ -98,6 +131,12 @@ export default function AccountSwitcher() {
   const canSwitchToMain = !isMainAccount && mainAccount;
   const hasAccountsToSwitchTo = hasOtherSubAccounts || canSwitchToMain;
 
+  /**
+   * Returns the appropriate Lucide icon component for a given trade role.
+   *
+   * @param tradeRole - The account's trade role string.
+   * @returns A JSX icon element sized at `h-4 w-4`.
+   */
   const getAccountIcon = (tradeRole: string) => {
     switch (tradeRole) {
       case "COMPANY":

@@ -1,3 +1,12 @@
+/**
+ * @file PolicyContent - Static privacy policy content component.
+ * @description Renders the full Ultrasooq privacy policy as statically-defined
+ * JSX. Covers data collection, retention, third-party sharing, external links
+ * disclaimer, and consent practices. No props accepted; content is hardcoded
+ * for the Ultrasooq marketplace. Last modified date shown at the top.
+ *
+ * @exports default PolicyContent - The privacy policy content fragment.
+ */
 import React from "react";
 
 const PolicyContent = () => {

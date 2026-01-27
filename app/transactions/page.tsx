@@ -1,3 +1,17 @@
+/**
+ * @file Transactions Page - app/transactions/page.tsx
+ * @route /transactions
+ * @description Transaction history listing page. Displays a table of all user transactions
+ *   with columns: ID, amount, type, status, created date, and a "View" action button.
+ *   Clicking "View" opens a modal dialog showing full transaction details (amount, type,
+ *   status, reference, description, dates). Includes pagination for browsing history.
+ * @authentication Required (implicitly via useTransactions which uses auth token).
+ * @key_components Pagination, Dialog (transaction detail modal), FiEye (view icon),
+ *   Label, Input, Textarea, Button
+ * @data_fetching
+ *   - useTransactions({ page, limit }) for paginated transaction list
+ * @state_management Local state for page, limit, selectedTransaction, isTransactionModalOpen.
+ */
 "use client";
 import React, { useMemo, useRef, useState } from "react";
 import { useTransactions } from "@/apis/queries/transactions.queries";

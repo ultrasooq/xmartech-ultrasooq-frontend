@@ -1,3 +1,35 @@
+/**
+ * @file RfqRequestVendorCard.tsx
+ * @description Compact vendor card component used in the RFQ request vendor
+ *   sidebar list. Displays the vendor's profile picture, name, offer price,
+ *   last message preview, timestamp, unread message count badge, and
+ *   selection indicator.
+ *
+ * @props
+ *   - offerPrice {string} - The vendor's quoted offer price.
+ *   - name {string} - Vendor display name.
+ *   - profilePicture {string} - Vendor profile image URL.
+ *   - onClick {() => void} - Callback when the card is clicked.
+ *   - isSelected {boolean} - Whether this vendor card is currently active.
+ *   - seller {{ firstName, lastName, profilePicture }} - Seller detail object.
+ *   - vendor {{ lastUnreadMessage: { content, createdAt }, unreadMsgCount }} -
+ *     Vendor message data with last message and unread count.
+ *
+ * @behavior
+ *   - Displays vendor avatar with status indicators:
+ *     - Blue badge with count when unread messages exist.
+ *     - Green checkmark when an offer price has been quoted.
+ *   - Shows offer price in a green badge or "Not quoted yet" text.
+ *   - Renders last message preview (line-clamped to 2 lines) with relative
+ *     timestamp via moment.
+ *   - Shows "Click to start conversation" hint when no price or messages exist.
+ *   - Highlights with orange border and checkmark when selected.
+ *
+ * @dependencies
+ *   - useAuth (AuthContext) - Currency symbol.
+ *   - cn (utility) - Conditional class name merging.
+ *   - moment - Relative time display.
+ */
 import React from "react";
 import Image from "next/image";
 import moment from "moment";

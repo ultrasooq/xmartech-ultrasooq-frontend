@@ -1,3 +1,11 @@
+/**
+ * @file ProductReviewCard.tsx
+ * @description Individual product review card displayed in the reviews section of
+ * the freelancer/vendor profile. Shows product image, product name, star rating
+ * (filled/empty), review title, and review text. Includes an optional edit button
+ * icon for review management.
+ */
+
 import React, { useMemo } from "react";
 import Image from "next/image";
 import { FaStar } from "react-icons/fa";
@@ -6,6 +14,7 @@ import AvatarPlaceholder from "@/public/images/no-user-image.png";
 import { Button } from "@/components/ui/button";
 import EditIcon from "@/public/images/edit-rfq.png";
 
+/** Props for the ProductReviewCard component. */
 type ProductReviewCardProps = {
   productName: string;
   productImage: {

@@ -12,11 +12,32 @@ import { useAuth } from "@/context/AuthContext";
 import { useGetAllServices } from "@/apis/queries/services.queries";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 
+/**
+ * Props for the vendor operations {@link Products} panel.
+ *
+ * @property onSelectProduct - Callback fired when a product is selected
+ *   from the list, passing the product data object.
+ * @property onSelectService - Callback fired when a service is selected
+ *   from the list, passing the service data object.
+ */
 type ProductsProps = {
   onSelectProduct?: (item: { [key: string]: any }) => void;
   onSelectService?: (item: { [key: string]: any }) => void;
 };
 
+/**
+ * Middle panel of the vendor operations layout. Lists the vendor's
+ * products and services in two tabs ("Products" / "Services") with
+ * infinite scroll (load-more on scroll). Selecting an item invokes
+ * `onSelectProduct` or `onSelectService` with the item data.
+ *
+ * Uses {@link useAllManagedProducts} for products and
+ * {@link useGetAllServices} for services. For `MEMBER` trade roles,
+ * filters by the member's admin/owner ID.
+ *
+ * @param props - {@link ProductsProps}
+ * @returns A scrollable product/service list panel.
+ */
 const Products: React.FC<ProductsProps> = ({ onSelectProduct, onSelectService }) => {
   const t = useTranslations();
   const { langDir } = useAuth();

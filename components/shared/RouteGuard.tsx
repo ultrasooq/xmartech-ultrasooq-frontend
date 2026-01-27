@@ -1,3 +1,27 @@
+/**
+ * @file RouteGuard - Client-side route access control component.
+ * @description Guards routes by checking the current user's authentication token
+ * and account status before rendering children. Redirects unauthenticated users
+ * to /login. For authenticated users, validates their status (ACTIVE, WAITING,
+ * INACTIVE) against the requiredStatus prop. Supports ANY (all statuses allowed),
+ * ACTIVE (full access only), and WAITING/INACTIVE (limited + full access).
+ * Shows a loader while checking and renders fallback content when access is denied.
+ *
+ * @props
+ *   - children {ReactNode} - Protected content to render when access is granted.
+ *   - requiredStatus {"ACTIVE" | "WAITING" | "INACTIVE" | "ANY"} - Required user status (default "ACTIVE").
+ *   - fallback {ReactNode} - Content to render when access is denied.
+ *   - showLoader {boolean} - Whether to show a loader during status check (default true).
+ *
+ * @dependencies
+ *   - next/navigation (useRouter) - Client-side navigation for redirects.
+ *   - @/apis/queries/user.queries (useMe) - Fetches current user data.
+ *   - @/apis/queries/auth.queries (useCurrentAccount) - Fetches current account data.
+ *   - @/utils/statusCheck - Status validation utilities (hasRouteAccess, hasLimitedAccess, etc.).
+ *   - @/utils/constants (PUREMOON_TOKEN_KEY) - Auth token cookie key.
+ *   - cookies-next (getCookie) - Cookie access for auth token.
+ *   - ./LoaderWithMessage - Loading indicator component.
+ */
 "use client";
 
 import React, { useEffect, useState } from 'react';

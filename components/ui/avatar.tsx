@@ -1,3 +1,16 @@
+/**
+ * @file Avatar - Shadcn UI avatar component.
+ * @description Renders a circular user avatar with image, fallback text/icon support.
+ * Displays AvatarImage when the image loads successfully, otherwise shows AvatarFallback.
+ *
+ * @exports Avatar - Root circular container (40x40px default).
+ * @exports AvatarImage - The user's profile image (aspect-square, full coverage).
+ * @exports AvatarFallback - Fallback content (initials, icon) shown when image fails to load.
+ *
+ * @dependencies
+ *   - @radix-ui/react-avatar - Accessible avatar primitive with image loading states.
+ *   - @/lib/utils (cn) - Tailwind class merging utility.
+ */
 "use client"
 
 import * as React from "react"
@@ -5,6 +18,7 @@ import * as AvatarPrimitive from "@radix-ui/react-avatar"
 
 import { cn } from "@/lib/utils"
 
+/** Root avatar container with circular clipping. */
 const Avatar = React.forwardRef<
   React.ElementRef<typeof AvatarPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root>

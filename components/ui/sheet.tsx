@@ -1,3 +1,27 @@
+/**
+ * @file Sheet - Shadcn UI side sheet (slide-over panel) component.
+ * @description Provides a dialog-based sliding panel that can appear from any edge
+ * of the viewport (top, bottom, left, right). Includes overlay backdrop,
+ * close button, header, footer, title, and description sub-components.
+ *
+ * @exports Sheet - Root state manager (Radix Dialog.Root).
+ * @exports SheetTrigger - Element that opens the sheet.
+ * @exports SheetClose - Element that closes the sheet.
+ * @exports SheetPortal - Portal for rendering outside the DOM tree.
+ * @exports SheetOverlay - Semi-transparent backdrop.
+ * @exports SheetContent - Sliding panel with side variant (top/bottom/left/right).
+ * @exports SheetHeader, SheetFooter - Layout sections.
+ * @exports SheetTitle, SheetDescription - Text content sections.
+ *
+ * @props SheetContent accepts:
+ *   - side {"top" | "bottom" | "left" | "right"} - Slide-in direction (default: "right").
+ *
+ * @dependencies
+ *   - @radix-ui/react-dialog - Accessible dialog primitive.
+ *   - class-variance-authority (cva) - Variant-based class generation.
+ *   - lucide-react (X) - Close button icon.
+ *   - @/lib/utils (cn) - Tailwind class merging utility.
+ */
 "use client"
 
 import * as React from "react"
@@ -7,6 +31,7 @@ import { X } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
+/** Sheet root managing open/close state. */
 const Sheet = DialogPrimitive.Root
 
 const SheetTrigger = DialogPrimitive.Trigger

@@ -1,3 +1,12 @@
+/**
+ * @file TrendingCategories.tsx
+ * @description Trending categories section on the home page. Fetches the product
+ * category tree via `useCategory`, displays top-level categories as selectable
+ * cards, and shows sub-categories in an expandable panel when a category is
+ * active. Supports navigation to filtered product pages via `useCategoryStore`
+ * and `useRouter`. Assigns visual icons to categories dynamically.
+ */
+
 import React, { useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";

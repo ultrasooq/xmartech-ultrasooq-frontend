@@ -1,3 +1,37 @@
+/**
+ * @file ProductChat.tsx
+ * @description Product-specific one-to-one chat component. Allows a buyer to
+ *   communicate directly with a seller about a specific product. If the current
+ *   user is the seller (admin) of the product, it delegates rendering to
+ *   `AdminProductChat` instead.
+ *
+ * @props
+ *   - productId {number} - The product ID to initiate or load chat for.
+ *   - roomId {number} - Optional pre-existing room ID to load directly.
+ *
+ * @behavior
+ *   - Fetches product details via `useGetProductDetails` to determine the seller.
+ *   - If the current user is the seller, renders `AdminProductChat` for managing
+ *     multiple buyer conversations.
+ *   - For buyers: creates or finds an existing private chat room via `findRoomId`,
+ *     then loads chat history via `getChatHistory`.
+ *   - Supports real-time messaging through SocketContext (sendMessage,
+ *     cratePrivateRoom, newMessage, newRoom, newAttachment).
+ *   - Supports emoji picker and file attachment uploads (uploadAttachment API).
+ *   - Displays `ProductChatHistory` for the message list and a message input
+ *     area with send, attach, and emoji buttons.
+ *   - Shows loading skeletons and error toasts for socket connection issues.
+ *
+ * @dependencies
+ *   - useGetProductDetails (TanStack Query) - Fetches product info.
+ *   - useSocket (SocketContext) - Real-time messaging.
+ *   - findRoomId, getChatHistory, uploadAttachment (API requests).
+ *   - useAuth (AuthContext) - Current user info.
+ *   - AdminProductChat - Seller-side multi-buyer chat view.
+ *   - ProductChatHistory - Message history renderer.
+ *   - EmojiPicker - Emoji selection overlay.
+ *   - generateUniqueNumber - Generates unique message IDs.
+ */
 import React, { useState, useEffect, useRef } from "react";
 import { useGetProductDetails } from "@/apis/queries/chat.queries";
 import { Skeleton } from "@/components/ui/skeleton";

@@ -1,3 +1,24 @@
+/**
+ * @file My Accounts Page - app/my-accounts/page.tsx
+ * @route /my-accounts
+ * @description Multi-account management page. Displays all user sub-accounts (useMyAccounts)
+ *   in a tabbed interface (Tabs) with "My Accounts" and "Create Account" tabs. Each account
+ *   card shows trade role, status (Badge), and a "Switch" button (useSwitchAccount). The
+ *   Create Account tab provides a form (Zod-validated) to create new sub-accounts with
+ *   trade role selection (RadioGroup: BUYER/COMPANY/FREELANCER), name, email, phone, and
+ *   Terms of Use / Privacy Policy acceptance. On switch, sets new auth token cookie and
+ *   redirects based on trade role.
+ * @authentication Required; uses auth-based account queries and mutations.
+ * @key_components Tabs, Card, Badge, Dialog, RadioGroup, Form (react-hook-form + Zod),
+ *   Input, ControlledPhoneInput, Checkbox, LoaderWithMessage, Button
+ * @data_fetching
+ *   - useMyAccounts for sub-account list
+ *   - useCreateAccount mutation for new sub-account creation
+ *   - useSwitchAccount mutation for account switching
+ *   - useUpdateProfile mutation for profile updates
+ * @state_management AuthContext (setUser, setPermissions) for account switch;
+ *   react-hook-form for create account form; local state for activeTab, dialogs.
+ */
 "use client";
 import React, { useState, useRef } from "react";
 import { useRouter } from "next/navigation";

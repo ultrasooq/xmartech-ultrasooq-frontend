@@ -1,3 +1,26 @@
+/**
+ * @file ReviewForm - Product review creation and editing form.
+ * @description Renders a dialog form for creating or editing product reviews with
+ * a star rating (via Ratings component), title, and description fields. Supports
+ * both add and update operations via useAddReview and useUpdateReview mutations.
+ * When a reviewId is provided, fetches existing review data via useReviewById and
+ * pre-fills the form. On success, invalidates product and review query caches.
+ * Validated with Zod schema (description 2-100 chars, title 2-50 chars, numeric rating).
+ *
+ * @props
+ *   - onClose {() => void} - Close form callback.
+ *   - reviewId {number} - Optional existing review ID for edit mode.
+ *
+ * @dependencies
+ *   - react-hook-form (useForm, Controller) - Form state management.
+ *   - zod / @hookform/resolvers/zod - Schema-based validation.
+ *   - @/apis/queries/review.queries (useAddReview, useReviewById, useUpdateReview) - Review CRUD.
+ *   - @tanstack/react-query (useQueryClient) - Query cache invalidation.
+ *   - next/navigation (useParams) - Product ID from URL parameters.
+ *   - ./Forms/ControlledTextInput, ./Forms/ControlledTextareaInput - Form inputs.
+ *   - ./Ratings - Star rating interactive component.
+ *   - next-intl (useTranslations) - Internationalization.
+ */
 import React, { useEffect, useState } from "react";
 import { DialogHeader, DialogTitle } from "../ui/dialog";
 import { Form } from "../ui/form";

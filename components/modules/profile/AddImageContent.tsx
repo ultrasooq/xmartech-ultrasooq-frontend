@@ -3,10 +3,27 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 
+/**
+ * Props for the {@link AddImageContent} component.
+ *
+ * @property description - Instructional text displayed above the
+ *   "browse" link (e.g., "Drop your File , or").
+ */
 type AddImageContentProps = {
   description: string;
 };
 
+/**
+ * Placeholder overlay shown inside file-upload drop zones.
+ *
+ * Renders an upload icon, the provided {@link AddImageContentProps.description}
+ * text, a "browse" link, and the company logo specification note.
+ * This component is used as the empty-state content for image and
+ * file upload areas throughout the application.
+ *
+ * @param props - {@link AddImageContentProps}
+ * @returns An absolutely positioned overlay element with upload instructions.
+ */
 const AddImageContent: React.FC<AddImageContentProps> = ({ description }) => {
   const t = useTranslations();
   const { langDir } = useAuth();

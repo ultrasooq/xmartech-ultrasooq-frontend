@@ -5,11 +5,30 @@ import { getInitials } from "@/utils/helper";
 import EditIcon from "@/public/images/edit-icon.svg";
 import Link from "next/link";
 
+/**
+ * Props for the buyer {@link ProfileCard} component.
+ *
+ * @property userDetails - The full user object containing profile data
+ *   such as `firstName`, `lastName`, `email`, `phoneNumber`, and
+ *   `profilePicture`. Typed as `any` because the shape comes from the
+ *   backend API response.
+ */
 type ProfileCardProps = {
   userDetails: any;
 };
 
+/**
+ * Displays a buyer's profile summary card with avatar, name, email,
+ * phone number, and an "Edit" link that navigates to `/profile`.
+ *
+ * The avatar falls back to the user's initials when no profile picture
+ * URL is available. Contact details default to "NA" when absent.
+ *
+ * @param props - {@link ProfileCardProps}
+ * @returns A styled card element showing the buyer profile overview.
+ */
 const ProfileCard: React.FC<ProfileCardProps> = ({ userDetails }) => {
+  /** Memoised first-letter initials derived from the user's name. */
   const memoizedInitials = useMemo(
     () => getInitials(userDetails?.firstName, userDetails?.lastName),
     [userDetails?.firstName, userDetails?.lastName],

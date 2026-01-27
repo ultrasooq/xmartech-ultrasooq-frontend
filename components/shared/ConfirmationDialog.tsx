@@ -1,3 +1,27 @@
+/**
+ * @file ConfirmationDialog - Full Dialog-based confirmation modal with variants.
+ * @description Renders a controlled Dialog modal for confirming user actions.
+ * Supports default and destructive visual variants. Shows a title, description,
+ * and confirm/cancel buttons with customizable text. The confirm button displays
+ * a spinning loader during async operations. Calls onConfirm then onClose when
+ * confirmed. Uses next-intl for default button text translations.
+ *
+ * @props
+ *   - isOpen {boolean} - Controls dialog visibility.
+ *   - onClose {() => void} - Callback to close the dialog.
+ *   - onConfirm {() => void} - Callback when the confirm button is clicked.
+ *   - title {string} - Dialog title text.
+ *   - description {string} - Dialog description/body text.
+ *   - confirmText {string} - Custom confirm button text (defaults to translated "confirm").
+ *   - cancelText {string} - Custom cancel button text (defaults to translated "cancel").
+ *   - isLoading {boolean} - When true, disables buttons and shows spinner (default false).
+ *   - variant {"default" | "destructive"} - Visual style of confirm button (default "default").
+ *
+ * @dependencies
+ *   - @/components/ui/dialog (Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle) - Dialog layout.
+ *   - @/components/ui/button (Button) - Action buttons with variant support.
+ *   - next-intl (useTranslations) - Default button text translations.
+ */
 "use client";
 
 import React from "react";

@@ -1,3 +1,20 @@
+/**
+ * @file Dropship / Wholesale Management Page - app/dropship-management/page.tsx
+ * @route /dropship-management
+ * @description Wholesale product management dashboard for sellers. Displays:
+ *   (1) Dashboard stats cards: total products, active resellers, total orders, revenue,
+ *       trending (lucide icons: Package, Users, ShoppingCart, DollarSign, TrendingUp).
+ *   (2) Paginated grid of wholesale products (product image, name, price, reseller count,
+ *       sales stats). Each product card has a "View Sales" button opening a sales detail
+ *       modal (useWholesaleProductSales).
+ * @authentication Required; uses authenticated wholesale product queries.
+ * @key_components Card, Dialog (sales modal), Pagination, Button, Image, lucide icons
+ * @data_fetching
+ *   - useWholesaleProducts({ page, limit }) for paginated wholesale product list
+ *   - useWholesaleDashboard for summary stats
+ *   - useWholesaleProductSales(productId) for per-product sales detail modal
+ * @state_management Local state for page, selectedProductId, showSalesModal.
+ */
 "use client";
 
 import React, { useState } from "react";

@@ -1,3 +1,14 @@
+/**
+ * @file HeroBanner.tsx
+ * @description Hero banner section on the home page. Fetches active banners for
+ * three positions (MAIN, SIDE_TOP, SIDE_BOTTOM) via `useActiveBanners` and renders:
+ * - A main banner carousel with auto-slide (5s interval), navigation arrows, and
+ *   dot indicators. Supports click-through URLs and CTA buttons.
+ * - Side banners (top and bottom) with hover effects.
+ * Tracks banner views via `useTrackBannerView` (fired once per render cycle)
+ * and banner clicks via `useTrackBannerClick`.
+ */
+
 "use client";
 import React, { useMemo, useEffect, useState } from "react";
 import Image from "next/image";
@@ -7,6 +18,13 @@ import { useActiveBanners } from "@/apis/queries/banner.queries";
 import { useTrackBannerView, useTrackBannerClick } from "@/apis/queries/banner.queries";
 import { IBanner } from "@/apis/requests/banner.requests";
 
+/**
+ * Hero banner component with main carousel and side banners.
+ * Auto-cycles through main banners every 5 seconds, tracks views/clicks,
+ * and renders skeleton placeholders during loading.
+ *
+ * @returns A responsive hero section with main carousel and side banner panels.
+ */
 const HeroBanner: React.FC = () => {
   // Fetch banners for different positions (using backend enum values)
   const { data: mainBannersData, isLoading: mainLoading } = useActiveBanners('MAIN');

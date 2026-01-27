@@ -1,3 +1,12 @@
+/**
+ * @file SearchedServices.tsx
+ * @description Search results section for services. Fetches services by search
+ * term via `useGetAllServices`, renders them as `ServiceCard` components, and
+ * integrates with the `AddServiceToCartModal` dialog for adding services to cart.
+ * Maps API response to service objects with features, pricing, and review data.
+ * Provides skeleton loading, empty state, and "View All" link.
+ */
+
 import { useGetAllServices } from "@/apis/queries/services.queries";
 import SkeletonProductCardLoader from "@/components/shared/SkeletonProductCardLoader";
 import { useAuth } from "@/context/AuthContext";
@@ -8,6 +17,7 @@ import ServiceCard from "../trending/ServiceCard";
 import AddServiceToCartModal from "../serviceDetails/AddServiceToCartModal";
 import { Dialog } from "@/components/ui/dialog";
 
+/** Props for the SearchedServices section. */
 type SearchedServicesType = {
     searchTerm?: string;
     haveAccessToken: boolean;

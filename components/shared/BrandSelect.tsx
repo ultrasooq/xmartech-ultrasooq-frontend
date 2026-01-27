@@ -1,3 +1,21 @@
+/**
+ * @file BrandSelect - Brand and product type selector with creatable dropdown.
+ * @description Renders two dropdowns: one for product type (Brand/Spare Part/Own Brand)
+ * and one for brand selection. The brand dropdown supports creating new brands inline
+ * via react-select/creatable. Brand options are filtered by the selected product type
+ * and the current user's ID. Integrates with React Hook Form via Controller.
+ *
+ * @props
+ *   - selectedBrandType {string} - Initial brand type ("OWNBRAND" default).
+ *   - productType {string} - Product type code ("P" for product, "R" filters out OWNBRAND).
+ *
+ * @dependencies
+ *   - @/apis/queries/masters.queries (useBrands, useCreateBrand) - Brand data & mutation.
+ *   - react-select/creatable (CreatableSelect) - Dropdown with create-new-option support.
+ *   - react-hook-form (Controller, useFormContext) - Form state management.
+ *   - @/components/ui/tooltip - Info tooltip for brand input guidance.
+ *   - @/context/AuthContext (useAuth) - Current user and language direction.
+ */
 import { useBrands, useCreateBrand } from "@/apis/queries/masters.queries";
 import { IBrands, IOption } from "@/utils/types/common.types";
 import React, { useEffect, useMemo, useRef, useState } from "react";

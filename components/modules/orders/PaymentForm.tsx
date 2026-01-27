@@ -18,6 +18,16 @@ import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 import { useWalletBalance } from "@/apis/queries/wallet.queries";
 
+/**
+ * Props for the {@link PaymentForm} component.
+ *
+ * @property onCreateOrder      - Callback invoked with the selected payment
+ *   type and Stripe payment intent ID upon successful payment.
+ * @property calculateTotalAmount - Callback to compute the total order amount.
+ * @property isLoading           - Whether the parent is processing the order.
+ * @property onManageAmount      - Callback to handle advance amount changes.
+ * @property clearCardElement    - When `true`, resets the Stripe CardElement.
+ */
 type PaymentFormProps = {
   onCreateOrder: (paymentType: string, paymentIntent: string) => void;
   calculateTotalAmount: () => void;
@@ -26,9 +36,23 @@ type PaymentFormProps = {
   clearCardElement: boolean;
 };
 
-// Load Stripe with your public key
+/** Stripe.js instance loaded with the application's publishable key. */
 const stripePromise = loadStripe('pk_test_51QuptGPQ2VnoEyMPay2u4FyltporIQfMh9hWcp2EEresPjx07AuT4lFLuvnNrvO7ksqtaepmRQHfYs4FLia8lIV500i83tXYMR');
 
+/**
+ * Payment form component for the checkout page. Provides multiple
+ * payment methods via tabs:
+ * - **Stripe card payment** with CardElement, name input, and
+ *   PaymentIntent creation via {@link useCreatePaymentIntent}.
+ * - **Cash on Delivery** option.
+ * - **Wallet payment** using the user's wallet balance.
+ *
+ * Handles Stripe card validation, advance amount management, and
+ * delegates final order creation to the parent via `onCreateOrder`.
+ *
+ * @param props - {@link PaymentFormProps}
+ * @returns A tabbed payment form section.
+ */
 const PaymentForm: React.FC<PaymentFormProps> = ({
   onCreateOrder,
   calculateTotalAmount,

@@ -1,3 +1,19 @@
+/**
+ * @file PriceSection.tsx
+ * @description Complex pricing section (~1224 lines) for the service creation form.
+ * Manages:
+ * - Consumer type (CONSUMER/VENDOR/EVERYONE) and sell type selection
+ * - Discount configuration (type, value, start/end dates)
+ * - Stock quantity
+ * - Location selection: country -> state -> city cascading selects
+ * - "Where to sell" multi-select (cities)
+ * - Place of origin
+ * - Buy group settings (min participants, deadline date/time)
+ * - Geolocation (latitude/longitude)
+ * Uses react-hook-form context with multiple `useWatch` subscriptions for
+ * conditional field visibility. Fetches location data via master queries.
+ */
+
 import React, { useEffect, useMemo, useState } from "react";
 import {
   FormControl,

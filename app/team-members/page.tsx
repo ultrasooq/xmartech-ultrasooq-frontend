@@ -1,3 +1,18 @@
+/**
+ * @file Team Members Page - app/team-members/page.tsx
+ * @route /team-members
+ * @description Team member management page for company/freelancer accounts. Displays
+ *   a paginated table of team members with name, email, status, and an "Add Member"
+ *   modal (AddToMemberForm). Each member row links to a detail/edit view. Requires
+ *   PERMISSION_TEAM_MEMBERS; redirects to /home if denied. Wrapped with
+ *   withActiveUserGuard HOC for active user enforcement.
+ * @authentication Required; permission-gated via checkPermission(PERMISSION_TEAM_MEMBERS).
+ * @key_components Pagination, Dialog (AddToMemberForm modal), AddToMemberForm, IoMdAdd icon,
+ *   Info (lucide), Link, withActiveUserGuard (HOC)
+ * @data_fetching
+ *   - useAllMembers({ page, limit }) for paginated team member list
+ * @state_management Local state for page, isAddToMemberModalOpen, selectedMember.
+ */
 "use client"; // Add this at the top
 import React, { useEffect, useMemo, useRef, useState } from "react";
 // import Pagination from "@/components/shared/Pagination";

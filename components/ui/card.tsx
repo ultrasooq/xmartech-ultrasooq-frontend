@@ -1,7 +1,26 @@
+/**
+ * @file Card - Shadcn UI card component family.
+ * @description Provides a set of composable card primitives (Card, CardHeader, CardTitle,
+ * CardDescription, CardContent, CardFooter) for building content containers with
+ * consistent styling. Uses native HTML elements with forwarded refs.
+ *
+ * @exports Card - The root card container with rounded border and shadow.
+ * @exports CardHeader - Flex-column header section with vertical spacing and padding.
+ * @exports CardTitle - Semibold heading rendered as an h3 element.
+ * @exports CardDescription - Muted paragraph for supplementary text.
+ * @exports CardContent - Main body content area with horizontal padding.
+ * @exports CardFooter - Bottom section with flex alignment for actions.
+ *
+ * @props Each sub-component accepts standard HTMLDivElement attributes plus className override.
+ *
+ * @dependencies
+ *   - @/lib/utils (cn) - Tailwind class merging utility.
+ */
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
+/** Root card container with rounded border, background, and subtle shadow. */
 const Card = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>

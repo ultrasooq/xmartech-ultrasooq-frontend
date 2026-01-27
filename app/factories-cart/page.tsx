@@ -1,3 +1,27 @@
+/**
+ * @file Factories Cart Page - app/factories-cart/page.tsx
+ * @route /factories-cart
+ * @description Cart page specifically for Factory / RFQ product requests. Displays two
+ *   types of cart items: RFQ products (useRfqCartListByUserId) and Factories customized
+ *   products (useFactoriesCartListByUserId). Users can update quantities, remove items,
+ *   select a shipping address (useAllUserAddress), set a delivery date, and submit
+ *   request-for-quotes via useAddRfqQuotes (RFQ) or useAddFactoriesRequestQuotes (Factories).
+ *   Uses a Zod-validated form for address and delivery date. Shows an order summary with
+ *   totals and a banner image.
+ * @authentication Required; uses authenticated queries for cart and address data.
+ * @key_components RfqProductCard, FactoriesCustomizedProductCard, ControlledDatePicker,
+ *   ControlledSelectInput, Form (react-hook-form + Zod), Button, Footer
+ * @data_fetching
+ *   - useRfqCartListByUserId for RFQ cart items
+ *   - useFactoriesCartListByUserId for factory cart items
+ *   - useAllUserAddress for address selection
+ *   - useMe for user profile
+ *   - useUpdateRfqCartWithLogin / useUpdateFactoriesCartWithLogin for quantity updates
+ *   - useDeleteRfqCartItem / useDeleteFactoriesCartItem for item removal
+ *   - useAddRfqQuotes / useAddFactoriesRequestQuotes mutations for submitting quotes
+ * @state_management react-hook-form with Zod resolver for address/date form;
+ *   useMemo for cart lists and address options.
+ */
 "use client";
 import { useAllUserAddress } from "@/apis/queries/address.queries";
 import {

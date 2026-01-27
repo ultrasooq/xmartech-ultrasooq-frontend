@@ -1,3 +1,23 @@
+/**
+ * @file Freelancer Profile Setup Page - app/freelancer-profile/page.tsx
+ * @route /freelancer-profile
+ * @description Freelancer profile creation form. Collects: about-us (rich text), phone,
+ *   location (country/state/city cascading selects), address, working hours (per day with
+ *   AM/PM toggles), business categories (AccordionMultiSelectV2/MultiSelectCategory), and
+ *   tags. Uses Zod validation. On submit, calls useCreateFreelancerProfile to persist the
+ *   profile and redirects to /freelancer-profile-details.
+ * @authentication Required; useMe() and useCurrentAccount() for user/account context.
+ * @key_components Form (react-hook-form + Zod), AccordionMultiSelectV2, MultiSelectCategory,
+ *   ControlledPhoneInput, ControlledTextInput, ControlledRichTextEditor, ControlledSelectInput,
+ *   Checkbox, Label, Button
+ * @data_fetching
+ *   - useCreateFreelancerProfile mutation for profile creation
+ *   - useTags for tag autocomplete
+ *   - useCountries for cascading location selects
+ *   - useMe for user data, useCurrentAccount for account info
+ * @state_management react-hook-form with Zod resolver; local state for working hours toggles,
+ *   categories, location cascading.
+ */
 "use client";
 import { useCreateFreelancerProfile } from "@/apis/queries/freelancer.queries";
 import AccordionMultiSelectV2 from "@/components/shared/AccordionMultiSelectV2";

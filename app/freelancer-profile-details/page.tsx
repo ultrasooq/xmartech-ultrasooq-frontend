@@ -1,3 +1,22 @@
+/**
+ * @file Freelancer Profile Details Page - app/freelancer-profile-details/page.tsx
+ * @route /freelancer-profile-details (also accepts ?sellerId=<id> query param for vendor view)
+ * @description Freelancer profile display page with two modes:
+ *   (1) Own profile: shows ProfileCard, InformationSection, ReviewSection, MoreInformationSection
+ *       with tabs for Profile Info, Products, and Reviews.
+ *   (2) Vendor view (?sellerId): shows VendorCard, VendorInformationSection,
+ *       VendorMoreInformationSection with the same tab structure.
+ *   Includes a "+" button linking to /product for adding new products. Background
+ *   hero image banner at the top.
+ * @authentication Required; useMe() fetches current user profile.
+ * @key_components ProfileCard, InformationSection, ReviewSection, MoreInformationSection,
+ *   VendorCard, VendorInformationSection, VendorMoreInformationSection, ProductsSection,
+ *   Tabs, Footer, PlusIcon
+ * @data_fetching
+ *   - useMe() for current user data
+ *   - useVendorDetails({ adminId }) for vendor profile when viewing another seller
+ * @state_management Local state for activeTab, activeSellerId (from URL query params).
+ */
 "use client";
 import { useMe } from "@/apis/queries/user.queries";
 import React, { useEffect, useState } from "react";

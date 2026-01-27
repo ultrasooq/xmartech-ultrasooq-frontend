@@ -1,3 +1,35 @@
+/**
+ * @file DropshipProductForm.tsx
+ * @description A 4-step wizard form for creating dropshipped products. Guides the
+ *   seller through selecting a source product, customizing details, setting markup
+ *   pricing, and previewing the final product before submission.
+ *
+ * @props None (empty interface DropshipProductFormProps)
+ *
+ * @behavior
+ *   - Step 1 "Select Product": Uses ProductSearchSelector to browse and choose a
+ *     source product for dropshipping.
+ *   - Step 2 "Customize": Edits product name, description (with rich text extraction
+ *     to plain text), and additional marketing images via ImageUploader.
+ *   - Step 3 "Set Pricing": Configures markup percentage via PricingCalculator
+ *     showing base price, markup amount, and final price.
+ *   - Step 4 "Preview": Shows ProductPreview of the final dropship product.
+ *   - Form validation via Zod schema (originalProductId, customProductName,
+ *     customDescription, markup, additionalImages, marketingText).
+ *   - Submits via `useCreateDropshipProduct` mutation with success/error toasts.
+ *   - Resets form and navigates back to step 1 on successful creation.
+ *   - Manages client-side hydration with `isClient` state.
+ *
+ * @dependencies
+ *   - useForm, zodResolver (React Hook Form + Zod) - Form management and validation.
+ *   - useCreateDropshipProduct (TanStack Query) - Dropship product creation mutation.
+ *   - ProductSearchSelector - Source product selection grid.
+ *   - PricingCalculator - Markup pricing calculator.
+ *   - ProductPreview - Visual product preview.
+ *   - ImageUploader - Marketing image upload with compression.
+ *   - useAuth (AuthContext) - Language direction.
+ *   - useTranslations (next-intl) - i18n translations.
+ */
 "use client";
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";

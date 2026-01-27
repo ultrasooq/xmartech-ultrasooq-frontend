@@ -1,3 +1,24 @@
+/**
+ * @file NotificationItem - Single notification row with type-specific icon.
+ * @description Renders a clickable notification row with a color-coded icon based
+ * on notification type (ORDER, MESSAGE, RFQ, REVIEW, PAYMENT, SHIPMENT, or default).
+ * Displays the notification title, message (2-line clamp), and relative timestamp
+ * via moment.js. Unread notifications have a blue background tint and blue dot
+ * indicator. Clicking marks the notification as read and navigates to its link.
+ *
+ * @props
+ *   - notification {Notification} - Notification data object with id, type, title,
+ *     message, read status, link, and createdAt timestamp.
+ *   - onMarkAsRead {() => void} - Optional callback after marking as read.
+ *
+ * @dependencies
+ *   - @/utils/types/notification.types (Notification, NotificationType) - Type definitions.
+ *   - moment - Relative time formatting (fromNow).
+ *   - next/navigation (useRouter) - Client-side navigation.
+ *   - @/apis/queries/notifications.queries (useMarkAsRead) - Mark-as-read mutation.
+ *   - @/context/AuthContext (useAuth) - Language direction context.
+ *   - next/image - Image rendering (imported but unused in current implementation).
+ */
 "use client";
 
 import React from "react";

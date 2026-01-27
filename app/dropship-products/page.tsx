@@ -1,3 +1,24 @@
+/**
+ * @file Dropship Products Page - app/dropship-products/page.tsx
+ * @route /dropship-products
+ * @description Dropship product management page showing two tabs: "My Dropship Products"
+ *   (useUserOwnDropshipableProducts) and "Browse Existing" (useExistingProduct). Displays
+ *   products in grid/list view (DropshipProductManageCard / ExistingProductCard) with search,
+ *   sort, pagination, and filter sidebar (brand, price range). Includes "Create New Dropship"
+ *   button. Supports wishlist toggling. Wrapped with withActiveUserGuard HOC (implied by
+ *   the pattern used).
+ * @authentication Required; uses authenticated product queries.
+ * @key_components DropshipProductManageCard, ExistingProductCard, Pagination, GridIcon,
+ *   ListIcon, Accordion (filters), Select, Input, Footer, IoMdAdd icon, Truck icon,
+ *   SkeletonProductCardLoader
+ * @data_fetching
+ *   - useUserOwnDropshipableProducts for own dropship products
+ *   - useExistingProduct for browsing existing products
+ *   - useMe / useCurrentAccount for user context
+ *   - useAddToWishList / useDeleteFromWishList for wishlist
+ * @state_management Local state for page, search, sort, gridView toggle, active tab;
+ *   debounced search via lodash debounce.
+ */
 "use client";
 import React, { useEffect, useMemo, useRef, useState, use } from "react";
 import { debounce } from "lodash";

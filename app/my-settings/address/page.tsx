@@ -1,3 +1,17 @@
+/**
+ * @file Address Management Page - app/my-settings/address/page.tsx
+ * @route /my-settings/address
+ * @description User address management page within the settings section. Displays all saved
+ *   addresses as AddressCard components with edit and delete actions. "Add New Address"
+ *   button opens an AddressForm modal dialog. Supports address deletion via useDeleteAddress
+ *   with toast notifications. Shows loading skeletons and empty state.
+ * @authentication Required; uses useAllUserAddress for authenticated address data.
+ * @key_components AddressCard, AddressForm, Dialog, IoMdAdd icon, Skeleton
+ * @data_fetching
+ *   - useAllUserAddress({ page, limit }) for user addresses
+ *   - useDeleteAddress mutation for address removal
+ * @state_management Local state for isAddModalOpen, selectedAddressId (for edit mode).
+ */
 "use client";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import AddressCard from "@/components/modules/mySettings/address/AddressCard";

@@ -1,3 +1,11 @@
+/**
+ * @file AddressForm.tsx
+ * @description Modal form for authenticated users to add or edit a saved shipping/billing
+ * address during checkout. Uses react-hook-form with Zod validation and cascading
+ * country -> state -> city select inputs. Calls `useAddAddress` or `useUpdateAddress`
+ * mutations on submit. When editing, pre-populates the form via `useAddressById` query.
+ */
+
 import React, { useEffect, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -33,11 +41,19 @@ const customStyles = {
   control: (base: any) => ({ ...base, height: 48, minHeight: 48 }),
 };
 
+/** Props for the authenticated AddressForm modal component. */
 type AddressFormProps = {
   addressId?: number;
   onClose: () => void;
 };
 
+/**
+ * Builds a Zod validation schema for authenticated user address fields.
+ * Validates first/last name, phone, address, country/state/city IDs, town (alphabetic),
+ * and postcode with localised error messages.
+ * @param t - next-intl translation function.
+ * @returns A Zod object schema matching the address form shape.
+ */
 const formSchema = (t: any) => {
   return z.object({
     firstName: z
@@ -105,6 +121,15 @@ const formSchema = (t: any) => {
   });
 };
 
+/**
+ * Authenticated user address form rendered inside a modal dialog.
+ * Supports add and edit modes. When `addressId` is provided, fetches existing
+ * address data to pre-populate all fields, including cascading location selectors.
+ * On submit, calls the appropriate mutation (create or update) and shows toast feedback.
+ *
+ * @param props - {@link AddressFormProps}
+ * @returns A modal form with validated address inputs, cascading selectors, and submit button.
+ */
 const AddressForm: React.FC<AddressFormProps> = ({ addressId, onClose }) => {
   const t = useTranslations();
   const { langDir } = useAuth();

@@ -1,3 +1,11 @@
+/**
+ * @file RfqCartMenu.tsx
+ * @description Sidebar panel displaying the user's RFQ (Request for Quotation) cart.
+ * Shows the total item count, a "Go to RFQ Cart" link, and a list of
+ * `RfqCartMenuCard` components for each item. Provides removal via
+ * the `useDeleteRfqCartItem` mutation with toast feedback.
+ */
+
 import {
   useDeleteRfqCartItem,
   useRfqCartListByUserId,
@@ -9,6 +17,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 
+/** Props for the RFQ cart sidebar menu. */
 type RfqCartMenuProps = {
   onAdd: (
     args0: number,
@@ -21,6 +30,13 @@ type RfqCartMenuProps = {
   cartList: any[];
 };
 
+/**
+ * RFQ cart sidebar component. Maps each cart item to an `RfqCartMenuCard`
+ * and provides quantity adjustment and removal callbacks.
+ *
+ * @param props - {@link RfqCartMenuProps}
+ * @returns A sidebar panel with RFQ cart items and navigation link.
+ */
 const RfqCartMenu: React.FC<RfqCartMenuProps> = ({
   onAdd,
   cartList

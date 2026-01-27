@@ -1,3 +1,24 @@
+/**
+ * @file Select - Shadcn UI select dropdown component.
+ * @description Provides a fully styled native-like select dropdown with portal
+ * rendering, scroll buttons, animated open/close transitions, and check
+ * indicators for the selected item.
+ *
+ * @exports Select - Root state manager (Radix Select.Root).
+ * @exports SelectGroup - Logical grouping of select items.
+ * @exports SelectValue - Displays the currently selected value.
+ * @exports SelectTrigger - Button that opens the dropdown with caret icon.
+ * @exports SelectContent - Dropdown panel with scroll buttons and animation.
+ * @exports SelectLabel - Non-interactive label within a group.
+ * @exports SelectItem - Individual selectable option with check indicator.
+ * @exports SelectSeparator - Visual divider between groups/items.
+ * @exports SelectScrollUpButton, SelectScrollDownButton - Scroll navigation.
+ *
+ * @dependencies
+ *   - @radix-ui/react-select - Accessible select primitive.
+ *   - @radix-ui/react-icons - Caret, check, and chevron icons.
+ *   - @/lib/utils (cn) - Tailwind class merging utility.
+ */
 "use client"
 
 import * as React from "react"
@@ -11,6 +32,7 @@ import * as SelectPrimitive from "@radix-ui/react-select"
 
 import { cn } from "@/lib/utils"
 
+/** Select root managing open/close state and value. */
 const Select = SelectPrimitive.Root
 
 const SelectGroup = SelectPrimitive.Group

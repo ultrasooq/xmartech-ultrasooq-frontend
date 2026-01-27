@@ -1,3 +1,31 @@
+/**
+ * @file ProductMessage.tsx
+ * @description A single message preview card used in the admin/seller sidebar
+ *   to display a buyer conversation summary. Shows the buyer's avatar (or
+ *   placeholder), display name (account name or first+last name), last message
+ *   preview, timestamp, and unread message count badge.
+ *
+ * @props
+ *   - onClick {() => void} - Callback when the card is clicked to select this
+ *     conversation.
+ *   - isSelected {boolean} - Whether this card is currently active/selected
+ *     (applies shadow highlight).
+ *   - message {{ user, content, createdAt, unreadMsgCount }} - The message
+ *     preview data containing user info, last message text, timestamp, and
+ *     unread count.
+ *
+ * @behavior
+ *   - Displays the user's profile picture or a default avatar placeholder.
+ *   - Shows the account name (cleaned of email-style prefixes and @-signs)
+ *     or falls back to firstName + lastName.
+ *   - Truncates long message content and shows relative time via moment.
+ *   - Renders an unread count badge when unread messages exist.
+ *   - Applies a shadow effect when selected.
+ *
+ * @dependencies
+ *   - cn (utility) - Conditional class name merging.
+ *   - moment - Relative time display ("fromNow").
+ */
 import React from "react";
 import Image from "next/image";
 import moment from "moment";

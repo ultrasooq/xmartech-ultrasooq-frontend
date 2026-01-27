@@ -1,3 +1,11 @@
+/**
+ * @file QuestionsAnswersSection.tsx
+ * @description Q&A section on the service details page. Fetches questions for the
+ * current service via `useServiceQuestions`, renders them as `QuestionCard` components,
+ * and provides a modal dialog for submitting new questions via `QuestionForm`.
+ * Only authenticated users (with an access token) can ask questions.
+ */
+
 import React, { useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -8,6 +16,7 @@ import { useServiceQuestions } from "@/apis/queries/question.queries";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 
+/** Props for the QuestionsAnswersSection component. */
 type QuestionsAnswersSectionProps = {
   hasAccessToken?: boolean;
   serviceId?: string;

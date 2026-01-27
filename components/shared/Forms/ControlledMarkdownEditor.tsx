@@ -1,3 +1,26 @@
+/**
+ * @file ControlledMarkdownEditor - React Hook Form integrated markdown editor.
+ * @description Renders a Markdown editor powered by @uiw/react-md-editor, integrated
+ * with React Hook Form via Controller and useFormContext. Dynamically imported with
+ * SSR disabled to avoid server-side rendering issues. Supports descriptionJson
+ * field name with automatic conversion between array format and plain string.
+ * Optional character limit with counter display and maxLength enforcement.
+ *
+ * @props
+ *   - label {string} - Label text displayed above the editor.
+ *   - name {string} - Form field name (special handling for "descriptionJson").
+ *   - value {string} - Optional controlled value override.
+ *   - onChange {(e: any) => void} - Optional custom change handler.
+ *   - readOnly {boolean} - When true, hides the toolbar (default false).
+ *   - height {number} - Editor height in pixels (default 400).
+ *   - maxLength {number} - Optional character limit with counter display.
+ *
+ * @dependencies
+ *   - next/dynamic - Dynamic import for SSR-safe loading.
+ *   - @uiw/react-md-editor - Markdown editor component.
+ *   - react-hook-form (Controller, useFormContext) - Form state management.
+ *   - @/context/AuthContext (useAuth) - Language direction context.
+ */
 "use client";
 import { useAuth } from "@/context/AuthContext";
 import React from "react";

@@ -1,3 +1,23 @@
+/**
+ * @file ControlledSelectInput - React Hook Form controlled select dropdown.
+ * @description Renders a labeled select dropdown integrated with React Hook Form.
+ * Supports optional icon display per option and RTL language direction.
+ * Shows "No data available" when options array is empty.
+ *
+ * @props
+ *   - label {string} - Label text displayed above the select.
+ *   - name {string} - Form field name (must match schema).
+ *   - options {ControlledSelectOptions[]} - Array of { label, value, icon? } options.
+ *   - placeholder {string} - Optional custom placeholder text.
+ *
+ * @dependencies
+ *   - react-hook-form (useFormContext) - Accesses the parent form context.
+ *   - @/components/ui/form - Form field wrapper components.
+ *   - @/components/ui/select - Select dropdown primitives.
+ *   - next/image - Optimized image for option icons.
+ *   - next-intl (useTranslations) - i18n translation hook.
+ *   - @/context/AuthContext (useAuth) - Language direction context.
+ */
 import React from "react";
 import {
   FormControl,

@@ -1,3 +1,40 @@
+/**
+ * @file PriceSection.tsx
+ * @description Complex pricing form section for product creation. Handles all
+ *   pricing-related fields including base price, discounts, sell type configuration,
+ *   location-based selling (country/state/city cascading selectors), geolocation,
+ *   and sell-type-specific fields (BUYGROUP, TRIAL_PRODUCT, NORMALSELL,
+ *   WHOLESALE_PRODUCT).
+ *
+ * @props None (uses React Hook Form context via `useFormContext`)
+ *
+ * @behavior
+ *   - Manages cascading location selectors: country -> state -> city, fetched
+ *     on demand via `useFetchStatesByCountry` and `useFetchCitiesByState`.
+ *   - Supports geolocation with latitude/longitude fields.
+ *   - Renders different form fields based on the selected sell type:
+ *     - BUYGROUP: date open/close, start/end time, min/max sale quantity.
+ *     - TRIAL_PRODUCT: trial period, return policy fields.
+ *     - NORMALSELL: standard pricing fields.
+ *     - WHOLESALE_PRODUCT: minimum order quantity, tier pricing.
+ *   - Consumer type selection (CONSUMER, VENDOR, EVERYONE) affects discount
+ *     field visibility (consumer discount vs vendor discount).
+ *   - Supports "Ask for Price" toggle via Switch component.
+ *   - Stock quantity managed via CounterTextInputField.
+ *   - Date/time pickers for sale scheduling.
+ *
+ * @dependencies
+ *   - useFormContext, useWatch, Controller (React Hook Form) - Form state.
+ *   - useCountries, useAllCountries, useFetchStatesByCountry, useFetchCitiesByState
+ *     (TanStack Query) - Location data queries.
+ *   - useLocation (TanStack Query) - Geolocation data.
+ *   - CounterTextInputField - Numeric input with +/- buttons.
+ *   - ControlledDatePicker, ControlledTimePicker, ControlledTextInput - Form inputs.
+ *   - ReactSelect - Dropdown selector for sell type, consumer type, location.
+ *   - useAuth (AuthContext) - Language direction, currency.
+ *   - useTranslations (next-intl) - i18n translations.
+ *   - useSearchParams - URL parameter reading for edit mode detection.
+ */
 import React, { useEffect, useMemo, useState } from "react";
 import {
   FormControl,

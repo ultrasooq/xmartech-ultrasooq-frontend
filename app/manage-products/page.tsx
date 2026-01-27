@@ -1,3 +1,31 @@
+/**
+ * @file Manage Products Page - app/manage-products/page.tsx
+ * @route /manage-products
+ * @description Main seller product management dashboard. Features multiple tabs:
+ *   (1) "My Products" -- ManageProductCard grid with search, pagination, and bulk actions
+ *       (select multiple -> navigate to /manage-products/bulk-action).
+ *   (2) "Existing Products" -- ExistingProductCard grid for browsing and adding existing
+ *       marketplace products to the seller's catalog (useAddMultiplePriceForProduct).
+ *   (3) "Dropship Products" -- DropshipProductCard grid for managing dropshipped items
+ *       (useDropshipProducts, useDeleteDropshipProduct).
+ *   (4) "Store Products" -- ProductCard grid showing published store products (useCategory,
+ *       PRODUCT_CATEGORY_ID filtered).
+ *   Includes "Add Product" button, search input with debounce, and per-tab pagination.
+ *   Requires PERMISSION_PRODUCTS; redirects if denied.
+ * @authentication Required; permission-gated via checkPermission(PERMISSION_PRODUCTS).
+ * @key_components ManageProductCard, ExistingProductCard, DropshipProductCard, ProductCard,
+ *   Pagination, FormProvider, Input, Button, Skeleton, SkeletonProductCardLoader, IoMdAdd,
+ *   Store icon (lucide), Label
+ * @data_fetching
+ *   - useAllManagedProducts for own products
+ *   - useExistingProduct for existing product search
+ *   - useDropshipProducts / useDeleteDropshipProduct for dropship products
+ *   - useCategory for store product category tree
+ *   - useAddMultiplePriceForProduct mutation
+ *   - useMe / useCurrentAccount for user/permission context
+ * @state_management FormProvider for form context; local state for activeTab, page, search,
+ *   selectedProducts (bulk actions), showAddProducts, showDropshipProducts.
+ */
 "use client";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {

@@ -1,3 +1,13 @@
+/**
+ * @fileoverview TanStack React Query hooks for the wallet system.
+ *
+ * Provides hooks for wallet balance, transactions, deposits,
+ * withdrawals, transfers, wallet settings, AmwalPay wallet
+ * configuration and verification, and admin-level wallet management.
+ *
+ * @module queries/wallet
+ */
+
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { APIResponseError } from "@/utils/types/common.types";
 import {
@@ -16,6 +26,20 @@ import {
   verifyAmwalPayWalletPayment,
 } from "../requests/wallet.requests";
 
+/**
+ * Query hook that fetches the authenticated user's wallet balance.
+ * Retries on 500 errors (wallet may not be created yet) with
+ * exponential backoff.
+ *
+ * @param enabled - Whether the query should execute. Defaults to `true`.
+ *
+ * @remarks
+ * - Query key: `["wallet", "balance"]`
+ * - **refetchInterval**: 30 000 ms.
+ * - **staleTime**: 10 000 ms.
+ * - **retry**: Up to 3 times on 500 or network errors.
+ * - Endpoint: Delegated to `fetchWalletBalance` in wallet.requests.
+ */
 export const useWalletBalance = (enabled = true) =>
   useQuery({
     queryKey: ["wallet", "balance"],
@@ -46,6 +70,16 @@ export const useWalletBalance = (enabled = true) =>
     },
   });
 
+/**
+ * Query hook that fetches paginated wallet transactions with optional
+ * type and date-range filters. Retries on 500 errors.
+ *
+ * @remarks
+ * - Query key: `["wallet", "transactions", payload]`
+ * - **refetchInterval**: 30 000 ms.
+ * - **staleTime**: 10 000 ms.
+ * - Endpoint: Delegated to `fetchWalletTransactions` in wallet.requests.
+ */
 export const useWalletTransactions = (
   payload: {
     page: number;
@@ -83,6 +117,13 @@ export const useWalletTransactions = (
     },
   });
 
+/**
+ * Query hook that fetches a single wallet transaction by ID.
+ *
+ * @remarks
+ * Query key: `["wallet", "transaction", transactionId]`
+ * Endpoint: Delegated to `fetchWalletTransactionById` in wallet.requests.
+ */
 export const useWalletTransactionById = (transactionId: number, enabled = true) =>
   useQuery({
     queryKey: ["wallet", "transaction", transactionId],
@@ -93,6 +134,13 @@ export const useWalletTransactionById = (transactionId: number, enabled = true) 
     enabled: enabled && !!transactionId,
   });
 
+/**
+ * Query hook that fetches the user's wallet settings / preferences.
+ *
+ * @remarks
+ * Query key: `["wallet", "settings"]`
+ * Endpoint: Delegated to `fetchWalletSettings` in wallet.requests.
+ */
 export const useWalletSettings = (enabled = true) =>
   useQuery({
     queryKey: ["wallet", "settings"],
@@ -103,6 +151,13 @@ export const useWalletSettings = (enabled = true) =>
     enabled,
   });
 
+/**
+ * Mutation hook to deposit funds into the user's wallet.
+ *
+ * @remarks
+ * - **Invalidates**: `["wallet", "balance"]`, `["wallet", "transactions"]` on success.
+ * - Endpoint: Delegated to `depositToWallet` in wallet.requests.
+ */
 export const useDepositToWallet = () => {
   const queryClient = useQueryClient();
   
@@ -118,6 +173,12 @@ export const useDepositToWallet = () => {
   });
 };
 
+/**
+ * Mutation hook to create an AmwalPay configuration for wallet deposits.
+ *
+ * @remarks
+ * - Endpoint: Delegated to `createAmwalPayWalletConfig` in wallet.requests.
+ */
 export const useCreateAmwalPayWalletConfig = () => {
   return useMutation<
     { data: any; message: string; status: boolean },
@@ -135,6 +196,13 @@ export const useCreateAmwalPayWalletConfig = () => {
   });
 };
 
+/**
+ * Mutation hook to verify an AmwalPay wallet deposit payment.
+ *
+ * @remarks
+ * - **Invalidates**: `["wallet", "balance"]`, `["wallet", "transactions"]` on success.
+ * - Endpoint: Delegated to `verifyAmwalPayWalletPayment` in wallet.requests.
+ */
 export const useVerifyAmwalPayWalletPayment = () => {
   const queryClient = useQueryClient();
   return useMutation<
@@ -155,6 +223,13 @@ export const useVerifyAmwalPayWalletPayment = () => {
   });
 };
 
+/**
+ * Mutation hook to withdraw funds from the user's wallet.
+ *
+ * @remarks
+ * - **Invalidates**: `["wallet", "balance"]`, `["wallet", "transactions"]` on success.
+ * - Endpoint: Delegated to `withdrawFromWallet` in wallet.requests.
+ */
 export const useWithdrawFromWallet = () => {
   const queryClient = useQueryClient();
   
@@ -169,6 +244,14 @@ export const useWithdrawFromWallet = () => {
   });
 };
 
+/**
+ * Mutation hook to transfer funds from the current user's wallet
+ * to another user's wallet.
+ *
+ * @remarks
+ * - **Invalidates**: `["wallet", "balance"]`, `["wallet", "transactions"]` on success.
+ * - Endpoint: Delegated to `transferToUser` in wallet.requests.
+ */
 export const useTransferToUser = () => {
   const queryClient = useQueryClient();
   
@@ -183,6 +266,13 @@ export const useTransferToUser = () => {
   });
 };
 
+/**
+ * Mutation hook to update the user's wallet settings / preferences.
+ *
+ * @remarks
+ * - **Invalidates**: `["wallet", "settings"]` on success.
+ * - Endpoint: Delegated to `updateWalletSettings` in wallet.requests.
+ */
 export const useUpdateWalletSettings = () => {
   const queryClient = useQueryClient();
   
@@ -196,7 +286,14 @@ export const useUpdateWalletSettings = () => {
   });
 };
 
-// Admin queries
+/**
+ * Query hook (admin) that fetches all wallets with pagination and
+ * optional user/status filters.
+ *
+ * @remarks
+ * Query key: `["admin", "wallets", payload]`
+ * Endpoint: Delegated to `fetchAllWallets` in wallet.requests.
+ */
 export const useAllWallets = (
   payload: {
     page: number;
@@ -215,6 +312,14 @@ export const useAllWallets = (
     enabled,
   });
 
+/**
+ * Mutation hook (admin) to update a wallet's status (e.g., active, suspended).
+ *
+ * @remarks
+ * - **Payload**: `{ walletId: number; status: string }`
+ * - **Invalidates**: `["admin", "wallets"]`, `["wallet", "balance"]` on success.
+ * - Endpoint: Delegated to `updateWalletStatus` in wallet.requests.
+ */
 export const useUpdateWalletStatus = () => {
   const queryClient = useQueryClient();
   
@@ -230,6 +335,14 @@ export const useUpdateWalletStatus = () => {
   });
 };
 
+/**
+ * Query hook (admin) that fetches all wallet transactions across
+ * all users with pagination and filters.
+ *
+ * @remarks
+ * Query key: `["admin", "transactions", payload]`
+ * Endpoint: Delegated to `fetchAllWalletTransactions` in wallet.requests.
+ */
 export const useAllWalletTransactions = (
   payload: {
     page: number;

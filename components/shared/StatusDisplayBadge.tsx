@@ -1,3 +1,20 @@
+/**
+ * @file StatusDisplayBadge - Configurable user status badge with icon and tooltip.
+ * @description Renders a styled badge indicating the user's account status.
+ * Uses the USER_STATUS_CONFIG constants to determine background color, text color,
+ * border color, label text, and SVG icon type (clock, check-circle, times-circle,
+ * ban, user-secret) based on the status string. Supports three sizes (sm/md/lg)
+ * and optional icon display. Shows a truncated status note tooltip when provided.
+ *
+ * @props
+ *   - status {string} - User status key (e.g., "ACTIVE", "WAITING", "REJECT").
+ *   - statusNote {string} - Optional admin note displayed below the badge.
+ *   - size {"sm" | "md" | "lg"} - Badge size preset (default "md").
+ *   - showIcon {boolean} - Whether to show the status icon (default true).
+ *
+ * @dependencies
+ *   - @/utils/constants (USER_STATUS_CONFIG) - Status color, icon, and label mapping.
+ */
 import React from "react";
 import { USER_STATUS_CONFIG } from "@/utils/constants";
 

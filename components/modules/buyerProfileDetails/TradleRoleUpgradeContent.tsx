@@ -6,11 +6,29 @@ import CompanyIcon from "@/public/images/company.svg";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 
+/**
+ * Props for the {@link TradeRoleUpgradeContent} dialog component.
+ *
+ * @property onClose - Optional callback invoked to close the dialog.
+ * @property onConfirmRole - Callback fired when the user selects a vendor
+ *   role. Receives either `"COMPANY"` or `"FREELANCER"`.
+ */
 type TradeRoleUpgradeContentProps = {
   onClose?: () => void;
   onConfirmRole: (args0: "COMPANY" | "FREELANCER") => void;
 };
 
+/**
+ * Dialog content that lets a buyer upgrade their trade role to either
+ * "FREELANCER" or "COMPANY".
+ *
+ * Renders two radio-style selector cards with icons. Selecting either
+ * option immediately invokes {@link TradeRoleUpgradeContentProps.onConfirmRole}
+ * with the chosen role string.
+ *
+ * @param props - {@link TradeRoleUpgradeContentProps}
+ * @returns A dialog content element with role-selection UI.
+ */
 const TradeRoleUpgradeContent: React.FC<TradeRoleUpgradeContentProps> = ({
   onClose,
   onConfirmRole,

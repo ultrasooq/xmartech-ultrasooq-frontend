@@ -1,3 +1,11 @@
+/**
+ * @file QuestionCard.tsx
+ * @description Expandable Q&A card for the service details page. Displays a question
+ * with the asker's name and an optional answer from the service provider.
+ * Supports expand/collapse toggle for long content. Answer form (AnswerForm)
+ * integration is commented out, pending future implementation.
+ */
+
 import React, { useState } from "react";
 // import { Button } from "@/components/ui/button";
 // import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -6,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 
+/** Props for the QuestionCard component. */
 type QuestionCardProps = {
   id: number;
   question: string;

@@ -1,3 +1,23 @@
+/**
+ * @file Service Detail Page - app/services/[id]/page.tsx
+ * @route /services/:id (dynamic segment = service ID)
+ * @description Public service detail page. Displays service images (ServiceImagesCard),
+ *   service description (PlateEditor), vendor info (VendorSection), tabs for Description /
+ *   Reviews (ReviewSection) / Q&A (QuestionsAnswersSection), and an add-to-cart action
+ *   (useAddServiceToCart). Shows a mini cart sidebar overlay with current cart items.
+ *   Supports wishlist toggling. Includes confirm dialog for cart item removal.
+ * @authentication Optional; supports guest (device-based) and authenticated flows.
+ * @key_components ServiceImagesCard, VendorSection, ReviewSection, QuestionsAnswersSection,
+ *   PlateEditor, ProductCard, ServiceCard (cart items), Tabs, Dialog, Skeleton, Footer
+ * @data_fetching
+ *   - useServiceById for service details
+ *   - useCartListByDevice / useCartListByUserId for cart state
+ *   - useAddServiceToCart for adding service to cart
+ *   - useDeleteCartItem / useDeleteServiceFromCart for cart item removal
+ *   - useAddToWishList / useDeleteFromWishList for wishlist
+ *   - useMe for user identity
+ * @state_management Local state for cart visibility, quantity, haveAccessToken, confirm dialog.
+ */
 "use client";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";

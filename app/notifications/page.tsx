@@ -1,3 +1,20 @@
+/**
+ * @file Notifications Page - app/notifications/page.tsx
+ * @route /notifications
+ * @description Full-page notification center. Lists all user notifications with filtering
+ *   by type (ORDER, CHAT, SYSTEM, PAYMENT, RFQ, TEAM) and read status (all/read/unread).
+ *   Supports "Mark all as read" (useMarkAllAsRead), individual delete (useDeleteNotification),
+ *   and pagination with page numbers. Each notification renders as a NotificationItem
+ *   component. Shows unread count badge, empty state, and loading skeletons.
+ * @authentication Required (implicitly via useNotifications which uses auth token).
+ * @key_components NotificationItem, Select (filter dropdowns), Button, Skeleton
+ * @data_fetching
+ *   - useNotifications({ page, limit, type, read }) for paginated notifications
+ *   - useMarkAllAsRead mutation
+ *   - useDeleteNotification mutation
+ * @state_management NotificationsContext (refreshNotifications for real-time updates);
+ *   local state for page, filterType, filterRead.
+ */
 "use client";
 
 import React, { useState } from "react";

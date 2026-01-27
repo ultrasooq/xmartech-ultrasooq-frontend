@@ -1,3 +1,23 @@
+/**
+ * @file ControlledNumberInput - React Hook Form integrated numeric-only input.
+ * @description Renders a text input that only allows numeric characters and a single
+ * decimal point. Strips non-numeric characters on every keystroke and ensures only
+ * one decimal point is present. Integrates with React Hook Form via useFormContext
+ * and FormField. Supports a custom onChange prop alongside the RHF field.onChange.
+ * Extends standard InputProps for full HTML input attribute support.
+ *
+ * @props
+ *   - label {string} - Optional label text.
+ *   - name {string} - Form field name for the numeric value.
+ *   - showLabel {boolean} - When true, displays the label (default false).
+ *   - ...InputProps - All standard HTML input props are supported.
+ *
+ * @dependencies
+ *   - react-hook-form (useFormContext) - Form state management.
+ *   - @/components/ui/form (FormControl, FormField, FormItem, FormLabel, FormMessage) - Form primitives.
+ *   - @/components/ui/input (Input, InputProps) - Styled input component.
+ *   - @/lib/utils (cn) - Tailwind class merging utility.
+ */
 import React from "react";
 import {
     FormControl,

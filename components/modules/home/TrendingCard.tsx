@@ -1,9 +1,18 @@
+/**
+ * @file TrendingCard.tsx
+ * @description Trending category card displayed in the home page categories grid.
+ * Shows a category image (with fallback icon for missing images), name, and
+ * active state highlighting. Similar to TrendingOptionCard but styled for
+ * the main category grid rather than a sidebar or option list.
+ */
+
 import React from "react";
 import Image from "next/image";
 import { MdOutlineImageNotSupported } from "react-icons/md";
 // import Link from "next/link";
 import { cn } from "@/lib/utils";
 
+/** Props for the TrendingCard component. */
 type TrendingCardProps = {
   item: any;
   isActiveIndex?: boolean;

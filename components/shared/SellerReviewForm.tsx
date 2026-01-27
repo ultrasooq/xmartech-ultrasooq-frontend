@@ -1,3 +1,25 @@
+/**
+ * @file SellerReviewForm - Seller product review submission form.
+ * @description Renders a dialog form for sellers to submit product reviews with
+ * a star rating, title, and description. Supports creating new reviews via
+ * the useAddSellerReview mutation. On success, invalidates related queries.
+ *
+ * @props
+ *   - onClose {() => void} - Close form callback.
+ *   - reviewId {number} - Optional existing review ID (for edit, currently unused).
+ *   - productPriceId {number} - Product price ID to attach the review to.
+ *   - adminId {number} - Admin/seller user ID.
+ *   - productId {number} - Product ID being reviewed.
+ *
+ * @dependencies
+ *   - react-hook-form (useForm, Controller) - Form state management.
+ *   - zod / @hookform/resolvers/zod - Schema-based validation.
+ *   - @/apis/queries/review.queries - Review mutation hooks.
+ *   - @tanstack/react-query (useQueryClient) - Query cache invalidation.
+ *   - ./Forms/ControlledTextInput, ./Forms/ControlledTextareaInput - Form inputs.
+ *   - ./Ratings - Star rating interactive component.
+ *   - ./LoaderWithMessage - Loading spinner with text.
+ */
 import React from "react";
 import { DialogHeader, DialogTitle } from "../ui/dialog";
 import { Form } from "../ui/form";

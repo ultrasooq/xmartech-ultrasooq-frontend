@@ -1,3 +1,16 @@
+/**
+ * @file ProductDetailsSection.tsx
+ * @description Dynamic custom field builder (~1018 lines) for service product details.
+ * Allows users to create custom form fields with configurable properties:
+ * - Field types: text, textarea, dropdown, checkbox, radio button, date
+ * - Properties per field: label, required flag, size (full/half/third/quarter),
+ *   placeholder, and type-specific options (dropdown choices, checkbox/radio options)
+ * - Preview mode to visualise the custom form
+ * - Edit and delete operations on existing fields
+ * Uses UUID (v4) for unique field identification and manages state via `useState`.
+ * Renders created fields via the shared `CustomFieldContent` component.
+ */
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";

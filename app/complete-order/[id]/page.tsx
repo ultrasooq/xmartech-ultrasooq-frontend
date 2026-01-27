@@ -1,3 +1,21 @@
+/**
+ * @file Complete Order Payment Page - app/complete-order/[id]/page.tsx
+ * @route /complete-order/:id (dynamic segment = order ID)
+ * @description Payment page for unauthenticated / guest orders. Fetches order details
+ *   by ID (useOrderByIdUnAuth), displays order products with images, shipping/billing
+ *   addresses, and an order summary (items total, fees, shipping, grand total). Supports
+ *   two payment types: DIRECT (full payment) and ADVANCE (partial payment with custom
+ *   amount). On submit, creates a Paymob payment intent (useCreatePaymentIntent) and
+ *   redirects the user to the Paymob payment gateway URL.
+ * @authentication Not required; uses useOrderByIdUnAuth for guest order retrieval.
+ * @key_components SkeletonProductCardLoader, LoaderWithMessage, Button, Switch (payment type),
+ *   Input (advance amount), Image, Label
+ * @data_fetching
+ *   - useOrderByIdUnAuth({ orderId }) for order details
+ *   - useCreatePaymentIntent mutation for Paymob payment redirect
+ * @state_management Local state for itemsTotal, fee, shippingCharge, total, paymentType,
+ *   advanceAmount, isRedirectingToPaymob; useParams for order ID.
+ */
 "use client";
 import React, { useEffect, useState } from "react";
 import { useCreatePaymentIntent, useOrderByIdUnAuth } from "@/apis/queries/orders.queries";

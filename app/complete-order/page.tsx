@@ -1,3 +1,27 @@
+/**
+ * @file Complete Order / Payment Page - app/complete-order/page.tsx
+ * @route /complete-order
+ * @description Final order placement and payment page. Reads order data from useOrderStore
+ *   (Zustand) and provides multiple payment options:
+ *   (1) Stripe (loadStripe + PaymentForm component)
+ *   (2) Paymob (useCreatePaymentIntent -> redirect to Paymob gateway)
+ *   (3) EMI / installment payments (useCreateEMIPayment)
+ *   (4) Amwal payment gateway (useCreateAmwalPayConfig -> SmartBox Checkout widget)
+ *   (5) Payment link (useCreatePaymentLink)
+ *   Payment method is selected via RadioGroup. On successful payment, calls useCreateOrder
+ *   (authenticated) or useCreateOrderUnAuth (guest) and redirects to /checkout-complete.
+ *   Supports RFQ-based orders with rfq-specific fields from the order store.
+ * @authentication Supports both authenticated (PUREMOON_TOKEN_KEY) and guest checkout.
+ * @key_components PaymentForm, RadioGroup, Label, Input, Button, LoaderWithMessage,
+ *   SmartBox (Amwal payment widget)
+ * @data_fetching
+ *   - useCreatePaymentIntent, useCreateEMIPayment, useCreatePaymentLink mutations
+ *   - useCreateAmwalPayConfig for Amwal gateway
+ *   - useCreateOrder / useCreateOrderUnAuth for order finalization
+ *   - useCartListByDevice / useCartListByUserId for cart reference
+ * @state_management useOrderStore (Zustand) for order data from checkout;
+ *   local state for paymentType, processing flags, advanceAmount, EMI config.
+ */
 "use client";
 import React, { useEffect, useState } from "react";
 

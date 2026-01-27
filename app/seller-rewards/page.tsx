@@ -1,3 +1,19 @@
+/**
+ * @file Seller Rewards Page - app/seller-rewards/page.tsx
+ * @route /seller-rewards
+ * @description Lists all seller reward programs for the current seller. Each reward card
+ *   shows product image, reward name, percentage, and status. Sellers can create share
+ *   links (useCreateShareLink) and view detail pages for each reward (/seller-rewards/:id).
+ *   Includes a CreateSellerRewardForm modal (Dialog) for creating new reward entries.
+ *   Requires PERMISSION_SELLER_REWARDS; redirects to /home if permission is denied.
+ * @authentication Required; permission-gated via checkPermission(PERMISSION_SELLER_REWARDS).
+ * @key_components Pagination, Dialog (CreateSellerRewardForm modal), CreateSellerRewardForm,
+ *   Link, Info (lucide icon)
+ * @data_fetching
+ *   - useSellerRewards({ page, limit }) for paginated seller rewards
+ *   - useCreateShareLink mutation for generating share links
+ * @state_management Local state for page, isSellerRewardFormModalOpen.
+ */
 "use client"; // Add this at the top
 import React, { useMemo, useRef, useState, useEffect } from "react";
 import Pagination from "@/components/shared/Pagination";

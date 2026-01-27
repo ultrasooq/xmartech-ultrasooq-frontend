@@ -1,3 +1,40 @@
+/**
+ * @file ProductTable.tsx
+ * @description Product table/list view component for the trending page. Renders
+ *   products in a tabular layout with discount calculations, star ratings, stock
+ *   status, buygroup timing display, and action buttons (cart, view, wishlist).
+ *
+ * @props
+ *   - list {TrendingProduct[]} - Array of trending product objects to display.
+ *   - onWishlist {(productId, wishlist) => void} - Wishlist toggle callback.
+ *   - onAddToCart {(item, quantity, action, variant?, cartId?) => void} - Cart callback.
+ *   - wishlistMap {Map<number, boolean>} - Product ID to wishlist state mapping.
+ *   - cartMap {Map<number, { quantity, cartId? }>} - Product ID to cart state mapping.
+ *   - haveAccessToken {boolean} - Whether the user is authenticated.
+ *   - productVariants {any[]} - Available variant options.
+ *
+ * @behavior
+ *   - Table columns: Product (image + name + rating + stock + buygroup timer),
+ *     Category, Brand, Price (with discounts), Actions (cart, view, wishlist).
+ *   - Discount calculation via `calculateDiscountedPrice`: determines discount
+ *     based on trade role, vendor business category matching, and consumer type.
+ *     Supports PERCENTAGE and FLAT discount types.
+ *   - Rating calculation: averages review ratings from `productReview` array.
+ *   - Stock status from `productQuantity` or `productPrices[0].stock`.
+ *   - Contains `BuygroupTimingDisplay` sub-component: live countdown timer for
+ *     BUYGROUP products with "Not Started" / "Expired" / countdown states.
+ *   - "Ask Vendor for Price" button links to seller RFQ request page.
+ *   - Discount badge on product image (percentage or flat amount).
+ *   - "Save" text showing discount amount/percentage.
+ *
+ * @dependencies
+ *   - useVendorBusinessCategories (hook) - Vendor business category IDs.
+ *   - useCurrentAccount (TanStack Query) - Current account trade role.
+ *   - useAuth (AuthContext) - User, currency, language direction.
+ *   - useTranslations (next-intl) - i18n translations.
+ *   - Table components (shadcn) - Table UI.
+ *   - validator - URL validation for product images.
+ */
 import React, { useState, useEffect, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import {

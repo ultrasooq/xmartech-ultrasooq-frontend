@@ -1,3 +1,25 @@
+/**
+ * @file AccordionMultiSelect - Accordion-based multi-select with checkboxes.
+ * @description Renders a collapsible accordion that displays checkbox options
+ * for multi-selection. Selected items are shown as chips in the accordion trigger.
+ * Manages a local selectedItems state that syncs bidirectionally with the form
+ * field value via React Hook Form's useFormContext. Initializes selections from
+ * existing form values on mount.
+ *
+ * @props
+ *   - label {string} - Label text displayed above the accordion.
+ *   - name {string} - Form field name for the selected values array.
+ *   - options {{ label: string; value: string }[]} - Available options.
+ *   - placeholder {string} - Placeholder text shown when nothing is selected.
+ *   - error {string} - Error message to display below the accordion.
+ *
+ * @dependencies
+ *   - @/components/ui/accordion - Collapsible accordion container.
+ *   - @/components/ui/form (FormControl, FormField, FormItem, FormLabel) - Form primitives.
+ *   - @/components/ui/checkbox (Checkbox) - Styled checkbox component.
+ *   - react-hook-form (useFormContext) - Form state management.
+ *   - @/context/AuthContext (useAuth) - Language direction context.
+ */
 import React, { useEffect, useState } from "react";
 import {
   Accordion,

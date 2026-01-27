@@ -15,12 +15,28 @@ import {
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 
+/**
+ * Props for the {@link AddToRoleForm} component.
+ *
+ * @property onClose          - Callback to close the dialog.
+ * @property updatePermission - Callback invoked after role creation/update
+ *   with the role ID so the parent can open the permission editor.
+ * @property roleDetails      - Existing role data for edit mode (has
+ *   `label` and `value` fields), or `null`/`undefined` for create.
+ */
 type AddToRoleFormProps = {
   onClose: () => void;
   updatePermission: (roleId: number) => void;
   roleDetails: any;
 };
 
+/**
+ * Builds the Zod schema for the role name form. Validates the role
+ * name is 2+ chars and letters-only.
+ *
+ * @param t - Translation function from `next-intl`.
+ * @returns A Zod object schema.
+ */
 const addFormSchema = (t: any) => {
   return z.object({
     userRoleName: z
@@ -32,6 +48,15 @@ const addFormSchema = (t: any) => {
 };
 
 
+/**
+ * Dialog form for creating or editing a user role. In create mode,
+ * calls {@link useCreateUserRole}; in edit mode, calls
+ * {@link useUpdateUserRole}. After success, invokes `updatePermission`
+ * with the new/updated role ID.
+ *
+ * @param props - {@link AddToRoleFormProps}
+ * @returns A dialog form with role name input and save button.
+ */
 const AddToRoleForm: React.FC<AddToRoleFormProps> = ({ onClose, updatePermission, roleDetails }) => {
   const t = useTranslations();
   const { langDir } = useAuth();

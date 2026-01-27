@@ -18,6 +18,17 @@ import {
 import validator from "validator";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
 
+/**
+ * Props for the {@link DropshipProductCard} component.
+ *
+ * @property product        - Full product data object from the dropship
+ *   product listing API.
+ * @property onSelect       - Callback fired when "Create Dropship" is clicked.
+ * @property onWishlist     - Callback fired when the wishlist toggle is clicked.
+ * @property isCreatedByMe  - Whether the current user created this product.
+ * @property inWishlist     - Truthy value if the product is in the wishlist.
+ * @property haveAccessToken - Whether the user is authenticated.
+ */
 interface DropshipProductCardProps {
   product: any;
   onSelect: (product: any) => void;
@@ -27,6 +38,22 @@ interface DropshipProductCardProps {
   haveAccessToken?: boolean;
 }
 
+/**
+ * Card component for browsing available dropshipable products.
+ *
+ * Displays:
+ * - Product image with validation and placeholder fallback.
+ * - Status badge (Active/Inactive) and "Dropshipable" label.
+ * - Wishlist heart toggle (hidden for products created by the current user).
+ * - Brand, category, and vendor information.
+ * - Product price with currency symbol.
+ * - Truncated description with tooltip.
+ * - "View Product" link to the product detail page.
+ * - "Create Dropship" action button.
+ *
+ * @param props - {@link DropshipProductCardProps}
+ * @returns A styled card for the dropship product browsing grid.
+ */
 const DropshipProductCard: React.FC<DropshipProductCardProps> = ({
   product,
   onSelect,

@@ -14,12 +14,31 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useMe } from "@/apis/queries/user.queries";
 import { useAddToWishList } from "@/apis/queries/wishlist.queries";
 
+/**
+ * Props for the {@link Cart} component.
+ *
+ * @property haveAccessToken - Whether the user is authenticated.
+ * @property isLoadingCart    - `true` while cart data is being fetched
+ *   (renders skeleton placeholders).
+ * @property cartItems        - Array of cart item objects to render,
+ *   each may be a product or a service entry.
+ */
 type CartProps = {
     haveAccessToken: boolean;
     isLoadingCart: boolean;
     cartItems: any[];
 };
 
+/**
+ * Renders the shopping cart item list including both product cards and
+ * service cards. Provides remove-from-cart (product and service) and
+ * add-to-wishlist functionality via React Query mutations.
+ *
+ * Shows skeleton loaders when `isLoadingCart` is `true`.
+ *
+ * @param props - {@link CartProps}
+ * @returns The cart items section.
+ */
 const Cart: React.FC<CartProps> = ({
     haveAccessToken,
     isLoadingCart,

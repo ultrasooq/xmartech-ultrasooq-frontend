@@ -1,3 +1,19 @@
+/**
+ * @file Input - Shadcn UI input component.
+ * @description Renders a styled single-line text input. Includes built-in
+ * password visibility toggle: when type="password", an eye open/closed icon
+ * allows the user to toggle between masked and plain text display.
+ *
+ * @props Accepts all native HTMLInputElement attributes including:
+ *   - type {string} - Input type; "password" enables visibility toggle.
+ *   - placeholder {string} - Placeholder text.
+ *   - disabled {boolean} - Disables the input.
+ *   - className {string} - Additional CSS classes.
+ *
+ * @dependencies
+ *   - @radix-ui/react-icons (EyeClosedIcon, EyeOpenIcon) - Password toggle icons.
+ *   - @/lib/utils (cn) - Tailwind class merging utility.
+ */
 import * as React from "react";
 import { EyeClosedIcon, EyeOpenIcon } from "@radix-ui/react-icons";
 import { cn } from "@/lib/utils";
@@ -5,6 +21,7 @@ import { cn } from "@/lib/utils";
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {}
 
+/** Styled text input with optional password visibility toggle. */
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, ...props }, ref) => {
     const [showPassword, setShowPassword] = React.useState(false);

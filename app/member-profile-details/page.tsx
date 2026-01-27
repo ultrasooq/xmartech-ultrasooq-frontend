@@ -1,3 +1,20 @@
+/**
+ * @file Member Profile Details Page - app/member-profile-details/page.tsx
+ * @route /member-profile-details (also accepts ?sellerId=<id> for vendor view)
+ * @description Team member profile page with two modes:
+ *   (1) Own profile: shows member ProfileCard, InformationSection, ReviewSection,
+ *       MoreInformationSection with tabs for Profile Info, Products, Reviews.
+ *   (2) Vendor view (?sellerId): shows VendorCard, VendorInformationSection,
+ *       VendorMoreInformationSection. Background hero image banner.
+ * @authentication Required; useMe() for user data.
+ * @key_components ProfileCard (member variant), InformationSection, ReviewSection,
+ *   MoreInformationSection, VendorCard, VendorInformationSection, VendorMoreInformationSection,
+ *   ProductsSection, Tabs, Footer
+ * @data_fetching
+ *   - useMe() for current user data
+ *   - useVendorDetails({ adminId }) for vendor view mode
+ * @state_management Local state for activeTab, activeSellerId (from URL query params).
+ */
 "use client";
 import { useMe } from "@/apis/queries/user.queries";
 import React, { useEffect, useState } from "react";

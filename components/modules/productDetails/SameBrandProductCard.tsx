@@ -1,3 +1,36 @@
+/**
+ * @file SameBrandProductCard.tsx
+ * @description Product card variant for the same-brand products section. Displays
+ *   a single product with image, name, ratings, pricing with discount logic, and
+ *   action buttons. Shares identical discount calculation logic with ProductCard.
+ *
+ * @props
+ *   - id, productName, productImages, shortDescription - Product basic info.
+ *   - productProductPrice, productPrice - Pricing data.
+ *   - productReview - Review array for star rating calculation.
+ *   - inWishlist, productWishlist - Wishlist state and data.
+ *   - haveAccessToken - Whether the user is authenticated.
+ *   - onWishlist, onAddToCart - Action callbacks.
+ *   - consumerDiscount, consumerDiscountType, vendorDiscount, vendorDiscountType,
+ *     consumerType, categoryId - Discount eligibility data.
+ *   - askForPrice - Whether to show "Ask for Price" button.
+ *
+ * @behavior
+ *   - Implements `getApplicableDiscount` using `checkCategoryConnection` to
+ *     determine vendor vs consumer discount based on trade role and category match.
+ *   - Calculates discounted price (PERCENTAGE or FLAT).
+ *   - Renders star ratings, pricing with strikethrough for discounted items.
+ *   - Action buttons: wishlist toggle, view (eye icon), add-to-cart/ask-for-price.
+ *   - Uses the same discount logic as ProductCard (productDetails module).
+ *
+ * @dependencies
+ *   - useVendorBusinessCategories (hook) - Vendor's business category IDs.
+ *   - checkCategoryConnection (utility) - Category hierarchy matching.
+ *   - useCategory (TanStack Query) - Category data for connection checking.
+ *   - useCurrentAccount (TanStack Query) - Current account trade role.
+ *   - useAuth (AuthContext) - User info, currency, language direction.
+ *   - useTranslations (next-intl) - i18n translations.
+ */
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";

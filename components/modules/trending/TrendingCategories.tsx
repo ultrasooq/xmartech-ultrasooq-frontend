@@ -1,3 +1,29 @@
+/**
+ * @file TrendingCategories.tsx
+ * @description Category navigation component for the trending page. Displays
+ *   sub-categories and sub-sub-categories based on the currently selected
+ *   category from the global category store.
+ *
+ * @props None
+ *
+ * @behavior
+ *   - Reads category state from `useCategoryStore` (Zustand): subCategories,
+ *     subSubCategories, secondLevelCategoryIndex.
+ *   - Renders sub-categories as `TrendingOptionCard` components (horizontally
+ *     scrollable cards) with click-to-select behavior.
+ *   - Renders sub-sub-categories as `TrendingCard` components in a grid.
+ *   - Tracks active second-level and third-level category indices.
+ *   - Shows a "Clear" button that resets all category store selections and
+ *     reloads the page.
+ *   - Syncs local activeSecondLevelCategoryIndex with the store's value.
+ *   - Only renders when subCategories or subSubCategories have items.
+ *
+ * @dependencies
+ *   - useCategoryStore (Zustand) - Global category selection state.
+ *   - TrendingOptionCard, TrendingCard (home module) - Category card components.
+ *   - useAuth (AuthContext) - Language direction.
+ *   - useTranslations (next-intl) - i18n translations.
+ */
 import { useCategoryStore } from "@/lib/categoryStore";
 import React, { useEffect, useState } from "react";
 import TrendingOptionCard from "../home/TrendingOptionCard";

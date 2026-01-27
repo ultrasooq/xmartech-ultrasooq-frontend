@@ -1,3 +1,19 @@
+/**
+ * @file Email Change Verify Page - app/email-change-verify/page.tsx
+ * @route /email-change-verify
+ * @description OTP verification page for the email change flow. Displays a 4-digit OTP
+ *   input (individual input boxes with auto-focus advance), a 120-second countdown timer,
+ *   and a "Resend OTP" button. On successful verification (useChangeEmailVerify), shows
+ *   a success toast and redirects to /my-settings. Email is retrieved from sessionStorage
+ *   (set during the change-email initiation in /my-settings/change-email).
+ * @authentication Required; part of the authenticated email change flow.
+ * @key_components Form (react-hook-form), Input (OTP digits), Button, Image (background)
+ * @data_fetching
+ *   - useChangeEmailVerify mutation for OTP verification
+ *   - useChangeEmail mutation for OTP resend
+ * @state_management Local state for otp array, countdown timer (count), refs for input focus;
+ *   sessionStorage for new email persistence.
+ */
 "use client";
 import React, {
   useCallback,

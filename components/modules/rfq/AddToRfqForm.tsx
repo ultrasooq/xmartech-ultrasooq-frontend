@@ -1,3 +1,17 @@
+/**
+ * @file AddToRfqForm.tsx
+ * @description Complex modal form for adding or editing RFQ (Request for Quotation) products.
+ * Supports two distinct modes:
+ * 1. "Add to Cart" mode: Sets quantity, product type (SAME/SIMILAR), offer price range
+ *    (from/to), and a note before adding the product to the RFQ cart.
+ * 2. "Edit" mode: Updates product images, notes, and details. When editing a product
+ *    created by another user, duplicates it as a new type-R product via
+ *    `useAddProductDuplicateRfq` before applying edits.
+ *
+ * Handles file uploads (images/videos) via `useUploadMultipleFile`, manages product
+ * type P-to-R conversion, and validates form inputs with Zod schemas.
+ */
+
 import {
   useCreateProduct,
   useRfqProductById,

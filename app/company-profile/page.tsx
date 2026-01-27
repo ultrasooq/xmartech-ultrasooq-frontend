@@ -1,3 +1,25 @@
+/**
+ * @file Company Profile Setup Page - app/company-profile/page.tsx
+ * @route /company-profile
+ * @description Company profile creation form for sellers upgrading to COMPANY trade role.
+ *   Collects: company name, description (rich text), logo, cover image, phone, business
+ *   categories (AccordionMultiSelectV2/MultiSelectCategory), tags, location (country/state/city),
+ *   address, working hours (per day with AM/PM toggles), number of employees, establishment
+ *   year, website URL, and branch information. Uses Zod validation. On submit, uploads
+ *   images (useUploadFile), then calls useCreateCompanyProfile to persist the profile,
+ *   and redirects to /company-profile-details.
+ * @authentication Required; seller must have COMPANY trade role.
+ * @key_components Form (react-hook-form + Zod), AccordionMultiSelectV2, MultiSelectCategory,
+ *   ControlledPhoneInput, ControlledTextInput, ControlledRichTextEditor, ControlledSelectInput,
+ *   Checkbox, Switch, Label, Button
+ * @data_fetching
+ *   - useCreateCompanyProfile mutation for company creation
+ *   - useTags for tag autocomplete
+ *   - useCountries for country/state/city cascading selects
+ *   - useUploadFile for logo/cover image uploads
+ * @state_management react-hook-form with useFieldArray for dynamic branch rows;
+ *   local state for image files, business hours toggles, selected categories.
+ */
 "use client";
 import { Button } from "@/components/ui/button";
 import React, { useMemo, useState } from "react";

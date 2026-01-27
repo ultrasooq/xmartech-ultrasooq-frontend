@@ -1,3 +1,18 @@
+/**
+ * @fileoverview Dummy/placeholder data for development and UI prototyping
+ * in the Ultrasooq marketplace.
+ *
+ * Contains static arrays of product cards, trending topic icons, trending
+ * product images, and hierarchical category link lists used to populate
+ * UI components during development before real API data is available.
+ *
+ * @module utils/dummyDatas
+ * @dependencies Static image imports from @/public/images.
+ *
+ * Notes: This file is intended for development purposes only. The data
+ * should be replaced by real API responses in production.
+ */
+
 import CamerasImageOne from "@/public/images/pro-12.png";
 import CamerasImageTwo from "@/public/images/pro-13.png";
 import CamerasImageThree from "@/public/images/pro-14.png";
@@ -38,6 +53,14 @@ import TrendingFourteen from "@/public/images/tp-14.png";
 import TrendingFifteen from "@/public/images/tp-15.png";
 import TrendingSixteen from "@/public/images/tp-16.png";
 
+/**
+ * Placeholder product list for the "Deals" section on the homepage.
+ *
+ * @description Each item contains a discount badge, image path, shop name,
+ * offer price, description, and original price for card rendering.
+ *
+ * @const
+ */
 export const dealsList = [
   {
     discount: "-6%",
@@ -81,6 +104,10 @@ export const dealsList = [
   },
 ];
 
+/**
+ * Placeholder product list for the "Best Seller" section.
+ * @const
+ */
 export const bestSellerList = [
   {
     discount: "-6%",
@@ -124,6 +151,10 @@ export const bestSellerList = [
   },
 ];
 
+/**
+ * Placeholder product list for the "Computer & Technology" category section.
+ * @const
+ */
 export const computerTechnologyList = [
   {
     discount: "-6%",
@@ -167,6 +198,10 @@ export const computerTechnologyList = [
   },
 ];
 
+/**
+ * Placeholder product list for the "Home Electronics" category section.
+ * @const
+ */
 export const homeElectronicsList = [
   {
     discount: "-6%",
@@ -210,6 +245,10 @@ export const homeElectronicsList = [
   },
 ];
 
+/**
+ * Placeholder product list for the "Cameras & Videos" category section.
+ * @const
+ */
 export const camerasVideosList = [
   {
     discount: "-6%",
@@ -253,6 +292,14 @@ export const camerasVideosList = [
   },
 ];
 
+/**
+ * Trending topic categories with icons for the trending topics navigation bar.
+ *
+ * @description Each item has an icon SVG path and a category label displayed
+ * as a topic pill/chip in the trending section.
+ *
+ * @const
+ */
 export const trendingTopicList = [
   {
     path: HotIcon,
@@ -292,6 +339,12 @@ export const trendingTopicList = [
   },
 ];
 
+/**
+ * Trending product entries with names and thumbnail images for the
+ * trending products grid/carousel.
+ *
+ * @const
+ */
 export const trendingList = [
   {
     name: "TELEVISION",
@@ -359,6 +412,14 @@ export const trendingList = [
   },
 ];
 
+/**
+ * Top-level category options for a three-tier cascading category selector.
+ *
+ * @description Provides the first tier of a hierarchical category selection
+ * used during product listing configuration.
+ *
+ * @const
+ */
 export const LINK_CATEGORY_ONE_LIST = [
   {
     label: "Category 1",
@@ -382,6 +443,14 @@ export const LINK_CATEGORY_ONE_LIST = [
   },
 ];
 
+/**
+ * Second-tier category options keyed by first-tier category value.
+ *
+ * @description Maps each LINK_CATEGORY_ONE value to its available
+ * sub-categories for the second dropdown in the cascading selector.
+ *
+ * @const
+ */
 export const LINK_CATEGORY_TWO_LIST: {
   [key: string]: { label: string; value: string }[];
 } = {
@@ -441,6 +510,14 @@ export const LINK_CATEGORY_TWO_LIST: {
   ],
 };
 
+/**
+ * Third-tier (leaf) category options keyed by second-tier category value.
+ *
+ * @description Maps each LINK_CATEGORY_TWO value to its available
+ * sub-categories for the third dropdown in the cascading selector.
+ *
+ * @const
+ */
 export const LINK_CATEGORY_THREE_LIST: {
   [key: string]: { label: string; value: string }[];
 } = {

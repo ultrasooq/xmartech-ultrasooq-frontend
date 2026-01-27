@@ -7,6 +7,11 @@ import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 
+/**
+ * Props for the seller-side {@link OtherItemCard} component.
+ *
+ * Mirrors the buyer-side OtherItemCard but links to seller order routes.
+ */
 type OtherItemCardProps = {
   id: number;
   orderProductType?: string;
@@ -23,6 +28,14 @@ type OtherItemCardProps = {
   updatedAt: string;
 };
 
+/**
+ * Displays "Other Items in this order" on the seller's order detail page.
+ * Shows product image, name, price, status, and date. Links to the
+ * seller order detail page at `/seller-orders/<id>`.
+ *
+ * @param props - {@link OtherItemCardProps}
+ * @returns An order item card for sibling items in the seller's order.
+ */
 const OtherItemCard: React.FC<OtherItemCardProps> = ({
   id,
   orderProductType,

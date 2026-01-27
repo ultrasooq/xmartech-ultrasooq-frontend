@@ -1,3 +1,25 @@
+/**
+ * @file NavigationMenu - Shadcn UI navigation menu component.
+ * @description Provides a set of composable navigation menu primitives with
+ * animated dropdown content, a shared viewport, and an active-item indicator.
+ * Built for site-level navigation with hover/focus-triggered submenus.
+ *
+ * @exports NavigationMenu - Root container with auto-included viewport.
+ * @exports NavigationMenuList - Horizontal list of menu items.
+ * @exports NavigationMenuItem - Individual menu item wrapper.
+ * @exports NavigationMenuTrigger - Button that opens submenu content with chevron.
+ * @exports NavigationMenuContent - Animated dropdown panel for submenu items.
+ * @exports NavigationMenuLink - Styled navigation link.
+ * @exports NavigationMenuViewport - Shared viewport rendering all open content.
+ * @exports NavigationMenuIndicator - Arrow indicator pointing to active item.
+ * @exports navigationMenuTriggerStyle - CVA style helper for trigger buttons.
+ *
+ * @dependencies
+ *   - @radix-ui/react-navigation-menu - Accessible navigation primitive.
+ *   - @radix-ui/react-icons (ChevronDownIcon) - Dropdown indicator icon.
+ *   - class-variance-authority (cva) - Variant-based class generation.
+ *   - @/lib/utils (cn) - Tailwind class merging utility.
+ */
 import * as React from "react"
 import { ChevronDownIcon } from "@radix-ui/react-icons"
 import * as NavigationMenuPrimitive from "@radix-ui/react-navigation-menu"
@@ -5,6 +27,7 @@ import { cva } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
 
+/** Root navigation menu container with auto-included viewport. */
 const NavigationMenu = React.forwardRef<
   React.ElementRef<typeof NavigationMenuPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof NavigationMenuPrimitive.Root>

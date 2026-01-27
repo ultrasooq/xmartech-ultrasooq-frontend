@@ -1,3 +1,34 @@
+/**
+ * @file OtherSellerSection.tsx
+ * @description "Other Sellers" drawer content component. Displays a product info
+ *   header and a list of alternative sellers offering the same product. Handles
+ *   add-to-cart operations and checkout navigation for selected sellers.
+ *
+ * @props
+ *   - productId {number} - Product ID override (falls back to URL params).
+ *   - onClose {() => void} - Callback to close the drawer.
+ *
+ * @behavior
+ *   - Fetches product details via `useProductById` to get all sellers and their
+ *     pricing for the product.
+ *   - Displays the product image, name, and current price in a header card.
+ *   - Renders a list of `SellerCard` components for each alternative seller.
+ *   - Each SellerCard has an "Add to Cart" button that triggers cart operations
+ *     via `useUpdateCartWithLogin` (authenticated) or `useUpdateCartByDevice`
+ *     (anonymous).
+ *   - "Proceed to Checkout" button navigates to checkout and closes the drawer.
+ *   - Fetches current cart state to check which sellers are already in cart.
+ *   - Shows loading skeletons while data is fetching.
+ *
+ * @dependencies
+ *   - useProductById (TanStack Query) - Full product data with all sellers.
+ *   - useMe (TanStack Query) - Current user info.
+ *   - useCartListByDevice, useCartListByUserId (TanStack Query) - Cart data.
+ *   - useUpdateCartWithLogin, useUpdateCartByDevice (TanStack Query) - Cart mutations.
+ *   - SellerCard (otherSellers module) - Seller card renderer.
+ *   - useAuth (AuthContext) - Currency, language direction.
+ *   - useTranslations (next-intl) - i18n translations.
+ */
 import React, { useEffect, useState } from "react";
 import {
   // useOneWithProductPrice,

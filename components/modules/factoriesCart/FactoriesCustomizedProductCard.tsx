@@ -7,6 +7,23 @@ import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 // import { useCartStore } from "@/lib/rfqStore";
 
+/**
+ * Props for the {@link FactoriesCustomizedProductCard} component.
+ *
+ * @property factoriesCartId      - Cart entry ID.
+ * @property productId            - Parent product ID.
+ * @property customizeProductId   - Customised product variant ID.
+ * @property productName          - Display name.
+ * @property productQuantity      - Quantity in the cart.
+ * @property productImages        - Array of original product images.
+ * @property customizeProductImages - Array of customised product images.
+ * @property offerFromPrice       - Lower bound of the price range.
+ * @property offerToPrice         - Upper bound of the price range.
+ * @property onAdd                - Callback for quantity update (receives
+ *   factoriesCartId, customizeProductId, and new quantity).
+ * @property onRemove             - Callback to remove this item.
+ * @property note                 - Customization note text.
+ */
 type FactoriesProductCardProps = {
   factoriesCartId: number;
   productId: number;
@@ -30,6 +47,15 @@ type FactoriesProductCardProps = {
   note: string;
 };
 
+/**
+ * Cart item card for a customised factory product on the factories
+ * cart page. Shows both customised and original product images,
+ * product name, quantity controls with +/- buttons, remove button,
+ * customization note, and price range display with currency symbol.
+ *
+ * @param props - {@link FactoriesProductCardProps}
+ * @returns A product card row for the factories cart list.
+ */
 const FactoriesCustomizedProductCard: React.FC<FactoriesProductCardProps> = ({
   factoriesCartId,
   productId,

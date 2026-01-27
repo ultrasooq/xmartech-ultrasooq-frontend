@@ -1,3 +1,19 @@
+/**
+ * @file ScrollArea - Shadcn UI custom scrollable area component.
+ * @description Provides a cross-browser custom scrollbar experience with a styled
+ * viewport, vertical/horizontal scrollbar tracks, and rounded thumb indicators.
+ *
+ * @exports ScrollArea - Main scrollable container with auto-included vertical ScrollBar.
+ * @exports ScrollBar - Styled scrollbar track and thumb supporting both orientations.
+ *
+ * @props ScrollArea accepts all Radix ScrollArea.Root props plus className.
+ * @props ScrollBar accepts:
+ *   - orientation {"vertical" | "horizontal"} - Scrollbar direction (default: "vertical").
+ *
+ * @dependencies
+ *   - @radix-ui/react-scroll-area - Accessible scroll area primitive.
+ *   - @/lib/utils (cn) - Tailwind class merging utility.
+ */
 "use client"
 
 import * as React from "react"
@@ -5,6 +21,7 @@ import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area"
 
 import { cn } from "@/lib/utils"
 
+/** Custom scrollable container with styled scrollbar. */
 const ScrollArea = React.forwardRef<
   React.ElementRef<typeof ScrollAreaPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof ScrollAreaPrimitive.Root>

@@ -1,3 +1,28 @@
+/**
+ * @file Factory Product Detail Page - app/factories/[id]/page.tsx
+ * @route /factories/:id (dynamic segment = factory product ID)
+ * @description Factory product detail page. Displays product images (ProductImagesCard),
+ *   pricing with role-based discounts, variant selection, add-to-cart with quantity controls,
+ *   vendor info (VendorSection), rich-text description (PlateEditor), tabs for Description /
+ *   Reviews (ReviewSection) / Q&A (QuestionsAnswersSection), related products
+ *   (RelatedProductsSection), and same-brand products (SameBrandSection). Shows a mini cart
+ *   sidebar overlay. Supports wishlist toggle and buy-now flow.
+ * @authentication Optional; supports guest (device-based) and authenticated flows.
+ * @key_components ProductImagesCard, ProductDescriptionCard, VendorSection, ReviewSection,
+ *   QuestionsAnswersSection, RelatedProductsSection, SameBrandSection, PlateEditor,
+ *   ProductCard, ServiceCard, Tabs, Dialog, Skeleton, Footer
+ * @data_fetching
+ *   - useProductById for product details
+ *   - useOneWithProductPrice for pricing data
+ *   - useProductVariant for variant attributes
+ *   - useCartListByDevice / useCartListByUserId for cart state
+ *   - useUpdateCartWithLogin / useUpdateCartByDevice for cart operations
+ *   - useDeleteCartItem / useDeleteServiceFromCart for cart item removal
+ *   - useAddToWishList / useDeleteFromWishList for wishlist
+ *   - useMe for user identity
+ * @state_management Local state for cart visibility, variant selection, quantity,
+ *   haveAccessToken, confirm dialog.
+ */
 "use client";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {

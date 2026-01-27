@@ -1,3 +1,20 @@
+/**
+ * @file DeleteContent - Confirmation dialog content for delete operations.
+ * @description Renders a danger-styled dialog asking the user to confirm a deletion.
+ * Provides "No" (cancel) and "Yes" (confirm) buttons. Shows a spinner while loading.
+ *
+ * @props
+ *   - onClose {() => void} - Cancel/close callback.
+ *   - onConfirm {() => void} - Confirm deletion callback.
+ *   - isLoading {boolean} - When true, disables buttons and shows spinner.
+ *
+ * @dependencies
+ *   - @/components/ui/dialog - Dialog layout components.
+ *   - @/components/ui/button (Button) - Styled action buttons.
+ *   - next/image - Loading spinner image.
+ *   - next-intl (useTranslations) - i18n translation hook.
+ *   - @/context/AuthContext (useAuth) - Language direction context.
+ */
 import React from "react";
 import {
   DialogDescription,

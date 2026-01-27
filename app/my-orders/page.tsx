@@ -1,3 +1,20 @@
+/**
+ * @file My Orders Page - app/my-orders/page.tsx
+ * @route /my-orders
+ * @description Buyer-side order listing page. Displays all orders with search (debounced),
+ *   status filter (RadioGroup: All/Pending/Confirmed/Shipped/Delivered/Cancelled), and
+ *   time filter (Last 30 days / 3 months / 6 months / Year). Each order renders as an
+ *   OrderCard with product info, status badge, and link to /my-orders/:id for details.
+ *   Shows order stats summary (total orders, in-progress, delivered, cancelled) in
+ *   Card components. Empty state with ShoppingBag icon.
+ * @authentication Required; uses useOrders for authenticated order data.
+ * @key_components OrderCard, Pagination, Card, Badge, Skeleton, RadioGroup, Input, Button,
+ *   various lucide icons (Search, Filter, Package, Clock, CheckCircle, Truck, etc.)
+ * @data_fetching
+ *   - useOrders({ page, limit, searchTerm, orderStatus, orderTime }) for paginated orders
+ * @state_management Local state for page, searchTerm, orderStatus, orderTime;
+ *   debounced search via lodash debounce.
+ */
 "use client";
 import React, { useRef, useState } from "react";
 import { useOrders } from "@/apis/queries/orders.queries";

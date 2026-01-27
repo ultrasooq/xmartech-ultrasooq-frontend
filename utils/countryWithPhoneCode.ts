@@ -1,3 +1,33 @@
+/**
+ * @fileoverview Static dataset of countries with their ISO codes, flags,
+ * and international calling codes.
+ *
+ * Provides a comprehensive list of countries for phone code selector
+ * components used during registration, profile editing, and address
+ * management forms.
+ *
+ * @module utils/countryWithPhoneCode
+ * @dependencies None (static data array).
+ */
+
+/**
+ * Complete list of countries with their names, flag emojis, ISO 3166-1
+ * alpha-2 codes, and international calling codes.
+ *
+ * @description
+ * Intent: Supplies data for country/phone-code picker components across
+ * the application (registration, address forms, profile edits).
+ *
+ * Usage: Consumed by phone code selector dropdowns that display flag,
+ * country name, and calling code.
+ *
+ * Notes: Entries are manually maintained. Some calling codes may share
+ * values across territories (e.g., +1 for US and Canada). Flag emojis
+ * may render as mojibake if the file encoding is not UTF-8.
+ *
+ * @const
+ * @type {Array<{country: string, flag: string, code: string, callingCode: string}>}
+ */
 export const COUNTRY_WITH_PHONE_CODE = [
   {
     country: "United States",

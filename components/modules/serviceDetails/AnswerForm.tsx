@@ -1,3 +1,11 @@
+/**
+ * @file AnswerForm.tsx
+ * @description Modal form for service providers to answer or update answers to
+ * questions about their service. Uses react-hook-form with Zod validation
+ * (min 2 chars, max 500 chars). Calls `useUpdateServiceAnswer` mutation on
+ * submit and shows toast feedback. Pre-populates existing answer text if available.
+ */
+
 import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -12,6 +20,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 
+/** Props for the AnswerForm modal component. */
 type AnswerFormProps = {
   onClose: () => void;
   serviceId: number;

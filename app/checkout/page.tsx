@@ -1,3 +1,37 @@
+/**
+ * @file Checkout Page - app/checkout/page.tsx
+ * @route /checkout
+ * @description Full checkout flow for the marketplace. Manages:
+ *   (1) Cart item review with per-seller product grouping and role-based discount calculations.
+ *   (2) Shipping address selection (RadioGroup of saved addresses, or guest address form).
+ *   (3) Billing address display (read-only from user profile for logged-in users).
+ *   (4) Shipping method selection per seller (PICKUP, SELLERDROP, THIRDPARTY) with
+ *       seller delivery service modal (Shipping component).
+ *   (5) RFQ (Request For Quotation) checkout flow -- when ?fromRfq=true, loads RFQ quote
+ *       data from sessionStorage (rfqQuoteData) and displays RFQ products + suggested
+ *       alternative products instead of regular cart items.
+ *   (6) Pre-order fee calculation (usePreOrderCalculation), invalid/unavailable product
+ *       detection, and order total computation (itemsTotal + shippingCharge + fee).
+ *   (7) Places order by storing data in useOrderStore (Zustand) and navigating to /complete-order.
+ * @authentication Supports both authenticated (cookie-based) and guest checkout.
+ *   useMe(), useAllUserAddress(), useCurrentAccount() are called only when authenticated.
+ * @key_components ProductCard, ServiceCard, AddressCard, GuestAddressCard, AddressForm,
+ *   GuestAddressForm, Shipping (delivery service selector), LoaderWithMessage,
+ *   Dialog (confirm remove, shipping modal, address modal), RadioGroup, Select
+ * @data_fetching
+ *   - useCartListByDevice / useCartListByUserId for cart items
+ *   - useAllUserAddress for saved addresses
+ *   - usePreOrderCalculation mutation for fee/invalid product detection
+ *   - useFindOneRfqQuotesUsersByBuyerID for RFQ quote details
+ *   - useAllProducts / useCategory for fresh product pricing and category connections
+ *   - useUpdateCartWithLogin / useUpdateCartByDevice for quantity changes
+ *   - useDeleteCartItem / useDeleteServiceFromCart for item removal
+ *   - useAddToWishList for wishlist transfer
+ *   - useDeleteAddress for address management
+ * @state_management useOrderStore (Zustand) for persisting order data across navigation;
+ *   useVendorBusinessCategories() hook; productPricingInfoMap (useMemo) for discount logic;
+ *   extensive local state for addresses, shipping info, RFQ data, totals, and modals.
+ */
 "use client";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";

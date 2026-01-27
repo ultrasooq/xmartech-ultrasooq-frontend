@@ -1,3 +1,13 @@
+/**
+ * @file ProfileCard.tsx
+ * @description Profile header card on the freelancer profile details page. Displays
+ * avatar (with initials fallback), full name, email, phone, business type badges,
+ * freelancer ID (formatted with FREELANCER_UNIQUE_ID prefix), and an online/offline
+ * status toggle. The status toggle calls `useUpdatFreelancerActiveStatus` mutation.
+ * Computes online status based on current day/time matching the user's working hours.
+ * Shows an edit icon linking to /profile for the profile owner.
+ */
+
 import React, { useMemo } from "react";
 import Image from "next/image";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";

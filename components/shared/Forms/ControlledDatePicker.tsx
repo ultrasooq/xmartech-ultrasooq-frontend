@@ -1,3 +1,26 @@
+/**
+ * @file ControlledDatePicker - React Hook Form integrated native date input.
+ * @description Renders a styled native HTML date input integrated with React Hook
+ * Form via useFormContext and FormField. Supports future-only or past-only date
+ * constraints via the isFuture prop and optional minDate override. Includes helper
+ * functions for converting between Date objects and YYYY-MM-DD format strings.
+ * Features a custom CalendarIcon overlay and orange focus ring styling.
+ *
+ * @props
+ *   - label {string} - Optional label displayed above the date input.
+ *   - name {string} - Form field name for the date value.
+ *   - isFuture {boolean} - When true, restricts to future dates only.
+ *   - minDate {Date} - Optional minimum selectable date.
+ *   - placeholder {string} - Placeholder text for the input.
+ *
+ * @dependencies
+ *   - react-hook-form (useFormContext) - Form state management.
+ *   - @/components/ui/form (FormControl, FormField, FormItem, FormLabel, FormMessage) - Form primitives.
+ *   - @radix-ui/react-icons (CalendarIcon) - Calendar icon overlay.
+ *   - @/lib/utils (cn) - Tailwind class merging utility.
+ *   - @/context/AuthContext (useAuth) - Language direction context.
+ *   - next-intl (useTranslations) - Internationalization.
+ */
 import React from "react";
 import {
   FormControl,

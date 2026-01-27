@@ -1,3 +1,20 @@
+/**
+ * @file Services Browse Page - app/services/page.tsx
+ * @route /services
+ * @description Public services browsing page. Displays all available services in grid or
+ *   list view (ServiceCard / ServiceTable) with search, sort (price, newest, rating),
+ *   pagination, and add-to-cart modal (AddServiceToCartModal). Supports both guest
+ *   (device-based) and authenticated cart flows.
+ * @authentication Optional; supports guest and authenticated users via PUREMOON_TOKEN_KEY.
+ * @key_components ServiceCard, ServiceTable, AddServiceToCartModal, GridIcon, ListIcon,
+ *   FilterMenuIcon, Select, Input, Pagination, SkeletonProductCardLoader, Footer, Dialog
+ * @data_fetching
+ *   - useGetAllServices for service listings with search/sort/pagination
+ *   - useCartListByDevice / useCartListByUserId for cart state
+ *   - useMe for user identity
+ * @state_management Local state for page, search, sort, gridView toggle, cart modal state;
+ *   debounced search via lodash debounce.
+ */
 "use client";
 import React, { useEffect, useMemo, useRef, useState, use } from "react";
 import { useRouter, useSearchParams } from "next/navigation";

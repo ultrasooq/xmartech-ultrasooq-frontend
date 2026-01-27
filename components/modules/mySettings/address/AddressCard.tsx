@@ -12,6 +12,23 @@ import LocationIcon from "@/public/images/locationicon.svg";
 import { MoreVertical, Edit, Trash2 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 
+/**
+ * Props for the {@link AddressCard} component.
+ *
+ * @property id          - Unique identifier of the saved address.
+ * @property firstName   - Contact first name for this address.
+ * @property lastName    - Contact last name for this address.
+ * @property cc          - Country calling code (e.g., "+1").
+ * @property phoneNumber - Phone number associated with the address.
+ * @property address     - Street address line.
+ * @property town        - Town or locality name.
+ * @property city        - City name or object with `{id, name}`.
+ * @property state       - State/region name or object with `{id, name}`.
+ * @property country     - Country name or object with `{id, name}`.
+ * @property postCode    - Postal/ZIP code.
+ * @property onEdit      - Callback invoked when the user clicks "Edit".
+ * @property onDelete    - Callback invoked when the user clicks "Delete".
+ */
 type AddressCardProps = {
   id: number;
   firstName: string;
@@ -28,6 +45,18 @@ type AddressCardProps = {
   onDelete: () => void;
 };
 
+/**
+ * Displays a single saved address as a styled card with phone, full
+ * address, and a three-dot dropdown menu offering "Edit" and "Delete"
+ * actions.
+ *
+ * City, state, and country props accept either a plain string or an
+ * object with `{id, name}` -- the component extracts the display name
+ * from either shape via {@link getName}.
+ *
+ * @param props - {@link AddressCardProps}
+ * @returns A bordered card element with address details and action menu.
+ */
 const AddressCard: React.FC<AddressCardProps> = ({
   id,
   firstName,
@@ -45,7 +74,13 @@ const AddressCard: React.FC<AddressCardProps> = ({
 }) => {
   const { langDir } = useAuth();
   
-  // Helper function to extract name from object or string
+  /**
+   * Extracts a display name from a value that may be a raw string or
+   * an `{id, name}` object returned by the API.
+   *
+   * @param value - String or object to extract from.
+   * @returns The resolved name string, or an empty string when absent.
+   */
   const getName = (value?: string | { id: number; name: string }): string => {
     if (!value) return "";
     return typeof value === "string" ? value : value.name || "";

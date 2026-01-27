@@ -1,3 +1,22 @@
+/**
+ * @file Search Page - app/search/page.tsx
+ * @route /search?term=<query>
+ * @description Search results page. Accepts a "term" search param (via Next.js async
+ *   searchParams) and displays results across four tabbed sections: Store Products,
+ *   Buy Group Products, Factory Products, and Services. Each section renders its own
+ *   component (SearchedStoreProducts, SearchedBuygroupProducts, SearchedFactoryProducts,
+ *   SearchedServices) with per-tab result counts shown in badges. Shows an empty state
+ *   with a Search icon when no results are found across all categories.
+ * @authentication Optional; supports guest (device-based) and authenticated flows.
+ *   Checks PUREMOON_TOKEN_KEY cookie.
+ * @key_components SearchedStoreProducts, SearchedBuygroupProducts, SearchedFactoryProducts,
+ *   SearchedServices, Search (lucide icon)
+ * @data_fetching
+ *   - useCartListByDevice / useCartListByUserId for cart state
+ *   - Individual search components handle their own product queries internally
+ * @state_management Local state for haveAccessToken, cartList, and per-section result counts
+ *   (storeProductsCount, buygroupProductsCount, factoryProductsCount, servicesCount).
+ */
 "use client";
 import React, { useEffect, useState, use } from "react";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";

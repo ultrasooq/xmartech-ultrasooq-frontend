@@ -9,6 +9,9 @@ import {
   NotificationUnreadCountResponse,
 } from "@/utils/types/notification.types";
 
+/**
+ * Payload for fetching notifications with optional filtering and pagination.
+ */
 export interface FetchNotificationsPayload {
   page?: number;
   limit?: number;
@@ -16,6 +19,21 @@ export interface FetchNotificationsPayload {
   read?: boolean;
 }
 
+/**
+ * Fetches the authenticated user's notifications with optional filtering and pagination.
+ *
+ * @param payload - Optional query parameters for filtering/pagination.
+ * @param payload.page - The page number to retrieve.
+ * @param payload.limit - The number of records per page.
+ * @param payload.type - Optional notification type filter.
+ * @param payload.read - Optional filter for read/unread status.
+ * @returns Axios promise resolving to the paginated list of notifications.
+ *
+ * @remarks
+ * - **HTTP Method:** `GET`
+ * - **Endpoint:** `/notification`
+ * - **Auth:** Bearer token required.
+ */
 export const fetchNotifications = async (
   payload: FetchNotificationsPayload = {},
 ) => {
@@ -30,6 +48,16 @@ export const fetchNotifications = async (
   });
 };
 
+/**
+ * Fetches the count of unread notifications for the authenticated user.
+ *
+ * @returns Axios promise resolving to the unread notification count.
+ *
+ * @remarks
+ * - **HTTP Method:** `GET`
+ * - **Endpoint:** `/notification/unread-count`
+ * - **Auth:** Bearer token required.
+ */
 export const fetchUnreadCount = async () => {
   return axios({
     method: "GET",
@@ -42,6 +70,17 @@ export const fetchUnreadCount = async () => {
   });
 };
 
+/**
+ * Marks a single notification as read.
+ *
+ * @param notificationId - The numeric ID of the notification to mark as read.
+ * @returns Axios promise resolving to the update confirmation.
+ *
+ * @remarks
+ * - **HTTP Method:** `PUT`
+ * - **Endpoint:** `/notification/:notificationId/read`
+ * - **Auth:** Bearer token required.
+ */
 export const markAsRead = async (notificationId: number) => {
   return axios({
     method: "PUT",
@@ -54,6 +93,16 @@ export const markAsRead = async (notificationId: number) => {
   });
 };
 
+/**
+ * Marks all notifications as read for the authenticated user.
+ *
+ * @returns Axios promise resolving to the bulk update confirmation.
+ *
+ * @remarks
+ * - **HTTP Method:** `PUT`
+ * - **Endpoint:** `/notification/read-all`
+ * - **Auth:** Bearer token required.
+ */
 export const markAllAsRead = async () => {
   return axios({
     method: "PUT",
@@ -66,6 +115,17 @@ export const markAllAsRead = async () => {
   });
 };
 
+/**
+ * Deletes a single notification by its ID.
+ *
+ * @param notificationId - The numeric ID of the notification to delete.
+ * @returns Axios promise resolving to the deletion confirmation.
+ *
+ * @remarks
+ * - **HTTP Method:** `DELETE`
+ * - **Endpoint:** `/notification/:notificationId`
+ * - **Auth:** Bearer token required.
+ */
 export const deleteNotification = async (notificationId: number) => {
   return axios({
     method: "DELETE",
@@ -78,6 +138,16 @@ export const deleteNotification = async (notificationId: number) => {
   });
 };
 
+/**
+ * Deletes all notifications for the authenticated user.
+ *
+ * @returns Axios promise resolving to the bulk deletion confirmation.
+ *
+ * @remarks
+ * - **HTTP Method:** `DELETE`
+ * - **Endpoint:** `/notification`
+ * - **Auth:** Bearer token required.
+ */
 export const deleteAllNotifications = async () => {
   return axios({
     method: "DELETE",
@@ -89,4 +159,3 @@ export const deleteAllNotifications = async () => {
     },
   });
 };
-

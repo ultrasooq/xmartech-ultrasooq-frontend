@@ -1,3 +1,20 @@
+/**
+ * @file Seller Order Details Page - app/seller-orders/[id]/page.tsx
+ * @route /seller-orders/:id (dynamic segment = order ID)
+ * @description Detailed seller-side order view. Displays order status timeline (placed,
+ *   confirmed, shipped, delivered), product details (image, name, variant, quantity, price),
+ *   other items in the same order (OtherItemCard), shipping/billing address, and payment
+ *   info. Seller can update product status via UpdateProductStatusForm modal and add
+ *   receipts via AddReceipt component. Shows help center link and invoice download.
+ *   Requires PERMISSION_ORDERS; redirects to /home if denied.
+ * @authentication Required; permission-gated via checkPermission(PERMISSION_ORDERS).
+ * @key_components OtherItemCard, UpdateProductStatusForm, AddReceipt, Dialog, Skeleton,
+ *   Footer, Button, Link
+ * @data_fetching
+ *   - useOrderBySellerId({ orderId }) for seller-side order details
+ * @state_management Local state for isStatusModalOpen, selectedProductId, isReceiptModalOpen;
+ *   useParams for order ID.
+ */
 "use client";
 import React, { useEffect, useState } from "react";
 import { BiSolidCircle, BiCircle } from "react-icons/bi";

@@ -21,6 +21,32 @@ import { checkCategoryConnection } from "@/utils/categoryConnection";
 import { useCategory } from "@/apis/queries/category.queries";
 import { useCurrentAccount } from "@/apis/queries/auth.queries";
 
+/**
+ * Props for the {@link FactoriesProductCard} component.
+ *
+ * @property id                   - Product ID.
+ * @property productType          - `"F"` (factory) or `"P"` (regular).
+ * @property productName          - Display name.
+ * @property productNote          - Customization note.
+ * @property productStatus        - Active/Inactive status.
+ * @property productImages        - Array of product images.
+ * @property productVariants      - Available variant options.
+ * @property productQuantity      - Quantity in cart (if added).
+ * @property productVariant       - Currently selected variant.
+ * @property customizeProductId   - ID of the customised product variant.
+ * @property onAdd                - Callback for the "Customise" action.
+ * @property onWishlist           - Callback for wishlist toggle.
+ * @property isCreatedByMe        - Whether this product was created by
+ *   the current user.
+ * @property cartId               - Cart entry ID (if already in cart).
+ * @property isAddedToFactoryCart  - Whether already in the factories cart.
+ * @property inWishlist            - Whether currently wishlisted.
+ * @property haveAccessToken       - Whether the user is authenticated.
+ * @property productPrices         - Array of product price entries.
+ * @property categoryId            - Product category ID for discount matching.
+ * @property categoryLocation      - Category hierarchy location string.
+ * @property consumerType          - Target audience type.
+ */
 type RfqProductCardProps = {
   id: number;
   productType: "F" | "P";
@@ -47,6 +73,23 @@ type RfqProductCardProps = {
   consumerType?: "CONSUMER" | "VENDORS" | "EVERYONE";
 };
 
+/**
+ * Full-featured product card for the factories page. Supports both
+ * factory ("F") and regular ("P") product types with:
+ *
+ * - **Product image** with validation and placeholder fallback.
+ * - **Variant selectors** for colour and other product options.
+ * - **Quantity controls** with min/max validation.
+ * - **Price display** with discount calculation following the marketplace
+ *   discount matrix (vendor/consumer/everyone types, category matching).
+ * - **Cart management** -- add to regular cart or factory cart with
+ *   confirmation dialogs for removal.
+ * - **Wishlist toggle** with heart icon.
+ * - **"Customise" button** for factory products (triggers `onAdd`).
+ *
+ * @param props - {@link RfqProductCardProps}
+ * @returns A feature-rich product card element.
+ */
 const FactoriesProductCard: React.FC<RfqProductCardProps> = ({
   id,
   productType,

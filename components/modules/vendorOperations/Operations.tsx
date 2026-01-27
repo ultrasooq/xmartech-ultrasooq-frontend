@@ -3,15 +3,30 @@ import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 
+/**
+ * Props for the {@link Operations} sidebar component.
+ *
+ * @property onSelect - Callback fired when an operation tab is selected,
+ *   receiving the operation key string (e.g., `"questions_n_comments"`).
+ */
 type OperationsProps = {
   onSelect: (operation: string) => void;
 };
 
+/** Shape of a single operation tab entry. */
 type Operation = {
   key: string;
   label: string;
 };
 
+/**
+ * Sidebar navigation for the vendor operations panel. Renders a list
+ * of operation tabs (currently only "Questions & Comments" is active).
+ * Selecting a tab invokes `onSelect` with the operation key.
+ *
+ * @param props - {@link OperationsProps}
+ * @returns A sidebar element with operation tab buttons.
+ */
 const Operations: React.FC<OperationsProps> = ({ onSelect }) => {
   const t = useTranslations();
   const { langDir } = useAuth();

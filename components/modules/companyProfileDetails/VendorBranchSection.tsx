@@ -1,3 +1,30 @@
+/**
+ * @file VendorBranchSection.tsx
+ * @description Read-only branch details card for the public vendor profile page.
+ *   Displays a single branch's address, contact info, working hours, branch images,
+ *   and category tags without an edit button (public view).
+ *
+ * @props
+ *   - branchDetails {any} - Branch object containing branchName, branchType,
+ *     address, city, state, country, zipCode, workingDays, startTime, endTime,
+ *     phoneNumber, email, branchPicture array, and userBranchCategory_category.
+ *
+ * @behavior
+ *   - Same layout as BranchSection but without the edit icon/link.
+ *   - Renders a collapsible card with branch name and type header.
+ *   - Expand/collapse toggle controls visibility of detailed information.
+ *   - Displays: address, working days (parsed), working hours with AM/PM, phone,
+ *     email, branch pictures grid, and categories via ViewMultiTagSection.
+ *   - Memoizes parsed working days via `parsedDays` helper.
+ *
+ * @dependencies
+ *   - parsedDays, getAmPm (helpers) - Working days parsing and time formatting.
+ *   - ViewMultiTagSection - Category tag display component.
+ *   - cn (utility) - Conditional class name merging.
+ *   - ChevronDownIcon, ChevronUpIcon (Radix) - Toggle icons.
+ *   - useAuth (AuthContext) - Language direction.
+ *   - useTranslations (next-intl) - i18n translations.
+ */
 import React, { useMemo, useState } from "react";
 import { getAmPm, parsedDays } from "@/utils/helper";
 import Image from "next/image";

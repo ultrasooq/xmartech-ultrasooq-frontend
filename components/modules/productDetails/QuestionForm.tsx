@@ -1,3 +1,31 @@
+/**
+ * @file QuestionForm.tsx
+ * @description A dialog form for posting new product questions. Renders within
+ *   a Dialog modal and allows authenticated users to submit questions about a
+ *   product, with validation and instruction guidelines.
+ *
+ * @props
+ *   - onClose {() => void} - Callback to close the question dialog.
+ *
+ * @behavior
+ *   - Extracts productId from URL params via `useParams`.
+ *   - Uses Zod schema validation: question must be 2-200 characters, trimmed.
+ *   - Submits via `useAddQuestion` mutation with productId and question text.
+ *   - On success: shows success toast, closes dialog, resets form.
+ *   - On error: shows error toast with response message.
+ *   - Renders a header, textarea input, instruction bullet list (ask about
+ *     the product, be specific, check existing answers), and submit button.
+ *   - Supports RTL layout via `langDir` from AuthContext.
+ *
+ * @dependencies
+ *   - useForm, zodResolver (React Hook Form + Zod) - Form validation.
+ *   - useAddQuestion (TanStack Query) - Question submission mutation.
+ *   - ControlledTextareaInput - Textarea form component.
+ *   - useToast (shadcn) - Toast notifications.
+ *   - useParams (next/navigation) - URL parameter extraction for productId.
+ *   - useTranslations (next-intl) - i18n translations.
+ *   - useAuth (AuthContext) - Language direction.
+ */
 import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";

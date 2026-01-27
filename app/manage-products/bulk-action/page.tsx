@@ -1,3 +1,20 @@
+/**
+ * @file Bulk Product Action Page - app/manage-products/bulk-action/page.tsx
+ * @route /manage-products/bulk-action?ids=<comma-separated productIds>
+ * @description Bulk product editing page. Reads product IDs from ?ids query param, fetches
+ *   all managed products (useAllManagedProducts) filtered to those IDs, and displays them
+ *   as ManageProductCard components with a BulkEditSidebar for batch edits (price, stock,
+ *   status changes). Submits changes via useUpdateMultipleProductPrice mutation.
+ *   Requires PERMISSION_PRODUCTS. Wrapped with withActiveUserGuard HOC.
+ * @authentication Required; permission-gated via checkPermission(PERMISSION_PRODUCTS).
+ * @key_components ManageProductCard, BulkEditSidebar, FormProvider (react-hook-form),
+ *   withActiveUserGuard (HOC)
+ * @data_fetching
+ *   - useAllManagedProducts for product data (filtered by IDs)
+ *   - useUpdateMultipleProductPrice mutation for batch updates
+ * @state_management FormProvider (react-hook-form) wrapping bulk edit controls;
+ *   local state for selectedProducts, isUpdating, debugMode.
+ */
 "use client";
 import React, { useEffect, useState, useMemo, useRef } from "react";
 import { useSearchParams } from "next/navigation";

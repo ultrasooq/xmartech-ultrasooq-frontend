@@ -1,3 +1,13 @@
+/**
+ * @fileoverview TanStack React Query hooks for the wishlist module.
+ *
+ * Provides hooks to fetch the wishlist, add / remove products, and
+ * retrieve the wishlist count. Add/remove mutations broadly invalidate
+ * product-related caches to keep "wishlisted" state in sync everywhere.
+ *
+ * @module queries/wishlist
+ */
+
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   addToWishList,
@@ -7,6 +17,20 @@ import {
 } from "../requests/wishlist.requests";
 import { APIResponseError } from "@/utils/types/common.types";
 
+/**
+ * Query hook that fetches the authenticated user's wishlist with
+ * pagination.
+ *
+ * @param payload - Pagination parameters.
+ * @param payload.page - Page number (1-based).
+ * @param payload.limit - Records per page.
+ * @param enabled - Whether the query should execute. Defaults to `true`.
+ * @returns A `useQuery` result with the paginated wishlist.
+ *
+ * @remarks
+ * Query key: `["wishlist", payload]`
+ * Endpoint: Delegated to `fetchWishList` in wishlist.requests.
+ */
 export const useWishlist = (
   payload: {
     page: number;
@@ -26,6 +50,22 @@ export const useWishlist = (
     enabled,
   });
 
+/**
+ * Mutation hook to add a product to the authenticated user's wishlist.
+ *
+ * @returns A `useMutation` result.
+ *
+ * @remarks
+ * - **Payload**: `{ productId: number }`
+ * - **Response**: `{ data: any; message: string; status: boolean }`
+ * - **Invalidates** on success:
+ *   `["wishlist"]`, `["wishlist-count"]`, `["cart-by-user"]`,
+ *   `["cart-count-with-login"]`, `["products"]`, `["existing-products"]`,
+ *   `["same-brand-products"]`, `["related-products"]`, `["vendor-products"]`.
+ *   The broad invalidation keeps the "wishlisted" badge in sync across
+ *   every product listing surface.
+ * - Endpoint: Delegated to `addToWishList` in wishlist.requests.
+ */
 export const useAddToWishList = () => {
   const queryClient = useQueryClient();
   return useMutation<
@@ -71,6 +111,21 @@ export const useAddToWishList = () => {
   });
 };
 
+/**
+ * Mutation hook to remove a product from the authenticated user's wishlist.
+ *
+ * @returns A `useMutation` result.
+ *
+ * @remarks
+ * - **Payload**: `{ productId: number }`
+ * - **Response**: `{ data: any; message: string; status: boolean }`
+ * - **Invalidates** on success:
+ *   `["wishlist"]`, `["wishlist-count"]`, `["cart-by-user"]`,
+ *   `["cart-count-with-login"]`, `["products"]`, `["existing-products"]`,
+ *   `["same-brand-products"]`, `["related-products"]`, `["vendor-products"]`.
+ *   Mirrors the invalidation pattern of {@link useAddToWishList}.
+ * - Endpoint: Delegated to `deleteFromWishList` in wishlist.requests.
+ */
 export const useDeleteFromWishList = () => {
   const queryClient = useQueryClient();
   return useMutation<
@@ -116,6 +171,17 @@ export const useDeleteFromWishList = () => {
   });
 };
 
+/**
+ * Query hook that fetches the total number of items in the
+ * authenticated user's wishlist.
+ *
+ * @param enabled - Whether the query should execute. Defaults to `true`.
+ * @returns A `useQuery` result with the wishlist count.
+ *
+ * @remarks
+ * Query key: `["wishlist-count"]`
+ * Endpoint: Delegated to `fetchWishlistCount` in wishlist.requests.
+ */
 export const useWishlistCount = (enabled = true) =>
   useQuery({
     queryKey: ["wishlist-count"],

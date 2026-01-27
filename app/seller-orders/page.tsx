@@ -1,3 +1,20 @@
+/**
+ * @file Seller Orders Page - app/seller-orders/page.tsx
+ * @route /seller-orders (also accepts ?term=<search> query param)
+ * @description Seller-side order management page. Lists all orders received by the seller
+ *   (useOrdersBySellerId) with search (debounced, FiSearch icon), status filter (RadioGroup:
+ *   All/Pending/Confirmed/Shipped/Delivered/Cancelled), time filter (30d/3m/6m/1y), and
+ *   pagination. Each order renders as an OrderCard (seller variant) linking to
+ *   /seller-orders/:id. Shows loading skeletons and empty state.
+ *   Requires PERMISSION_ORDERS; redirects to /home if denied.
+ * @authentication Required; permission-gated via checkPermission(PERMISSION_ORDERS).
+ * @key_components OrderCard (seller variant), Pagination, RadioGroup, Label, Button,
+ *   Skeleton, FiSearch/IoIosCloseCircleOutline icons, Link
+ * @data_fetching
+ *   - useOrdersBySellerId({ page, limit, searchTerm, orderStatus, orderTime })
+ * @state_management Local state for page, searchTerm, orderStatus, orderTime;
+ *   debounced search via lodash debounce; useSearchParams for URL term param.
+ */
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import { useOrdersBySellerId } from "@/apis/queries/orders.queries";

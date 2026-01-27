@@ -1,3 +1,13 @@
+/**
+ * @file SearchedStoreProducts.tsx
+ * @description Search results section for store products. Fetches all products by
+ * search term via `useAllProducts`, with user-role-based filtering (BUYER sees all
+ * products; VENDOR/MEMBER sees only their own). Renders results as shared
+ * `ProductCard` components. Supports wishlist toggling, cart item matching,
+ * related service cart discovery, skeleton loading, and "View All" link.
+ * Can hide the section header via `hideHeader` prop for embedded use.
+ */
+
 import React, { useEffect, useMemo, useState } from "react";
 import { useAllProducts } from "@/apis/queries/product.queries";
 import { useTranslations } from "next-intl";
@@ -10,6 +20,7 @@ import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 import { useMe } from "@/apis/queries/user.queries";
 
+/** Props for the SearchedStoreProducts section. */
 type SearchedStoreProductsType = {
     searchTerm?: string;
     haveAccessToken: boolean;

@@ -17,11 +17,25 @@ import {
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 
+/**
+ * Props for the {@link PermissionForm} component.
+ *
+ * @property roleId  - The user role ID to assign permissions to.
+ * @property onClose - Callback to close the dialog.
+ */
 type PermissionFormProps = {
   roleId: number;
   onClose: () => void;
 };
 
+/**
+ * Builds the Zod schema for the permission assignment form.
+ * Requires at least one permission to be selected and transforms
+ * the selected options into `{permissionId}` objects.
+ *
+ * @param t - Translation function from `next-intl`.
+ * @returns A Zod object schema for the permission list.
+ */
 const addFormSchema = (t: any) => {
   return z.object({
     permissionIdList: z
@@ -44,6 +58,18 @@ const addFormSchema = (t: any) => {
   });
 };
 
+/**
+ * Form for assigning permissions to a user role. Fetches available
+ * permissions via {@link usePermissions} and existing assignments via
+ * {@link useGetPermission}. Creates or updates assignments using
+ * {@link useSetPermission} / {@link useUpdatePermission} mutations.
+ *
+ * Uses an {@link AccordionMultiSelectV2} for multi-selection of
+ * permission entries.
+ *
+ * @param props - {@link PermissionFormProps}
+ * @returns A dialog form with permission multi-select and save button.
+ */
 const PermissionForm: React.FC<PermissionFormProps> = ({
   roleId,
   onClose,

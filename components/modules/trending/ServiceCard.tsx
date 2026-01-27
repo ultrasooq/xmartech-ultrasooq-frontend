@@ -1,3 +1,40 @@
+/**
+ * @file ServiceCard.tsx
+ * @description Service card component for the trending page with cart management,
+ *   countdown timer, quantity controls, and variant selection. Supports both
+ *   product-type and service-type cart operations with confirm-removal dialogs.
+ *
+ * @props (typed as `any` -- see component for destructured properties)
+ *   - item (TrendingProduct-like) - Service/product data including pricing,
+ *     images, categories, variants.
+ *   - onWishlist, onAddToCart - Action callbacks.
+ *   - wishlistMap, cartMap - Maps for wishlist/cart state lookup.
+ *   - haveAccessToken - Whether the user is authenticated.
+ *   - productVariants - Available variant options.
+ *   - various discount/pricing fields.
+ *
+ * @behavior
+ *   - Cart management: add/remove/update quantity via useUpdateCartWithLogin,
+ *     useUpdateCartByDevice, and useUpdateCartWithService mutations.
+ *   - Confirm removal dialog when removing an item from cart.
+ *   - Buygroup countdown timer (BUYGROUP sell type): live countdown display
+ *     with days:hours:minutes:seconds, "Not Started" or "Expired" states.
+ *   - Quantity increment/decrement buttons with min/max validation.
+ *   - Variant type/value selection buttons.
+ *   - Discount logic: calculates applicable discount based on consumer type
+ *     and trade role (similar to ProductCard).
+ *   - Renders star ratings, stock status, wishlist toggle, view/cart action buttons.
+ *   - Uses `useClickOutside` hook to close dropdown menus.
+ *
+ * @dependencies
+ *   - useDeleteCartItem, useUpdateCartByDevice, useUpdateCartWithLogin,
+ *     useUpdateCartWithService (TanStack Query) - Cart mutations.
+ *   - useCartStore (Zustand) - RFQ cart state.
+ *   - useClickOutside (use-events) - Outside click detection.
+ *   - useAuth (AuthContext) - User, currency, language direction.
+ *   - useTranslations (next-intl) - i18n translations.
+ *   - Dialog (shadcn) - Confirm removal dialog.
+ */
 import { TrendingProduct } from "@/utils/types/common.types";
 import Image from "next/image";
 import Link from "next/link";

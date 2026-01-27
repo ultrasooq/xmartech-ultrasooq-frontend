@@ -1,3 +1,19 @@
+/**
+ * @file Reset Password Page - app/reset-password/page.tsx
+ * @route /reset-password
+ * @description Final step in the forgot-password flow. Provides new password and confirm
+ *   password fields with Zod validation (min 8 chars, matching passwords via superRefine).
+ *   On submit, calls useResetPassword mutation. On success, shows a
+ *   PasswordChangeSuccessContent dialog, deletes the temp cookie, sets the new auth token
+ *   (PUREMOON_TOKEN_KEY), and redirects to /home after a 3-second delay.
+ * @authentication Public page; reads PUREMOON_TEMP_TOKEN_KEY from the OTP verify step.
+ * @key_components Form (react-hook-form + Zod), ControlledTextInput (password fields),
+ *   PasswordChangeSuccessContent (success dialog), LoaderWithMessage, Button
+ * @data_fetching
+ *   - useResetPassword mutation for setting the new password
+ * @state_management Local state for success dialog visibility; cookie management
+ *   (deleteCookie PUREMOON_TEMP_TOKEN_KEY, setCookie PUREMOON_TOKEN_KEY).
+ */
 "use client";
 import { useResetPassword } from "@/apis/queries/auth.queries";
 import ControlledTextInput from "@/components/shared/Forms/ControlledTextInput";

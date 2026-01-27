@@ -1,8 +1,22 @@
+/**
+ * @file SuggestedProductsListCard.tsx
+ * @description Static / placeholder suggested products list card for the service
+ * creation form. Displays hardcoded product items (e.g., iPhone 13 Pro Max)
+ * with export icons. Not yet connected to dynamic product data from the API.
+ * Intended to suggest related products when creating a service.
+ */
+
 import React from "react";
 import IphoneIcon from "@/public/images/iphone.png";
 import ExportIcon from "@/public/images/export.png";
 import Image from "next/image";
 
+/**
+ * Placeholder component displaying a static list of suggested products.
+ * Currently uses hardcoded data; intended to be replaced with dynamic API data.
+ *
+ * @returns A card with a "Product Found" heading and hardcoded product entries.
+ */
 const SuggestedProductsListCard = () => {
   return (
     <div className="w-full rounded-lg border border-solid border-gray-300 bg-white p-2 shadow-xs">

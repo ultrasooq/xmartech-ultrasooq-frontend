@@ -12,6 +12,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
+/**
+ * Props for the {@link TransactionHistory} component.
+ *
+ * @property transactions - Array of wallet transaction objects.
+ * @property loading      - When `true`, shows skeleton loaders.
+ * @property pagination   - Pagination state and setter for page navigation.
+ */
 interface TransactionHistoryProps {
   transactions: IWalletTransaction[];
   loading?: boolean;
@@ -23,6 +30,15 @@ interface TransactionHistoryProps {
   };
 }
 
+/**
+ * Displays a filterable list of wallet transactions with type and
+ * status filters, transaction icons, amounts with colour-coded
+ * credit/debit indicators, and a detail modal. Includes pagination
+ * support.
+ *
+ * @param props - {@link TransactionHistoryProps}
+ * @returns A transaction history section with filter controls and list.
+ */
 const TransactionHistory: React.FC<TransactionHistoryProps> = ({ 
   transactions, 
   loading = false,

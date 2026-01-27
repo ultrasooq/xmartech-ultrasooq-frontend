@@ -1,3 +1,11 @@
+/**
+ * @file RfqCartMenuCard.tsx
+ * @description Individual cart item card used inside the RFQ cart sidebar menu.
+ * Shows a product thumbnail, name, quantity increment/decrement controls, and a
+ * remove link. Passes offerPriceFrom, offerPriceTo, and note through the `onAdd`
+ * callback when adjusting quantity so the cart can maintain these values.
+ */
+
 import { Button } from "@/components/ui/button";
 // import { useCartStore } from "@/lib/rfqStore";
 import Image from "next/image";
@@ -7,6 +15,7 @@ import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 
+/** Props for the RFQ cart sidebar item card. */
 type RfqCartMenuCardProps = {
   id: number;
   rfqProductId: number;
@@ -29,6 +38,13 @@ type RfqCartMenuCardProps = {
   note: string;
 };
 
+/**
+ * RFQ cart sidebar item card. Displays product thumbnail, name, quantity controls,
+ * and remove button. Syncs local quantity state with `productQuantity` prop.
+ *
+ * @param props - {@link RfqCartMenuCardProps}
+ * @returns A compact card with product preview and quantity adjustment controls.
+ */
 const RfqCartMenuCard: React.FC<RfqCartMenuCardProps> = ({
   id,
   rfqProductId,

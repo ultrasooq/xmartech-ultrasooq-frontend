@@ -1,3 +1,21 @@
+/**
+ * @file Buyer Profile Details Page - app/buyer-profile-details/page.tsx
+ * @route /buyer-profile-details
+ * @description Buyer-specific profile dashboard. Shows the buyer's ProfileCard, personal
+ *   InformationSection, and tabs for Profile Info. Includes a trade role upgrade flow --
+ *   buyers can upgrade to COMPANY or FREELANCER via a TradeRoleUpgradeContent modal dialog,
+ *   with a ConfirmContent confirmation step. On upgrade confirmation, calls useUpdateProfile
+ *   with the new tradeRole and redirects to the corresponding profile page (/company-profile
+ *   or /freelancer-profile). Background hero image banner at the top.
+ * @authentication Required; useMe() for user data, useCurrentAccount() for account context.
+ * @key_components ProfileCard, InformationSection, TradeRoleUpgradeContent, ConfirmContent,
+ *   Tabs, Dialog, Footer
+ * @data_fetching
+ *   - useMe() for current user data
+ *   - useCurrentAccount() for account/trade role info
+ *   - useUpdateProfile mutation for trade role upgrade
+ * @state_management Local state for isRoleModalOpen, isConfirmModalOpen, role selection.
+ */
 "use client";
 import { useMe, useUpdateProfile } from "@/apis/queries/user.queries";
 import { useCurrentAccount } from "@/apis/queries/auth.queries";

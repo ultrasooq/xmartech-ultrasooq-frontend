@@ -5,16 +5,39 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 
+/**
+ * Props for the {@link InformationSection} component.
+ *
+ * @property userDetails - Backend user object containing `email`,
+ *   `phoneNumber`, and `userSocialLink` array with entries that have
+ *   `link` and `linkType` fields.
+ */
 type InformationSectionProps = {
   userDetails: any;
 };
 
+/**
+ * Renders the "Contact Information" section on a member's profile page.
+ *
+ * Displays the member's email, phone number, and social links in a
+ * labelled grid layout. Includes an "Edit" button that navigates to
+ * the `/profile` route. Social links are rendered as anchor tags with
+ * share icons.
+ *
+ * @param props - {@link InformationSectionProps}
+ * @returns A bordered section element with contact details.
+ */
 const InformationSection: React.FC<InformationSectionProps> = ({
   userDetails,
 }) => {
   const t = useTranslations();
   const { langDir } = useAuth();
 
+  /**
+   * Memoised list of social link elements derived from
+   * `userDetails.userSocialLink`. Each entry renders a share icon
+   * anchor and the link-type label (e.g., "Facebook", "Twitter").
+   */
   const getSocialLinks = useMemo(() => {
     if (userDetails?.userSocialLink?.length > 0) {
       const socialLinks = userDetails?.userSocialLink?.map(

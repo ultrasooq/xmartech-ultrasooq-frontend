@@ -1,3 +1,25 @@
+/**
+ * @file Home Page - app/home/page.tsx
+ * @route /home
+ * @description Main marketplace landing page. Displays a hero banner, category sidebar,
+ *   and multiple product sections: Deal of the Day (buy-group products), Home Decor
+ *   (categoryId 203), Fashion & Beauty (categoryId 258), Consumer Electronics
+ *   (categoryIds 269,270), Top Rated Products, Best Sellers, New Arrivals, Hot Deals,
+ *   and Highly Reviewed products. Each section shows up to 4-8 ProductCards in a grid.
+ *   Includes a promotional "Special Offer" banner and a Footer.
+ * @authentication Optional; supports both guest (device-based cart) and logged-in flows.
+ *   Checks PUREMOON_TOKEN_KEY cookie for auth state.
+ * @key_components HeroBanner, CategorySidebar, ProductCard, Footer, TrendingCategories
+ * @data_fetching
+ *   - useAllBuyGroupProducts (deal of the day, page 1, limit 4)
+ *   - useAllProducts (home decor, fashion, electronics, top-rated, hot deals, new arrivals -- multiple queries)
+ *   - useCategory("4") for top-level category tree
+ *   - useMe() for current user
+ *   - useCartListByDevice / useCartListByUserId for cart overlay
+ *   - useAddToWishList / useDeleteFromWishList for wishlist toggling
+ * @state_management useCategoryStore (Zustand) for category navigation state;
+ *   local state for cartList, haveAccessToken, isCategorySidebarOpen.
+ */
 "use client";
 import DealsCard from "@/components/modules/home/DealsCard";
 import ProductCardHome from "@/components/modules/home/ProductCard";

@@ -1,3 +1,25 @@
+/**
+ * @file Add Company Branch Page - app/company-profile/add-branch/page.tsx
+ * @route /company-profile/add-branch
+ * @description Form page for adding a new branch to an existing company profile. Collects
+ *   branch name, phone, location (country/state/city cascading selects), address, working
+ *   hours (per day with AM/PM toggles), logo upload, business categories
+ *   (AccordionMultiSelectV2/MultiSelectCategory), and tags. Uses Zod validation. On submit,
+ *   uploads the logo (useUploadFile), then calls useCreateCompanyBranch to persist the branch,
+ *   and redirects to /company-profile-details.
+ * @authentication Required; uses useMe() for user data context.
+ * @key_components Form (react-hook-form + Zod), AccordionMultiSelectV2, MultiSelectCategory,
+ *   ControlledPhoneInput, ControlledTextInput, ControlledSelectInput, Checkbox, Switch,
+ *   Label, Button
+ * @data_fetching
+ *   - useCreateCompanyBranch mutation for branch creation
+ *   - useTags for tag autocomplete
+ *   - useCountries for cascading location selects
+ *   - useUploadFile for logo upload
+ *   - useMe for user context
+ * @state_management react-hook-form with Zod resolver; local state for image file,
+ *   working hours toggles, selected categories.
+ */
 "use client";
 import { useCreateCompanyBranch } from "@/apis/queries/company.queries";
 import { useCountries } from "@/apis/queries/masters.queries";

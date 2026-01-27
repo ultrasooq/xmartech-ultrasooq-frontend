@@ -1,3 +1,32 @@
+/**
+ * @file Product Detail Page - app/trending/[id]/page.tsx
+ * @route /trending/:id (dynamic segment = product ID)
+ * @description Full product detail page. Displays product images (ProductImagesCard),
+ *   pricing with role-based discounts (consumer vs vendor), variant selection, add-to-cart
+ *   with quantity controls, vendor information (VendorSection), rich-text description
+ *   (PlateEditor), tabs for Description / Reviews (ReviewSection) / Q&A
+ *   (QuestionsAnswersSection), related products (RelatedProductsSection), and same-brand
+ *   products (SameBrandSection). Tracks product views via useTrackProductView.
+ *   Shows a mini cart sidebar overlay with current cart items (ProductCard, ServiceCard).
+ *   Supports wishlist toggle and buy-now (navigates to /checkout).
+ * @authentication Optional; supports guest (device-based) and authenticated flows.
+ *   Checks PUREMOON_TOKEN_KEY cookie.
+ * @key_components ProductImagesCard, ProductDescriptionCard, VendorSection, ReviewSection,
+ *   QuestionsAnswersSection, RelatedProductsSection, SameBrandSection, PlateEditor,
+ *   ProductCard, ServiceCard, Tabs, Dialog, Skeleton, Footer
+ * @data_fetching
+ *   - useProductById for product details
+ *   - useOneWithProductPrice for pricing and discount data
+ *   - useProductVariant for variant attributes
+ *   - useTrackProductView mutation for view analytics
+ *   - useCartListByDevice / useCartListByUserId for cart state
+ *   - useUpdateCartWithLogin / useUpdateCartByDevice for cart operations
+ *   - useDeleteCartItem / useDeleteServiceFromCart for cart item removal
+ *   - useAddToWishList / useDeleteFromWishList for wishlist
+ *   - useMe for user identity and wishlist query keys
+ * @state_management Local state for cart visibility, variant selection, quantity,
+ *   activeImageIndex, currentVariant, haveAccessToken, confirm dialog.
+ */
 "use client";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {

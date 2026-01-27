@@ -1,3 +1,20 @@
+/**
+ * @file Checkbox - Shadcn UI checkbox component.
+ * @description Renders an accessible checkbox input with a check icon indicator.
+ * Supports checked, unchecked, and indeterminate states. Uses brand primary
+ * color for the checked state background.
+ *
+ * @props Accepts all Radix UI Checkbox.Root props including:
+ *   - checked {boolean | "indeterminate"} - Current state.
+ *   - onCheckedChange {(checked: boolean | "indeterminate") => void} - Change handler.
+ *   - disabled {boolean} - Disables the checkbox.
+ *   - className {string} - Additional CSS classes.
+ *
+ * @dependencies
+ *   - @radix-ui/react-checkbox - Accessible checkbox primitive.
+ *   - @radix-ui/react-icons (CheckIcon) - Checkmark indicator icon.
+ *   - @/lib/utils (cn) - Tailwind class merging utility.
+ */
 "use client";
 
 import * as React from "react";
@@ -6,6 +23,7 @@ import { CheckIcon } from "@radix-ui/react-icons";
 
 import { cn } from "@/lib/utils";
 
+/** Styled checkbox with check indicator, border, and shadow. */
 const Checkbox = React.forwardRef<
   React.ElementRef<typeof CheckboxPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root>

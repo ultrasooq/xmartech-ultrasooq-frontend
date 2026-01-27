@@ -1,3 +1,29 @@
+/**
+ * @file AccordionMultiSelectV2 - Accordion-based multi-select dropdown with search and create.
+ * @description Renders a collapsible accordion that displays checkbox options for
+ * multi-selection. Includes an inline search input to filter options and an optional
+ * "create new" feature when no options match the search. Selected items are displayed
+ * as chips in the accordion trigger. Integrates with React Hook Form via useFormContext.
+ *
+ * @props
+ *   - label {string} - Label text displayed above the accordion.
+ *   - name {string} - Form field name for the selected values array.
+ *   - options {OptionProps[]} - Available options with label/value pairs.
+ *   - placeholder {string} - Placeholder text shown when nothing is selected.
+ *   - canCreate {boolean} - When true, allows creating new options inline (default false).
+ *   - createOption {(option: string) => void} - Callback to create a new option.
+ *   - error {string} - Error message to display below the accordion.
+ *
+ * @dependencies
+ *   - react-hook-form (useFormContext) - Form state management.
+ *   - @/components/ui/form (FormControl, FormField, FormItem, FormLabel) - Form primitives.
+ *   - @/components/ui/checkbox (Checkbox) - Styled checkbox component.
+ *   - @/components/ui/input (Input) - Search text input.
+ *   - @/components/ui/accordion - Collapsible accordion container.
+ *   - @/context/AuthContext (useAuth) - Language direction context.
+ *   - next-intl (useTranslations) - Internationalization.
+ *   - @/lib/utils (cn) - Tailwind class merging utility.
+ */
 import React, { useState } from "react";
 import { useFormContext } from "react-hook-form";
 import {

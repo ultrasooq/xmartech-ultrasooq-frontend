@@ -1,3 +1,30 @@
+/**
+ * @file SellerRewardDetail.tsx
+ * @description A modal/dialog component that displays the full details of a
+ *   seller reward program and provides a "Generate Share Link" action. Shows
+ *   reward metadata including start/end times, percentage, fix amount,
+ *   minimum order, and available stock.
+ *
+ * @props
+ *   - reward {{ [key: string]: string }} - The seller reward object containing
+ *     id, startDate, startTime, endDate, endTime, rewardPercentage,
+ *     rewardFixAmount, minimumOrder, and stock fields.
+ *   - onClose {() => void} - Callback to close the detail modal.
+ *
+ * @behavior
+ *   - Renders a detail card with labeled rows for each reward field.
+ *   - Formats dates using `convertDateTime` helper.
+ *   - "Generate Link" button triggers `useCreateShareLink` mutation to create
+ *     a shareable link for the reward, shows success toast, and closes the modal.
+ *   - Close button (X icon) in the header triggers `onClose`.
+ *
+ * @dependencies
+ *   - useCreateShareLink (TanStack Query) - Share link creation mutation.
+ *   - useAuth (AuthContext) - Language direction.
+ *   - useTranslations (next-intl) - i18n translations.
+ *   - convertDateTime (helper) - Date formatting utility.
+ *   - toast (shadcn) - Success/error notifications.
+ */
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import { Button } from "@/components/ui/button";

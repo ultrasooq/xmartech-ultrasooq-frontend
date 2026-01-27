@@ -7,6 +7,34 @@ import { checkCategoryConnection } from "@/utils/categoryConnection";
 import { useCategory } from "@/apis/queries/category.queries";
 import { useCurrentAccount } from "@/apis/queries/auth.queries";
 
+/**
+ * Props for the {@link SellerCard} component.
+ *
+ * @property productId            - ID of the product being sold.
+ * @property sellerName           - Display name of the seller.
+ * @property offerPrice           - Legacy offer price field (string).
+ * @property productPrice         - Legacy product price field (string).
+ * @property onAdd                - Callback for the "Add to Cart" action.
+ * @property onToCheckout         - Callback for the "Buy Now" action.
+ * @property productProductPrice  - Actual numeric price string used for
+ *   discount calculation.
+ * @property consumerDiscount     - Percentage or flat discount for consumers.
+ * @property consumerDiscountType - `"PERCENTAGE"` or `"FLAT"`.
+ * @property vendorDiscount       - Percentage or flat discount for vendors.
+ * @property vendorDiscountType   - `"PERCENTAGE"` or `"FLAT"`.
+ * @property askForPrice          - `"true"` when price is hidden and the
+ *   buyer must contact the seller.
+ * @property askForStock          - `"true"` when stock is hidden.
+ * @property deliveryAfter        - Number of days until delivery.
+ * @property productLocation      - Location string for the product.
+ * @property sellerId             - User ID of the seller (used for profile link).
+ * @property soldByTradeRole      - Seller's trade role (`"COMPANY"` or
+ *   `"FREELANCER"`) for profile URL routing.
+ * @property onChooseSeller       - Callback invoked when "Choose Seller" is clicked.
+ * @property categoryId           - Product's category ID for discount matching.
+ * @property categoryLocation     - Comma-separated category location string.
+ * @property consumerType         - Target consumer audience of the product price.
+ */
 type SellerCardProps = {
   productId: number;
   sellerName: string;
@@ -31,6 +59,28 @@ type SellerCardProps = {
   consumerType?: "CONSUMER" | "VENDORS" | "EVERYONE";
 };
 
+/**
+ * Displays a single seller's offering for a product on the product
+ * detail page's "Other Sellers" section.
+ *
+ * Layout is a three-column grid showing: seller info (with profile link
+ * and product location), discounted price (calculated via the shared
+ * discount logic), and delivery estimate.
+ *
+ * Below the grid are action buttons:
+ * - "Choose Seller" -- always visible.
+ * - "Add to Cart" and "Buy Now" -- shown when `askForPrice` is not `"true"`.
+ * - "Message" -- shown when the price is hidden and contact is required.
+ *
+ * Discount calculation follows the marketplace discount matrix:
+ * - Vendor with matching category gets vendor discount.
+ * - Vendor with non-matching category + EVERYONE consumer type gets
+ *   consumer discount.
+ * - Buyer always gets consumer discount.
+ *
+ * @param props - {@link SellerCardProps}
+ * @returns A bordered section element with seller offer details.
+ */
 const SellerCard: React.FC<SellerCardProps> = ({
   productId,
   sellerName,
@@ -70,6 +120,13 @@ const SellerCard: React.FC<SellerCardProps> = ({
   
   const categoryConnections = productCategoryQuery?.data?.data?.category_categoryIdDetail || [];
   
+  /**
+   * Computes the final display price after applying the applicable
+   * discount based on the current user's trade role and category match
+   * against the vendor's business categories.
+   *
+   * @returns The discounted price as a number rounded to two decimals.
+   */
   const calculateDiscountedPrice = () => {
     const price = productProductPrice ? Number(productProductPrice) : 0;
     const productConsumerType = consumerType || "CONSUMER";

@@ -1,3 +1,25 @@
+/**
+ * @file ControlledRichTextEditor - React Hook Form integrated simple rich text editor.
+ * @description Provides a textarea-based editor integrated with React Hook Form via
+ * Controller and useFormContext. Includes a SimpleRichTextEditor internal component
+ * that renders a resizable textarea with optional character limit counter. Handles
+ * conversion between string and array formats for the "descriptionJson" field name.
+ * Supports read-only mode and custom onChange handler override.
+ *
+ * @exports default ControlledRichTextEditor - The form-integrated editor wrapper.
+ *
+ * @props (ControlledRichTextEditor)
+ *   - label {string} - Label text displayed above the editor.
+ *   - name {string} - Form field name (special handling for "descriptionJson").
+ *   - value {any[]} - Optional controlled value override.
+ *   - onChange {(e: any) => void} - Optional custom change handler.
+ *   - readOnly {boolean} - When true, makes the textarea read-only (default false).
+ *   - maxLength {number} - Optional character limit with counter display.
+ *
+ * @dependencies
+ *   - react-hook-form (Controller, useFormContext) - Form state management.
+ *   - @/context/AuthContext (useAuth) - Language direction context.
+ */
 import { useAuth } from "@/context/AuthContext";
 import React from "react";
 import { Controller, useFormContext } from "react-hook-form";

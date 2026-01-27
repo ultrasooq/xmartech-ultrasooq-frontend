@@ -1,3 +1,29 @@
+/**
+ * @file DescriptionAndSpecificationSection.tsx
+ * @description Product creation form section for entering the product description,
+ *   specification key-value pairs, and variant types. Combines a rich text editor
+ *   for descriptions, a dynamic list of specification fields (label + value), and
+ *   the ProductVariantTypes component for managing product variants.
+ *
+ * @props None (uses React Hook Form context via `useFormContext`)
+ *
+ * @behavior
+ *   - Renders a rich text description editor via ControlledRichTextEditor with a
+ *     markdown editor (ControlledMarkdownEditor) below it.
+ *   - Manages a dynamic `productSpecificationList` field array where users can
+ *     add and remove label/specification pairs.
+ *   - Includes ProductVariantTypes for defining variant types and values.
+ *   - Conditionally shows the variant section only when not on the dropshipping path.
+ *   - Add/remove buttons for specification entries with trash icon UI.
+ *
+ * @dependencies
+ *   - useFormContext, useFieldArray (React Hook Form) - Form state and dynamic fields.
+ *   - ControlledRichTextEditor, ControlledMarkdownEditor, ControlledTextInput - Form inputs.
+ *   - ProductVariantTypes - Variant type management component.
+ *   - useTranslations (next-intl) - i18n translations.
+ *   - useAuth (AuthContext) - Language direction.
+ *   - usePathname (next/navigation) - Route detection for conditional rendering.
+ */
 import React from "react";
 import ControlledRichTextEditor from "@/components/shared/Forms/ControlledRichTextEditor";
 import ControlledMarkdownEditor from "@/components/shared/Forms/ControlledMarkdownEditor";

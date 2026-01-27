@@ -1,3 +1,23 @@
+/**
+ * @file SimilarProductsSection.tsx
+ * @description A placeholder carousel section for displaying similar products.
+ *   Currently renders empty product card slots (gray placeholders) in a
+ *   horizontally-scrolling carousel. Intended to be populated with actual
+ *   similar product data in a future implementation.
+ *
+ * @props None
+ *
+ * @behavior
+ *   - Renders a "Similar products" heading and a shadcn Carousel with 10
+ *     placeholder items.
+ *   - Carousel is configured with start alignment and infinite loop.
+ *   - Each placeholder is a gray rounded box of fixed dimensions.
+ *   - Responsive: shows 2 items on mobile up to 5 on large screens.
+ *
+ * @dependencies
+ *   - Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
+ *     (shadcn/Embla) - Carousel components.
+ */
 import React from "react";
 import {
   Carousel,

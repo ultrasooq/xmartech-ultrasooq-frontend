@@ -1,3 +1,26 @@
+/**
+ * @file VendorCard.tsx (companyProfileDetails module)
+ * @description Vendor profile card component for the public vendor profile page.
+ *   Displays the vendor's avatar image, account name, annual purchasing volume,
+ *   business type tags, and company unique ID.
+ *
+ * @props
+ *   - vendor {any} - Vendor profile object containing profilePicture, accountName,
+ *     annualPurchasingVolume, userBusinessType array, and companyUniqueId.
+ *   - isLoading {boolean} - Loading state (currently unused in render logic).
+ *
+ * @behavior
+ *   - Renders a large profile avatar (160x160) with fallback to NoImagePlaceholder.
+ *   - Shows the vendor's account name and annual purchasing volume with currency.
+ *   - Maps business types as styled badges.
+ *   - Displays the company unique ID with a label.
+ *   - Supports RTL layout via `langDir` from AuthContext.
+ *
+ * @dependencies
+ *   - COMPANY_UNIQUE_ID (constant) - Label for company ID display.
+ *   - useAuth (AuthContext) - Language direction, currency.
+ *   - useTranslations (next-intl) - i18n translations.
+ */
 import Image from "next/image";
 import React from "react";
 import NoImagePlaceholder from "@/public/images/no-image.jpg";

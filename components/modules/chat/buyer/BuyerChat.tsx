@@ -1,3 +1,36 @@
+/**
+ * @file BuyerChat.tsx
+ * @description Buyer-side RFQ chat list component. Fetches and displays all RFQ
+ *   (Request for Quotation) quotes created by the current buyer. Supports two
+ *   layout modes: a column sidebar list (used in the three-panel chat layout) and
+ *   a grid view (currently returns null / unused).
+ *
+ * @props
+ *   - layoutMode {"grid" | "column"} - Layout mode; "column" renders the sidebar
+ *     list (default: "grid").
+ *   - viewMode {"rfqRequests" | "vendors" | "details"} - Determines which section
+ *     to display (default: "rfqRequests").
+ *   - selectedRfqId {number | null} - Currently selected RFQ ID for highlighting.
+ *   - selectedVendorId {number | null} - Currently selected vendor ID (unused here).
+ *   - onSelectRfq {(rfq: any) => void} - Callback when the user clicks an RFQ card.
+ *   - onSelectVendor {(vendor: any) => void} - Callback for vendor selection (unused here).
+ *
+ * @behavior
+ *   - Queries `useAllRfqQuotesByBuyerId` with pagination (page, limit).
+ *   - Memoizes the RFQ product list, extracting the first product image, RFQ date,
+ *     address, creation date, and product count for each quote.
+ *   - In column/rfqRequests mode, renders a scrollable list of clickable cards.
+ *     Each card shows the first product image, a formatted RFQ ID (zero-padded),
+ *     product count, and formatted date.
+ *   - Highlights the selected RFQ with an orange border and dot indicator.
+ *
+ * @dependencies
+ *   - useAllRfqQuotesByBuyerId (TanStack Query) - Fetches buyer's RFQ quotes.
+ *   - useAuth (AuthContext) - Provides language direction and currency.
+ *   - useTranslations (next-intl) - i18n translation function.
+ *   - moment - Date formatting.
+ *   - validator - URL validation for product images.
+ */
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
 import Image from "next/image";

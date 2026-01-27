@@ -1,3 +1,25 @@
+/**
+ * @file Vendor Dashboard Page - app/vendor-dashboard/page.tsx
+ * @route /vendor-dashboard
+ * @description Seller/vendor dashboard with order management capabilities. Displays:
+ *   (1) Order stats cards (total, pending, confirmed, shipped, delivered) via useVendorOrderStats.
+ *   (2) Recent orders list (useVendorRecentOrders) with status badges and action buttons.
+ *   (3) Full order table (useOrdersBySellerId) with search, status filter, and pagination.
+ *   (4) Order status update modal (useUpdateOrderStatus) with tracking info entry
+ *       (useAddOrderTracking). Supports note/tracking number/carrier input for status transitions.
+ * @authentication Required; uses useMe() for vendor identity.
+ * @key_components Card, Badge, Dialog (status update modal), Select, Input, Label,
+ *   Textarea, Button, various lucide icons (Package, Clock, CheckCircle, Truck, etc.)
+ * @data_fetching
+ *   - useVendorOrderStats for dashboard summary cards
+ *   - useVendorRecentOrders for recent orders widget
+ *   - useOrdersBySellerId for full order table
+ *   - useUpdateOrderStatus mutation for status changes
+ *   - useAddOrderTracking mutation for tracking info
+ *   - useMe for vendor identity
+ * @state_management Local state for activeTab, search, statusFilter, page,
+ *   statusUpdateModal state, tracking form fields.
+ */
 "use client";
 import React, { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";

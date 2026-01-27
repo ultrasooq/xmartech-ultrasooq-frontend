@@ -1,3 +1,22 @@
+/**
+ * @file Company Profile Details Page - app/company-profile-details/page.tsx
+ * @route /company-profile-details (also accepts ?sellerId=<id> for vendor view)
+ * @description Company profile display page with two modes:
+ *   (1) Own profile: shows ProfileCard, InformationSection, BranchSection,
+ *       MoreInformationSection with tabs for Profile Info, Products, Reviews.
+ *       Includes a "+" button linking to /product for adding new products.
+ *   (2) Vendor view (?sellerId): shows VendorCard, VendorInformationSection,
+ *       VendorBranchSection, VendorMoreInformationSection.
+ *   Background hero image banner at the top.
+ * @authentication Required; useMe() for current user data.
+ * @key_components ProfileCard, InformationSection, BranchSection, MoreInformationSection,
+ *   VendorCard, VendorBranchSection, VendorInformationSection, VendorMoreInformationSection,
+ *   ProductsSection, ReviewSection, Tabs, PlusIcon, Footer
+ * @data_fetching
+ *   - useMe() for current user data
+ *   - useVendorDetails({ adminId }) for vendor view mode
+ * @state_management Local state for activeTab, activeSellerId (from URL query params).
+ */
 "use client";
 import { useMe } from "@/apis/queries/user.queries";
 import BranchSection from "@/components/modules/companyProfileDetails/BranchSection";

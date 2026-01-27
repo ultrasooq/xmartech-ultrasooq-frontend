@@ -29,6 +29,7 @@ import DynamicFormViewSection from "../createProduct/DynamicFormViewSection";
 import PriceSection from "../createProduct/PriceSection";
 import AddImageContent from "../profile/AddImageContent";
 
+/** Custom styles for react-select controls to match the form input height. */
 const customStyles = {
   control: (base: any) => ({
     ...base,
@@ -41,11 +42,31 @@ const customStyles = {
   }),
 };
 
+/**
+ * Shape of a product image entry managed by the form.
+ *
+ * @property path - Either a `File` object (new upload) or a URL string
+ *   (previously uploaded).
+ * @property id   - UUID used to track the image within the form array.
+ */
 type ProductImageProps = {
   path: string;
   id: string;
 };
 
+/**
+ * Props for the {@link BasicInformationSection} component.
+ *
+ * @property tagsList         - Array of `{label, value}` options for the tag
+ *   multi-select.
+ * @property isEditable       - When `true`, the category/sub-category
+ *   hierarchy is pre-populated and editable.
+ * @property activeProductType - Current product type string (e.g., "P", "R",
+ *   "D") forwarded to the {@link PriceSection}.
+ * @property hasId            - Indicates whether the form is in edit mode
+ *   (an existing product ID is present). When `true`, category selection
+ *   and other "create-only" fields are hidden.
+ */
 type BasicInformationProps = {
   tagsList: any;
   isEditable?: boolean;
@@ -53,6 +74,26 @@ type BasicInformationProps = {
   hasId?: boolean;
 };
 
+/**
+ * Renders the "Basic Information" section of the product edit form.
+ *
+ * Includes:
+ * - **Category & sub-category cascading selects** (hidden in edit mode).
+ * - **Product name** text input.
+ * - **Brand** select and **product condition** select (create mode only).
+ * - **Tag multi-select** via {@link AccordionMultiSelectV2} (create mode only).
+ * - **Product image/video uploader** with preview, edit-in-place, and
+ *   remove functionality.
+ * - **Price section** and **description section** (delegated to child
+ *   components).
+ * - **Dynamic form fields** rendered when the selected sub-category has
+ *   associated `category_dynamicFormCategory` entries.
+ *
+ * Uses `react-hook-form` context and `react-select` for dropdowns.
+ *
+ * @param props - {@link BasicInformationProps}
+ * @returns The basic information form section.
+ */
 const BasicInformationSection: React.FC<BasicInformationProps> = ({
   tagsList,
   isEditable,
@@ -84,6 +125,12 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categoryQuery?.data?.data?.children?.length]);
 
+  /**
+   * Replaces an existing preview image's `path` with a newly selected file.
+   *
+   * @param id   - UUID of the image entry to update.
+   * @param item - FileList from the native file input change event.
+   */
   const handleEditPreviewImage = (id: string, item: FileList) => {
     const tempArr = watchProductImages || [];
     const filteredFormItem = tempArr.filter(
@@ -95,6 +142,11 @@ const BasicInformationSection: React.FC<BasicInformationProps> = ({
     }
   };
 
+  /**
+   * Removes a preview image entry from the form's `productImages` array.
+   *
+   * @param id - UUID of the image entry to remove.
+   */
   const handleRemovePreviewImage = (id: string) => {
     formContext.setValue("productImages", [
       ...(watchProductImages || []).filter(

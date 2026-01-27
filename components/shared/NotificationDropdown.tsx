@@ -1,3 +1,25 @@
+/**
+ * @file NotificationDropdown - Notification list dropdown panel.
+ * @description Renders a scrollable panel of recent notifications with a header
+ * showing unread count and "Mark all as read" action. Fetches the latest 10
+ * notifications via useNotifications query. Shows skeleton loaders while fetching,
+ * an empty state with bell icon when no notifications exist, and a list of
+ * NotificationItem components otherwise. Footer includes a "View all notifications"
+ * button that navigates to /notifications.
+ *
+ * @props
+ *   - onClose {() => void} - Optional callback to close the dropdown panel.
+ *
+ * @dependencies
+ *   - @/apis/queries/notifications.queries (useNotifications, useMarkAllAsRead) - Data fetching.
+ *   - @/context/NotificationContext (useNotificationsContext) - Notification state.
+ *   - ./NotificationItem - Individual notification row component.
+ *   - next/navigation (useRouter) - Client-side navigation.
+ *   - @/context/AuthContext (useAuth) - Language direction context.
+ *   - next-intl (useTranslations) - Internationalization.
+ *   - next/link - Link component.
+ *   - @/components/ui/skeleton (Skeleton) - Loading skeleton placeholders.
+ */
 "use client";
 
 import React, { useState } from "react";

@@ -1,3 +1,23 @@
+/**
+ * @file Seller RFQ Request Page - app/seller-rfq-request/page.tsx
+ * @route /seller-rfq-request (accepts ?rfqId=<id>&tab=<rfq|chat|operations>)
+ * @description Seller-side RFQ request detail and communication page. Features three main
+ *   panels/tabs:
+ *   (1) RFQ -- SellerChat for RFQ-specific communication with the buyer
+ *   (2) Chat -- ProductChat for product-related messaging (ProductMessagesList for admin)
+ *   (3) Operations -- VendorOperations for order processing and fulfillment actions
+ *   Includes a collapsible sidebar listing all seller's RFQ quotes
+ *   (useAllRfqQuotesUsersBySellerId) with product thumbnails. Selecting an RFQ loads its
+ *   chat thread and enables the operations panel.
+ *   Requires PERMISSION_RFQ_SELLER_REQUESTS; redirects to /home if denied.
+ * @authentication Required; permission-gated via checkPermission(PERMISSION_RFQ_SELLER_REQUESTS).
+ * @key_components SellerChat, ProductChat, ProductMessagesList, VendorOperations, Image
+ * @data_fetching
+ *   - useAllRfqQuotesUsersBySellerId for sidebar RFQ list
+ *   - Individual chat/operations components handle their own data fetching
+ * @state_management Local state for currentTab, productId, roomId, selectedRfqId,
+ *   selectedCustomerId, sidebar collapse states.
+ */
 "use client";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";

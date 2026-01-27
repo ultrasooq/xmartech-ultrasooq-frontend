@@ -1,3 +1,24 @@
+/**
+ * @file ControlledTextInput - React Hook Form integrated text input.
+ * @description Renders a styled text input integrated with React Hook Form via
+ * useFormContext and FormField. Supports optional label display via showLabel prop.
+ * Extends standard InputProps for full HTML input attribute support. Destructures
+ * value and defaultValue from props to prevent conflicts with the RHF field binding.
+ * Respects language direction from AuthContext for the label.
+ *
+ * @props
+ *   - label {string} - Optional label text.
+ *   - name {string} - Form field name for the text value.
+ *   - showLabel {boolean} - When true, displays the label above the input.
+ *   - ...InputProps - All standard HTML input props are supported.
+ *
+ * @dependencies
+ *   - react-hook-form (useFormContext) - Form state management.
+ *   - @/components/ui/form (FormControl, FormField, FormItem, FormLabel, FormMessage) - Form primitives.
+ *   - @/components/ui/input (Input, InputProps) - Styled input component.
+ *   - @/lib/utils (cn) - Tailwind class merging utility.
+ *   - @/context/AuthContext (useAuth) - Language direction context.
+ */
 import React from "react";
 import {
   FormControl,

@@ -1,3 +1,40 @@
+/**
+ * @file Root Layout - app/layout.tsx
+ * @route All routes (root layout wrapping every page)
+ *
+ * @description
+ * The top-level server-side layout for the entire Ultrasooq / Puremoon B2B/B2C
+ * marketplace frontend. It bootstraps all global providers, performs server-side
+ * user authentication, fetches permissions and locale, and renders the shared
+ * conditional layout (header / sidebar / footer).
+ *
+ * @authentication
+ * - Reads the PUREMOON_TOKEN_KEY cookie on the server.
+ * - Calls POST /user/me to authorize the current user.
+ * - Calls GET /user/get-perrmision to fetch role-based permissions.
+ * - Passes user object and permissions into AuthProvider context.
+ *
+ * @providers
+ * - SessionWrapper (next-auth session)
+ * - ReactQueryProvider (TanStack Query)
+ * - AuthProvider (user, permissions, locale)
+ * - SocketProvider (real-time WebSocket)
+ * - SidebarProvider (sidebar open/close state)
+ * - NotificationProvider (notification badge / list)
+ * - LocaleProvider / NextIntlClientProvider (i18n translations)
+ *
+ * @key_components
+ * - NextTopLoader - page-transition progress bar (red #DB2302)
+ * - ConditionalLayout - renders Header/Sidebar based on the current route
+ * - TitleProtection - guards against title manipulation
+ * - Toaster - global toast notification container
+ *
+ * @data_fetching
+ * - authorizeUser() - server function, POST /user/me
+ * - getUserPermissions() - server function, GET /user/get-perrmision
+ * - getUserLocale() - reads locale preference from cookie/service
+ * - Dynamic import of translations/${locale}.json
+ */
 import { inter } from "@/app/ui/fonts";
 import "@/app/ui/global.css";
 import "@/scss/main.scss";

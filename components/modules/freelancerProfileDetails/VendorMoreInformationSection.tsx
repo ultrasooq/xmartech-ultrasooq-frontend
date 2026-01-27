@@ -1,3 +1,10 @@
+/**
+ * @file VendorMoreInformationSection.tsx
+ * @description Read-only "More Information" section for viewing another vendor's profile.
+ * Same layout as MoreInformationSection but without the edit icon/link.
+ * Displays "About Me" via PlateEditor, address, working hours, and category tags.
+ */
+
 import React, { useMemo } from "react";
 import { getAmPm, handleDescriptionParse, parsedDays } from "@/utils/helper";
 import PlateEditor from "@/components/shared/Plate/PlateEditor";
@@ -5,6 +12,7 @@ import ViewMultiTagSection from "../companyProfileDetails/ViewMultiTagSection";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 
+/** Props for the VendorMoreInformationSection component. */
 type VendorMoreInformationSectionProps = {
   vendor: any;
 };

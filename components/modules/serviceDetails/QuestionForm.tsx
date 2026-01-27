@@ -1,3 +1,11 @@
+/**
+ * @file QuestionForm.tsx
+ * @description Modal form for submitting a new question about a service.
+ * Uses react-hook-form with Zod validation (min 2 chars, max 250 chars).
+ * Calls `useAddServiceQuestion` mutation on submit and shows toast feedback.
+ * Extracts the service ID from URL params via `useParams`.
+ */
+
 import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";

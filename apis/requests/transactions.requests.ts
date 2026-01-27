@@ -4,6 +4,17 @@ import { getCookie } from "cookies-next";
 import urlcat from "urlcat";
 import { getApiUrl } from "@/config/api";
 
+/**
+ * Fetches all payment transactions for the authenticated user.
+ *
+ * @param payload - Optional query/filter parameters (untyped). Passed as both URL params and request body.
+ * @returns Axios promise resolving to the list of transactions.
+ *
+ * @remarks
+ * - **HTTP Method:** `GET`
+ * - **Endpoint:** `/payment/transaction/getl-all`
+ * - **Auth:** Bearer token required.
+ */
 export const fetchTransactions = (payload: any) => {
   return axios({
     method: "GET",

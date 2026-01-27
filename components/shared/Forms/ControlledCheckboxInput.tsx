@@ -1,3 +1,20 @@
+/**
+ * @file ControlledCheckboxInput - React Hook Form integrated checkbox group.
+ * @description Renders a group of checkboxes under a label, managed via React Hook
+ * Form's useFormContext. Each checkbox option toggles a single-select behavior
+ * (checking one option replaces the entire value array rather than appending).
+ * Displays validation messages below the group via FormMessage.
+ *
+ * @props
+ *   - label {string} - Group label displayed above the checkboxes.
+ *   - name {string} - Form field name for the selected values array.
+ *   - options {{ label: string; value: string }[]} - Available checkbox options.
+ *
+ * @dependencies
+ *   - react-hook-form (useFormContext) - Form state management.
+ *   - @/components/ui/form (FormControl, FormField, FormItem, FormLabel, FormMessage) - Form primitives.
+ *   - @/components/ui/checkbox (Checkbox) - Styled checkbox component.
+ */
 import React from "react";
 import { useFormContext } from "react-hook-form";
 import {

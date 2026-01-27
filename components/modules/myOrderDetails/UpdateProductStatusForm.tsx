@@ -16,6 +16,17 @@ import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 import moment from "moment";
 
+/**
+ * Props for the {@link UpdateProductStatusForm} component.
+ *
+ * @property orderProductId     - The order-product entry ID to update.
+ * @property onClose            - Callback to close the form/dialog.
+ * @property orderProductStatus - Current status of the order product.
+ * @property orderProductDate   - Date the order was placed.
+ * @property deliveryAfter      - Number of days for delivery.
+ * @property tradeRole          - The user's trade role (affects which
+ *   statuses are available).
+ */
 type UpdateProductStatusFormProps = {
   orderProductId: string;
   onClose: () => void;
@@ -25,6 +36,11 @@ type UpdateProductStatusFormProps = {
   tradeRole?: string;
 };
 
+/**
+ * Zod validation schema for the status update form.
+ * Requires a `status` string (2-50 chars). When the status is
+ * `"CANCELLED"`, the `cancelReason` field becomes mandatory.
+ */
 const formSchema = z
   .object({
     status: z
@@ -44,6 +60,17 @@ const formSchema = z
     }
   });
 
+/**
+ * Form for updating the delivery/order status of a single order product.
+ *
+ * Provides a status dropdown (filtered by trade role and delivery
+ * window) and an optional cancel-reason textarea (required when
+ * status is `"CANCELLED"`). Uses {@link useUpdateProductStatus}
+ * and {@link useUpdateCancelReason} mutations.
+ *
+ * @param props - {@link UpdateProductStatusFormProps}
+ * @returns A form element with status selection and submit button.
+ */
 const UpdateProductStatusForm: React.FC<UpdateProductStatusFormProps> = ({
   orderProductId,
   onClose,

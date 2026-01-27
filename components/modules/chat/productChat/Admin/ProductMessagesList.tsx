@@ -1,3 +1,35 @@
+/**
+ * @file ProductMessagesList.tsx
+ * @description Lists all products that have active chat messages for the current
+ *   seller/admin user. Each product entry shows a summary of conversations with
+ *   buyer avatars, message previews, and unread counts. Clicking a product
+ *   navigates to the product chat view.
+ *
+ * @props
+ *   - onSelectProduct {(productId, roomId, userId?) => void} - Callback when a
+ *     product conversation is selected.
+ *   - layoutMode {"grid" | "column"} - Layout mode; "column" renders a compact
+ *     sidebar list, "grid" renders a wider card-based layout.
+ *   - selectedCustomerId {number | null} - Currently selected customer for
+ *     highlighting in the list.
+ *
+ * @behavior
+ *   - Fetches all products with messages via `useGetAllProductsWithMessages`.
+ *   - Auto-refetches when a new socket message arrives (via `newMessage`).
+ *   - In grid mode, displays product cards with image, name, and a nested list
+ *     of `ProductMessageItem` sub-components (one per buyer conversation).
+ *   - In column mode, renders a compact scrollable list of product items.
+ *   - Contains an internal `ProductMessageItem` component that displays buyer
+ *     avatar, name, last message, timestamp, and unread badge.
+ *   - Shows loading skeletons and empty states.
+ *
+ * @dependencies
+ *   - useGetAllProductsWithMessages (TanStack Query) - Fetches product/message data.
+ *   - useSocket (SocketContext) - Listens for new messages to trigger refetch.
+ *   - useAuth (AuthContext) - Current user info, language direction.
+ *   - useQueryClient (TanStack React Query) - Cache invalidation.
+ *   - moment - Relative time display.
+ */
 "use client";
 
 import React, { useEffect } from "react";

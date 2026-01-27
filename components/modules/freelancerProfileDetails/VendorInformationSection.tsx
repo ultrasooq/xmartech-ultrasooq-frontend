@@ -1,8 +1,17 @@
+/**
+ * @file VendorInformationSection.tsx
+ * @description Read-only vendor contact information section displayed on a vendor's
+ * public profile page. Shows email, phone number, and social media links
+ * (Facebook, Instagram, X/Twitter, LinkedIn, YouTube). Parses social links
+ * from the vendor's `socialLinks` JSON field via a memoised helper.
+ */
+
 import React, { useMemo } from "react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 
+/** Props for the VendorInformationSection component. */
 type VendorInformationSectionProps = {
   vendor: any;
 };

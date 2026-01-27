@@ -19,6 +19,20 @@ import { IoCloseSharp } from "react-icons/io5";
 import { useClickOutside } from "use-events";
 import { useAddServiceToCart } from "@/apis/queries/services.queries";
 
+/**
+ * Props for the {@link ServiceCard} component.
+ *
+ * @property cartId            - The cart entry ID.
+ * @property serviceId         - ID of the service.
+ * @property serviceFeatureId  - ID of the specific service feature.
+ * @property serviceFeatureName - Display name of the service feature.
+ * @property serviceCost       - Unit cost of the service.
+ * @property cartQuantity      - Current quantity in the cart.
+ * @property serviceFeatures   - Array of all service features in this cart entry.
+ * @property relatedCart       - Optional related cart data (product the
+ *   service is attached to).
+ * @property onRemove          - Callback to remove this service from the cart.
+ */
 type ServiceCardProps = {
     cartId: number;
     serviceId: number;
@@ -31,6 +45,17 @@ type ServiceCardProps = {
     onRemove: () => void;
 };
 
+/**
+ * Cart card component for a service item. Displays the service feature
+ * name and cost, with quantity increment/decrement controls and a
+ * remove button with confirmation dialog.
+ *
+ * Uses {@link useAddServiceToCart} and {@link useAddServiceToCartWithProduct}
+ * for quantity updates.
+ *
+ * @param props - {@link ServiceCardProps}
+ * @returns A service item row for the cart list.
+ */
 const ServiceCard: React.FC<ServiceCardProps> = ({
     cartId,
     serviceId,

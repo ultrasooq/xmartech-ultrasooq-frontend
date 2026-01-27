@@ -22,6 +22,52 @@ import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import DropshipProductsModal from "./DropshipProductsModal";
 
+/**
+ * Props for the {@link DropshipProductManageCard} component.
+ *
+ * Contains both display data and state-management callbacks. Many
+ * numeric/string props map directly to fields in the
+ * `product_productPrice` API response.
+ *
+ * @property selectedIds            - Array of currently-selected price IDs.
+ * @property onSelectedId           - Checkbox change callback (checked, id).
+ * @property onSelect               - Fires when checkbox is checked, passing
+ *   the card's current form state for bulk-edit prefill.
+ * @property id                     - Product price ID (`productPriceId`).
+ * @property productId              - Parent product ID.
+ * @property status                 - `"ACTIVE"` or `"INACTIVE"`.
+ * @property askForPrice            - Whether the price is hidden (`"true"`/`"false"`).
+ * @property askForStock            - Whether the stock is hidden.
+ * @property productImage           - URL or `null`.
+ * @property productName            - Display name.
+ * @property productPrice           - Base price string.
+ * @property offerPrice             - Offer price string.
+ * @property deliveryAfter          - Days until delivery.
+ * @property stock                  - Available stock quantity.
+ * @property consumerType           - Target audience type.
+ * @property sellType               - Sell type (e.g., `"BUYGROUP"`).
+ * @property timeOpen / timeClose   - Scheduled sale window (timestamps).
+ * @property vendorDiscount / vendorDiscountType - Vendor-specific discount.
+ * @property consumerDiscount / consumerDiscountType - Consumer discount.
+ * @property minQuantity / maxQuantity - Order quantity bounds.
+ * @property minCustomer / maxCustomer - Customer count bounds.
+ * @property minQuantityPerCustomer / maxQuantityPerCustomer - Per-customer limits.
+ * @property productCondition       - Condition string (new/used/refurbished).
+ * @property onRemove               - Callback to delete this product price.
+ * @property onWishlist             - Wishlist toggle callback.
+ * @property inWishlist             - Whether currently wishlisted.
+ * @property hideCheckbox           - Hides the selection checkbox.
+ * @property hideEyeIcon            - Hides the visibility toggle.
+ * @property hideActionButtons      - Hides edit/delete/dropship buttons.
+ * @property disableFields          - Marks fields as disabled.
+ * @property productType            - `"P"` (regular), `"D"` (dropshipable),
+ *   `"R"` (RFQ).
+ * @property isDropshipped          - Whether this is a dropshipped copy.
+ * @property isCreatedByMe          - Whether the current user created it.
+ * @property haveAccessToken        - Whether the user is authenticated.
+ * @property brandName / categoryName / shortDescription / skuNo - Extra
+ *   product metadata for display.
+ */
 type DropshipProductManageCardProps = {
   selectedIds?: number[];
   onSelectedId?: (args0: boolean | string, args1: number) => void;
@@ -69,6 +115,29 @@ type DropshipProductManageCardProps = {
   skuNo?: string;
 };
 
+/**
+ * Full-featured product management card used in the dropship product
+ * listing pages.
+ *
+ * Renders a compact row layout with:
+ * - **Selection checkbox** and **eye icon** for toggling
+ *   `ACTIVE`/`INACTIVE` visibility status.
+ * - **Product image** with S3-domain detection and placeholder fallback.
+ * - **Product type badges** (Dropshipable / Regular / Dropship Product).
+ * - **Stock, price, and offer price** indicators.
+ * - **Brand, category, short description** metadata.
+ * - **Status badge** (Active / Inactive).
+ * - **Action buttons**: wishlist toggle, view dropship products modal,
+ *   edit (navigates to `/product?edit=true&...`), and delete with
+ *   confirmation dialog.
+ *
+ * All pricing and product-state fields are managed as local state
+ * (initialised from props) to support inline editing scenarios and
+ * bulk-edit prefill via the `onSelect` callback.
+ *
+ * @param props - {@link DropshipProductManageCardProps}
+ * @returns A bordered card element for managing a dropship product.
+ */
 const DropshipProductManageCard: React.FC<DropshipProductManageCardProps> = ({
   selectedIds,
   onSelectedId,
@@ -145,17 +214,20 @@ const DropshipProductManageCard: React.FC<DropshipProductManageCardProps> = ({
   // Modal state
   const [showDropshipModal, setShowDropshipModal] = useState(false);
 
+  /** Navigates to the product edit page with the current productId and productPriceId. */
   const handleEdit = () => {
     router.push(`/product?edit=true&productId=${productId}&productPriceId=${id}`);
   };
 
 
+  /** Shows a browser confirm dialog and invokes onRemove on confirmation. */
   const handleRemove = () => {
     if (window.confirm(t("are_you_sure_you_want_to_delete_this_product"))) {
       onRemove(id);
     }
   };
 
+  /** Delegates wishlist add/remove to the parent's onWishlist callback. */
   const handleWishlistToggle = () => {
     if (onWishlist) {
       onWishlist();

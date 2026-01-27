@@ -1,3 +1,30 @@
+/**
+ * @file ImageUploader.tsx
+ * @description A drag-and-drop image uploader component with client-side image
+ *   compression. Used in the dropship product form for uploading additional
+ *   marketing images. Supports multiple image uploads with preview and removal.
+ *
+ * @props
+ *   - onImagesChange {(images: string[]) => void} - Callback invoked whenever
+ *     the image list changes (add or remove), providing base64 data URLs.
+ *   - maxImages {number} - Maximum number of images allowed (default: 5).
+ *   - className {string} - Additional CSS classes for the container.
+ *
+ * @behavior
+ *   - Supports drag-and-drop and click-to-browse file selection.
+ *   - Filters uploads to image files only (image/* MIME type).
+ *   - Compresses each image client-side using an HTML canvas: scales down to
+ *     maxWidth (800px default) while maintaining aspect ratio, then exports
+ *     as JPEG at 0.8 quality.
+ *   - Displays image previews in a grid with individual remove (X) buttons.
+ *   - Prevents exceeding the maxImages limit with a toast or silent skip.
+ *   - Calls `onImagesChange` with the updated base64 string array after every
+ *     add or remove operation.
+ *
+ * @dependencies
+ *   - useTranslations (next-intl) - i18n translations.
+ *   - lucide-react (X, Upload, ImageIcon) - UI icons.
+ */
 "use client";
 import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";

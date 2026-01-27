@@ -9,11 +9,30 @@ import { useMe } from "@/apis/queries/user.queries";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 
+/**
+ * Props for the {@link QuestionAndAnswers} component.
+ *
+ * @property productId      - The product ID to fetch questions for.
+ * @property productAddedBy - User ID of the product owner (used to
+ *   determine if the current user can answer questions).
+ */
 type QuestionAndAnswersProps = {
   productId: number;
   productAddedBy: number;
 };
 
+/**
+ * Displays a paginated list of questions and answers for a specific
+ * product within the vendor operations panel. The product owner can
+ * answer unanswered questions via a modal dialog containing
+ * {@link AnswerForm}.
+ *
+ * Fetches questions via {@link useQuestions} with page/limit pagination
+ * and a user-type filter.
+ *
+ * @param props - {@link QuestionAndAnswersProps}
+ * @returns A Q&A section for a product.
+ */
 const QuestionAndAnswers: React.FC<QuestionAndAnswersProps> = ({
   productId,
   productAddedBy

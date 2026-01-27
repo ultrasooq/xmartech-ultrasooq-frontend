@@ -1,3 +1,42 @@
+/**
+ * @file ProductSuggestionModal.tsx
+ * @description A full-screen overlay modal that allows vendors (sellers) to suggest
+ *   alternative products to a buyer during an RFQ (Request for Quotation) negotiation.
+ *   The vendor searches their own product catalogue, selects one or more items, and
+ *   optionally edits the offer price and quantity for each selected product before
+ *   submitting the suggestions.
+ *
+ * @props
+ *   - isOpen {boolean} - Controls modal visibility.
+ *   - onClose {() => void} - Callback to close the modal.
+ *   - onSelectProducts {(products: Array<...>) => void} - Callback invoked on
+ *     submit with the array of selected product suggestions (includes
+ *     suggestedProductId, offerPrice, quantity, and full productDetails).
+ *   - rfqQuoteProductId {number} - The RFQ quote product this suggestion targets.
+ *   - vendorId {number} - The vendor whose catalogue is searched.
+ *   - defaultQuantity {number} - Fallback quantity for new selections (default: 1).
+ *   - defaultOfferPrice {number} - Fallback offer price for new selections.
+ *   - mainProduct {{ id, name, image, quantity, offerPrice }} - Preview card for
+ *     the originally-requested product.
+ *   - existingSuggestions {Array<...>} - Previously suggested products that are
+ *     pre-checked in the list with their saved price/quantity values.
+ *
+ * @behavior
+ *   - On open, pre-populates selections from `existingSuggestions` and loads the
+ *     vendor's product list via `getVendorProductsForSuggestion`.
+ *   - Search is debounced (500ms) and resets pagination on each new query.
+ *   - "Load More" button supports paginated fetching (20 items per page).
+ *   - Duplicate products are deduplicated when appending new pages.
+ *   - On submit, only changed or newly-added suggestions are sent; de-selected
+ *     existing suggestions are sent with quantity 0 (removal signal).
+ *   - Resets all state when the modal closes.
+ *
+ * @dependencies
+ *   - getVendorProductsForSuggestion (API request) - Fetches paginated vendor products.
+ *   - useAuth (AuthContext) - Provides currency symbol and language direction.
+ *   - useTranslations (next-intl) - i18n translation function.
+ *   - validator - URL validation for product images.
+ */
 "use client";
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";

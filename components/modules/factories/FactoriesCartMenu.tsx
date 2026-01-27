@@ -12,11 +12,28 @@ import FactoriesCartMenuCard from "./FactoriesCartMenuCard";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 
+/**
+ * Props for the {@link FactoryCartMenu} sidebar component.
+ *
+ * @property onInitCart      - Optional callback invoked with the initial
+ *   cart list when data is loaded (used by the parent to track count).
+ * @property haveAccessToken - Whether the user is authenticated.
+ */
 type FactoryCartMenuProps = {
-  onInitCart?: (cartList: any[]) => void; 
+  onInitCart?: (cartList: any[]) => void;
   haveAccessToken: boolean;
 };
 
+/**
+ * Factory cart sidebar listing all items in the user's factories cart.
+ * Fetches items via {@link useFactoriesCartListByUserId} and renders
+ * each as a {@link FactoriesCartMenuCard}. Provides delete functionality
+ * via {@link useDeleteFactoriesCartItem} and a link to the full
+ * factories cart page.
+ *
+ * @param props - {@link FactoryCartMenuProps}
+ * @returns A sidebar section with factory cart items and navigation link.
+ */
 const FactoryCartMenu: React.FC<FactoryCartMenuProps> = ({
   onInitCart,
   haveAccessToken,

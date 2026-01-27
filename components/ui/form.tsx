@@ -1,3 +1,25 @@
+/**
+ * @file Form - Shadcn UI form component family for React Hook Form integration.
+ * @description Bridges React Hook Form with accessible UI form elements. Provides
+ * context-based field management, automatic aria attributes, and error message
+ * display. Each FormField wraps a Controller and injects field context.
+ *
+ * @exports Form - Re-export of React Hook Form's FormProvider.
+ * @exports FormField - Controller wrapper that provides field name context.
+ * @exports useFormField - Hook to access field state, IDs, and error info.
+ * @exports FormItem - Container for a single form field with vertical spacing.
+ * @exports FormLabel - Accessible label auto-linked to the field control.
+ * @exports FormControl - Slot wrapper applying aria-describedby and aria-invalid.
+ * @exports FormDescription - Muted helper text for a field.
+ * @exports FormMessage - Error message display (renders error or children).
+ *
+ * @dependencies
+ *   - react-hook-form (Controller, FormProvider, useFormContext) - Form state management.
+ *   - @radix-ui/react-label - Accessible label primitive.
+ *   - @radix-ui/react-slot - Polymorphic slot for FormControl.
+ *   - @/components/ui/label - Styled Label component.
+ *   - @/lib/utils (cn) - Tailwind class merging utility.
+ */
 import * as React from "react";
 import * as LabelPrimitive from "@radix-ui/react-label";
 import { Slot } from "@radix-ui/react-slot";
@@ -13,6 +35,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 
+/** Re-export of FormProvider as Form for convenient usage. */
 const Form = FormProvider;
 
 type FormFieldContextValue<

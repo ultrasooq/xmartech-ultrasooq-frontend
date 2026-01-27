@@ -1,3 +1,17 @@
+/**
+ * @file Help Center Queries Page - app/queries/page.tsx
+ * @route /queries
+ * @description Lists all help center / support queries submitted by the user. Displays a
+ *   paginated table with query ID, subject, status, and creation date. Clicking the "View"
+ *   (FiEye) icon opens a modal dialog showing full query details including subject,
+ *   description, status, admin response, and dates.
+ * @authentication Required (implicitly via useHelpCenterQueries which uses auth token).
+ * @key_components Pagination, Dialog (query detail modal), FiEye (view icon), Label,
+ *   Textarea, Button
+ * @data_fetching
+ *   - useHelpCenterQueries({ page, limit }) for paginated query list
+ * @state_management Local state for page, limit, selectedQuery, isQueryModalOpen.
+ */
 "use client"; // Add this at the top
 import React, { useMemo, useRef, useState, useEffect } from "react";
 import { useHelpCenterQueries } from "@/apis/queries/help-center.queries";

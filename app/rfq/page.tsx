@@ -1,3 +1,28 @@
+/**
+ * @file RFQ Products Page - app/rfq/page.tsx
+ * @route /rfq
+ * @description RFQ product browsing page. Displays products available for Request for
+ *   Quotation (useRfqProducts) in grid/list view (RfqProductCard / RfqProductTable) with
+ *   search, sort, brand/category/price filter sidebar (Accordion, Checkbox, ReactSlider),
+ *   and pagination. Features an RFQ cart sidebar (RfqCartMenu) showing items added via
+ *   "Add to RFQ Cart" modal (AddToRfqForm). Supports wishlist toggling and category
+ *   filtering via useCategory with Accordion tree.
+ * @authentication Optional; supports guest and authenticated flows.
+ * @key_components RfqProductCard, RfqProductTable, RfqCartMenu, AddToRfqForm,
+ *   GridIcon, ListIcon, Accordion, ReactSlider, Select, Input, Pagination, Dialog, Footer,
+ *   SkeletonProductCardLoader
+ * @data_fetching
+ *   - useRfqProducts for RFQ product listings
+ *   - useRfqCartListByUserId for RFQ cart state
+ *   - useUpdateRfqCartWithLogin for RFQ cart add
+ *   - useDeleteRfqCartItem for cart item removal
+ *   - useBrands for brand filter
+ *   - useCategory for category tree filter
+ *   - useAddToWishList / useDeleteFromWishList for wishlist
+ *   - useMe for user identity
+ * @state_management Local state for filters (brandIds, priceRange, sort, search),
+ *   pagination, gridView, variant modal, RFQ form modal, cart sidebar visibility.
+ */
 "use client";
 import React, { useEffect, useMemo, useRef, useState, use } from "react";
 import { debounce } from "lodash";

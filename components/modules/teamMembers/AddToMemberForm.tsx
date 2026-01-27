@@ -27,11 +27,26 @@ const customStyles = {
   control: (base: any) => ({ ...base, height: 48, minHeight: 48 }),
 };
 
+/**
+ * Props for the {@link AddToMemberForm} component.
+ *
+ * @property onClose       - Callback to close the dialog.
+ * @property memberDetails - Existing member data for edit mode, or
+ *   `undefined`/`null` for creating a new member.
+ */
 type AddToMemberFormProps = {
   onClose: () => void;
   memberDetails: any;
 };
 
+/**
+ * Builds the Zod validation schema for the add/edit member form.
+ * Validates first name, last name, email, and phone number with
+ * localised error messages.
+ *
+ * @param t - Translation function from `next-intl`.
+ * @returns A Zod object schema for the member form.
+ */
 const addFormSchema = (t: any) => {
   return z.object({
     firstName: z
@@ -71,6 +86,21 @@ const addFormSchema = (t: any) => {
   })
 };
 
+/**
+ * Dialog form for creating or editing a team member.
+ *
+ * When `memberDetails` is supplied the form operates in **edit mode**,
+ * pre-populating every field and calling {@link useUpdateMember} on submit.
+ * Otherwise it operates in **create mode** using {@link useCreateMember}.
+ *
+ * The form collects first name, last name, email, phone (optional with
+ * country dial-code), user role (fetched via {@link useUserRoles}), and
+ * an ACTIVE / INACTIVE status toggle. Validation is handled by the
+ * {@link addFormSchema} Zod schema resolved through `react-hook-form`.
+ *
+ * @param props - {@link AddToMemberFormProps}
+ * @returns A modal form for team-member management.
+ */
 const AddToMemberForm: React.FC<AddToMemberFormProps> = ({
   onClose,
   memberDetails,

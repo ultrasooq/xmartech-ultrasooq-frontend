@@ -1,3 +1,12 @@
+/**
+ * @file MoreInformationSection.tsx
+ * @description Editable "More Information" section on the user's own freelancer profile.
+ * Displays: "About Me" description via PlateEditor (rich text), address, working
+ * hours (parsed from JSON with day/time range), and category tags via
+ * ViewMultiTagSection. Includes edit icon linking to /profile for modifications.
+ * Parses the user's description with `handleDescriptionParse` for Plate editor format.
+ */
+
 import React, { useMemo } from "react";
 import Image from "next/image";
 import { getAmPm, handleDescriptionParse, parsedDays } from "@/utils/helper";
@@ -8,6 +17,7 @@ import ViewMultiTagSection from "../companyProfileDetails/ViewMultiTagSection";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 
+/** Props for the MoreInformationSection component. */
 type MoreInformationSectionProps = {
   userDetails: any;
 };

@@ -1,3 +1,21 @@
+/**
+ * @file TagInformationSection.tsx
+ * @description Simple tag display section for the company profile page. Renders
+ *   a list of user branch tags as styled badge elements.
+ *
+ * @props
+ *   - tagDetails {any} - Object containing `userBranchTags` array, where each
+ *     tag has `id` and `tag` (display text) properties.
+ *
+ * @behavior
+ *   - Renders a "Tag" heading and maps over `tagDetails.userBranchTags` to
+ *     display each tag as a gray badge with cyan text.
+ *   - Supports RTL layout via `langDir` from AuthContext.
+ *
+ * @dependencies
+ *   - useAuth (AuthContext) - Language direction.
+ *   - useTranslations (next-intl) - i18n translations.
+ */
 import { useAuth } from "@/context/AuthContext";
 import { useTranslations } from "next-intl";
 import React from "react";

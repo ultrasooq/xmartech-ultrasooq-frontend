@@ -1,3 +1,14 @@
+/**
+ * @fileoverview TanStack React Query hooks for authentication and
+ * multi-account management.
+ *
+ * Covers registration, login (including social login), OTP verification,
+ * password reset flows, email change flows, and multi-account
+ * operations (list / create / switch / current account).
+ *
+ * @module queries/auth
+ */
+
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   changeEmail,
@@ -48,6 +59,17 @@ import {
   ISwitchAccountRequest,
 } from "@/utils/types/auth.types";
 
+/**
+ * Mutation hook for new user registration.
+ *
+ * @returns A `useMutation` result.
+ *
+ * @remarks
+ * - **Payload**: {@link IRegisterRequest}
+ * - **Response**: {@link IRegister}
+ * - **Error type**: {@link APIResponseError}
+ * - Endpoint: Delegated to `register` in auth.requests.
+ */
 export const useRegister = () =>
   useMutation<IRegister, APIResponseError, IRegisterRequest>({
     mutationFn: async (payload) => {
@@ -59,6 +81,17 @@ export const useRegister = () =>
     },
   });
 
+/**
+ * Mutation hook for verifying the OTP code sent during registration
+ * or other verification flows.
+ *
+ * @returns A `useMutation` result.
+ *
+ * @remarks
+ * - **Payload**: {@link IVerifyOtpRequest}
+ * - **Response**: {@link IVerifyOtp}
+ * - Endpoint: Delegated to `verifyOtp` in auth.requests.
+ */
 export const useVerifyOtp = () =>
   useMutation<IVerifyOtp, APIResponseError, IVerifyOtpRequest>({
     mutationFn: async (payload) => {
@@ -70,6 +103,16 @@ export const useVerifyOtp = () =>
     },
   });
 
+/**
+ * Mutation hook to request a new OTP code to be resent.
+ *
+ * @returns A `useMutation` result.
+ *
+ * @remarks
+ * - **Payload**: {@link IResendOtpRequest}
+ * - **Response**: {@link IResendOtp}
+ * - Endpoint: Delegated to `resendOtp` in auth.requests.
+ */
 export const useResendOtp = () =>
   useMutation<IResendOtp, APIResponseError, IResendOtpRequest>({
     mutationFn: async (payload) => {
@@ -81,6 +124,16 @@ export const useResendOtp = () =>
     },
   });
 
+/**
+ * Mutation hook for user login with email and password.
+ *
+ * @returns A `useMutation` result.
+ *
+ * @remarks
+ * - **Payload**: {@link ILoginRequest}
+ * - **Response**: {@link ILogin}
+ * - Endpoint: Delegated to `login` in auth.requests.
+ */
 export const useLogin = () =>
   useMutation<ILogin, APIResponseError, ILoginRequest>({
     mutationFn: async (payload) => {
@@ -92,6 +145,17 @@ export const useLogin = () =>
     },
   });
 
+/**
+ * Mutation hook to initiate a forgot-password flow by requesting a
+ * reset link / OTP.
+ *
+ * @returns A `useMutation` result.
+ *
+ * @remarks
+ * - **Payload**: {@link IForgotPasswordRequest}
+ * - **Response**: {@link IForgotPassword}
+ * - Endpoint: Delegated to `forgotPassword` in auth.requests.
+ */
 export const useForgotPassword = () =>
   useMutation<IForgotPassword, APIResponseError, IForgotPasswordRequest>({
     mutationFn: async (payload) => {
@@ -103,6 +167,17 @@ export const useForgotPassword = () =>
     },
   });
 
+/**
+ * Mutation hook to reset the user password after completing the
+ * forgot-password verification step.
+ *
+ * @returns A `useMutation` result.
+ *
+ * @remarks
+ * - **Payload**: {@link IResetPasswordRequest}
+ * - **Response**: {@link IResetPassword}
+ * - Endpoint: Delegated to `resetPassword` in auth.requests.
+ */
 export const useResetPassword = () =>
   useMutation<IResetPassword, APIResponseError, IResetPasswordRequest>({
     mutationFn: async (payload) => {
@@ -114,6 +189,16 @@ export const useResetPassword = () =>
     },
   });
 
+/**
+ * Mutation hook to verify the OTP during the password-reset flow.
+ *
+ * @returns A `useMutation` result.
+ *
+ * @remarks
+ * - **Payload**: {@link IPasswordResetVerifyOtpRequest}
+ * - **Response**: {@link IPasswordResetVerify}
+ * - Endpoint: Delegated to `passwordResetVerify` in auth.requests.
+ */
 export const usePasswordResetVerify = () =>
   useMutation<
     IPasswordResetVerify,
@@ -129,6 +214,17 @@ export const usePasswordResetVerify = () =>
     },
   });
 
+/**
+ * Mutation hook to change the authenticated user's password from
+ * account settings (requires current password).
+ *
+ * @returns A `useMutation` result.
+ *
+ * @remarks
+ * - **Payload**: {@link IChangePasswordRequest}
+ * - **Response**: {@link IChangePassword}
+ * - Endpoint: Delegated to `changePassword` in auth.requests.
+ */
 export const useChangePassword = () =>
   useMutation<IChangePassword, APIResponseError, IChangePasswordRequest>({
     mutationFn: async (payload) => {
@@ -140,6 +236,16 @@ export const useChangePassword = () =>
     },
   });
 
+/**
+ * Mutation hook to initiate an email change for the authenticated user.
+ *
+ * @returns A `useMutation` result.
+ *
+ * @remarks
+ * - **Payload**: {@link IChangeEmailRequest}
+ * - **Response**: {@link IChangeEmail}
+ * - Endpoint: Delegated to `changeEmail` in auth.requests.
+ */
 export const useChangeEmail = () =>
   useMutation<IChangeEmail, APIResponseError, IChangeEmailRequest>({
     mutationFn: async (payload) => {
@@ -151,6 +257,19 @@ export const useChangeEmail = () =>
     },
   });
 
+/**
+ * Mutation hook to verify the OTP for the email-change flow.
+ * On success, invalidates the `["me"]` query key to refresh
+ * the current user profile.
+ *
+ * @returns A `useMutation` result.
+ *
+ * @remarks
+ * - **Payload**: {@link IChangeEmailVerifyRequest}
+ * - **Response**: {@link IChangeEmailVerify}
+ * - **Invalidates**: `["me"]` on success.
+ * - Endpoint: Delegated to `emailChangeVerify` in auth.requests.
+ */
 export const useChangeEmailVerify = () => {
   const queryClient = useQueryClient();
 
@@ -173,6 +292,17 @@ export const useChangeEmailVerify = () => {
   });
 };
 
+/**
+ * Mutation hook for social login (e.g., Google, Facebook).
+ * Returns an access token alongside user data on success.
+ *
+ * @returns A `useMutation` result.
+ *
+ * @remarks
+ * - **Payload**: `{ firstName, lastName, email, tradeRole, loginType }`
+ * - **Response**: `{ accessToken: string; data: any; message: string; status: boolean }`
+ * - Endpoint: Delegated to `socialLogin` in auth.requests.
+ */
 export const useSocialLogin = () =>
   useMutation<
     {
@@ -200,6 +330,20 @@ export const useSocialLogin = () =>
   });
 
 // Multi-Account System Queries
+
+/**
+ * Query hook that retrieves all accounts associated with the
+ * authenticated user's multi-account system.
+ *
+ * @returns A `useQuery` result whose `data` is {@link IMyAccounts}.
+ *
+ * @remarks
+ * - Query key: `["myAccounts"]`
+ * - **Enabled**: only when the auth token cookie is present.
+ * - **Cache policy**: `staleTime: 0` and `gcTime: 0` -- data is never
+ *   cached and always re-fetched.
+ * - Endpoint: Delegated to `myAccounts` in auth.requests.
+ */
 export const useMyAccounts = () => {
   return useQuery<IMyAccounts, APIResponseError>({
     queryKey: ["myAccounts"],
@@ -220,6 +364,18 @@ export const useMyAccounts = () => {
   });
 };
 
+/**
+ * Query hook that retrieves the currently active account within the
+ * multi-account system.
+ *
+ * @returns A `useQuery` result whose `data` is {@link ICurrentAccount}.
+ *
+ * @remarks
+ * - Query key: `["currentAccount"]`
+ * - **Enabled**: only when the auth token cookie is present.
+ * - **Cache policy**: `staleTime: 0` and `gcTime: 0`.
+ * - Endpoint: Delegated to `currentAccount` in auth.requests.
+ */
 export const useCurrentAccount = () => {
   return useQuery<ICurrentAccount, APIResponseError>({
     queryKey: ["currentAccount"],
@@ -235,6 +391,20 @@ export const useCurrentAccount = () => {
   });
 };
 
+/**
+ * Mutation hook to create a new account within the multi-account
+ * system. On success it resets all cached queries and force-refetches
+ * account-related data.
+ *
+ * @returns A `useMutation` result.
+ *
+ * @remarks
+ * - **Payload**: {@link ICreateAccountRequest}
+ * - **Response**: {@link ICreateAccount}
+ * - **Invalidates / resets**: All queries, then specifically
+ *   `["myAccounts"]` and `["currentAccount"]`.
+ * - Endpoint: Delegated to `createAccount` in auth.requests.
+ */
 export const useCreateAccount = () => {
   const queryClient = useQueryClient();
 
@@ -259,6 +429,23 @@ export const useCreateAccount = () => {
   });
 };
 
+/**
+ * Mutation hook to switch between accounts in the multi-account
+ * system. On success it persists the new access token in the cookie,
+ * resets all cached queries, and force-refetches auth-related data.
+ *
+ * @returns A `useMutation` result.
+ *
+ * @remarks
+ * - **Payload**: {@link ISwitchAccountRequest}
+ * - **Response**: {@link ISwitchAccount}
+ * - **Side effects on success**:
+ *   1. Updates the auth cookie with `data.data.accessToken`.
+ *   2. Resets all queries (to clear stale per-user cached data).
+ *   3. Invalidates and refetches `["myAccounts"]`, `["currentAccount"]`,
+ *      and `["me"]`.
+ * - Endpoint: Delegated to `switchAccount` in auth.requests.
+ */
 export const useSwitchAccount = () => {
   const queryClient = useQueryClient();
 

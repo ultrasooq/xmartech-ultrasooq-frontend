@@ -1,3 +1,33 @@
+/**
+ * @file VendorCard.tsx (trending module)
+ * @description Vendor card component for the trending page vendors section.
+ *   Displays vendor avatar, name, contact information (email, phone, location),
+ *   business type badges, product count, and action buttons. Includes a loading
+ *   skeleton variant.
+ *
+ * @props
+ *   - vendor {{ id, firstName, lastName, email, phoneNumber, profilePicture,
+ *     tradeRole, userProfile, productCount, averageRating, location,
+ *     userBusinessType, products }} - Vendor data object.
+ *   - isLoading {boolean} - When true, renders a skeleton placeholder.
+ *   - onViewProducts {(vendorId) => void} - Callback for "View Products" button.
+ *
+ * @behavior
+ *   - Renders a card with vendor avatar (fallback to placeholder), display name,
+ *     and contact info rows (email, phone, location) with icons.
+ *   - Shows business type badges (e.g., "MANUFACTURER", "WHOLESALER").
+ *   - Displays product count and average rating with star icon.
+ *   - "View Products" button triggers `onViewProducts` callback.
+ *   - Profile link navigates to `/company-profile-details/{vendorId}`.
+ *   - Loading skeleton shows animated placeholder boxes when `isLoading` is true.
+ *
+ * @dependencies
+ *   - lucide-react (Building2, Mail, Phone, MapPin, Star, Users, Package,
+ *     ExternalLink, ChevronRight) - UI icons.
+ *   - Badge (shadcn) - Business type badges.
+ *   - useAuth (AuthContext) - Language direction, currency.
+ *   - useTranslations (next-intl) - i18n translations.
+ */
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -5,13 +35,13 @@ import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Building2, 
-  Mail, 
-  Phone, 
-  MapPin, 
-  Star, 
-  Users, 
+import {
+  Building2,
+  Mail,
+  Phone,
+  MapPin,
+  Star,
+  Users,
   Package,
   ExternalLink,
   ChevronRight

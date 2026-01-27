@@ -1,3 +1,24 @@
+/**
+ * @file Edit Company Profile Page - app/company-profile/edit-profile/page.tsx
+ * @route /company-profile/edit-profile
+ * @description Form page for editing the main company profile. Loads existing company data
+ *   via useUniqueUser and pre-fills: company name, description (QuillEditor), logo, phone,
+ *   business type, purchasing volume, address, number of employees, establishment year,
+ *   website URL, and country/state/city selects. Uses Zod validation. On submit, uploads
+ *   logo (useUploadFile), then calls useUpdateCompanyProfile (or useCreateCompanyProfile
+ *   if none exists) to persist changes, and redirects to /company-profile-details.
+ * @authentication Required; uses authenticated queries.
+ * @key_components Form (react-hook-form + Zod), ControlledTextInput, ControlledSelectInput,
+ *   ControlledRichTextEditor, ControlledPhoneInput, QuillEditor, Button
+ * @data_fetching
+ *   - useUniqueUser for existing company data pre-fill
+ *   - useUpdateCompanyProfile / useCreateCompanyProfile mutations
+ *   - useTags for tag autocomplete
+ *   - useCountries for location selects
+ *   - useUploadFile for logo upload
+ * @state_management react-hook-form with Zod resolver; local state for image file,
+ *   data loading flag.
+ */
 "use client";
 import { Button } from "@/components/ui/button";
 import React, { useEffect, useMemo, useState } from "react";

@@ -1,3 +1,17 @@
+/**
+ * @file Textarea - Shadcn UI textarea component.
+ * @description Renders a styled multi-line text input with consistent border,
+ * focus ring, placeholder, and disabled styling.
+ *
+ * @props Accepts all native HTMLTextAreaElement attributes including:
+ *   - placeholder {string} - Placeholder text.
+ *   - rows {number} - Number of visible text lines.
+ *   - disabled {boolean} - Disables the textarea.
+ *   - className {string} - Additional CSS classes.
+ *
+ * @dependencies
+ *   - @/lib/utils (cn) - Tailwind class merging utility.
+ */
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
@@ -5,6 +19,7 @@ import { cn } from "@/lib/utils"
 export interface TextareaProps
   extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}
 
+/** Styled multi-line text input with focus ring and placeholder styling. */
 const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
   ({ className, ...props }, ref) => {
     return (

@@ -1,3 +1,27 @@
+/**
+ * @file Factories Page - app/factories/page.tsx
+ * @route /factories
+ * @description Factory product browsing page. Displays factory-sourced products
+ *   (useFactoriesProducts) with search, sort, grid/list view toggle
+ *   (FactoriesProductCard / ProductTable), and pagination. Features a factory cart sidebar
+ *   (FactoryCartMenu) showing items added via "Add to Factory Cart"
+ *   (useUpdateFactoriesCartWithLogin). Supports product customization via
+ *   useAddCustomizeProduct modal (CustomizeFactoryProductForm). Includes wishlist toggling,
+ *   category filter sidebar (Accordion), and banner image.
+ * @authentication Optional; supports guest and authenticated flows.
+ * @key_components FactoriesProductCard, ProductTable, FactoryCartMenu,
+ *   CustomizeFactoryProductForm, GridIcon, ListIcon, FilterMenuIcon, Pagination,
+ *   Dialog, Select, Input, Accordion, Footer, SkeletonProductCardLoader
+ * @data_fetching
+ *   - useFactoriesProducts for factory product listings
+ *   - useFactoriesCartListByUserId for factory cart state
+ *   - useUpdateFactoriesCartWithLogin for cart operations
+ *   - useAddCustomizeProduct for customization requests
+ *   - useAddToWishList / useDeleteFromWishList for wishlist
+ *   - useMe for user identity
+ * @state_management Local state for page, search, sort, gridView, variant modal,
+ *   customization modal, cart sidebar visibility; debounced search.
+ */
 "use client";
 import React, { useEffect, useMemo, useRef, useState, use } from "react";
 import { debounce } from "lodash";

@@ -1,3 +1,32 @@
+/**
+ * @file AnswerForm.tsx
+ * @description A dialog form for submitting answers to product questions.
+ *   Renders within a Dialog modal and allows users to type and submit a reply
+ *   to a specific product question.
+ *
+ * @props
+ *   - onClose {() => void} - Callback to close the answer dialog.
+ *   - questionId {number} - The ID of the question being answered.
+ *   - onReplySuccess {(answer: string) => void} - Optional callback invoked
+ *     after a successful answer submission with the answer text.
+ *
+ * @behavior
+ *   - Uses Zod schema validation: answer must be 2-200 characters, trimmed.
+ *   - Submits via `useUpdateAnswer` mutation with questionId and answer text.
+ *   - On success: shows success toast, calls `onReplySuccess` with the answer,
+ *     closes the dialog, and resets the form.
+ *   - On error: shows error toast with the response message.
+ *   - Renders a header with title and close icon, a textarea input, an
+ *     instruction list, and a submit button.
+ *
+ * @dependencies
+ *   - useForm, zodResolver (React Hook Form + Zod) - Form validation.
+ *   - useUpdateAnswer (TanStack Query) - Answer submission mutation.
+ *   - ControlledTextareaInput - Textarea form component.
+ *   - useToast (shadcn) - Toast notifications.
+ *   - useTranslations (next-intl) - i18n translations.
+ *   - useAuth (AuthContext) - Language direction.
+ */
 import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";

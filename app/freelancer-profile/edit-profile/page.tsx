@@ -1,3 +1,17 @@
+/**
+ * @file Edit Freelancer Profile Page - app/freelancer-profile/edit-profile/page.tsx
+ * @route /freelancer-profile/edit-profile
+ * @description Simple form page for editing the freelancer "About Us" section. Pre-fills
+ *   from useMe() user data. Provides a rich text editor (ControlledRichTextEditor) for
+ *   the about text. On submit, calls useUpdateFreelancerProfile and redirects to
+ *   /freelancer-profile-details.
+ * @authentication Required; useMe() for current user data.
+ * @key_components Form (react-hook-form + Zod), ControlledRichTextEditor, Button
+ * @data_fetching
+ *   - useMe() for current about-us data pre-fill
+ *   - useUpdateFreelancerProfile mutation for saving changes
+ * @state_management react-hook-form with Zod resolver.
+ */
 "use client";
 import { useUpdateFreelancerProfile } from "@/apis/queries/freelancer.queries";
 import { Button } from "@/components/ui/button";

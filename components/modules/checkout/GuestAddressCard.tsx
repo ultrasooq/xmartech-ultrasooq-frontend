@@ -1,3 +1,11 @@
+/**
+ * @file GuestAddressCard.tsx
+ * @description Simplified address card for guest (unauthenticated) users during checkout.
+ * Similar to AddressCard but without radio selection or delete action -- only edit
+ * is available via a dropdown menu. All address fields (city, state, country) are
+ * plain strings rather than objects, since guest addresses are not persisted in the DB.
+ */
+
 import React from "react";
 import {
   DropdownMenu,
@@ -10,6 +18,7 @@ import DropdownIcon from "@/public/images/custom-hover-dropdown-btn.svg";
 import PhoneIcon from "@/public/images/phoneicon.svg";
 import LocationIcon from "@/public/images/locationicon.svg";
 
+/** Props for the GuestAddressCard component. All location fields are plain strings. */
 type GuestAddressCardProps = {
   firstName?: string;
   lastName?: string;
@@ -24,6 +33,13 @@ type GuestAddressCardProps = {
   onEdit: () => void;
 };
 
+/**
+ * Renders a guest address as a non-selectable card with contact details and an
+ * edit-only dropdown menu. No radio button or delete action is provided.
+ *
+ * @param props - {@link GuestAddressCardProps}
+ * @returns A card displaying guest address information with an edit option.
+ */
 const GuestAddressCard: React.FC<GuestAddressCardProps> = ({
   firstName,
   lastName,

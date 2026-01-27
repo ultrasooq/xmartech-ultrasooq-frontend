@@ -1,3 +1,42 @@
+/**
+ * @file CategorySidebar.tsx
+ * @description Multi-level category sidebar component (~1265 lines) for the
+ *   trending page. Supports up to 6 levels of nested category navigation with
+ *   different UIs for desktop (multi-column hover-based drill-down) and mobile
+ *   (single-column drill-down navigation stack).
+ *
+ * @props
+ *   - isOpen {boolean} - Whether the sidebar is visible (mobile overlay).
+ *   - onClose {() => void} - Callback to close the sidebar.
+ *   - onCategorySelect {(category) => void} - Callback when a leaf category is selected.
+ *
+ * @behavior
+ *   - Fetches top-level categories via `useCategory` query and sub-categories
+ *     on demand via `fetchCategory` API request.
+ *   - Desktop: multi-column layout where hovering over a category in column N
+ *     loads and displays its children in column N+1 (up to 6 columns).
+ *   - Mobile: single-column drill-down with back button navigation, tracking
+ *     the navigation stack of selected categories at each level.
+ *   - Updates `useCategoryStore` (Zustand) with the selected category hierarchy.
+ *   - Custom scrollbar styles injected via `<style>` tag for thin scrollbars
+ *     that appear on hover.
+ *   - Manages scroll position within each column, preventing body scroll when
+ *     mobile sidebar is open.
+ *   - Category images displayed alongside names when available.
+ *   - Supports "All" option to select a parent category without drilling deeper.
+ *   - Keyboard and mouse event handling for hover-based navigation.
+ *
+ * @dependencies
+ *   - useCategory (TanStack Query) - Top-level category data.
+ *   - fetchCategory (API request) - On-demand sub-category fetching.
+ *   - useCategoryStore (Zustand) - Global category selection state.
+ *   - PRODUCT_CATEGORY_ID (constant) - Root product category ID.
+ *   - useAuth (AuthContext) - Language direction.
+ *   - useTranslations (next-intl) - i18n translations.
+ *   - useRouter (next/navigation) - Programmatic navigation.
+ *   - cn (utility) - Conditional class names.
+ *   - X, ChevronLeft (lucide-react) - Close and back icons.
+ */
 "use client";
 import React, { useState, useMemo, useEffect, useRef } from "react";
 import { useCategory } from "@/apis/queries/category.queries";

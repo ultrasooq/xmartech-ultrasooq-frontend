@@ -7,6 +7,26 @@ import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 
+/**
+ * Props for the seller-side {@link OrderCard} component.
+ *
+ * @property id               - Order product entry ID.
+ * @property orderProductType  - `"SERVICE"` or product type.
+ * @property purchasePrice     - Final purchase price string.
+ * @property productName       - Product display name.
+ * @property produtctImage     - Product image array (API typo preserved).
+ * @property productColor      - Colour variant string.
+ * @property orderQuantity     - Quantity ordered.
+ * @property sellerOrderId     - Seller-side order ID string.
+ * @property orderStatus       - Current delivery status.
+ * @property orderProductDate  - Order placement date.
+ * @property updatedAt         - Last-updated timestamp.
+ * @property tradeRole         - Seller's trade role.
+ * @property sellerId          - Seller user ID.
+ * @property productPriceId    - Product price entry ID.
+ * @property productId         - Product ID.
+ * @property serviceFeature    - Service feature data.
+ */
 type OrderCardProps = {
   id: number;
   orderProductType?: string;
@@ -26,6 +46,18 @@ type OrderCardProps = {
   serviceFeature?: any;
 };
 
+/**
+ * Displays a single order item card on the seller's "Seller Orders"
+ * page. Shows product image, name, price with currency, seller order ID,
+ * quantity, colour variant, delivery status progress, and last-updated
+ * date. Links to the seller order detail page at `/seller-orders/<id>`.
+ *
+ * Uses `SELLER_DELIVERY_STATUS` constants for the delivery progress
+ * indicator.
+ *
+ * @param props - {@link OrderCardProps}
+ * @returns An order card element for the seller's order list.
+ */
 const OrderCard: React.FC<OrderCardProps> = ({
   id,
   orderProductType,

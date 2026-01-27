@@ -1,3 +1,35 @@
+/**
+ * @file SameBrandSection.tsx
+ * @description Same brand products section for the product detail page. Displays
+ *   a single product at a time from the same brand with previous/next navigation,
+ *   full cart and wishlist management, and buygroup expiry filtering.
+ *
+ * @props
+ *   - productDetails {any} - Current product details (used for brand matching
+ *     and exclusion from results).
+ *   - isLoading {boolean} - Loading state from parent.
+ *
+ * @behavior
+ *   - Fetches same-brand products via `useSameBrandProducts` query.
+ *   - Filters out expired buygroup products (dateClose + endTime in the past).
+ *   - Displays one product at a time with Previous/Next navigation buttons.
+ *   - Manages wishlist toggling via `useAddToWishList` / `useDeleteFromWishList`
+ *     mutations with cache invalidation.
+ *   - Manages cart via `useUpdateCartWithLogin` (authenticated) or
+ *     `useUpdateCartByDevice` (anonymous).
+ *   - Renders the current product as a `SameBrandProductCard`.
+ *   - Shows loading skeleton during data fetch.
+ *   - Hides the section entirely when no same-brand products are found.
+ *
+ * @dependencies
+ *   - useSameBrandProducts (TanStack Query) - Same brand products data.
+ *   - useMe (TanStack Query) - Current user info.
+ *   - useAddToWishList, useDeleteFromWishList (TanStack Query) - Wishlist mutations.
+ *   - useUpdateCartWithLogin, useUpdateCartByDevice (TanStack Query) - Cart mutations.
+ *   - SameBrandProductCard - Product card renderer.
+ *   - useAuth (AuthContext) - Currency, language direction.
+ *   - stripHTML, getOrCreateDeviceId (helpers) - Utilities.
+ */
 import React, { useEffect, useMemo, useState, useCallback } from "react";
 import SameBrandProductCard from "./SameBrandProductCard";
 import {

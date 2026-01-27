@@ -1,3 +1,28 @@
+/**
+ * @file UserRatingCard - User product review card with avatar, stars, and relative time.
+ * @description Renders a bordered card displaying a user's product review. Includes
+ * the reviewer's profile picture (with avatar placeholder fallback), star rating
+ * (1-5 filled/empty stars), review title, description text, and a relative
+ * timestamp (e.g., "2 days ago"). Buyers see an edit button to modify their review.
+ * Uses Intl.RelativeTimeFormat for human-readable date formatting.
+ *
+ * @props
+ *   - rating {number} - Star rating value (1-5).
+ *   - title {string} - Review title/heading.
+ *   - review {string} - Review body text.
+ *   - date {string} - ISO date string for when the review was created.
+ *   - name {string} - Reviewer display name.
+ *   - profilePicture {string} - URL to reviewer's profile image.
+ *   - isBuyer {boolean} - When true, shows an edit button for the review.
+ *   - onEdit {() => void} - Callback when the edit button is clicked.
+ *
+ * @dependencies
+ *   - next/image - Optimized image rendering for avatar and edit icon.
+ *   - react-icons/fa (FaStar, FaRegStar) - Filled and outline star icons.
+ *   - @/components/ui/button (Button) - Ghost button for edit action.
+ *   - @/public/images/no-user-image.png - Fallback avatar placeholder.
+ *   - @/public/images/edit-rfq.png - Edit pencil icon image.
+ */
 import Image from "next/image";
 import React, { useMemo } from "react";
 import { FaStar } from "react-icons/fa";

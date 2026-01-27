@@ -1,3 +1,11 @@
+/**
+ * @file CommanUtils.tsx
+ * @description Shared utility components for service feature date and time selection.
+ * Provides `DatePicker` (calendar popover with future-date-only constraint and
+ * dropdown year/month navigation) and `TimePicker` (select dropdown with predefined
+ * time options). Both components integrate with service feature state management
+ * via `updateFeatureField` callbacks and support RTL layout alignment.
+ */
 
 import {
     Popover,
@@ -11,6 +19,15 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { useState } from "react";
 import { timeOptions } from "@/components/shared/Forms/ControlledTimePicker";
+
+/**
+ * Date picker popover for selecting a service feature date.
+ * Displays the selected date formatted as "PPP" or a placeholder.
+ * Only allows selecting today or future dates. Closes on selection.
+ *
+ * @param props - Contains selectedFeature, updateFeatureField, feature, langDir, and t.
+ * @returns A popover trigger button with an inline calendar.
+ */
 export const DatePicker = ({
     selectedFeature,
     updateFeatureField,
@@ -67,6 +84,14 @@ export const DatePicker = ({
         </Popover>
     )
 }
+/**
+ * Time picker popover for selecting a service feature time.
+ * Displays the selected time or a placeholder. Uses a `<select>` dropdown
+ * with predefined time options from `ControlledTimePicker`. Closes on selection.
+ *
+ * @param props - Contains selectedFeature, updateFeatureField, feature, langDir, and t.
+ * @returns A popover trigger button with a time selection dropdown.
+ */
 export const TimePicker = ({
     selectedFeature,
     updateFeatureField,

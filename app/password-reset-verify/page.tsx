@@ -1,3 +1,20 @@
+/**
+ * @file Password Reset Verify Page - app/password-reset-verify/page.tsx
+ * @route /password-reset-verify
+ * @description OTP verification page for the password reset flow. Displays a 4-digit OTP
+ *   input (individual input boxes with auto-focus advance), a countdown timer (120s),
+ *   and a "Resend OTP" button. On successful OTP verification (usePasswordResetVerify),
+ *   stores a temporary token (PUREMOON_TEMP_TOKEN_KEY cookie) and redirects to
+ *   /reset-password. Email is retrieved from sessionStorage (set during /forget-password).
+ * @authentication Public page; part of the forgot-password flow.
+ * @key_components Form (react-hook-form), Input (OTP digits), Button, LoaderWithMessage,
+ *   Image (background)
+ * @data_fetching
+ *   - usePasswordResetVerify mutation for OTP verification
+ *   - useResendOtp / useForgotPassword mutations for OTP resend
+ * @state_management Local state for otp array, countdown timer (count), refs for input focus;
+ *   sessionStorage for email persistence across the forgot-password flow.
+ */
 "use client";
 import React, {
   useCallback,

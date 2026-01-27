@@ -1,3 +1,26 @@
+/**
+ * @file DynamicFormViewSection.tsx
+ * @description Renders dynamic forms that are linked to a product's category.
+ *   Iterates over a list of form definitions and renders each one using the
+ *   shared DynamicForm component. Shows "no form found" when no forms are
+ *   available for the current category.
+ *
+ * @props
+ *   - dynamicFormList {any} - Array of dynamic form objects, each containing
+ *     categoryId, formId, formIdDetail (form definition), status, and timestamps.
+ *
+ * @behavior
+ *   - Maps over the `dynamicFormList` array and renders a `DynamicForm` component
+ *     for each entry.
+ *   - Displays a centered "no form found" message when the list is empty.
+ *   - Each form entry includes metadata like categoryId, formId, status, and
+ *     the full form definition in formIdDetail.
+ *
+ * @dependencies
+ *   - DynamicForm (shared component) - Renders individual dynamic form instances.
+ *   - useAuth (AuthContext) - Language direction for RTL support.
+ *   - useTranslations (next-intl) - i18n translations.
+ */
 import DynamicForm from "@/components/shared/DynamicForm";
 import { useAuth } from "@/context/AuthContext";
 import { useTranslations } from "next-intl";

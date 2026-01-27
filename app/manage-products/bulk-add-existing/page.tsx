@@ -1,3 +1,23 @@
+/**
+ * @file Bulk Add Existing Products Page - app/manage-products/bulk-add-existing/page.tsx
+ * @route /manage-products/bulk-add-existing
+ * @description Allows sellers to search existing marketplace products (useExistingProductById)
+ *   and bulk-add them to their own catalog. Displays a search interface, product preview
+ *   cards with images, and a "Selected Products" list with remove and "Add All" actions.
+ *   Creates products via useCreateProduct mutation with auto-generated SKU. Wrapped with
+ *   withActiveUserGuard HOC.
+ * @authentication Required; checks PUREMOON_TOKEN_KEY cookie.
+ * @key_components Input (search), Button, Checkbox, Image, Label, ArrowLeft/Plus/Trash2/Eye
+ *   (lucide icons), withActiveUserGuard (HOC)
+ * @data_fetching
+ *   - useExistingProductById for product search/lookup
+ *   - useCreateProduct mutation for adding products to catalog
+ *   - useUploadMultipleFile for image uploads
+ *   - useTags for tag data
+ *   - useMe for user context
+ * @state_management Local state for selectedProducts, searchTerm, isProcessing;
+ *   useSearchParams for query context.
+ */
 "use client";
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";

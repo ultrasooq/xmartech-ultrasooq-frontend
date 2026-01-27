@@ -1,8 +1,17 @@
+/**
+ * @file DealsCard.tsx
+ * @description Product deal card used in the home page "Deals" section.
+ * Displays a product image, discount badge, star rating, product name,
+ * and pricing with original/discounted price. Uses the auth context
+ * to display the correct currency symbol.
+ */
+
 import React from "react";
 import Image from "next/image";
 import StarIcon from "@/public/images/star.png";
 import { useAuth } from "@/context/AuthContext";
 
+/** Props for the DealsCard component. */
 type DealsCardProps = {
   item: any;
 };

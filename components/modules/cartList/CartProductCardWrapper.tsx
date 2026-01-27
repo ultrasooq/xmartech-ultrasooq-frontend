@@ -7,6 +7,15 @@ import { useCurrentAccount } from "@/apis/queries/auth.queries";
 import { useAuth } from "@/context/AuthContext";
 import { CartItem } from "@/utils/types/cart.types";
 
+/**
+ * Props for the {@link CartProductCardWrapper} component.
+ *
+ * @property item            - The cart item object.
+ * @property onRemove        - Callback to remove the item from the cart.
+ * @property onWishlist      - Callback to add the product to the wishlist.
+ * @property haveAccessToken - Whether the user is authenticated.
+ * @property relatedCart     - Optional related cart data.
+ */
 type CartProductCardWrapperProps = {
   item: CartItem;
   onRemove: (cartId: number) => void;
@@ -15,6 +24,18 @@ type CartProductCardWrapperProps = {
   relatedCart?: any;
 };
 
+/**
+ * Wrapper component that fetches product and category data for a single
+ * cart item, then passes the enriched data (consumer type, discount
+ * info, category connections) to the presentational {@link ProductCard}.
+ *
+ * This separation allows the product card to receive pre-resolved
+ * discount and category matching data, supporting the marketplace
+ * discount matrix across different trade roles.
+ *
+ * @param props - {@link CartProductCardWrapperProps}
+ * @returns A {@link ProductCard} with enriched product/category data.
+ */
 const CartProductCardWrapper: React.FC<CartProductCardWrapperProps> = ({
   item,
   onRemove,

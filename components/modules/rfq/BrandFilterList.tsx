@@ -1,3 +1,11 @@
+/**
+ * @file BrandFilterList.tsx
+ * @description Brand filter accordion for the RFQ product listing sidebar. Fetches
+ * brands via the `useBrands` query with debounced search, renders checkboxes for each
+ * brand, and supports select-all toggling. Notifies the parent of selected brand IDs
+ * via the `onSelectBrands` callback.
+ */
+
 import React, { useState, useMemo, useEffect } from "react";
 import {
   Accordion,
@@ -13,12 +21,21 @@ import { debounce } from "lodash";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 
+/** Props for the BrandFilterList accordion component. */
 type BrandFilterListTypes = {
   selectAllBrands?: boolean;
   selectedBrandsCount?: number;
   onSelectBrands?: (brandIds: number[]) => void;
 };
 
+/**
+ * Brand filter accordion that provides searchable, multi-select brand checkboxes.
+ * Uses lodash debounce (1s) for search input, fetches matching brands from API,
+ * and supports external select-all / deselect-all via `selectAllBrands` prop.
+ *
+ * @param props - {@link BrandFilterListTypes}
+ * @returns An accordion panel with search input and brand checkboxes.
+ */
 const BrandFilterList: React.FC<BrandFilterListTypes> = ({
   selectAllBrands = false,
   selectedBrandsCount,

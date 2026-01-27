@@ -1,3 +1,32 @@
+/**
+ * @file BranchSection.tsx
+ * @description Collapsible branch details card for the owner's company profile page.
+ *   Displays a single branch's address, contact info, working hours, branch images,
+ *   and category tags. Includes an edit link and expand/collapse toggle.
+ *
+ * @props
+ *   - branchDetails {any} - Branch object containing branchName, branchType,
+ *     address, city, state, country, zipCode, workingDays, startTime, endTime,
+ *     phoneNumber, email, branchPicture array, and userBranchCategory_category.
+ *
+ * @behavior
+ *   - Renders a card with branch name and type (Main Branch / Sub Branch) header.
+ *   - Expand/collapse toggle (ChevronDown/Up icons) controls visibility of details.
+ *   - Displays: address fields, working days (parsed from JSON), working hours
+ *     with AM/PM formatting, phone, email.
+ *   - Shows branch pictures in a grid.
+ *   - Renders categories via `ViewMultiTagSection` component.
+ *   - Edit icon links to `/profile` for branch editing.
+ *   - Memoizes parsed working days via `parsedDays` helper.
+ *
+ * @dependencies
+ *   - parsedDays, getAmPm (helpers) - Working days parsing and time formatting.
+ *   - ViewMultiTagSection - Category tag display component.
+ *   - cn (utility) - Conditional class name merging.
+ *   - ChevronDownIcon, ChevronUpIcon (Radix) - Toggle icons.
+ *   - useAuth (AuthContext) - Language direction.
+ *   - useTranslations (next-intl) - i18n translations.
+ */
 import React, { useMemo, useState } from "react";
 import { getAmPm, parsedDays } from "@/utils/helper";
 import Image from "next/image";

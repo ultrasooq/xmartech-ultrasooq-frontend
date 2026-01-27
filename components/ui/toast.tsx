@@ -1,3 +1,27 @@
+/**
+ * @file Toast - Shadcn UI toast notification sub-components.
+ * @description Provides the building blocks for toast notifications: a viewport
+ * (fixed-position container), toast root with swipe-to-dismiss support,
+ * action button, close button, title, and description. Includes custom
+ * variants (danger, success, info) in addition to the standard Shadcn variants.
+ *
+ * @exports ToastProvider - Provider wrapping all toast instances.
+ * @exports ToastViewport - Fixed-position container for toasts (bottom-right on SM+).
+ * @exports Toast - Individual toast root with variant-based styling and swipe gestures.
+ * @exports ToastAction - Action button within a toast.
+ * @exports ToastClose - Close button with X icon.
+ * @exports ToastTitle - Bold title text.
+ * @exports ToastDescription - Body text content.
+ * @exports ToastProps, ToastActionElement - TypeScript type exports.
+ *
+ * @variants "default" | "destructive" | "danger" | "success" | "info"
+ *
+ * @dependencies
+ *   - @radix-ui/react-toast - Accessible toast primitive with swipe support.
+ *   - @radix-ui/react-icons (Cross2Icon) - Close icon.
+ *   - class-variance-authority (cva) - Variant-based class generation.
+ *   - @/lib/utils (cn) - Tailwind class merging utility.
+ */
 import * as React from "react";
 import { Cross2Icon } from "@radix-ui/react-icons";
 import * as ToastPrimitives from "@radix-ui/react-toast";
@@ -5,6 +29,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
 
+/** Toast provider wrapping all toast instances. */
 const ToastProvider = ToastPrimitives.Provider;
 
 const ToastViewport = React.forwardRef<

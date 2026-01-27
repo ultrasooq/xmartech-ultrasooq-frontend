@@ -1,3 +1,17 @@
+/**
+ * @file NotificationBell - Notification bell icon with unread count badge.
+ * @description Renders a bell icon button that opens a NotificationDropdown popover.
+ * Displays an unread notification count badge (capped at "99+") and plays a bounce
+ * animation for 3 seconds when a new notification arrives. Hidden when no user is
+ * logged in. Uses NotificationsContext for unread count and new notification events.
+ *
+ * @dependencies
+ *   - @/components/ui/popover (Popover, PopoverContent, PopoverTrigger) - Dropdown container.
+ *   - @/context/NotificationContext (useNotificationsContext) - Notification state.
+ *   - ./NotificationDropdown - Notification list dropdown content.
+ *   - @/context/AuthContext (useAuth) - Current user check.
+ *   - @/lib/utils (cn) - Tailwind class merging utility.
+ */
 "use client";
 
 import React, { useState, useEffect } from "react";

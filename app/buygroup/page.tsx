@@ -1,3 +1,25 @@
+/**
+ * @file Buy Group Page - app/buygroup/page.tsx
+ * @route /buygroup (also accepts query params: ?brandIds, ?sort, ?menuId, ?categoryId, etc.)
+ * @description Buy Group product browsing page. Displays group-buying products
+ *   (useAllBuyGroupProducts) with sidebar filters (brand checkboxes, price range slider
+ *   via ReactSlider, search input), grid/list view toggle (ProductCard / ProductTable),
+ *   sort dropdown, and pagination. Supports add-to-cart with variant modal
+ *   (useProductVariant) and wishlist toggling. Includes category filter via useCategory.
+ * @authentication Optional; supports guest (device-based) and authenticated flows.
+ * @key_components ProductCard, ProductTable, GridIcon, ListIcon, FilterMenuIcon,
+ *   Accordion (filter sections), ReactSlider, Select, Input, Pagination, Footer
+ * @data_fetching
+ *   - useAllBuyGroupProducts for buy-group product listings
+ *   - useBrands for brand filter options
+ *   - useCategory for category tree filter
+ *   - useProductVariant for variant selection modal
+ *   - useCartListByDevice / useCartListByUserId for cart state
+ *   - useAddToWishList / useDeleteFromWishList for wishlist
+ *   - useMe for user identity
+ * @state_management Local state for filters (brandIds, priceRange, sort, search),
+ *   pagination (page, limit), view mode (gridView), variant modal state.
+ */
 "use client";
 import { useBrands } from "@/apis/queries/masters.queries";
 import {

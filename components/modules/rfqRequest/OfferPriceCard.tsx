@@ -1,3 +1,17 @@
+/**
+ * @file OfferPriceCard.tsx
+ * @description Compact 6-column grid row component for displaying and editing
+ * offer prices within the RFQ negotiation workflow. Columns: product (image + name),
+ * product type (SAME/SIMILAR), delivery date, quantity, editable price, and address.
+ *
+ * Supports a price negotiation workflow:
+ * - Vendors can always edit prices.
+ * - Buyers can only edit after first vendor approval (`hasFirstVendorApproval`).
+ * - Shows budget range (offerPriceFrom - offerPriceTo) when available.
+ * - Displays PENDING price request status with requested price, status, and date.
+ * - Shows APPROVED status indicator and "waiting for vendor offer" for buyers.
+ */
+
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import moment from "moment";
@@ -6,6 +20,7 @@ import { capitalizeWord, formatDate, formatPrice } from "@/utils/helper";
 import { useAuth } from "@/context/AuthContext";
 import { useTranslations } from "next-intl";
 
+/** Props for the OfferPriceCard row component. */
 type OfferPriceCardProps = {
   offerPrice: string;
   note: string;
@@ -24,6 +39,15 @@ type OfferPriceCardProps = {
   hasFirstVendorApproval?: boolean;
 };
 
+/**
+ * Renders a single offer price row in a 6-column grid layout.
+ * Manages inline editing of the offer price with save/cancel controls.
+ * Enforces role-based editing restrictions: buyers must wait for vendor's
+ * first approval before they can counter-offer.
+ *
+ * @param props - {@link OfferPriceCardProps}
+ * @returns A compact row with product info, price editor, and negotiation status.
+ */
 const OfferPriceCard: React.FC<OfferPriceCardProps> = ({
   offerPrice,
   note,

@@ -7,6 +7,23 @@ import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 
+/**
+ * Props for the buyer-side {@link OtherItemCard} component.
+ *
+ * @property id                 - Order product entry ID.
+ * @property orderProductType    - `"SERVICE"` or product type.
+ * @property productName         - Product display name.
+ * @property offerPrice          - Price string.
+ * @property orderQuantity       - Quantity ordered.
+ * @property variant             - Variant details.
+ * @property serviceFeature      - Service feature data.
+ * @property productImages       - Array of product image objects.
+ * @property sellerName          - Seller's display name.
+ * @property orderNo             - Human-readable order number.
+ * @property orderProductDate    - Order placement date string.
+ * @property orderProductStatus  - Current delivery status.
+ * @property updatedAt           - Last-updated timestamp.
+ */
 type OtherItemCardProps = {
   id: number;
   orderProductType?: string;
@@ -23,6 +40,14 @@ type OtherItemCardProps = {
   updatedAt: string;
 };
 
+/**
+ * Displays "Other Items in this order" card on the buyer's order
+ * details page. Shows product image, name, price, status, and date.
+ * Links to the order detail page at `/my-orders/<id>`.
+ *
+ * @param props - {@link OtherItemCardProps}
+ * @returns An order item card for sibling items in the same order.
+ */
 const OtherItemCard: React.FC<OtherItemCardProps> = ({
   id,
   orderProductType,

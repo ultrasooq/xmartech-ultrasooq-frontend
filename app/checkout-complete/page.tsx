@@ -1,3 +1,16 @@
+/**
+ * @file Checkout Complete Page - app/checkout-complete/page.tsx
+ * @route /checkout-complete?success=<true|false>&id=<transactionId>&order=<orderId>
+ * @description Order completion confirmation page. Reads query params (success, id, order)
+ *   to display either a success state (CheckCircle2 icon, green theme, order/transaction
+ *   IDs with copy-to-clipboard) or a failure state (XCircle icon, red theme, retry options).
+ *   Provides navigation links to "View My Orders" (/my-orders), "Continue Shopping" (/home),
+ *   and for guests, a link to complete payment (/complete-order/:orderId).
+ * @authentication Optional; checks PUREMOON_TOKEN_KEY cookie for auth state.
+ * @key_components Button, Link, CheckCircle2/XCircle (lucide), Copy (lucide), Image
+ * @data_fetching None; reads all data from URL search params.
+ * @state_management Local state for haveAccessToken, copiedId (clipboard feedback).
+ */
 "use client";
 import React, { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";

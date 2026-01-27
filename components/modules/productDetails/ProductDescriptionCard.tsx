@@ -1,3 +1,51 @@
+/**
+ * @file ProductDescriptionCard.tsx
+ * @description The largest and most comprehensive component in the product detail
+ *   page (~989 lines). Displays the full product description including pricing
+ *   with complex discount logic, variant selector, quantity controls, action
+ *   buttons, buygroup countdown timer, product metadata, and an "Other Sellers"
+ *   drawer.
+ *
+ * @props
+ *   - productDetails {any} - Complete product details object.
+ *   - isLoading {boolean} - Whether product data is loading.
+ *   - hasAccessToken {boolean} - Whether the user is authenticated.
+ *   - onAddToCart {(variant?) => void} - Add-to-cart callback.
+ *   - onBuyNow {(variant?) => void} - Buy-now callback.
+ *
+ * @behavior
+ *   - Complex discount logic via `getApplicableDiscount`: determines correct
+ *     discount (consumer vs vendor) based on trade role, category connection
+ *     (via `checkCategoryConnection`), and consumer type.
+ *   - Variant selector: fetches product variants via `useProductVariant`, renders
+ *     variant type/value buttons, and updates the selected variant combination.
+ *   - Quantity controls: plus/minus buttons with min (minSaleQuantity) and max
+ *     (stock or maxSaleQuantity) validation, with toast warnings.
+ *   - Buygroup countdown timer: displays live countdown for BUYGROUP sell type
+ *     products with days:hours:minutes:seconds format, "Not Started" or "Expired"
+ *     states.
+ *   - Own-product detection: hides cart/buy buttons when the current user owns
+ *     the product (user.id === product.adminId).
+ *   - "Other Sellers" drawer: opens a side drawer with `OtherSellerSection`
+ *     showing alternative sellers for the same product.
+ *   - "Message Seller" link: navigates to product chat page.
+ *   - Product details: SKU, categories (linked), tags, specifications.
+ *   - Security badges: secure payment and 24hr support icons.
+ *   - CompactVendorInfo: inline vendor info display.
+ *   - Star rating display from product reviews.
+ *
+ * @dependencies
+ *   - useProductVariant (TanStack Query) - Product variant data.
+ *   - useVendorBusinessCategories (hook) - Vendor's business category IDs.
+ *   - checkCategoryConnection (utility) - Category hierarchy matching.
+ *   - useCategory (TanStack Query) - Category data.
+ *   - useAuth (AuthContext) - User, currency, language direction.
+ *   - CompactVendorInfo - Inline vendor display.
+ *   - OtherSellerSection (trending module) - Other sellers drawer content.
+ *   - Drawer (shadcn) - Side drawer for other sellers.
+ *   - useTranslations (next-intl) - i18n translations.
+ *   - toast (shadcn) - Warning notifications for quantity limits.
+ */
 import React, { useEffect, useMemo, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";

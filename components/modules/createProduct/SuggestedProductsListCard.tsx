@@ -1,3 +1,21 @@
+/**
+ * @file SuggestedProductsListCard.tsx
+ * @description A static placeholder/mockup component displaying a "Product Found"
+ *   card with hardcoded Lorem Ipsum content and a placeholder iPhone image. This
+ *   component appears to be a design-time stub that has not yet been connected
+ *   to dynamic data.
+ *
+ * @props None
+ *
+ * @behavior
+ *   - Renders a fixed card layout with a "Product Found" heading, placeholder
+ *     description text, a product image (static iPhone), "Remove" link, and an
+ *     export icon button.
+ *   - No dynamic data, event handlers, or API integration -- purely visual.
+ *
+ * @dependencies
+ *   - Static image imports (iphone.png, export.png).
+ */
 import React from "react";
 import IphoneIcon from "@/public/images/iphone.png";
 import ExportIcon from "@/public/images/export.png";

@@ -1,3 +1,21 @@
+/**
+ * @file ViewMultiTagSection.tsx
+ * @description Category tag display section used within branch detail cards.
+ *   Renders branch category names as styled badge elements in a flex-wrap layout.
+ *
+ * @props
+ *   - categoryDetails {any} - Array of branch category objects, each containing
+ *     `id` and `userBranchCategory_category.categoryName` for display.
+ *
+ * @behavior
+ *   - Renders a "Categories" heading and maps over `categoryDetails` array.
+ *   - Each category is displayed as a gray badge with the category name.
+ *   - Supports RTL layout via `langDir` from AuthContext.
+ *
+ * @dependencies
+ *   - useAuth (AuthContext) - Language direction.
+ *   - useTranslations (next-intl) - i18n translations.
+ */
 import { useAuth } from "@/context/AuthContext";
 import { useTranslations } from "next-intl";
 import React from "react";

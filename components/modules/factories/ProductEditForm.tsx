@@ -29,6 +29,10 @@ import { IoCloseSharp } from "react-icons/io5";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 
+/**
+ * Zod sub-schema for a single product-price item's editable fields.
+ * All fields are optional since they may not all be present during edit.
+ */
 const baseProductPriceItemSchema = z.object({
   consumerType: z.string().trim().optional(),
   sellType: z.string().trim().optional(),
@@ -46,12 +50,28 @@ const baseProductPriceItemSchema = z.object({
 });
 
 
+/**
+ * Props for the {@link ProductEditForm} dialog component.
+ *
+ * @property onClose                - Callback to close the edit dialog.
+ * @property selectedProductId      - The `productPriceId` of the product
+ *   variant being edited.
+ * @property onProductUpdateSuccess - Callback invoked after a successful
+ *   product update so the parent can refetch data.
+ */
 type EditFormProps = {
   onClose: () => void;
   selectedProductId?: number;
   onProductUpdateSuccess: () => void;
 };
 
+/**
+ * Builds the Zod validation schema for the product edit form.
+ * Uses the translation function `t` to generate localised error messages.
+ *
+ * @param t - Translation function from `next-intl`.
+ * @returns A Zod object schema for the edit form fields.
+ */
 const formSchema = (t: any) => {
   return z.object({
     productName: z
@@ -98,6 +118,7 @@ const formSchema = (t: any) => {
   });
 };
 
+/** Default (empty) values for the edit form before product data loads. */
 const defaultValues = {
   productName: "",
   productImagesList: undefined,
@@ -126,6 +147,23 @@ const defaultValues = {
   ],
 };
 
+/**
+ * Modal-based product edit form used within the factories feature.
+ *
+ * Fetches the existing product data via
+ * {@link useOneProductByProductCondition} using route params (`id`)
+ * and the provided `selectedProductId`. Pre-populates the form with
+ * product name, images (supporting both image and video uploads),
+ * short descriptions, specifications, and rich-text description.
+ *
+ * On submit, uploads any new files via {@link useUploadMultipleFile},
+ * categorises each upload as image or video by file extension, and
+ * calls {@link useUpdateProduct} with the assembled payload. Invokes
+ * `onProductUpdateSuccess` on success to let the parent refetch.
+ *
+ * @param props - {@link EditFormProps}
+ * @returns A dialog section containing the product edit form.
+ */
 const ProductEditForm: React.FC<EditFormProps> = ({
   onClose,
   selectedProductId,
@@ -173,6 +211,13 @@ const ProductEditForm: React.FC<EditFormProps> = ({
     );
   }, [tagsQuery?.data]);
 
+  /**
+   * Uploads an array of new file entries to the server via the
+   * multi-file upload mutation.
+   *
+   * @param list - Array of `{path: File, id: string}` objects.
+   * @returns An array of uploaded file URLs, or `undefined` on failure.
+   */
   const handleUploadedFile = async (list: any[]) => {
     if (list?.length) {
       const formData = new FormData();
@@ -188,6 +233,14 @@ const ProductEditForm: React.FC<EditFormProps> = ({
     }
   };
 
+  /**
+   * Form submission handler. Separates new file uploads from
+   * previously-uploaded URLs, categorises each as image or video by
+   * extension, uploads new files, assembles the final payload, and
+   * calls the update product mutation.
+   *
+   * @param formData - Validated form data from react-hook-form.
+   */
   const onSubmit = async (formData: any) => {
     const updatedFormData = {
       ...formData,

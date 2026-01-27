@@ -1,3 +1,12 @@
+/**
+ * @file Shipping.tsx
+ * @description Modal dialog component for selecting a shipping service during checkout.
+ * Lists shipping services offered by the product seller ("own") or by third-party
+ * logistics providers ("other"). Supports pagination and displays service name,
+ * price, and a select action button. Uses cascading city-based filtering
+ * (fromCityId -> toCityId) to narrow results to applicable shipping routes.
+ */
+
 import React, { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
@@ -7,6 +16,7 @@ import { IoCloseSharp } from "react-icons/io5";
 import { useGetServicesByOtherSeller, useGetServicesBySeller } from "@/apis/queries/services.queries";
 import Pagination from "@/components/shared/Pagination";
 
+/** Props for the Shipping modal component. */
 type ShippingProps = {
     sellerId?: number;
     type: "own" | "other";
@@ -16,6 +26,15 @@ type ShippingProps = {
     onSelect: (sellerId: number, item: any) => void;
 };
 
+/**
+ * Shipping component that renders a modal table of available shipping services.
+ * Conditionally queries either the seller's own services or third-party services
+ * based on the `type` prop. Displays a paginated list of services with name,
+ * cost, and a select button that invokes `onSelect` with the chosen service.
+ *
+ * @param props - {@link ShippingProps}
+ * @returns A modal dialog body with shipping service table and pagination controls.
+ */
 const Shipping: React.FC<ShippingProps> = ({
     sellerId,
     type,

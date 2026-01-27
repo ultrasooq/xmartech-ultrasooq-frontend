@@ -1,3 +1,17 @@
+/**
+ * @file Forget Password Page - app/forget-password/page.tsx
+ * @route /forget-password
+ * @description First step of the password reset flow. Provides an email input field with
+ *   Zod validation (lowercase email enforcement via EMAIL_REGEX_LOWERCASE). On submit,
+ *   calls useForgotPassword mutation to send an OTP to the email, stores the email in
+ *   sessionStorage, and redirects to /password-reset-verify for OTP entry.
+ * @authentication Public page; initiates the forgot-password flow.
+ * @key_components Form (react-hook-form + Zod), ControlledTextInput, LoaderWithMessage,
+ *   Button, Image (background)
+ * @data_fetching
+ *   - useForgotPassword mutation to trigger OTP email
+ * @state_management react-hook-form for email input; sessionStorage for email persistence.
+ */
 "use client";
 import React from "react";
 import { useForm } from "react-hook-form";

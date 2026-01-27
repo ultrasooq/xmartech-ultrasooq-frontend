@@ -1,3 +1,23 @@
+/**
+ * @file Login Page - app/login/page.tsx
+ * @route /login
+ * @description User authentication page. Provides email/password login with Zod validation,
+ *   a "Remember Me" checkbox (7-day vs 1-day cookie expiry), Google OAuth via next-auth,
+ *   and links to /register and /forget-password. On successful login, sets PUREMOON_TOKEN_KEY
+ *   cookie, updates AuthContext (setUser, setPermissions), merges device-based cart
+ *   (useUpdateUserCartByDeviceId), and redirects to /home. Handles inactive accounts by
+ *   redirecting to /otp-verify.
+ * @authentication Public page; redirects authenticated users to /home upon successful login.
+ * @key_components Form (react-hook-form + shadcn), ControlledTextInput, LoaderWithMessage,
+ *   Checkbox, Button, Google sign-in button (next-auth signIn("google"))
+ * @data_fetching
+ *   - useLogin() mutation for manual login
+ *   - useSocialLogin() mutation for Google OAuth
+ *   - useUpdateUserCartByDeviceId() to merge guest cart into user account
+ *   - fetchUserPermissions() to load role-based permissions post-login
+ * @state_management AuthContext (setUser, setPermissions); local state for rememberMe,
+ *   isGoogleLoading; next-auth useSession for OAuth.
+ */
 "use client";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";

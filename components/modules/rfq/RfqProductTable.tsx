@@ -1,3 +1,11 @@
+/**
+ * @file RfqProductTable.tsx
+ * @description Table view of RFQ products. Displays each product's image, name,
+ * category, and brand in a responsive table layout. Uses the `TrendingProduct`
+ * type and validates image URLs before rendering. Contains commented-out SKU
+ * and price columns disabled due to type-R product pricing limitations.
+ */
+
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -15,10 +23,17 @@ import PlaceholderImage from "@/public/images/product-placeholder.png";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 
+/** Props for the RFQ product table component. */
 type ProducTableProps = {
   list: TrendingProduct[];
 };
 
+/**
+ * Renders a table of RFQ products with product image, name, category, and brand columns.
+ *
+ * @param props - {@link ProducTableProps}
+ * @returns A shadcn/ui Table wrapped in a Card displaying the RFQ product list.
+ */
 const RfqProductTable: React.FC<ProducTableProps> = ({ list }) => {
   const t = useTranslations();
   const { langDir } = useAuth();

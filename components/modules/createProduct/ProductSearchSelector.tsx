@@ -1,3 +1,34 @@
+/**
+ * @file ProductSearchSelector.tsx
+ * @description Searchable product grid for selecting a source product in the
+ *   dropship product creation workflow. Displays available products with search
+ *   functionality, debounced queries, and a visual selection state.
+ *
+ * @props
+ *   - onProductSelect {(product: any) => void} - Callback when a product card
+ *     is clicked to select it.
+ *   - selectedProduct {any} - The currently selected product object for
+ *     highlighting.
+ *
+ * @behavior
+ *   - Fetches available products via `useAvailableProductsForDropship` with
+ *     debounced search term (500ms delay).
+ *   - Displays products in a responsive grid (1-3 columns) with image, name,
+ *     plain text description (extracted from rich text HTML/JSON), price,
+ *     and location badge.
+ *   - Shows "All Products" by default; switches to search results when typing.
+ *   - Highlights the selected product card with a blue border and checkmark badge.
+ *   - Extracts plain text from rich text content (HTML tags stripped, Plate/Slate
+ *     JSON parsed) for product description display.
+ *   - Shows loading skeletons, empty state, and "no products found" messaging.
+ *   - Manages client-side hydration with `isClient` state.
+ *
+ * @dependencies
+ *   - useAvailableProductsForDropship (TanStack Query) - Fetches dropship-eligible products.
+ *   - useAuth (AuthContext) - Language direction.
+ *   - useTranslations (next-intl) - i18n translations.
+ *   - lucide-react (Search, Package, DollarSign, MapPin) - UI icons.
+ */
 "use client";
 import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";

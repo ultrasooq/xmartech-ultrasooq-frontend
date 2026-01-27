@@ -1,3 +1,29 @@
+/**
+ * @file ControlledTimePicker - React Hook Form integrated time picker with popover.
+ * @description Renders a time picker button that opens a Popover with a scrollable
+ * list of time options in 15-minute intervals (00:00 to 23:45). Displays times in
+ * 12-hour AM/PM format with the 24-hour value shown alongside. Selected time is
+ * highlighted in orange. Integrates with React Hook Form via Controller. Includes
+ * a Clock icon and supports RTL alignment.
+ *
+ * @exports default ControlledTimePicker - The form-integrated time picker.
+ * @exports timeOptions - Array of { value, label } time option objects.
+ *
+ * @props
+ *   - label {string} - Optional label text above the time picker.
+ *   - name {string} - Form field name for the selected time value (HH:MM format).
+ *
+ * @dependencies
+ *   - react-hook-form (useFormContext, Controller) - Form state management.
+ *   - @/components/ui/form (FormControl, FormItem, FormLabel, FormMessage) - Form primitives.
+ *   - @/components/ui/popover (Popover, PopoverContent, PopoverTrigger) - Dropdown popover.
+ *   - @/components/ui/button (Button) - Trigger button.
+ *   - @/components/ui/scroll-area (ScrollArea) - Scrollable time list.
+ *   - lucide-react (Clock) - Clock icon.
+ *   - @/lib/utils (cn) - Tailwind class merging utility.
+ *   - @/context/AuthContext (useAuth) - Language direction context.
+ *   - next-intl (useTranslations) - Internationalization.
+ */
 import React from "react";
 import { useFormContext, Controller } from "react-hook-form";
 import {

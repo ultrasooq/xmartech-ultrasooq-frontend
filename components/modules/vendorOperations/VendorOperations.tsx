@@ -4,6 +4,22 @@ import Operations from "@/components/modules/vendorOperations/Operations";
 import QuestionAndAnswers from "./QuestionAndComments";
 import ServiceQuestionAndAnswers from "./ServiceQuestionAndComments";
 
+/**
+ * Container component for the vendor operations page. Orchestrates
+ * three child panels:
+ *
+ * 1. **{@link Operations}** -- Left sidebar with operation tabs.
+ * 2. **{@link Products}** -- Middle panel listing the vendor's products
+ *    and services. Selecting one passes its data to the right panel.
+ * 3. **{@link QuestionAndAnswers}** or **{@link ServiceQuestionAndAnswers}**
+ *    -- Right panel showing the Q&A section for the selected product
+ *    or service, respectively.
+ *
+ * The component manages the selected operation, product/service, and
+ * product type (`"PRODUCT"` or `"SERVICE"`) as local state.
+ *
+ * @returns The full vendor operations three-panel layout.
+ */
 const VendorOperations = () => {
   const [selectedOperation, setSelectedOperation] = useState<string>(
     "questions_n_comments",

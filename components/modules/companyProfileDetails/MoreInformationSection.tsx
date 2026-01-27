@@ -1,3 +1,28 @@
+/**
+ * @file MoreInformationSection.tsx
+ * @description Company "More Information" section displayed on the owner's company
+ *   profile page. Shows year of establishment, number of employees, and the "About
+ *   Us" content rendered as rich text. Includes an edit link for profile editing.
+ *
+ * @props
+ *   - userDetails {any} - User profile object containing yearOfEstablishment,
+ *     numOfEmployees, aboutUs (rich text JSON/HTML string), and profilePicture.
+ *
+ * @behavior
+ *   - Renders labeled rows for year of establishment and number of employees.
+ *   - Parses `aboutUs` field as JSON (Plate/Slate rich text format) and renders
+ *     it using ControlledRichTextEditor in read-only mode within a React Hook Form.
+ *   - Falls back to ReactQuill rendering if aboutUs is HTML string format.
+ *   - Edit icon (link to /profile) visible for profile owners.
+ *   - Initializes a form with Zod schema for the aboutUs field.
+ *
+ * @dependencies
+ *   - ControlledRichTextEditor - Rich text display in read-only mode.
+ *   - ReactQuill (dynamic import, SSR disabled) - HTML rich text fallback.
+ *   - useForm, zodResolver (React Hook Form + Zod) - Form for rich text state.
+ *   - useAuth (AuthContext) - Language direction.
+ *   - useTranslations (next-intl) - i18n translations.
+ */
 import React, { useEffect, useMemo } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";

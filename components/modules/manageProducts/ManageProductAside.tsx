@@ -37,11 +37,32 @@ const customStyles = {
   }),
 };
 
+/**
+ * Props for the {@link ManageProductAside} sidebar component.
+ *
+ * @property isLoading     - When `true`, shows a loading indicator on
+ *   the submit button.
+ * @property prefilledData - Optional data object used to pre-fill the
+ *   bulk-edit form fields when a product card is selected.
+ */
 type ManageProductAsideProps = {
   isLoading?: boolean;
   prefilledData?: {[key: string]: any}
 };
 
+/**
+ * Sidebar form for bulk-editing product price/condition fields on the
+ * manage products page. Uses `react-hook-form` context from the parent
+ * to bind controlled select inputs for consumer type, sell type,
+ * product condition, and counter fields for stock, pricing, delivery,
+ * and quantity limits.
+ *
+ * Pre-fills form values from `prefilledData` when provided. Includes
+ * toggles for "Ask for Price" and "Ask for Stock" via switch components.
+ *
+ * @param props - {@link ManageProductAsideProps}
+ * @returns A sidebar form section with product management controls.
+ */
 const ManageProductAside: React.FC<ManageProductAsideProps> = ({
   isLoading,
   prefilledData

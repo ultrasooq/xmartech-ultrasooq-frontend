@@ -1,3 +1,25 @@
+/**
+ * @file Create / Edit Service Page - app/manage-services/create-service/page.tsx
+ * @route /manage-services/create-service (also ?edit=<serviceId> for editing)
+ * @description Service creation and editing form for sellers. Collects: service name,
+ *   category, tags, description/specifications (DescriptionAndSpecificationSection), images,
+ *   videos, pricing, location (country/state/city), availability schedule (weekdays, time
+ *   range via ControlledTimePicker), and address. Uses Zod validation. In edit mode,
+ *   pre-fills from useServiceById. On submit, uploads media (useUploadMultipleFile), then
+ *   calls useCreateService or useUpdateService, and redirects to /manage-services.
+ * @authentication Required; seller access expected.
+ * @key_components BasicInformationSection (service variant), DescriptionAndSpecificationSection,
+ *   Form (react-hook-form + Zod), ControlledTimePicker, ReactSelect, LoaderWithMessage,
+ *   Footer, Button, Label
+ * @data_fetching
+ *   - useServiceById for edit-mode pre-fill
+ *   - useCreateService / useUpdateService mutations
+ *   - useTags for tag autocomplete
+ *   - useUploadMultipleFile for media uploads
+ *   - useAllCountries / useFetchStatesByCountry / useFetchCitiesByState for location selects
+ * @state_management react-hook-form with useWatch for reactive fields;
+ *   local state for image/video files, edit mode; useSearchParams for edit ID.
+ */
 "use client";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";

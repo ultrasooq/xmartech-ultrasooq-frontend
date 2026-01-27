@@ -1,3 +1,22 @@
+/**
+ * @file Popover - Shadcn UI popover component.
+ * @description Floating content panel triggered by user interaction (click).
+ * Renders via a portal with animated entrance/exit and configurable alignment.
+ *
+ * @exports Popover - Root state manager (re-export of Radix Popover.Root).
+ * @exports PopoverTrigger - Element that opens the popover on interaction.
+ * @exports PopoverAnchor - Optional anchor element for positioning.
+ * @exports PopoverContent - The floating panel with border, shadow, and animations.
+ *
+ * @props PopoverContent accepts:
+ *   - align {"start" | "center" | "end"} - Horizontal alignment (default: "center").
+ *   - sideOffset {number} - Offset from the trigger element (default: 4).
+ *   - className {string} - Additional CSS classes.
+ *
+ * @dependencies
+ *   - @radix-ui/react-popover - Accessible popover primitive.
+ *   - @/lib/utils (cn) - Tailwind class merging utility.
+ */
 "use client"
 
 import * as React from "react"
@@ -5,6 +24,7 @@ import * as PopoverPrimitive from "@radix-ui/react-popover"
 
 import { cn } from "@/lib/utils"
 
+/** Popover root managing open/close state. */
 const Popover = PopoverPrimitive.Root
 
 const PopoverTrigger = PopoverPrimitive.Trigger

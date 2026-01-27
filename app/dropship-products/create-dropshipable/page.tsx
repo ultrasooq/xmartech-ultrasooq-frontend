@@ -1,3 +1,20 @@
+/**
+ * @file Create Dropshipable Product Page - app/dropship-products/create-dropshipable/page.tsx
+ * @route /dropship-products/create-dropshipable (also accepts ?productId=<id> query param)
+ * @description Search-and-select page for creating a dropshipable version of an existing
+ *   product. Provides a search input (useExistingProduct) to find existing products, displays
+ *   results as cards with product details, and allows viewing product info in a modal.
+ *   Selecting a product copies it as a dropshipable product (redirects to /product?copy=<id>
+ *   flow). Wrapped with withActiveUserGuard HOC.
+ * @authentication Required; uses authenticated product search queries.
+ * @key_components Input (search), Button, Dialog (product view modal), Image, Footer,
+ *   withActiveUserGuard (HOC), Search/Plus/Copy/ArrowLeft/Eye/X/Truck (lucide icons)
+ * @data_fetching
+ *   - useExistingProduct({ page, limit, term }) for product search
+ *   - useMe for user context
+ * @state_management Local state for searchTerm, searchResults, isSearching, viewProduct modal,
+ *   shouldSearch flag, isRedirecting; useSearchParams for productId.
+ */
 "use client";
 import React, { useEffect, useState, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";

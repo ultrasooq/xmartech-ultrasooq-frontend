@@ -1,3 +1,28 @@
+/**
+ * @file Calendar - Shadcn UI calendar/date picker component.
+ * @description Renders a month-view calendar using react-day-picker with custom
+ * dropdown navigation for month/year selection. Supports date range selection,
+ * outside days display, and all DayPicker props.
+ *
+ * @props Accepts all react-day-picker DayPicker props including:
+ *   - showOutsideDays {boolean} - Whether to show days outside current month (default: true).
+ *   - selected {Date | Date[] | DateRange} - Currently selected date(s).
+ *   - onSelect {(date) => void} - Selection change handler.
+ *   - className {string} - Additional CSS classes.
+ *   - classNames {object} - Override individual classNames for calendar parts.
+ *   - components {object} - Override individual sub-components.
+ *
+ * @behavior Custom dropdown components for month/year navigation use the Select
+ * and ScrollArea UI primitives for a styled, scrollable picker.
+ *
+ * @dependencies
+ *   - react-day-picker (DayPicker) - Calendar rendering engine.
+ *   - @/components/ui/button (buttonVariants) - Button styling for day cells.
+ *   - @/components/ui/scroll-area (ScrollArea) - Scrollable dropdown content.
+ *   - @/components/ui/select - Select dropdown for month/year navigation.
+ *   - lucide-react (ChevronLeft, ChevronRight) - Navigation arrow icons.
+ *   - @/lib/utils (cn) - Tailwind class merging utility.
+ */
 "use client";
 
 import * as React from "react";
@@ -16,6 +41,7 @@ import { DayPicker, DropdownProps } from "react-day-picker";
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>;
 
+/** Calendar component with styled day grid and dropdown month/year navigation. */
 function Calendar({
   className,
   classNames,

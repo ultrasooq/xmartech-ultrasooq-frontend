@@ -1,3 +1,18 @@
+/**
+ * @file Change Password Page - app/my-settings/change-password/page.tsx
+ * @route /my-settings/change-password
+ * @description Authenticated password change form. Requires current password, new password,
+ *   and confirm password with Zod validation (min 8 chars, matching passwords via superRefine).
+ *   On success, calls useChangePassword mutation, shows PasswordChangeSuccessContent dialog,
+ *   deletes the auth cookie (PUREMOON_TOKEN_KEY), and redirects to /login after a 3-second
+ *   delay (forces re-authentication with new password).
+ * @authentication Required; part of the authenticated settings flow.
+ * @key_components Form (react-hook-form + Zod), Input (password fields),
+ *   PasswordChangeSuccessContent (success dialog), Button
+ * @data_fetching
+ *   - useChangePassword mutation for password update
+ * @state_management Local state for success dialog visibility; cookie deletion on success.
+ */
 "use client";
 import { useChangePassword } from "@/apis/queries/auth.queries";
 import PasswordChangeSuccessContent from "@/components/shared/PasswordChangeSuccessContent";

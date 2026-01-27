@@ -1,3 +1,25 @@
+/**
+ * @file Dialog - Shadcn UI dialog (modal) component.
+ * @description Provides composable modal dialog primitives with an overlay backdrop,
+ * centered content panel, and animated entrance/exit transitions.
+ * The close button is commented out by default for custom close handling.
+ *
+ * @exports Dialog - Root state manager (Radix Dialog.Root).
+ * @exports DialogTrigger - Element that opens the dialog.
+ * @exports DialogPortal - Portal for rendering outside the DOM tree.
+ * @exports DialogClose - Element that closes the dialog.
+ * @exports DialogOverlay - Semi-transparent backdrop with fade animation.
+ * @exports DialogContent - Centered modal panel with zoom/slide animations.
+ * @exports DialogHeader - Flex-column header section.
+ * @exports DialogFooter - Footer section with responsive flex layout.
+ * @exports DialogTitle - Title text element.
+ * @exports DialogDescription - Descriptive muted text element.
+ *
+ * @dependencies
+ *   - @radix-ui/react-dialog - Accessible dialog primitive.
+ *   - @radix-ui/react-icons (Cross2Icon) - Close button icon (currently commented out).
+ *   - @/lib/utils (cn) - Tailwind class merging utility.
+ */
 "use client"
 
 import * as React from "react"
@@ -6,6 +28,7 @@ import { Cross2Icon } from "@radix-ui/react-icons"
 
 import { cn } from "@/lib/utils"
 
+/** Dialog root managing open/close state. */
 const Dialog = DialogPrimitive.Root
 
 const DialogTrigger = DialogPrimitive.Trigger

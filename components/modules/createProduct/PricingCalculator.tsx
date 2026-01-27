@@ -1,3 +1,29 @@
+/**
+ * @file PricingCalculator.tsx
+ * @description A dropship markup pricing calculator component that displays a
+ *   visual price breakdown with input fields for setting markup amounts. Shows
+ *   the original price, markup amount, markup percentage, final price, and
+ *   profit margin in a card-based layout.
+ *
+ * @props
+ *   - originalPrice {number | string | undefined} - The base price of the source product.
+ *   - markup {number | string | undefined} - The markup amount to add on top.
+ *   - onMarkupChange {(markup: number) => void} - Callback when the markup value changes.
+ *
+ * @behavior
+ *   - Calculates final price as originalPrice + markup.
+ *   - Computes markup percentage ((markup / originalPrice) * 100) and profit
+ *     margin ((markup / finalPrice) * 100).
+ *   - Provides two input methods: direct markup amount or percentage-based input.
+ *     Changing the percentage auto-calculates the corresponding markup amount.
+ *   - Displays a visual price flow with icon-labeled cards: Original Price,
+ *     Markup Amount, and Final Price.
+ *   - All numeric values are safely coerced with fallback to 0.
+ *
+ * @dependencies
+ *   - useTranslations (next-intl) - i18n translations.
+ *   - lucide-react (DollarSign, TrendingUp, Percent, Calculator) - Price icons.
+ */
 "use client";
 import React from "react";
 import { Input } from "@/components/ui/input";
