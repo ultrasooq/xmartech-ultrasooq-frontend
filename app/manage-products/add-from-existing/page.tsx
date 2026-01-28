@@ -36,6 +36,11 @@ const AddFromExistingProductPage = () => {
   const [isAIGenerating, setIsAIGenerating] = useState(false);
   const [aiGeneratedData, setAiGeneratedData] = useState<any>(null);
   const [aiProductSuggestions, setAiProductSuggestions] = useState<any[]>([]);
+  const [aiProductModels, setAiProductModels] = useState<Array<{modelName: string; specifications: string}>>([]);
+  const [aiModelSource, setAiModelSource] = useState<"text" | "image" | "url" | null>(null);
+  const [selectedModel, setSelectedModel] = useState<string | null>(null);
+  const [modelExists, setModelExists] = useState<boolean | null>(null);
+  const [checkingModel, setCheckingModel] = useState(false);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [previewData, setPreviewData] = useState<any>(null);
   const [processingProductIndex, setProcessingProductIndex] = useState<number | null>(null);
@@ -66,6 +71,31 @@ const AddFromExistingProductPage = () => {
   // Fetch categories for matching
   const categoriesQuery = useCategory(PRODUCT_CATEGORY_ID.toString());
 
+  // Build brief specifications string for AI product suggestions (image/URL flow)
+  const buildSpecsFromProductSuggestion = (product: any): string => {
+    const lines: string[] = [];
+
+    if (product.brand) {
+      lines.push(`Brand: ${product.brand}`);
+    }
+    if (product.category) {
+      lines.push(`Category: ${product.category}`);
+    }
+    const price = product.estimatedPrice ?? product.price;
+    if (price) {
+      lines.push(`Price: ${price}`);
+    }
+    if (Array.isArray(product.specifications) && product.specifications.length > 0) {
+      for (const spec of product.specifications.slice(0, 3)) {
+        if (spec.label && spec.specification) {
+          lines.push(`${spec.label}: ${spec.specification}`);
+        }
+      }
+    }
+
+    return lines.join("\n");
+  };
+
   // Helper function to find category path in hierarchy
   const findCategoryPathInHierarchy = (
     categories: any[], 
@@ -92,44 +122,144 @@ const AddFromExistingProductPage = () => {
     return null;
   };
 
-  // AI-based category matching function
-  const findMatchingCategoryWithAI = async (aiCategoryName: string): Promise<{ matchedCategoryId: number | null; confidence: string }> => {
-    if (!categoriesQuery?.data?.data?.children || !aiCategoryName) {
-      return { matchedCategoryId: null, confidence: 'low' };
+  // Helper function to flatten category tree and mark leaf categories
+  const flattenCategories = (categories: any[], parentPath: number[] = []): Array<{id: number; name: string; isLeaf: boolean; path: number[]; category: any}> => {
+    const result: Array<{id: number; name: string; isLeaf: boolean; path: number[]; category: any}> = [];
+    
+    for (const category of categories) {
+      const currentPath = [...parentPath, category.id];
+      const hasChildren = category.children && category.children.length > 0;
+      
+      // Add current category
+      result.push({
+        id: category.id,
+        name: category.name,
+        isLeaf: !hasChildren,
+        path: currentPath,
+        category: category,
+      });
+      
+      // Recursively add children
+      if (hasChildren) {
+        result.push(...flattenCategories(category.children, currentPath));
+      }
     }
     
-    const categories = categoriesQuery.data.data.children.map((cat: any) => ({
-      id: cat.id,
-      name: cat.name,
-    }));
+    return result;
+  };
+
+  // Helper function to find a category by ID in the tree
+  const findCategoryById = (categories: any[], targetId: number | string): any => {
+    for (const category of categories) {
+      if (category.id?.toString() === targetId?.toString() || Number(category.id) === Number(targetId)) {
+        return category;
+      }
+      if (category.children && category.children.length > 0) {
+        const found = findCategoryById(category.children, targetId);
+        if (found) return found;
+      }
+    }
+    return null;
+  };
+
+  // AI-based category matching function
+  const findMatchingCategoryWithAI = async (
+    aiCategoryName: string,
+    productName?: string
+  ): Promise<{ matchedCategoryId: number | null; confidence: string }> => {
+    if (!categoriesQuery?.data?.data?.children || !aiCategoryName) {
+      return { matchedCategoryId: null, confidence: "low" };
+    }
+
+    // Flatten all categories including leaf categories
+    const allCategories = flattenCategories(
+      categoriesQuery.data.data.children
+    );
+
+    // Separate leaf and parent categories
+    const leafCategories = allCategories.filter((cat) => cat.isLeaf);
+    const parentCategories = allCategories.filter((cat) => !cat.isLeaf);
 
     try {
       const token = getCookie(PUREMOON_TOKEN_KEY);
-      const response = await fetch(`${getApiUrl()}/product/ai-match-category`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          aiCategoryName: aiCategoryName,
-          availableCategories: categories,
-        }),
-      });
+
+      // STEP 1: Try matching with ONLY leaf categories first
+      if (leafCategories.length > 0) {
+        const leafCategoriesForMatching = leafCategories.map((cat) => ({
+          id: cat.id,
+          name: cat.name,
+          isLeaf: true,
+        }));
+
+        const leafResponse = await fetch(
+          `${getApiUrl()}/product/ai-match-category`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              aiCategoryName,
+              productName: productName || undefined,
+              availableCategories: leafCategoriesForMatching,
+            }),
+          }
+        );
+
+        const leafData = await leafResponse.json();
+
+        if (leafData.status && leafData.data && leafData.data.matchedCategoryId) {
+          // Found a leaf category match - use it!
+          console.log(
+            `[Category Matching] Matched leaf category: ${leafData.data.matchedCategoryId}`
+          );
+          return {
+            matchedCategoryId: leafData.data.matchedCategoryId,
+            confidence: leafData.data.confidence || "medium",
+          };
+        }
+      }
+
+      // STEP 2: If no leaf category matched, try with parents only (fallback)
+      const parentCategoriesForMatching = parentCategories.map((cat) => ({
+        id: cat.id,
+        name: cat.name,
+        isLeaf: false,
+      }));
+
+      if (parentCategoriesForMatching.length === 0) {
+        return { matchedCategoryId: null, confidence: "low" };
+      }
+
+      const response = await fetch(
+        `${getApiUrl()}/product/ai-match-category`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            aiCategoryName,
+            availableCategories: parentCategoriesForMatching,
+          }),
+        }
+      );
 
       const data = await response.json();
-      
-      if (data.status && data.data) {
+
+      if (data.status && data.data && data.data.matchedCategoryId) {
         return {
-          matchedCategoryId: data.data.matchedCategoryId || null,
-          confidence: data.data.confidence || 'low',
+          matchedCategoryId: data.data.matchedCategoryId,
+          confidence: data.data.confidence || "low",
         };
       }
-      
-      return { matchedCategoryId: null, confidence: 'low' };
+
+      return { matchedCategoryId: null, confidence: "low" };
     } catch (error) {
-      console.error('AI category matching error:', error);
-      return { matchedCategoryId: null, confidence: 'low' };
+      console.error("AI category matching error:", error);
+      return { matchedCategoryId: null, confidence: "low" };
     }
   };
 
@@ -158,6 +288,7 @@ const AddFromExistingProductPage = () => {
 
     // Clear previous AI suggestions and reset auto-trigger flag
     setAiProductSuggestions([]);
+    setAiProductModels([]);
     setAutoAISearchTriggered(false);
     setAiSearchSkipped(false); // Reset skip flag when user searches again
     // Set the query search term (this will trigger the query)
@@ -196,7 +327,7 @@ const AddFromExistingProductPage = () => {
     try {
       const token = getCookie(PUREMOON_TOKEN_KEY);
       
-      // For text queries, use the new lightweight list endpoint
+      // For text queries, use the new lightweight list endpoint to get models only
       if (type === 'text' && typeof input === 'string') {
         const response = await fetch(`${getApiUrl()}/product/ai-generate-list`, {
           method: 'POST',
@@ -233,12 +364,13 @@ const AddFromExistingProductPage = () => {
           if (abortController.signal.aborted) {
             return;
           }
-          // Lightweight product list (name, category, price, variants)
-          setAiProductSuggestions(data.data);
-          setAiGeneratedData(data.data);
+          // Now data.data is an array of model names (strings)
+          setAiProductModels(data.data);
+          setAiModelSource("text");
+          setAiProductSuggestions([]); // Clear old suggestions
           toast({
             title: t("search_successful") || "Search Successful",
-            description: t("found_products_from_web", { n: data.data.length }) || `Found ${data.data.length} product suggestions`,
+            description: t("found_models", { n: data.data.length }) || `Found ${data.data.length} product models`,
           });
         } else {
           // Check again before showing toast
@@ -247,12 +379,12 @@ const AddFromExistingProductPage = () => {
           }
           toast({
             title: t("no_results_found") || "No Results",
-            description: data.message || t("no_products_found_from_web") || "No products found from web search",
+            description: data.message || t("no_models_found") || "No product models found",
             variant: "destructive",
           });
         }
       } else {
-        // For image/URL, use the existing flow
+        // For image/URL, generate suggestions and normalize to model list
         const formData = new FormData();
         
         if (type === 'image' && input instanceof File) {
@@ -294,31 +426,53 @@ const AddFromExistingProductPage = () => {
           const isArray = Array.isArray(data.data);
           
           if (isArray && data.data.length > 0) {
-            // Check before state updates
             if (abortController.signal.aborted) {
               return;
             }
-            // Multiple product suggestions from web search
-            setAiProductSuggestions(data.data);
+
+            const models = data.data
+              .map((p: any) => ({
+                modelName: p.productName || p.name || "",
+                specifications: buildSpecsFromProductSuggestion(p),
+              }))
+              .filter((m: any) => m.modelName && m.modelName.trim().length > 0);
+
+            setAiProductModels(models);
+            setAiProductSuggestions([]);
             setAiGeneratedData(data.data);
+            setAiModelSource("image");
+
             toast({
               title: t("search_successful") || "Search Successful",
-              description: t("found_products_from_web", { n: data.data.length }) || `Found ${data.data.length} product suggestions from web`,
+              description:
+                t("found_models", { n: models.length }) ||
+                `Found ${models.length} product models`,
             });
           } else if (!isArray && data.data) {
-            // Check before state updates
             if (abortController.signal.aborted) {
               return;
             }
-            // Single product (for image/URL)
-            setPreviewData(data.data);
-            setShowPreviewModal(true);
+
+            const product = data.data;
+            const models = [
+              {
+                modelName: product.productName || product.name || "",
+                specifications: buildSpecsFromProductSuggestion(product),
+              },
+            ].filter((m: any) => m.modelName && m.modelName.trim().length > 0);
+
+            setAiProductModels(models);
+            setAiProductSuggestions([]);
+            setAiGeneratedData([product]);
+            setAiModelSource("image");
+
             toast({
-              title: t("generation_successful") || "Success",
-              description: t("ai_generated_product_data") || "AI generated product data",
+              title: t("search_successful") || "Search Successful",
+              description:
+                t("found_models", { n: models.length }) ||
+                `Found ${models.length} product models`,
             });
           } else {
-            // Check before showing toast
             if (abortController.signal.aborted) {
               return;
             }
@@ -457,26 +611,59 @@ const AddFromExistingProductPage = () => {
     }
   };
 
-  // Handle selecting a product suggestion
-  const handleSelectSuggestion = async (product: any, index: number) => {
-    setProcessingProductIndex(index);
+  // Handle selecting a model - check existence and generate details
+  const handleSelectModel = async (model: string | {modelName: string; specifications: string}) => {
+    const modelName = typeof model === 'string' ? model : model.modelName;
+    setSelectedModel(modelName);
+    setCheckingModel(true);
+    setModelExists(null);
+    const modelIndex = aiProductModels.findIndex(m => {
+      const mName = typeof m === 'string' ? m : m.modelName;
+      return mName === modelName;
+    });
+    setProcessingProductIndex(modelIndex >= 0 ? modelIndex : null);
+    
     try {
-      // First, generate full product details
       const token = getCookie(PUREMOON_TOKEN_KEY);
-      const response = await fetch(`${getApiUrl()}/product/ai-generate-details`, {
+      
+      // Step 1: Check if model exists
+      const checkResponse = await fetch(`${getApiUrl()}/product/check-model-exists`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
-          productName: product.productName,
-          category: product.category,
-          brand: product.brand,
+          modelName: modelName,
         }),
       });
       
-      const detailsData = await response.json();
+      const checkData = await checkResponse.json();
+      
+      if (!checkData.status) {
+        toast({
+          title: t("check_failed") || "Failed",
+          description: checkData.message || t("failed_to_check_model") || "Failed to check model existence",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      setModelExists(checkData.exists);
+      
+      // Step 2: Generate full details regardless of existence
+      const detailsResponse = await fetch(`${getApiUrl()}/product/ai-generate-details`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          productName: modelName,
+        }),
+      });
+      
+      const detailsData = await detailsResponse.json();
       
       if (!detailsData.status || !detailsData.data) {
         toast({
@@ -487,30 +674,39 @@ const AddFromExistingProductPage = () => {
         return;
       }
 
-      // Use AI to find matching category if category string is provided
-      let matchedCategoryId = null;
+      // Use AI to find matching category (always prefer our leaf-only matcher)
+      let matchedCategoryId: number | null = null;
       let categoryConfidence = 'low';
       let categoryPath: number[] | null = null;
       
       if (detailsData.data.category) {
-        const matchResult = await findMatchingCategoryWithAI(detailsData.data.category);
+        console.log('[Category Matching] Running leaf-only matcher for model:', modelName, 'category:', detailsData.data.category);
+        const matchResult = await findMatchingCategoryWithAI(detailsData.data.category, modelName);
         matchedCategoryId = matchResult.matchedCategoryId;
         categoryConfidence = matchResult.confidence;
-        
-        // If category matched, find the full path in hierarchy
-        if (matchedCategoryId && categoriesQuery?.data?.data?.children) {
-          categoryPath = findCategoryPathInHierarchy(
-            categoriesQuery.data.data.children, 
-            matchedCategoryId
-          );
-        }
+      }
+      
+      // Fallback: if our matcher failed but backend provided an ID, use it with lower confidence
+      if (!matchedCategoryId && detailsData.data.matchedCategoryId) {
+        console.log('[Category Matching] Using backend matchedCategoryId as fallback:', detailsData.data.matchedCategoryId);
+        matchedCategoryId = detailsData.data.matchedCategoryId;
+        categoryConfidence = 'medium';
+      }
+      
+      // If category matched, find the full path in hierarchy
+      if (matchedCategoryId && categoriesQuery?.data?.data?.children) {
+        categoryPath = findCategoryPathInHierarchy(
+          categoriesQuery.data.data.children, 
+          matchedCategoryId
+        );
       }
       
       setPreviewData({
         ...detailsData.data,
         matchedCategoryId: matchedCategoryId,
         categoryConfidence: categoryConfidence,
-        categoryPath: categoryPath, // Add full path
+        categoryPath: categoryPath,
+        modelExists: checkData.exists,
       });
       setShowPreviewModal(true);
     } catch (error: any) {
@@ -520,7 +716,132 @@ const AddFromExistingProductPage = () => {
         variant: "destructive",
       });
     } finally {
+      setCheckingModel(false);
       setProcessingProductIndex(null);
+    }
+  };
+
+  // Handle selecting a product suggestion (for image/URL flows)
+  const handleSelectSuggestion = async (product: any, index: number) => {
+    setProcessingProductIndex(index);
+    setSelectedModel(product.productName);
+    setCheckingModel(true);
+    setModelExists(null);
+
+    try {
+      const token = getCookie(PUREMOON_TOKEN_KEY);
+
+      // STEP 1: Check if this suggested model already exists
+      const checkResponse = await fetch(`${getApiUrl()}/product/check-model-exists`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          modelName: product.productName,
+        }),
+      });
+
+      const checkData = await checkResponse.json();
+
+      if (!checkData.status) {
+        toast({
+          title: t("check_failed") || "Failed",
+          description:
+            checkData.message ||
+            t("failed_to_check_model") ||
+            "Failed to check model existence",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setModelExists(checkData.exists);
+
+      // STEP 2: Generate full product details
+      const response = await fetch(`${getApiUrl()}/product/ai-generate-details`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          productName: product.productName,
+          category: product.category,
+          brand: product.brand,
+        }),
+      });
+
+      const detailsData = await response.json();
+
+      if (!detailsData.status || !detailsData.data) {
+        toast({
+          title: t("generation_failed") || "Failed",
+          description:
+            detailsData.message ||
+            t("failed_to_generate_details") ||
+            "Failed to generate product details",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // STEP 3: AI category matching (leaf-only), using product name as context
+      let matchedCategoryId: number | null = null;
+      let categoryConfidence = "low";
+      let categoryPath: number[] | null = null;
+
+      if (detailsData.data.category) {
+        console.log(
+          "[Category Matching] Running leaf-only matcher for suggestion category:",
+          detailsData.data.category
+        );
+        const matchResult = await findMatchingCategoryWithAI(
+          detailsData.data.category,
+          product.productName
+        );
+        matchedCategoryId = matchResult.matchedCategoryId;
+        categoryConfidence = matchResult.confidence;
+      }
+
+      // STEP 4: Fallback: backend matchedCategoryId if our matcher failed
+      if (!matchedCategoryId && detailsData.data.matchedCategoryId) {
+        console.log(
+          "[Category Matching] Using backend matchedCategoryId as fallback for suggestion:",
+          detailsData.data.matchedCategoryId
+        );
+        matchedCategoryId = detailsData.data.matchedCategoryId;
+        categoryConfidence = "medium";
+      }
+
+      // STEP 5: Build full category path from matched leaf
+      if (matchedCategoryId && categoriesQuery?.data?.data?.children) {
+        categoryPath = findCategoryPathInHierarchy(
+          categoriesQuery.data.data.children,
+          matchedCategoryId
+        );
+      }
+
+      // STEP 6: Open preview with same structure as text flow
+      setPreviewData({
+        ...detailsData.data,
+        matchedCategoryId,
+        categoryConfidence,
+        categoryPath,
+        modelExists: checkData.exists,
+      });
+      setShowPreviewModal(true);
+    } catch (error: any) {
+      toast({
+        title: t("generation_failed") || "Failed",
+        description:
+          error.message || t("ai_generation_error") || "AI generation error",
+        variant: "destructive",
+      });
+    } finally {
+      setProcessingProductIndex(null);
+      setCheckingModel(false);
     }
   };
 
@@ -688,7 +1009,7 @@ const AddFromExistingProductPage = () => {
               </div>
               
               {/* Load More with AI Button - Show below existing results */}
-              {!isAIGenerating && aiProductSuggestions.length === 0 && (
+              {!isAIGenerating && aiProductModels.length === 0 && (
                 <div className="flex justify-center pt-4 border-t border-gray-200">
                   <Button
                     onClick={() => handleAIGenerate(searchTerm || '', 'text')}
@@ -720,13 +1041,13 @@ const AddFromExistingProductPage = () => {
             </div>
           )}
 
-              {/* AI Product Suggestions List - Show below existing results */}
-              {aiProductSuggestions.length > 0 && (
+              {/* AI Product Models List - Show below existing results (TEXT source only) */}
+              {aiProductModels.length > 0 && aiModelSource === "text" && (
                 <div className="space-y-3 mt-6">
                   <div className="flex items-center justify-between">
                     <h4 className="font-medium text-gray-900 flex items-center gap-2" dir={langDir}>
                       <Sparkles className="h-5 w-5 text-purple-600" />
-                      {t("product_suggestions_from_web") || "Product Suggestions from Web"}
+                      {t("product_models_found") || "Product Models Found"}
                     </h4>
                     <Button
                       variant="ghost"
@@ -743,65 +1064,68 @@ const AddFromExistingProductPage = () => {
                     </Button>
                   </div>
                   <div className="space-y-3 max-h-96 overflow-y-auto">
-                    {aiProductSuggestions.map((product, idx) => (
-                      <div
-                        key={idx}
-                        className="bg-white border border-gray-200 rounded-lg p-4 hover:border-purple-400 hover:shadow-md transition-all"
-                      >
-                        <div className="flex items-start gap-4">
-                          <div className="flex-1">
-                            <div className="flex items-start justify-between mb-2">
-                              <h5 className="font-semibold text-gray-900" dir={langDir}>
-                                {product.productName || product.name}
-                              </h5>
-                              <Button
-                                size="sm"
-                                onClick={() => handleSelectSuggestion(product, idx)}
-                                disabled={processingProductIndex === idx}
-                                className="bg-purple-600 hover:bg-purple-700 text-white"
-                              >
-                                {processingProductIndex === idx ? (
-                                  <>
-                                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                    {t("generating") || "Generating..."}
-                                  </>
-                                ) : (
-                                  t("use") || "Use"
-                                )}
-                              </Button>
-                            </div>
-                            
-                            {/* Source Information */}
-                            <div className="flex items-center gap-2 mb-2">
-                              <LinkIcon className="h-4 w-4 text-gray-400" />
-                              <span className="text-xs font-medium text-purple-600">
-                                {product.sourceName || "Unknown Source"}
-                              </span>
-                            </div>
-
-                            {/* Product Details */}
-                            <div className="space-y-1 text-sm text-gray-600">
-                              {product.category && (
-                                <p className="font-medium text-gray-900">
-                                  {t("category")}: {product.category}
-                                </p>
-                              )}
-                              {product.brand && (
-                                <p>
-                                  {t("brand")}: {product.brand}
-                                </p>
+                    {aiProductModels.map((model, idx) => {
+                      const modelName = typeof model === 'string' ? model : model.modelName;
+                      const specifications = typeof model === 'string' ? '' : model.specifications;
+                      
+                      return (
+                        <div
+                          key={idx}
+                          className="bg-white border border-gray-200 rounded-lg p-4 hover:border-purple-400 hover:shadow-md transition-all"
+                        >
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="flex-1 min-w-0">
+                              {specifications ? (
+                                <div className="text-sm text-gray-700" dir={langDir}>
+                                  <span className="font-semibold text-gray-900">{modelName}</span>
+                                  <span className="text-gray-600 mx-1">-</span>
+                                  <span className="text-gray-700">
+                                    {specifications
+                                      .split('\n')
+                                      .filter(line => line.trim())
+                                      .map((spec) => {
+                                        // Extract value from "Label: Value" format
+                                        const colonIndex = spec.indexOf(':');
+                                        if (colonIndex > 0) {
+                                          return spec.substring(colonIndex + 1).trim();
+                                        }
+                                        return spec.trim();
+                                      })
+                                      .filter(value => value.length > 0)
+                                      .join(', ')}
+                                  </span>
+                                </div>
+                              ) : (
+                                <h5 className="font-semibold text-gray-900" dir={langDir}>
+                                  {modelName}
+                                </h5>
                               )}
                             </div>
+                            <Button
+                              size="sm"
+                              onClick={() => handleSelectModel(model)}
+                              disabled={checkingModel || processingProductIndex === idx}
+                              className="bg-purple-600 hover:bg-purple-700 text-white flex-shrink-0 ml-4"
+                            >
+                              {checkingModel && processingProductIndex === idx ? (
+                                <>
+                                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                  {t("checking_and_generating") || "Checking & Generating..."}
+                                </>
+                              ) : (
+                                t("select") || "Select"
+                              )}
+                            </Button>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               )}
 
-              {/* No Results Found - Only show if no AI suggestions either */}
-              {shouldSearch && querySearchTerm && searchResults.length === 0 && !isSearching && aiProductSuggestions.length === 0 && (
+              {/* No Results Found - Only show if no AI models either */}
+              {shouldSearch && querySearchTerm && searchResults.length === 0 && !isSearching && aiProductModels.length === 0 && (
             <div className="text-center py-8">
                   <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Search className="h-8 w-8 text-gray-400" />
@@ -941,7 +1265,7 @@ const AddFromExistingProductPage = () => {
                   </Button>
                 )}
 
-                {/* AI Product Suggestions List - Show after image analysis */}
+                {/* AI Product Suggestions List - Show after image analysis (if any) */}
                 {aiProductSuggestions.length > 0 && (
                   <div className="space-y-3 mt-6">
                     <div className="flex items-center justify-between">
@@ -1023,6 +1347,94 @@ const AddFromExistingProductPage = () => {
                           </div>
                         </div>
                       ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* AI Product Models from IMAGE source */}
+                {aiProductModels.length > 0 && aiModelSource === "image" && (
+                  <div className="space-y-3 mt-6">
+                    <div className="flex items-center justify-between">
+                      <h4
+                        className="font-medium text-gray-900 flex items-center gap-2"
+                        dir={langDir}
+                      >
+                        <Sparkles className="h-5 w-5 text-purple-600" />
+                        {t("product_models_found") || "Product Models Found"}
+                      </h4>
+                    </div>
+                    <div className="space-y-3 max-h-96 overflow-y-auto">
+                      {aiProductModels.map((model, idx) => {
+                        const modelName =
+                          typeof model === "string" ? model : model.modelName;
+                        const specifications =
+                          typeof model === "string" ? "" : model.specifications;
+
+                        return (
+                          <div
+                            key={idx}
+                            className="bg-white border border-gray-200 rounded-lg p-4 hover:border-purple-400 hover:shadow-md transition-all"
+                          >
+                            <div className="flex items-start justify-between gap-4">
+                              <div className="flex-1 min-w-0">
+                                {specifications ? (
+                                  <div
+                                    className="text-sm text-gray-700"
+                                    dir={langDir}
+                                  >
+                                    <span className="font-semibold text-gray-900">
+                                      {modelName}
+                                    </span>
+                                    <span className="text-gray-600 mx-1">-</span>
+                                    <span className="text-gray-700">
+                                      {specifications
+                                        .split("\n")
+                                        .filter((line) => line.trim())
+                                        .map((spec) => {
+                                          const colonIndex = spec.indexOf(":");
+                                          if (colonIndex > 0) {
+                                            return spec
+                                              .substring(colonIndex + 1)
+                                              .trim();
+                                          }
+                                          return spec.trim();
+                                        })
+                                        .filter((value) => value.length > 0)
+                                        .join(", ")}
+                                    </span>
+                                  </div>
+                                ) : (
+                                  <h5
+                                    className="font-semibold text-gray-900"
+                                    dir={langDir}
+                                  >
+                                    {modelName}
+                                  </h5>
+                                )}
+                              </div>
+                              <Button
+                                size="sm"
+                                onClick={() => handleSelectModel(model)}
+                                disabled={
+                                  checkingModel || processingProductIndex === idx
+                                }
+                                className="bg-purple-600 hover:bg-purple-700 text-white flex-shrink-0 ml-4"
+                              >
+                                {checkingModel &&
+                                processingProductIndex === idx ? (
+                                  <>
+                                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                    {t("checking_and_generating") ||
+                                      "Checking & Generating..."}
+                                  </>
+                                ) : (
+                                  t("select") || "Select"
+                                )}
+                              </Button>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 )}
@@ -1372,6 +1784,23 @@ const AddFromExistingProductPage = () => {
                         </div>
                       ))}
                     </div>
+                  </div>
+                )}
+                {previewData.modelExists !== null && (
+                  <div className={`col-span-2 p-3 rounded-lg ${
+                    previewData.modelExists 
+                      ? 'bg-yellow-50 border border-yellow-200' 
+                      : 'bg-green-50 border border-green-200'
+                  }`}>
+                    <p className={`text-sm font-medium ${
+                      previewData.modelExists 
+                        ? 'text-yellow-800' 
+                        : 'text-green-800'
+                    }`}>
+                      {previewData.modelExists 
+                        ? t("model_exists_in_system") || "⚠️ This model already exists in your product catalog"
+                        : t("model_new") || "✅ This is a new model"}
+                    </p>
                   </div>
                 )}
               </div>

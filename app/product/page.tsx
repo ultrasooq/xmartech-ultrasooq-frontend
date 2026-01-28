@@ -633,6 +633,37 @@ const CreateProductPage = () => {
   });
 
   // Ensure component only renders on client side
+  // Helper to build full category path (root -> ... -> leaf) from a leaf category ID
+  const buildCategoryPathFromLeaf = async (categoryId: number): Promise<number[]> => {
+    try {
+      const res = await fetchSubCategoriesById({
+        categoryId: String(categoryId),
+      });
+      const categoryData = res.data?.data;
+
+      // If categoryLocation exists in the data, we can trust it and just split it
+      if (categoryData?.categoryLocation) {
+        return categoryData.categoryLocation
+          .split(",")
+          .map((id: string) => Number(id.trim()))
+          .filter((id: number) => !Number.isNaN(id));
+      }
+
+      // If no parentId (or parentId equals id), this is the root category
+      if (!categoryData?.parentId || categoryData.parentId === categoryId) {
+        return [categoryId];
+      }
+
+      // Recursively fetch parent path, then append current categoryId
+      const parentPath = await buildCategoryPathFromLeaf(categoryData.parentId);
+      return [...parentPath, categoryId];
+    } catch (error) {
+      console.error("[AI Category] Error building category path from leaf:", error);
+      // Fallback: return just this categoryId
+      return [categoryId];
+    }
+  };
+
   useEffect(() => {
     setIsClient(true);
   }, []);
@@ -1350,19 +1381,33 @@ const CreateProductPage = () => {
       form.setValue("productPrice", price.toString());
     }
 
-    // Set matched category with full path if available (only if confidence is high or medium)
-    if (aiData.matchedCategoryId && (aiData.categoryConfidence === 'high' || aiData.categoryConfidence === 'medium')) {
-      form.setValue("categoryId", Number(aiData.matchedCategoryId));
-      
-      // Set category path if available
-      if (aiData.categoryPath && Array.isArray(aiData.categoryPath)) {
-        setSelectedCategoryIds(aiData.categoryPath.map((id: any) => id.toString()));
-      }
-      
-      // Set categoryLocation if available
-      if (aiData.categoryLocation) {
-        form.setValue("categoryLocation", aiData.categoryLocation);
-      }
+    // Set matched category with full path (prefer leaf category path)
+    if (
+      aiData.matchedCategoryId &&
+      (aiData.categoryConfidence === "high" ||
+        aiData.categoryConfidence === "medium")
+    ) {
+      const matchedId = Number(aiData.matchedCategoryId);
+
+      (async () => {
+        let path: number[] | null = null;
+
+        if (aiData.categoryPath && Array.isArray(aiData.categoryPath) && aiData.categoryPath.length > 0) {
+          path = aiData.categoryPath
+            .map((id: any) => Number(id))
+            .filter((id: number) => !Number.isNaN(id));
+        } else {
+          // Build full path from the matched leaf category
+          path = await buildCategoryPathFromLeaf(matchedId);
+        }
+
+        if (path && path.length > 0) {
+          const leafId = path[path.length - 1];
+          form.setValue("categoryId", leafId);
+          setSelectedCategoryIds(path.map((id: number) => id.toString()));
+          form.setValue("categoryLocation", path.join(","));
+        }
+      })();
     }
 
     toast({
