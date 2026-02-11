@@ -51,6 +51,17 @@ import CategoryFilter from "@/components/modules/manageProducts/CategoryFilter";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  useExternalStores,
+  useSubscribeProductsToExternalStore,
+} from "@/apis/queries/external-dropship.queries";
 
 interface DropshipProductsPageProps {
   searchParams?: Promise<{ term?: string }>;
@@ -76,6 +87,9 @@ const DropshipProductsPage = (props: DropshipProductsPageProps) => {
   const [page, setPage] = useState(1);
   const [limit] = useState(8);
   const [cartList, setCartList] = useState<any[]>([]);
+  const [selectedProductIds, setSelectedProductIds] = useState<number[]>([]);
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [selectedStoreId, setSelectedStoreId] = useState<string>("");
   const addToWishlist = useAddToWishList();
   const deleteFromWishlist = useDeleteFromWishList();
 
@@ -164,6 +178,10 @@ const DropshipProductsPage = (props: DropshipProductsPageProps) => {
     }
     return [];
   }, [categoriesQuery?.data?.data?.children]);
+
+  // External stores for export
+  const externalStoresQuery = useExternalStores(haveAccessToken);
+  const subscribeProductsMutation = useSubscribeProductsToExternalStore();
 
   const memoizedExistingProductList = useMemo(() => {
     let products = existingProductsQuery?.data?.data?.map((item: any) => ({
@@ -407,6 +425,63 @@ const DropshipProductsPage = (props: DropshipProductsPageProps) => {
     }
   }, [accessToken]);
 
+  const handleSelectedProduct = (checked: boolean | string, id: number) => {
+    const isChecked = checked === true || checked === "indeterminate";
+    setSelectedProductIds((prev) => {
+      let next = [...prev];
+      if (isChecked && !next.includes(id)) {
+        next.push(id);
+      }
+      if (!isChecked && next.includes(id)) {
+        next = next.filter((val) => val !== id);
+      }
+      return next;
+    });
+  };
+
+  const openExportModal = () => {
+    if (!selectedProductIds.length) {
+      toast({
+        title: t("validation_error"),
+        description: t("please_select_at_least_one_product"),
+        variant: "destructive",
+      });
+      return;
+    }
+    setIsExportModalOpen(true);
+  };
+
+  const handleConfirmExport = async () => {
+    if (!selectedStoreId || !selectedProductIds.length) {
+      toast({
+        title: t("validation_error"),
+        description: t("please_select_store_and_products"),
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      await subscribeProductsMutation.mutateAsync({
+        storeId: Number(selectedStoreId),
+        productIds: selectedProductIds,
+      });
+      toast({
+        title: t("success"),
+        description: t("products_exported_to_external_store"),
+        variant: "success",
+      });
+      setIsExportModalOpen(false);
+    } catch (error: any) {
+      toast({
+        title: t("error"),
+        description:
+          error?.response?.data?.message || t("something_went_wrong"),
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <>
       <title dir={langDir} translate="no">{t("my_dropship_products")} | Ultrasooq</title>
@@ -483,13 +558,24 @@ const DropshipProductsPage = (props: DropshipProductsPageProps) => {
                 )}
 
                 {haveAccessToken && me?.data?.data?.tradeRole != 'BUYER' ? (
-                  <Button
-                    onClick={() => router.push('/dropship-products/create-dropshipable')}
-                    className="flex items-center gap-2"
-                  >
-                    <IoMdAdd className="h-4 w-4" />
-                    {t("create_dropshipable_product")}
-                  </Button>
+                  <>
+                    <Button
+                      onClick={() =>
+                        router.push("/dropship-products/create-dropshipable")
+                      }
+                      className="flex items-center gap-2"
+                    >
+                      <IoMdAdd className="h-4 w-4" />
+                      {t("create_dropshipable_product")}
+                    </Button>
+                    <Button
+                      onClick={openExportModal}
+                      disabled={!selectedProductIds.length}
+                      className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                    >
+                      {t("export_to_external_store")}
+                    </Button>
+                  </>
                 ) : null}
               </div>
             </div>
@@ -652,7 +738,7 @@ const DropshipProductsPage = (props: DropshipProductsPageProps) => {
                       {memoizedDropshipProducts.map((item: any) => (
                         <DropshipProductManageCard
                           key={item.id}
-                          id={item.id}
+                          id={item.productId || item.id}
                           productId={item.productId || item.id}
                           status={item.status || "ACTIVE"}
                           askForPrice={item.askForPrice || "false"}
@@ -698,6 +784,8 @@ const DropshipProductsPage = (props: DropshipProductsPageProps) => {
                           categoryName={item.category?.categoryName}
                           shortDescription={item.product_productShortDescription?.[0]?.shortDescription || item.shortDescription}
                           skuNo={item.skuNo}
+                          selectedIds={selectedProductIds}
+                          onSelectedId={handleSelectedProduct}
                         />
                       ))}
                     </div>
@@ -980,6 +1068,77 @@ const DropshipProductsPage = (props: DropshipProductsPageProps) => {
       </div>
 
       <Footer />
+
+      {/* Export to External Store Modal */}
+      <Dialog open={isExportModalOpen} onOpenChange={setIsExportModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("export_to_external_store")}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-gray-600">
+              {t("external_export_info_message")}
+            </p>
+
+            {externalStoresQuery.isLoading ? (
+              <p className="text-sm text-gray-500">
+                {t("loading_external_stores")}
+              </p>
+            ) : externalStoresQuery.data?.data?.length ? (
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">
+                  {t("select_external_store")}
+                </label>
+                <Select
+                  value={selectedStoreId}
+                  onValueChange={(value) => setSelectedStoreId(value)}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue
+                      placeholder={t("select_external_store_placeholder")}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      {externalStoresQuery.data.data.map((store: any) => (
+                        <SelectItem key={store.id} value={String(store.id)}>
+                          {store.name}{" "}
+                          {store.platform ? `(${store.platform})` : ""}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+            ) : (
+              <p className="text-sm text-gray-500">
+                {t("no_external_stores_yet")}
+              </p>
+            )}
+          </div>
+          <DialogFooter className="mt-4">
+            <Button
+              variant="outline"
+              onClick={() => setIsExportModalOpen(false)}
+            >
+              {t("cancel")}
+            </Button>
+            <Button
+              onClick={handleConfirmExport}
+              disabled={
+                !selectedStoreId ||
+                !selectedProductIds.length ||
+                subscribeProductsMutation.isPending
+              }
+              className="bg-emerald-600 hover:bg-emerald-700"
+            >
+              {subscribeProductsMutation.isPending
+                ? t("saving")
+                : t("confirm_export")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };

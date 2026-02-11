@@ -10,6 +10,7 @@ import DownloadIconButton from "../DownloadIconButton";
 import { useTranslations } from "next-intl";
 import { useToast } from "@/components/ui/use-toast";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
+import sanitizeHtml from "@/utils/sanitizeHtml";
 
 interface RfqRequestChatHistoryProps {
   roomId: number | null;
@@ -210,7 +211,7 @@ const RfqRequestChatHistory: React.FC<RfqRequestChatHistoryProps> = ({
                           <div className="inline-block w-auto rounded-xl bg-blue-600 p-3 text-right text-sm text-white shadow-md">
                             <p
                               dangerouslySetInnerHTML={{
-                                __html: chat?.content,
+                                __html: sanitizeHtml(chat?.content),
                               }}
                             />
                           </div>
@@ -543,7 +544,7 @@ const RfqRequestChatHistory: React.FC<RfqRequestChatHistoryProps> = ({
                           <div className="inline-block w-auto rounded-xl border border-gray-300 bg-gray-200 p-3 text-left text-sm text-gray-800 shadow-sm">
                             <p
                               dangerouslySetInnerHTML={{
-                                __html: chat?.content,
+                                __html: sanitizeHtml(chat?.content),
                               }}
                             />
                           </div>

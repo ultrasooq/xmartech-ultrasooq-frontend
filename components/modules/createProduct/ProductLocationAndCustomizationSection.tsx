@@ -142,7 +142,17 @@ const ProductLocationAndCustomizationSection: React.FC<
   }, [selectedState]);
 
   useEffect(() => {
-    let ipInfo = JSON.parse(window.localStorage.ipInfo ?? "{}");
+    // Use sessionStorage for ipInfo (geolocation data)
+    let ipInfo = {};
+    if (typeof window !== "undefined") {
+      try {
+        const stored = window.sessionStorage.getItem("ipInfo");
+        ipInfo = stored ? JSON.parse(stored) : {};
+      } catch {
+        ipInfo = {};
+      }
+    }
+    
     if (ipInfo.country_name && countriesQuery?.data?.data) {
       let country = countriesQuery?.data?.data?.find(
         (item: any) =>
@@ -156,7 +166,17 @@ const ProductLocationAndCustomizationSection: React.FC<
   }, [countriesQuery?.data?.data?.length]);
 
   useEffect(() => {
-    let ipInfo = JSON.parse(window.localStorage.ipInfo ?? "{}");
+    // Use sessionStorage for ipInfo (geolocation data)
+    let ipInfo = {};
+    if (typeof window !== "undefined") {
+      try {
+        const stored = window.sessionStorage.getItem("ipInfo");
+        ipInfo = stored ? JSON.parse(stored) : {};
+      } catch {
+        ipInfo = {};
+      }
+    }
+    
     if (ipInfo.country_name && countriesNewQuery?.data?.data) {
       let country = countriesNewQuery?.data?.data?.find(
         (item: any) =>
@@ -249,9 +269,13 @@ const ProductLocationAndCustomizationSection: React.FC<
         (error) => {
           // Silently handle geolocation errors
           try {
-            let ipInfo = JSON.parse(
-              window.localStorage.getItem("ipInfo") || "{}",
-            );
+            // Use sessionStorage for ipInfo (geolocation data)
+            let ipInfo = {};
+            if (typeof window !== "undefined") {
+              const stored = window.sessionStorage.getItem("ipInfo");
+              ipInfo = stored ? JSON.parse(stored) : {};
+            }
+            
             if (ipInfo.latitude && ipInfo.longitude) {
               setValue(
                 "productLatLng",

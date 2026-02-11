@@ -410,10 +410,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
     <div
       className={cn(
         item.status === "INACTIVE" ? "opacity-50" : "",
-        "product-list-s1-col border-[1px] border-transparent! border-slate-300 p-3 hover:border-slate-200! hover:bg-slate-100",
+        "product-list-s1-col border-[1px] border-transparent! border-slate-300 p-3 hover:border-slate-200! hover:bg-slate-100 h-full flex flex-col",
       )}
     >
-      <div className="product-list-s1-box relative cursor-pointer ">
+      <div className="product-list-s1-box relative cursor-pointer flex-1 flex flex-col">
         <Link href={`/trending/${item.id}`}>
           {(() => {
             const { discount, discountType } = getApplicableDiscount();
@@ -449,7 +449,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
         {haveAccessToken ? (
           <div className="mb-3 flex flex-row items-center justify-center gap-x-3">
-            {item?.askForPrice !== "true" ? (
+            {!isSeller && item?.askForPrice !== "true" ? (
               <Button
                 variant="ghost"
                 className="relative h-8 w-8 rounded-full p-0 shadow-md"
@@ -494,7 +494,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         ) : null}
 
         <Link href={`/trending/${item.id}`}>
-          <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base">
+          <div className="relative w-full text-sm font-normal capitalize text-color-blue lg:text-base flex-1">
             <h4 className="mb-2.5 border-b border-solid border-gray-300 pb-2.5 text-xs font-normal uppercase text-color-dark">
               {item.productName}
             </h4>
@@ -509,7 +509,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </Link>
       </div>
 
-      <div>
+      <div className="mt-auto flex flex-col">
         {item?.askForPrice === "true" ? (
           <Link href={`/seller-rfq-request?product_id=${item?.id}`}>
             <button
@@ -540,135 +540,139 @@ const ProductCard: React.FC<ProductCardProps> = ({
         )}
       </div>
 
-      {productVariantTypes.length > 0 ? (
-        productVariantTypes.map((variantType: string, index: number) => {
-          return (
-            <div className="mb-2" dir={langDir} key={index}>
-              <label htmlFor={variantType}>{variantType}</label>
-              <select
-                className="w-full"
-                value={selectedProductVariant?.find((variant: any) => variant.type == variantType)?.value}
-                onChange={(e) => {
-                  let selectedVariants = [];
-                  let value = e.target.value;
-                  const selected = productVariants.find(
-                    (variant: any) => variant.type == variantType && variant.value == value
-                  );
+      {!isSeller ? (
+        <>
+          {productVariantTypes.length > 0 ? (
+            productVariantTypes.map((variantType: string, index: number) => {
+              return (
+                <div className="mb-2" dir={langDir} key={index}>
+                  <label htmlFor={variantType}>{variantType}</label>
+                  <select
+                    className="w-full"
+                    value={selectedProductVariant?.find((variant: any) => variant.type == variantType)?.value}
+                    onChange={(e) => {
+                      let selectedVariants = [];
+                      let value = e.target.value;
+                      const selected = productVariants.find(
+                        (variant: any) => variant.type == variantType && variant.value == value
+                      );
 
-                  if (selectedProductVariant.find((variant: any) => variant.type == selected.type)) {
-                    selectedVariants = selectedProductVariant.map((variant: any) => {
-                      if (variant.type == selected.type) {
-                        return selected;
+                      if (selectedProductVariant.find((variant: any) => variant.type == selected.type)) {
+                        selectedVariants = selectedProductVariant.map((variant: any) => {
+                          if (variant.type == selected.type) {
+                            return selected;
+                          }
+                          return variant;
+                        });
+
+                      } else {
+                        selectedVariants = [
+                          ...selectedProductVariant,
+                          selected
+                        ];
                       }
-                      return variant;
-                    });
 
-                  } else {
-                    selectedVariants = [
-                      ...selectedProductVariant,
-                      selected
-                    ];
+                      setSelectedProductVariant(selectedVariants);
+
+                      if (cartId) handleAddToCart(quantity, "add", selectedVariants);
+                    }}
+                  >
+                    {productVariants.filter((variant: any) => variant.type == variantType)
+                      .map((variant: any, i: number) => {
+                      return <option key={`${index}${i}`} value={variant.value} dir={langDir}>{variant.value}</option>;
+                    })}
+                  </select>
+                </div>
+              );
+            })
+          ) : null}
+
+          <div className="quantity_wrap mb-2">
+            <label dir={langDir} translate="no">
+              {t("quantity")}
+            </label>
+            <div className="qty-up-down-s1-with-rgMenuAction">
+              <div className="flex items-center gap-x-3 md:gap-x-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="relative hover:shadow-xs"
+                  onClick={() => handleQuantity(quantity - 1, "remove")}
+                  disabled={
+                    quantity === 0 ||
+                    item.status === "INACTIVE" ||
+                    updateCartWithLogin?.isPending
                   }
-
-                  setSelectedProductVariant(selectedVariants);
-
-                  if (cartId) handleAddToCart(quantity, "add", selectedVariants);
-                }}
-              >
-                {productVariants.filter((variant: any) => variant.type == variantType)
-                  .map((variant: any, i: number) => {
-                  return <option key={`${index}${i}`} value={variant.value} dir={langDir}>{variant.value}</option>;
-                })}
-              </select>
+                >
+                  <Image
+                    src="/images/upDownBtn-minus.svg"
+                    alt="minus-icon"
+                    fill
+                    className="p-3"
+                  />
+                </Button>
+                <input
+                  type="text"
+                  value={quantity}
+                  className="h-auto w-[35px] border-none bg-transparent text-center focus:border-none focus:outline-hidden"
+                  onChange={(e) => {
+                    const value = Number(e.target.value);
+                    setQuantity(isNaN(value) ? cartQuantity : value);
+                  }}
+                  onBlur={handleQuantityChange}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="relative hover:shadow-xs"
+                  onClick={() => handleQuantity(quantity + 1, "add")}
+                  disabled={
+                    item.status === "INACTIVE" || updateCartWithLogin?.isPending
+                  }
+                >
+                  <Image
+                    src="/images/upDownBtn-plus.svg"
+                    alt="plus-icon"
+                    fill
+                    className="p-3"
+                  />
+                </Button>
+              </div>
             </div>
-          );
-        })
-      ) : null}
-
-      <div className="quantity_wrap mb-2">
-        <label dir={langDir} translate="no">
-          {t("quantity")}
-        </label>
-        <div className="qty-up-down-s1-with-rgMenuAction">
-          <div className="flex items-center gap-x-3 md:gap-x-4">
-            <Button
-              type="button"
-              variant="outline"
-              className="relative hover:shadow-xs"
-              onClick={() => handleQuantity(quantity - 1, "remove")}
-              disabled={
-                quantity === 0 ||
-                item.status === "INACTIVE" ||
-                updateCartWithLogin?.isPending
-              }
-            >
-              <Image
-                src="/images/upDownBtn-minus.svg"
-                alt="minus-icon"
-                fill
-                className="p-3"
-              />
-            </Button>
-            <input
-              type="text"
-              value={quantity}
-              className="h-auto w-[35px] border-none bg-transparent text-center focus:border-none focus:outline-hidden"
-              onChange={(e) => {
-                const value = Number(e.target.value);
-                setQuantity(isNaN(value) ? cartQuantity : value);
-              }}
-              onBlur={handleQuantityChange}
-            />
-            <Button
-              type="button"
-              variant="outline"
-              className="relative hover:shadow-xs"
-              onClick={() => handleQuantity(quantity + 1, "add")}
-              disabled={
-                item.status === "INACTIVE" || updateCartWithLogin?.isPending
-              }
-            >
-              <Image
-                src="/images/upDownBtn-plus.svg"
-                alt="plus-icon"
-                fill
-                className="p-3"
-              />
-            </Button>
           </div>
-        </div>
-      </div>
 
-      <div className="cart_button">
-        {isAddedToCart ? (
-          <button
-            type="button"
-            className="flex items-center justify-evenly gap-x-2 rounded-sm border border-[#E8E8E8] p-[10px] text-[15px] font-bold leading-5 text-[#7F818D]"
-            disabled={false}
-            dir={langDir}
-            translate="no"
-          >
-            <FaCircleCheck color="#00C48C" />
-            {t("added_to_cart")}
-          </button>
-        ) : null}
-        {!isAddedToCart ? (
-          <button
-            type="button"
-            className="add_to_cart_button"
-            onClick={() => handleAddToCart(quantity, "add")}
-            disabled={
-              quantity == 0 ||
-              item.status === "INACTIVE" ||
-              updateCartWithLogin?.isPending
-            }
-            dir={langDir}
-            translate="no"
-          >
-            {t("add_to_cart")}
-          </button>
-        ) : null}
-      </div>
+          <div className="cart_button">
+            {isAddedToCart ? (
+              <button
+                type="button"
+                className="flex items-center justify-evenly gap-x-2 rounded-sm border border-[#E8E8E8] p-[10px] text-[15px] font-bold leading-5 text-[#7F818D]"
+                disabled={false}
+                dir={langDir}
+                translate="no"
+              >
+                <FaCircleCheck color="#00C48C" />
+                {t("added_to_cart")}
+              </button>
+            ) : null}
+            {!isAddedToCart ? (
+              <button
+                type="button"
+                className="add_to_cart_button"
+                onClick={() => handleAddToCart(quantity, "add")}
+                disabled={
+                  quantity == 0 ||
+                  item.status === "INACTIVE" ||
+                  updateCartWithLogin?.isPending
+                }
+                dir={langDir}
+                translate="no"
+              >
+                {t("add_to_cart")}
+              </button>
+            ) : null}
+          </div>
+        </>
+      ) : null}
 
       <Dialog open={isConfirmDialogOpen} onOpenChange={handleConfirmDialog}>
         <DialogContent

@@ -9,6 +9,7 @@ import { updateUnreadMessages } from "@/apis/requests/chat.requests";
 import DownloadIconButton from "../DownloadIconButton";
 import { useTranslations } from "next-intl";
 import PlaceholderImage from "@/public/images/product-placeholder.png";
+import sanitizeHtml from "@/utils/sanitizeHtml";
 
 interface SellerChatHistoryProps {
   roomId: number | null;
@@ -209,7 +210,7 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
                         <div className="rounded-xl rounded-br-sm bg-blue-600 px-3 py-2 text-xs text-white shadow-md ring-1 ring-blue-700/20">
                           <p
                             dangerouslySetInnerHTML={{
-                              __html: chat?.content,
+                              __html: sanitizeHtml(chat?.content),
                             }}
                           />
 
@@ -424,7 +425,7 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
                                   <p
                                     className="text-xs text-gray-800"
                                     dangerouslySetInnerHTML={{
-                                      __html: chat?.content,
+                                      __html: sanitizeHtml(chat?.content),
                                     }}
                                   />
                                 </div>
@@ -543,7 +544,7 @@ const SellerChatHistory: React.FC<SellerChatHistoryProps> = ({
                             <div className="rounded-xl rounded-tl-sm bg-white px-3 py-2 text-xs text-gray-800 shadow-sm ring-1 ring-gray-200">
                               <p
                                 dangerouslySetInnerHTML={{
-                                  __html: chat?.content,
+                                  __html: sanitizeHtml(chat?.content),
                                 }}
                               />
                             </div>

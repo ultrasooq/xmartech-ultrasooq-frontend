@@ -5,6 +5,7 @@ import { useAuth } from "@/context/AuthContext";
 import { updateUnreadMessages } from "@/apis/requests/chat.requests";
 import DownloadIconButton from "../DownloadIconButton";
 import { useTranslations } from "next-intl";
+import sanitizeHtml from "@/utils/sanitizeHtml";
 
 interface ProductChatHistoryProps {
   roomId?: number | null;
@@ -101,7 +102,7 @@ const ProductChatHistory: React.FC<ProductChatHistoryProps> = ({
                             <p
                               className="text-white"
                               dangerouslySetInnerHTML={{
-                                __html: chat?.content,
+                                __html: sanitizeHtml(chat?.content),
                               }}
                             />
                           </div>
@@ -227,7 +228,7 @@ const ProductChatHistory: React.FC<ProductChatHistoryProps> = ({
                             <p
                               className="text-gray-900"
                               dangerouslySetInnerHTML={{
-                                __html: chat?.content,
+                                __html: sanitizeHtml(chat?.content),
                               }}
                             />
                           </div>

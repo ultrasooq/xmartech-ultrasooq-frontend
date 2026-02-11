@@ -13,7 +13,8 @@ import {
   useProductVariant,
 } from "@/apis/queries/product.queries";
 import { useDropshipProducts } from "@/apis/queries/dropship.queries";
-import ProductCard from "@/components/modules/trending/ProductCard";
+import dynamic from "next/dynamic";
+import LazyProductCard from "@/components/modules/trending/LazyProductCard";
 import GridIcon from "@/components/icons/GridIcon";
 import ListIcon from "@/components/icons/ListIcon";
 import FilterMenuIcon from "@/components/icons/FilterMenuIcon";
@@ -1572,7 +1573,7 @@ const TrendingPage = (props0: TrendingPageProps) => {
                               });
                           }
                           return (
-                            <ProductCard
+                            <LazyProductCard
                               key={item.id}
                               productVariants={
                                 productVariants.find(

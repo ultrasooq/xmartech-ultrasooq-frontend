@@ -12,7 +12,7 @@ import {
   useAllProducts,
   useExistingProduct,
 } from "@/apis/queries/product.queries";
-import ProductCard from "@/components/modules/trending/ProductCard";
+import LazyProductCard from "@/components/modules/trending/LazyProductCard";
 import { debounce } from "lodash";
 import {
   Accordion,
@@ -274,7 +274,7 @@ const ExistingProductsPage = () => {
 
               <div className="product-list-s1">
                 {memoizedProductList.map((item: TrendingProduct) => (
-                  <ProductCard
+                  <LazyProductCard
                     key={item.id}
                     item={item}
                     onWishlist={() => { }}

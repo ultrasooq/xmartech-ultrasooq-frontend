@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
 import { IWallet, IWalletTransaction } from "@/utils/types/wallet.types";
 
 export type WalletState = {
@@ -29,6 +29,17 @@ const initialWalletState: WalletState = {
   error: null,
 };
 
+/**
+ * Secure wallet store that minimizes persisted sensitive data
+ * 
+ * SECURITY: For production safety, we do NOT persist:
+ * - Full transaction history (contains financial details, descriptions, metadata)
+ * - User IDs or account IDs
+ * - Transaction metadata (may contain sensitive payment info)
+ * 
+ * Only persists minimal balance info for UX (session-only via sessionStorage)
+ * Full wallet data should be fetched from backend when needed
+ */
 export const useWalletStore = create<WalletState & WalletActions>()(
   persist(
     (set, get) => ({
@@ -80,11 +91,32 @@ export const useWalletStore = create<WalletState & WalletActions>()(
     }),
     {
       name: "wallet-storage",
-      getStorage: () => localStorage,
-      // Only persist essential data, not loading states
+      // Use sessionStorage (cleared on browser close) for better security
+      storage: createJSONStorage(() => {
+        if (typeof window === "undefined") {
+          return {
+            getItem: () => null,
+            setItem: () => {},
+            removeItem: () => {},
+          } as any;
+        }
+        return sessionStorage;
+      }),
+      // Only persist minimal non-sensitive data
       partialize: (state) => ({
-        wallet: state.wallet,
-        transactions: state.transactions.slice(0, 50), // Keep only last 50 transactions
+        // Only persist balance and status - no transaction history, no user IDs
+        wallet: state.wallet
+          ? {
+              id: state.wallet.id,
+              balance: state.wallet.balance,
+              frozenBalance: state.wallet.frozenBalance,
+              status: state.wallet.status,
+              currencyCode: state.wallet.currencyCode,
+              // Explicitly exclude: userId, userAccountId, createdAt, updatedAt
+            }
+          : null,
+        // Do NOT persist transactions (contains sensitive financial data, descriptions, metadata)
+        transactions: [],
         lastUpdated: state.lastUpdated,
       }),
     }

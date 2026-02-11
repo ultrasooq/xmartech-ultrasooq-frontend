@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import sanitizeHtml from "@/utils/sanitizeHtml";
 
 interface PlateEditorProps {
   description?: string;
@@ -15,11 +16,13 @@ const PlateEditor: React.FC<PlateEditorProps> = ({
   fixedToolbar = false,
   ...props
 }) => {
+  const safeHtml = sanitizeHtml(description || "");
+
   return (
     <div
       className="prose max-w-none"
       dangerouslySetInnerHTML={{
-        __html: description || "",
+        __html: safeHtml,
       }}
       {...props}
     />

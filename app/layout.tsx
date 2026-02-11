@@ -11,6 +11,7 @@ import ReactQueryProvider from "@/providers/ReactQueryProvider";
 import LocaleProvider from "@/components/LocaleProvider";
 import ConditionalLayout from "@/components/ConditionalLayout";
 import TitleProtection from "@/components/TitleProtection";
+import ErrorBoundaryWrapper from "@/components/ErrorBoundaryWrapper";
 import { getUserLocale } from "@/src/services/locale";
 import { PUREMOON_TOKEN_KEY } from "@/utils/constants";
 import axios from "axios";
@@ -106,6 +107,7 @@ export default async function RootLayout({
     <SessionWrapper>
       <html lang={locale} className="h-full overflow-x-hidden">
         <body className={`${inter.className} h-full overflow-x-hidden`}>
+          <ErrorBoundaryWrapper>
           {/* <DisableRouteAnnouncer /> */}
           <ReactQueryProvider>
             <AuthProvider
@@ -134,6 +136,7 @@ export default async function RootLayout({
               </SocketProvider>
             </AuthProvider>
           </ReactQueryProvider>
+          </ErrorBoundaryWrapper>
         </body>
       </html>
     </SessionWrapper>

@@ -90,7 +90,11 @@ export default function LocaleProvider({
   }
 
   return (
-    <NextIntlClientProvider messages={currentMessages} locale={currentLocale}>
+    <NextIntlClientProvider 
+      messages={currentMessages} 
+      locale={currentLocale}
+      timeZone="UTC" // Add timeZone to match server-side config
+    >
       {children}
     </NextIntlClientProvider>
   );

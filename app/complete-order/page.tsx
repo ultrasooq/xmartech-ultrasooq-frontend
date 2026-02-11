@@ -31,7 +31,7 @@ import {
   useCreateAmwalPayConfig,
 } from "@/apis/queries/orders.queries";
 import { useRouter } from "next/navigation";
-import { loadStripe } from "@stripe/stripe-js";
+import { loadStripe } from "@/components/payments/LazyStripeLoader";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -41,9 +41,9 @@ import { Button } from "@/components/ui/button";
 import LoaderWithMessage from "@/components/shared/LoaderWithMessage";
 import { useWalletBalance } from "@/apis/queries/wallet.queries";
 
-// Load Stripe with your public key
+// Load Stripe with your public key from environment
 const stripePromise = loadStripe(
-  "pk_test_51QuptGPQ2VnoEyMPay2u4FyltporIQfMh9hWcp2EEresPjx07AuT4lFLuvnNrvO7ksqtaepmRQHfYs4FLia8lIV500i83tXYMR",
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "",
 );
 
 const CompleteOrderPage = () => {

@@ -1,10 +1,24 @@
 "use client";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import Header from "@/layout/MainLayout/Header";
-import Sidebar from "@/layout/MainLayout/Sidebar";
+import dynamic from "next/dynamic";
 import ContentWrapper from "@/components/ContentWrapper";
-import CategorySidebar from "@/components/modules/trending/CategorySidebar";
+
+// Lazy load heavy components
+const Header = dynamic(() => import("@/layout/MainLayout/Header"), {
+  ssr: true,
+});
+
+const Sidebar = dynamic(() => import("@/layout/MainLayout/Sidebar"), {
+  ssr: true,
+});
+
+const CategorySidebar = dynamic(
+  () => import("@/components/modules/trending/CategorySidebar"),
+  {
+    ssr: false,
+  }
+);
 
 interface ConditionalLayoutProps {
   children: React.ReactNode;

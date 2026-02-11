@@ -19,6 +19,10 @@ export const initialOrderState: State = {
   cart: [],
 };
 
+/**
+ * RFQ Cart store - safe to persist (only contains product IDs and quantities)
+ * Uses sessionStorage for session-only persistence
+ */
 export const useCartStore = create<State & Actions>()(
   persist(
     (set) => ({
@@ -47,7 +51,17 @@ export const useCartStore = create<State & Actions>()(
     }),
     {
       name: "rfq-cart-storage",
-      storage: createJSONStorage(() => localStorage),
+      // Use sessionStorage (cleared on browser close) for better security
+      storage: createJSONStorage(() => {
+        if (typeof window === "undefined") {
+          return {
+            getItem: () => null,
+            setItem: () => {},
+            removeItem: () => {},
+          } as any;
+        }
+        return sessionStorage;
+      }),
     },
   ),
 );

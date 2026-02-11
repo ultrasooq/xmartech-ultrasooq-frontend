@@ -16,13 +16,15 @@ import {
   useCreatePaymentIntent
 } from "@/apis/queries/orders.queries";
 import { useRouter } from "next/navigation";
-import { loadStripe } from "@stripe/stripe-js";
+import { loadStripe } from "@/components/payments/LazyStripeLoader";
 import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 
-// Load Stripe with your public key
-const stripePromise = loadStripe("pk_test_51QuptGPQ2VnoEyMPay2u4FyltporIQfMh9hWcp2EEresPjx07AuT4lFLuvnNrvO7ksqtaepmRQHfYs4FLia8lIV500i83tXYMR");
+// Load Stripe with your public key from environment
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "",
+);
 
 const OrdersPage = () => {
   const t = useTranslations();

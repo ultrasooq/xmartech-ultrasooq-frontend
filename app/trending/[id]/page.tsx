@@ -38,7 +38,7 @@ import Footer from "@/components/shared/Footer";
 // import EmailIcon from "@/public/images/email.svg";
 // import PhoneCallIcon from "@/public/images/phone-call.svg";
 import VendorSection from "@/components/modules/productDetails/VendorSection";
-import PlateEditor from "@/components/shared/Plate/PlateEditor";
+import PlateEditor from "@/components/shared/Plate/LazyPlateEditor";
 import ProductCard from "@/components/modules/cartList/ProductCard";
 import ServiceCard from "@/components/modules/cartList/ServiceCard";
 import { Skeleton } from "@/components/ui/skeleton";

@@ -22,7 +22,7 @@ import { useMe } from "@/apis/queries/user.queries";
 import { useQueryClient } from "@tanstack/react-query";
 import Footer from "@/components/shared/Footer";
 import VendorSection from "@/components/modules/productDetails/VendorSection";
-import PlateEditor from "@/components/shared/Plate/PlateEditor";
+import PlateEditor from "@/components/shared/Plate/LazyPlateEditor";
 import ProductCard from "@/components/modules/cartList/ProductCard";
 import ServiceCard from "@/components/modules/cartList/ServiceCard";
 import { Skeleton } from "@/components/ui/skeleton";

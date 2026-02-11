@@ -1788,5 +1788,9 @@
   "skip_loading": "تخطي التحميل",
   "product_data_loaded": "تم تحميل بيانات المنتج",
   "ai_data_loaded_successfully": "تم تحميل البيانات التي تم إنشاؤها بواسطة الذكاء الاصطناعي بنجاح. يرجى مراجعتها وإكمال النموذج.",
-  "product_location_and_customization": "موقع المنتج والتخصيص"
+  "product_location_and_customization": "موقع المنتج والتخصيص",
+  "search_rfq_banner_title": "لا يمكنك العثور على ما تبحث عنه؟",
+  "search_rfq_banner_message": "إذا لم تتمكن من العثور على المنتج الذي تبحث عنه، أنشئ طلب عرض سعر وسنرد عليك خلال 72 ساعة.",
+  "create_rfq": "إنشاء طلب عرض سعر",
+  "create_rfq_request": "إنشاء طلب عرض سعر"
 }

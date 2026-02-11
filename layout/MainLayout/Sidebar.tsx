@@ -211,15 +211,25 @@ const Sidebar: React.FC<SidebarProps> = ({ notificationCount }) => {
           },
         },
         {
-          icon: <WrenchIcon className="h-5 w-5 text-teal-600" />,
-          label: t("my_services"),
-          translationKey: "my_services",
-          shortLabel: getShortLabel("my_services"),
-          path: "/manage-services",
+          icon: <PackageIcon className="h-5 w-5 text-emerald-600" />,
+          label: t("external_stores"),
+          translationKey: "external_stores",
+          shortLabel: getShortLabel("external_stores"),
+          path: "/external-stores",
           onClick: () => {
-            router.push("/manage-services");
+            router.push("/external-stores");
           },
         },
+        // {
+        //   icon: <WrenchIcon className="h-5 w-5 text-teal-600" />,
+        //   label: t("my_services"),
+        //   translationKey: "my_services",
+        //   shortLabel: getShortLabel("my_services"),
+        //   path: "/manage-services",
+        //   onClick: () => {
+        //     router.push("/manage-services");
+        //   },
+        // },
         {
           icon: <FileSearchIcon className="h-5 w-5 text-purple-600" />,
           label: t("rfq_quotes"),
@@ -240,24 +250,24 @@ const Sidebar: React.FC<SidebarProps> = ({ notificationCount }) => {
             router.push("/seller-orders");
           },
         },
-        {
-          icon: <UsersIcon className="h-5 w-5 text-violet-600" />,
-          label: t("team_members"),
-          translationKey: "team_members",
-          shortLabel: getShortLabel("team_members"),
-          path: "/team-members",
-          onClick: () => {
-            router.push("/team-members");
-          },
-        },
+        // {
+        //   icon: <UsersIcon className="h-5 w-5 text-violet-600" />,
+        //   label: t("team_members"),
+        //   translationKey: "team_members",
+        //   shortLabel: getShortLabel("team_members"),
+        //   path: "/team-members",
+        //   onClick: () => {
+        //     router.push("/team-members");
+        //   },
+        // },
         {
           icon: <MessageCircleIcon className="h-5 w-5 text-cyan-600" />,
           label: t("messages"),
           translationKey: "messages",
           shortLabel: getShortLabel("messages"),
-          path: "/messages",
+          path: "/seller-rfq-request",
           onClick: () => {
-            router.push("/messages");
+            router.push("/seller-rfq-request?tab=product-messages");
           },
         },
         {
@@ -286,16 +296,16 @@ const Sidebar: React.FC<SidebarProps> = ({ notificationCount }) => {
             router.push("/manage-products");
           },
         },
-        {
-          icon: <WrenchIcon className="h-5 w-5 text-teal-600" />,
-          label: t("my_services"),
-          translationKey: "my_services",
-          shortLabel: getShortLabel("my_services"),
-          path: "/manage-services",
-          onClick: () => {
-            router.push("/manage-services");
-          },
-        },
+        // {
+        //   icon: <WrenchIcon className="h-5 w-5 text-teal-600" />,
+        //   label: t("my_services"),
+        //   translationKey: "my_services",
+        //   shortLabel: getShortLabel("my_services"),
+        //   path: "/manage-services",
+        //   onClick: () => {
+        //     router.push("/manage-services");
+        //   },
+        // },
         {
           icon: <FileSearchIcon className="h-5 w-5 text-purple-600" />,
           label: t("rfq_quotes"),
@@ -327,15 +337,25 @@ const Sidebar: React.FC<SidebarProps> = ({ notificationCount }) => {
           },
         },
         {
-          icon: <UsersIcon className="h-5 w-5 text-violet-600" />,
-          label: t("team_members"),
-          translationKey: "team_members",
-          shortLabel: getShortLabel("team_members"),
-          path: "/team-members",
+          icon: <PackageIcon className="h-5 w-5 text-emerald-600" />,
+          label: t("external_stores"),
+          translationKey: "external_stores",
+          shortLabel: getShortLabel("external_stores"),
+          path: "/external-stores",
           onClick: () => {
-            router.push("/team-members");
+            router.push("/external-stores");
           },
         },
+        // {
+        //   icon: <UsersIcon className="h-5 w-5 text-violet-600" />,
+        //   label: t("team_members"),
+        //   translationKey: "team_members",
+        //   shortLabel: getShortLabel("team_members"),
+        //   path: "/team-members",
+        //   onClick: () => {
+        //     router.push("/team-members");
+        //   },
+        // },
         {
           icon: <BarChart3Icon className="h-5 w-5 text-green-600" />,
           label: t("analytics"),

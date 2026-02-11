@@ -4,7 +4,7 @@ import ProductCardHome from "@/components/modules/home/ProductCard";
 import TrendingCard from "@/components/modules/home/TrendingCard";
 import TrendingOptionCard from "@/components/modules/home/TrendingOptionCard";
 import TrendingCategories from "@/components/modules/home/TrendingCategories";
-import ProductCard from "@/components/modules/trending/ProductCard";
+import LazyProductCard from "@/components/modules/trending/LazyProductCard";
 import Footer from "@/components/shared/Footer";
 import {
   bestSellerList,
@@ -496,7 +496,7 @@ function HomePage() {
                     });
                 }
                 return (
-                  <ProductCard
+                  <LazyProductCard
                     key={item.id}
                     item={item}
                     onWishlist={() =>
@@ -557,7 +557,7 @@ function HomePage() {
             </div>
             <div className="grid w-full grid-cols-2 pt-10 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
               {bestSellerList.map((item: any) => (
-                <ProductCard key={uuidv4()} item={item} />
+                <LazyProductCard key={uuidv4()} item={item} onWishlist={() => {}} haveAccessToken={false} />
               ))}
             </div>
           </div>
@@ -744,7 +744,7 @@ function HomePage() {
                     });
                 }
                 return (
-                  <ProductCard
+                  <LazyProductCard
                     key={item.id}
                     item={item}
                     onWishlist={() =>
@@ -866,7 +866,7 @@ function HomePage() {
                     });
                 }
                 return (
-                  <ProductCard
+                  <LazyProductCard
                     key={item.id}
                     item={item}
                     onWishlist={() =>
@@ -997,7 +997,7 @@ function HomePage() {
                       });
                   }
                   return (
-                    <ProductCard
+                    <LazyProductCard
                       key={item.id}
                       item={item}
                       onWishlist={() =>
@@ -1062,7 +1062,7 @@ function HomePage() {
                     });
                 }
                 return (
-                  <ProductCard
+                  <LazyProductCard
                     key={item.id}
                     item={item}
                     onWishlist={() =>
@@ -1126,7 +1126,7 @@ function HomePage() {
                     });
                 }
                 return (
-                  <ProductCard
+                  <LazyProductCard
                     key={item.id}
                     item={item}
                     onWishlist={() =>
@@ -1191,7 +1191,7 @@ function HomePage() {
                     });
                 }
                 return (
-                  <ProductCard
+                  <LazyProductCard
                     key={item.id}
                     item={item}
                     onWishlist={() =>
@@ -1255,7 +1255,7 @@ function HomePage() {
                     });
                 }
                 return (
-                  <ProductCard
+                  <LazyProductCard
                     key={item.id}
                     item={item}
                     onWishlist={() =>
@@ -1319,7 +1319,7 @@ function HomePage() {
                     });
                 }
                 return (
-                  <ProductCard
+                  <LazyProductCard
                     key={item.id}
                     item={item}
                     onWishlist={() =>

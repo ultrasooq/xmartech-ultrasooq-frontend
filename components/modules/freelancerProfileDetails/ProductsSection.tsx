@@ -5,6 +5,7 @@ import {
   useProductVariant,
   useProducts,
   useVendorProducts,
+  useAllManagedProducts,
 } from "@/apis/queries/product.queries";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
@@ -43,6 +44,7 @@ import {
 } from "@/components/ui/select";
 import FilterMenuIcon from "@/components/icons/FilterMenuIcon";
 import SkeletonProductCardLoader from "@/components/shared/SkeletonProductCardLoader";
+import Pagination from "@/components/shared/Pagination";
 
 type ProductsSectionProps = {
   sellerId?: string;
@@ -69,6 +71,8 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
     useState(false);
   const [productVariants, setProductVariants] = useState<any[]>([]);
   const [cartList, setCartList] = useState<any[]>([]);
+  const [page, setPage] = useState(1);
+  const [limit] = useState(12);
 
   const me = useMe();
 
@@ -107,25 +111,29 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
 
   const fetchProductVariant = useProductVariant();
 
-  const productsQuery = useProducts(
+  const productsQuery = useAllManagedProducts(
     {
-      userId: String(me?.data?.data?.id),
-      page: 1,
-      limit: 10,
-      term: searchTerm,
-      brandIds: selectedBrandIds.join(","),
+      page: page,
+      limit: limit,
+      term: searchTerm || undefined,
+      selectedAdminId:
+        me?.data?.data?.tradeRole == "MEMBER"
+          ? me?.data?.data?.addedBy
+          : undefined,
+      brandIds: selectedBrandIds.length > 0 ? selectedBrandIds.join(",") : undefined,
       status: displayHiddenProducts ? "INACTIVE" : "",
-      expireDate: displayExpiredProducts ? "expired" : "",
+      expireDate: displayExpiredProducts ? "expired" : undefined,
       sellType:
-        displayStoreProducts || displayBuyGroupProducts ? sellType() : "",
-      discount: displayDiscountedProducts,
-      sort: sortBy,
+        displayStoreProducts || displayBuyGroupProducts ? sellType() : undefined,
+      discount: displayDiscountedProducts || undefined,
     },
     !!me?.data?.data?.id && !sellerId,
   );
 
   const handleDebounce = debounce((event: any) => {
     setSearchTerm(event.target.value);
+    setPage(1); // Reset to first page when searching
+    if (sellerId) setVendorPage(1);
   }, 1000);
 
   const handleBrandChange = (
@@ -141,13 +149,18 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
       tempArr = tempArr.filter((ele: number) => ele !== item.value);
     }
     setSelectedBrandIds(tempArr);
+    setPage(1); // Reset to first page when filter changes
+    if (sellerId) setVendorPage(1);
   };
+
+  const [vendorPage, setVendorPage] = useState(1);
+  const [vendorLimit] = useState(12);
 
   const vendorProductsQuery = useVendorProducts(
     {
       adminId: sellerId || "",
-      page: 1,
-      limit: 10,
+      page: vendorPage,
+      limit: vendorLimit,
       term: searchTerm,
       brandIds: selectedBrandIds.join(","),
       status: "",
@@ -181,6 +194,8 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
     setDisplayExpiredProducts(false);
     setDisplayHiddenProducts(false);
     setDisplayDiscountedProducts(false);
+    setPage(1); // Reset to first page when clearing filters
+    if (sellerId) setVendorPage(1);
 
     if (searchInputRef.current) searchInputRef.current.value = "";
   };
@@ -191,47 +206,73 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
 
   const memoizedProducts = useMemo(() => {
     const mapped = (productsQuery.data?.data?.map((item: any) => {
-      // Find the active product price entry (status: "ACTIVE")
-      // If no active entry, fall back to the first one
-      const activePriceEntry = item?.product_productPrice?.find(
-        (pp: any) => pp?.status === "ACTIVE"
-      ) || item?.product_productPrice?.[0];
+      // useAllManagedProducts returns productPrice entries with nested product data
+      // Structure: item.productPrice_product contains the product details
+      const product = item?.productPrice_product || item?.product || item;
+      
+      // Get product image - prefer seller image, fallback to product image
+      const productImage = item?.productPrice_productSellerImage?.length
+        ? item?.productPrice_productSellerImage?.[0]?.image
+        : product?.productImages?.[0]?.image
+        || item?.productImages?.[0]?.image;
+      
+      // Get product reviews and wishlist from the product
+      const productReview = product?.productReview || item?.productReview || [];
+      const productWishlist = product?.product_wishlist || item?.product_wishlist || [];
       
       const mappedItem = {
-        id: item?.id,
-        productName: item?.productName || "-",
-        productPrice: item?.productPrice || 0,
-        offerPrice: item?.offerPrice || 0,
-        productImage: item?.productImages?.[0]?.image,
-        categoryName: item?.category?.name || "-",
-        skuNo: item?.skuNo,
-        brandName: item?.brand?.brandName || "-",
-        productReview: item?.productReview || [],
-        shortDescription: item?.product_productShortDescription?.length
+        id: product?.id || item?.productId || item?.id,
+        productName: product?.productName || item?.productName || "-",
+        productPrice: product?.productPrice || item?.productPrice || 0,
+        offerPrice: item?.offerPrice || product?.offerPrice || 0,
+        productImage: productImage,
+        categoryName: product?.category?.name || item?.category?.name || "-",
+        skuNo: product?.skuNo || item?.skuNo,
+        brandName: product?.brand?.brandName || item?.brand?.brandName || "-",
+        productReview: productReview,
+        shortDescription: product?.product_productShortDescription?.length
+          ? product?.product_productShortDescription?.[0]?.shortDescription
+          : item?.product_productShortDescription?.length
           ? item?.product_productShortDescription?.[0]?.shortDescription
           : "-",
-        status: item?.status || "-",
-        productWishlist: item?.product_wishlist || [],
-        inWishlist: item?.product_wishlist?.find(
+        status: item?.status || product?.status || "-",
+        productWishlist: productWishlist,
+        inWishlist: productWishlist.find(
           (ele: any) => ele?.userId === me.data?.data?.id,
         ),
-        productProductPriceId: activePriceEntry?.id,
-        productProductPrice: activePriceEntry?.offerPrice,
-        consumerDiscount: activePriceEntry?.consumerDiscount,
-        consumerDiscountType: activePriceEntry?.consumerDiscountType,
-        vendorDiscount: activePriceEntry?.vendorDiscount,
-        vendorDiscountType: activePriceEntry?.vendorDiscountType,
-        askForPrice: activePriceEntry?.askForPrice,
-        productPrices: item?.product_productPrice,
-        categoryId: item?.categoryId,
-        categoryLocation: item?.categoryLocation,
-        consumerType: activePriceEntry?.consumerType,
+        productProductPriceId: item?.id, // This is the productPriceId
+        productProductPrice: item?.offerPrice || 0,
+        consumerDiscount: item?.consumerDiscount || 0,
+        consumerDiscountType: item?.consumerDiscountType,
+        vendorDiscount: item?.vendorDiscount || 0,
+        vendorDiscountType: item?.vendorDiscountType,
+        askForPrice: item?.askForPrice,
+        productPrices: product?.product_productPrice || [item], // Wrap current price entry in array
+        categoryId: product?.categoryId || item?.categoryId,
+        categoryLocation: product?.categoryLocation || item?.categoryLocation,
+        consumerType: item?.consumerType,
       };
       
       return mappedItem;
     }) || []);
     
-    return mapped;
+    // Apply frontend sorting since useAllManagedProducts doesn't support sort parameter
+    const sorted = [...mapped];
+    if (sortBy === "desc") {
+      sorted.sort((a: any, b: any) => {
+        const dateA = new Date(a.id).getTime();
+        const dateB = new Date(b.id).getTime();
+        return dateB - dateA; // Descending (newest first)
+      });
+    } else if (sortBy === "asc") {
+      sorted.sort((a: any, b: any) => {
+        const dateA = new Date(a.id).getTime();
+        const dateB = new Date(b.id).getTime();
+        return dateA - dateB; // Ascending (oldest first)
+      });
+    }
+    
+    return sorted;
   }, [
     productsQuery.data?.data,
     me.data?.data?.id,
@@ -321,6 +362,19 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
     getProductVariants();
   }, [memoizedProducts, memoizedVendorProducts]);
 
+  // Reset page when filters change
+  useEffect(() => {
+    setPage(1);
+    if (sellerId) setVendorPage(1);
+  }, [
+    displayStoreProducts,
+    displayBuyGroupProducts,
+    displayExpiredProducts,
+    displayHiddenProducts,
+    displayDiscountedProducts,
+    sortBy,
+  ]);
+
   const cartListByUser = useCartListByUserId({
     page: 1,
     limit: 100,
@@ -394,9 +448,9 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
 
   return (
     <div className="trending-search-sec mt-0">
-      <div className="container m-auto px-3">
+      <div className="container m-auto px-2 sm:px-4 lg:px-6 max-w-full">
         <div
-          className={productFilter ? "left-filter show" : "left-filter"}
+          className={productFilter ? "left-filter show max-w-[280px]" : "left-filter max-w-[280px]"}
           dir={langDir}
         >
           <div className="all_select_button">
@@ -601,17 +655,17 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
           onClick={() => setProductFilter(false)}
         ></div>
 
-        <div className="right-products">
+        <div className="right-products" style={{ maxWidth: 'calc(100% - 280px)' }}>
           <div className="products-header-filter">
             <div className="le-info">
               {/* TODO: need name here */}
               {/* <h3></h3> */}
             </div>
             <div className="rg-filter">
-              {!sellerId && memoizedProducts.length ? (
+              {!sellerId && (memoizedProducts.length > 0 || productsQuery.data?.totalCount) ? (
                 <p dir={langDir} translate="no">
                   {t("n_products_found", {
-                    n: productsQuery.data?.totalCount,
+                    n: productsQuery.data?.totalCount || memoizedProducts.length,
                   })}
                 </p>
               ) : null}
@@ -712,7 +766,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
             </p>
           ) : null}
 
-          <div className="profile_details_product flex flex-wrap gap-3 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="profile_details_product grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
             {!sellerId && memoizedProducts.length && !productsQuery?.isLoading
               ? memoizedProducts.map((item: any) => {
                   const cartItem = cartList?.find(
@@ -742,6 +796,7 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
                       }
                       inWishlist={item?.inWishlist}
                       haveAccessToken={!!me.data?.data}
+                      isSeller={true}
                       productVariants={
                         productVariants.find(
                           (variant: any) => variant.productId == item.id,
@@ -804,6 +859,29 @@ const ProductsSection: React.FC<ProductsSectionProps> = ({ sellerId }) => {
                 })
               : null}
           </div>
+
+          {/* Pagination */}
+          {!sellerId && memoizedProducts.length > 0 && productsQuery.data?.totalCount ? (
+            <div className="mt-6">
+              <Pagination
+                totalCount={productsQuery.data?.totalCount || 0}
+                page={page}
+                setPage={setPage}
+                limit={limit}
+              />
+            </div>
+          ) : null}
+
+          {sellerId && memoizedVendorProducts.length > 0 && vendorProductsQuery.data?.totalCount ? (
+            <div className="mt-6">
+              <Pagination
+                totalCount={vendorProductsQuery.data?.totalCount || 0}
+                page={vendorPage}
+                setPage={setVendorPage}
+                limit={vendorLimit}
+              />
+            </div>
+          ) : null}
         </div>
       </div>
     </div>

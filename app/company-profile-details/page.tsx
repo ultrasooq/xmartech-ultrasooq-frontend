@@ -250,20 +250,7 @@ export default function CompanyProfileDetailsPage() {
                 <TabsContent value="products" className="mt-0">
                   <div className="w-full rounded-b-3xl rounded-tr-3xl border-2 border-blue-100 bg-white px-4 py-6 sm:px-8 sm:py-10 md:px-12 md:py-14">
                     {/* importing from freelancer details module */}
-                    <div className="space-y-6">
-                      <div className="flex items-center gap-3 mb-8">
-                        <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                          <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                          </svg>
-                        </div>
-                        <div>
-                          <h3 className="text-xl sm:text-2xl font-bold text-gray-900">{t("products")}</h3>
-                          <p className="text-sm text-gray-600">{t("browse_our_product_catalog")}</p>
-                        </div>
-                      </div>
-                      <ProductsSection sellerId={activeSellerId as string} />
-                    </div>
+                    <ProductsSection sellerId={activeSellerId as string} />
                   </div>
                 </TabsContent>
               </Tabs>

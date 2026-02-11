@@ -37,7 +37,7 @@ import Footer from "@/components/shared/Footer";
 // import EmailIcon from "@/public/images/email.svg";
 // import PhoneCallIcon from "@/public/images/phone-call.svg";
 import VendorSection from "@/components/modules/productDetails/VendorSection";
-import PlateEditor from "@/components/shared/Plate/PlateEditor";
+import PlateEditor from "@/components/shared/Plate/LazyPlateEditor";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/context/AuthContext";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";

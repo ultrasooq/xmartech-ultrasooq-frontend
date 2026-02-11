@@ -77,17 +77,26 @@ export const isBrowser = (): boolean => {
 
 export const getOrCreateDeviceId = () => {
   if (!isBrowser()) return;
-  let deviceId = localStorage.getItem("deviceId");
-  if (!deviceId) {
-    deviceId = generateDeviceId();
-    localStorage.setItem("deviceId", deviceId);
+  try {
+    let deviceId = localStorage.getItem("deviceId");
+    if (!deviceId) {
+      deviceId = generateDeviceId();
+      localStorage.setItem("deviceId", deviceId);
+    }
+    return deviceId;
+  } catch {
+    // Silently fail if storage is unavailable
+    return generateDeviceId();
   }
-  return deviceId;
 };
 
 export const getLoginType = () => {
   if (!isBrowser()) return;
-  return localStorage.getItem("loginType");
+  try {
+    return localStorage.getItem("loginType");
+  } catch {
+    return null;
+  }
 };
 
 export const stripHTML = (text: string) => {
