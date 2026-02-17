@@ -30,7 +30,6 @@ import {
   StoreIcon,
   ShoppingBagIcon,
   FileSearchIcon,
-  BarChart3Icon,
   UserCheckIcon,
   WalletIcon,
 } from "lucide-react";
@@ -107,7 +106,6 @@ const Sidebar: React.FC<SidebarProps> = ({ notificationCount }) => {
       cart: "cart",
       wishlist: "wishlist",
       messages: "message",
-      analytics: "analytics",
       dropshipping: "dropshipping",
       profile: "profile",
       settings: "settings",
@@ -270,16 +268,6 @@ const Sidebar: React.FC<SidebarProps> = ({ notificationCount }) => {
             router.push("/seller-rfq-request?tab=product-messages");
           },
         },
-        {
-          icon: <BarChart3Icon className="h-5 w-5 text-green-600" />,
-          label: t("analytics"),
-          translationKey: "analytics",
-          shortLabel: getShortLabel("analytics"),
-          path: "/analytics",
-          onClick: () => {
-            router.push("/analytics");
-          },
-        },
       );
     }
 
@@ -356,16 +344,6 @@ const Sidebar: React.FC<SidebarProps> = ({ notificationCount }) => {
         //     router.push("/team-members");
         //   },
         // },
-        {
-          icon: <BarChart3Icon className="h-5 w-5 text-green-600" />,
-          label: t("analytics"),
-          translationKey: "analytics",
-          shortLabel: getShortLabel("analytics"),
-          path: "/analytics",
-          onClick: () => {
-            router.push("/analytics");
-          },
-        },
       );
     }
 
