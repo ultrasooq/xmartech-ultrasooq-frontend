@@ -695,14 +695,14 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
   // Prevent body scroll when sidebar is open
   useEffect(() => {
     if (shouldShow) {
-      // Prevent body scroll
-      const originalOverflow = document.body.style.overflow;
       document.body.style.overflow = "hidden";
-
-      return () => {
-        document.body.style.overflow = originalOverflow;
-      };
+    } else {
+      document.body.style.overflow = "";
     }
+
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [shouldShow]);
 
   if (!hasBeenShown && !shouldShow) return null;
