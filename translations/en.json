@@ -2051,5 +2051,6 @@
   "search_rfq_banner_title": "Can't find what you're looking for?",
   "search_rfq_banner_message": "If you can't find the product you're looking for, make an RFQ and we will answer you within 72 hours.",
   "create_rfq": "Create RFQ",
-  "create_rfq_request": "Create RFQ Request"
+  "create_rfq_request": "Create RFQ Request",
+  "language": "Language"
 }

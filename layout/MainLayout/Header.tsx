@@ -11,7 +11,7 @@ import { useWishlistCount } from "@/apis/queries/wishlist.queries";
 import { fetchIpInfo } from "@/apis/requests/ip.requests";
 import QueryForm from "@/components/modules/QueryForm";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -53,7 +53,13 @@ import { getInitials, getOrCreateDeviceId } from "@/utils/helper";
 import { useQueryClient } from "@tanstack/react-query";
 import { deleteCookie, getCookie, setCookie } from "cookies-next";
 import { debounce, isArray } from "lodash";
-import { MenuIcon, LayoutGrid, Search, Loader2 } from "lucide-react";
+import {
+  MenuIcon,
+  LayoutGrid,
+  Search,
+  Loader2,
+  MoreHorizontal,
+} from "lucide-react";
 import { signOut } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
@@ -114,6 +120,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
   const { isHovered, isOpen, openSidebar, closeSidebar } = useSidebar();
   const [mounted, setMounted] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [isMobileMoreOpen, setIsMobileMoreOpen] = useState(false);
 
   // Ensure hydration matches - only calculate sidebar width after mount
   useEffect(() => {
@@ -150,7 +157,10 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
     window.addEventListener("closeCategorySidebar", handleCloseCategorySidebar);
 
     return () => {
-      window.removeEventListener("closeCategorySidebar", handleCloseCategorySidebar);
+      window.removeEventListener(
+        "closeCategorySidebar",
+        handleCloseCategorySidebar,
+      );
     };
   }, []);
   // const [subCategoryId, setSubCategoryId] = useState();
@@ -189,7 +199,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
     hasAccessToken && pathname?.startsWith("/rfq"),
   );
   // Check if RFQ cart has items - response structure is rfqCartQuery.data.data (array)
-  const hasRfqCartItems = 
+  const hasRfqCartItems =
     Array.isArray(rfqCartQuery.data?.data) && rfqCartQuery.data.data.length > 0;
   const category = useCategoryStore();
   const me = useMe(!!accessToken);
@@ -496,17 +506,18 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
     const getIpInfo = async () => {
       try {
         // Use sessionStorage for ipInfo (geolocation data - session-only)
-        const storedIpInfo = typeof window !== "undefined" 
-          ? window.sessionStorage.getItem("ipInfo") 
-          : null;
-        
+        const storedIpInfo =
+          typeof window !== "undefined"
+            ? window.sessionStorage.getItem("ipInfo")
+            : null;
+
         if (!storedIpInfo || getCookie("ipInfoLoaded") != "1") {
           const response = await fetchIpInfo();
 
           const ip = response.data.ip;
           if (ip) {
             let savedIpInfo = storedIpInfo ? JSON.parse(storedIpInfo) : {};
-            
+
             if (!savedIpInfo.ip || (savedIpInfo.ip && savedIpInfo.ip != ip)) {
               // Store ipInfo in sessionStorage (cleared on browser close)
               if (typeof window !== "undefined") {
@@ -525,7 +536,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
               localeKey =
                 languages.find((language) => language.locale == localeKey)
                   ?.locale || "en";
-              
+
               // Locale and currency are safe for localStorage (non-sensitive preferences)
               if (typeof window !== "undefined") {
                 try {
@@ -538,7 +549,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                   // Silently fail if storage is unavailable
                 }
               }
-              
+
               applyTranslation(localeKey).then(() => {
                 router.refresh();
               });
@@ -551,9 +562,10 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
           }
         } else {
           // Load currency from localStorage (safe preference)
-          const storedCurrency = typeof window !== "undefined"
-            ? window.localStorage.getItem("currency")
-            : null;
+          const storedCurrency =
+            typeof window !== "undefined"
+              ? window.localStorage.getItem("currency")
+              : null;
           if (storedCurrency) {
             setSelectedCurrency(storedCurrency);
             changeCurrency(storedCurrency);
@@ -1077,11 +1089,18 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                     alt="login"
                     className="h-4 w-4"
                   />
-                  <span className="text-xs font-medium text-white">
-                    Login
-                  </span>
+                  <span className="text-xs font-medium text-white">Login</span>
                 </Link>
               )}
+              {/* More (mobile utilities) */}
+              <button
+                type="button"
+                className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/5 text-white transition-all hover:bg-white/15 active:scale-95 sm:h-9 sm:w-9"
+                onClick={() => setIsMobileMoreOpen(true)}
+                aria-label="More options"
+              >
+                <MoreHorizontal className="h-4 w-4" />
+              </button>
             </div>
           </div>
 
@@ -1089,7 +1108,9 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
           <div className="mb-2 flex items-center gap-2 sm:mb-2.5">
             <div className="relative flex-1">
               <input
-                type="text"
+                type="search"
+                inputMode="search"
+                enterKeyHint="search"
                 className={`h-9 w-full rounded-lg border-2 border-white/20 bg-white/95 text-sm transition-all placeholder:text-gray-400 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none sm:h-10 sm:text-base ${
                   currentLocale === "ar" ? "pr-3 pl-10" : "pr-10 pl-3"
                 }`}
@@ -1136,15 +1157,15 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                 {/* Search Icon Button - Second in Arabic */}
                 <button
                   type="button"
-                  className="relative z-10 flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg transition-all hover:from-orange-600 hover:to-orange-700 active:scale-95 sm:h-10 sm:w-10 disabled:opacity-70 disabled:cursor-not-allowed"
+                  className="relative z-10 flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg transition-all hover:from-orange-600 hover:to-orange-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-70 sm:h-10 sm:w-10"
                   onClick={handleSearchClick}
                   disabled={isSearching}
-                  style={{ pointerEvents: 'auto' }}
+                  style={{ pointerEvents: "auto" }}
                 >
                   {isSearching ? (
-                    <Loader2 className="h-5 w-5 animate-spin pointer-events-none" />
+                    <Loader2 className="pointer-events-none h-5 w-5 animate-spin" />
                   ) : (
-                    <Search className="h-5 w-5 pointer-events-none" />
+                    <Search className="pointer-events-none h-5 w-5" />
                   )}
                 </button>
               </>
@@ -1153,15 +1174,15 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                 {/* Search Icon Button - First in English */}
                 <button
                   type="button"
-                  className="relative z-10 flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg transition-all hover:from-orange-600 hover:to-orange-700 active:scale-95 sm:h-10 sm:w-10 disabled:opacity-70 disabled:cursor-not-allowed"
+                  className="relative z-10 flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg transition-all hover:from-orange-600 hover:to-orange-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-70 sm:h-10 sm:w-10"
                   onClick={handleSearchClick}
                   disabled={isSearching}
-                  style={{ pointerEvents: 'auto' }}
+                  style={{ pointerEvents: "auto" }}
                 >
                   {isSearching ? (
-                    <Loader2 className="h-5 w-5 animate-spin pointer-events-none" />
+                    <Loader2 className="pointer-events-none h-5 w-5 animate-spin" />
                   ) : (
-                    <Search className="h-5 w-5 pointer-events-none" />
+                    <Search className="pointer-events-none h-5 w-5" />
                   )}
                 </button>
                 {/* All Categories Icon Button - Second in English */}
@@ -1237,7 +1258,9 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
               {memoizedMenu
                 .filter((item: any) => {
                   const name = item.name.toLowerCase();
-                  return !name.includes("service") && !name.includes("factories");
+                  return (
+                    !name.includes("service") && !name.includes("factories")
+                  );
                 })
                 .map((item: any) => {
                   // Use the static href from the menu item
@@ -1264,7 +1287,10 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                       {currentLocale === "ar" ? (
                         <>
                           <span className="text-xs font-medium sm:text-sm">
-                            {t(item.translationKey || getMenuTranslationKey(item?.name))}
+                            {t(
+                              item.translationKey ||
+                                getMenuTranslationKey(item?.name),
+                            )}
                           </span>
                           <Image
                             src={item.icon}
@@ -1294,7 +1320,10 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                             }}
                           />
                           <span className="text-xs font-medium sm:text-sm">
-                            {t(item.translationKey || getMenuTranslationKey(item?.name))}
+                            {t(
+                              item.translationKey ||
+                                getMenuTranslationKey(item?.name),
+                            )}
                           </span>
                         </>
                       )}
@@ -1315,9 +1344,9 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
           ((pathname === "/trending" || pathname === "/buygroup") &&
             hasCartItems &&
             (langDir === "rtl" ? "lg:pl-36" : "lg:pr-36")) ||
-          (pathname?.startsWith("/rfq") &&
-            hasRfqCartItems &&
-            (langDir === "rtl" ? "lg:pl-36" : "lg:pr-36")),
+            (pathname?.startsWith("/rfq") &&
+              hasRfqCartItems &&
+              (langDir === "rtl" ? "lg:pl-36" : "lg:pr-36")),
           showHeader ? "translate-y-0" : "-translate-y-full",
         )}
         key={`header-${currentTradeRole}-${currentAccount?.data?.data?.account?.id}`}
@@ -1504,12 +1533,12 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                     {/* Search button - first in Arabic */}
                     <button
                       type="button"
-                      className="relative z-10 h-9 rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 px-4 text-sm font-semibold whitespace-nowrap text-white shadow-lg transition-all hover:from-orange-600 hover:to-orange-700 active:scale-95 md:h-10 md:px-6 md:text-base lg:px-8 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      className="relative z-10 flex h-9 items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 px-4 text-sm font-semibold whitespace-nowrap text-white shadow-lg transition-all hover:from-orange-600 hover:to-orange-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-70 md:h-10 md:px-6 md:text-base lg:px-8"
                       onClick={handleSearchClick}
                       disabled={isSearching}
                       dir={langDir}
                       translate="no"
-                      style={{ pointerEvents: 'auto' }}
+                      style={{ pointerEvents: "auto" }}
                     >
                       {isSearching ? (
                         <>
@@ -1650,12 +1679,12 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                     {/* Search button - last in English */}
                     <button
                       type="button"
-                      className="relative z-10 h-9 rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 px-4 text-sm font-semibold whitespace-nowrap text-white shadow-lg transition-all hover:from-orange-600 hover:to-orange-700 active:scale-95 md:h-10 md:px-6 md:text-base lg:px-8 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      className="relative z-10 flex h-9 items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 px-4 text-sm font-semibold whitespace-nowrap text-white shadow-lg transition-all hover:from-orange-600 hover:to-orange-700 active:scale-95 disabled:cursor-not-allowed disabled:opacity-70 md:h-10 md:px-6 md:text-base lg:px-8"
                       onClick={handleSearchClick}
                       disabled={isSearching}
                       dir={langDir}
                       translate="no"
-                      style={{ pointerEvents: 'auto' }}
+                      style={{ pointerEvents: "auto" }}
                     >
                       {isSearching ? (
                         <>
@@ -1671,7 +1700,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
               </div>
               <div
                 className={cn(
-                  "flex w-[25%] sm:w-7/12 md:w-3/12 md:py-1.5 lg:w-1/6 lg:py-2 flex-shrink-0",
+                  "flex w-[25%] flex-shrink-0 sm:w-7/12 md:w-3/12 md:py-1.5 lg:w-1/6 lg:py-2",
                   langDir === "rtl"
                     ? "order-1 justify-start"
                     : "order-2 justify-end sm:order-2 md:order-3",
@@ -1679,7 +1708,7 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
               >
                 <ul
                   className={cn(
-                    "flex items-center gap-x-2 md:gap-x-3 flex-shrink-0",
+                    "flex flex-shrink-0 items-center gap-x-2 md:gap-x-3",
                     langDir === "rtl" ? "justify-start" : "justify-end",
                   )}
                 >
@@ -2166,7 +2195,12 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                         <div className="flex gap-x-3" onClick={handleClick}>
                           {currentLocale === "ar" ? (
                             <>
-                              <p>{t(item.translationKey || getMenuTranslationKey(item?.name))}</p>
+                              <p>
+                                {t(
+                                  item.translationKey ||
+                                    getMenuTranslationKey(item?.name),
+                                )}
+                              </p>
                               <Image
                                 src={item.icon}
                                 alt={item?.name}
@@ -2194,7 +2228,12 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
                                     : "none",
                                 }}
                               />{" "}
-                              <p>{t(item.translationKey || getMenuTranslationKey(item?.name))}</p>
+                              <p>
+                                {t(
+                                  item.translationKey ||
+                                    getMenuTranslationKey(item?.name),
+                                )}
+                              </p>
                             </>
                           )}
                         </div>
@@ -2517,6 +2556,101 @@ const Header: React.FC<{ locale?: string }> = ({ locale = "en" }) => {
           </div>
         )}
       </header>
+
+      {/* Mobile 'More' dialog for utility actions (store location, track order, currency, language) */}
+      <Dialog open={isMobileMoreOpen} onOpenChange={setIsMobileMoreOpen}>
+        <DialogContent className="max-w-xs rounded-2xl bg-white p-4 sm:max-w-sm sm:p-5">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <DialogTitle className="text-sm font-semibold text-gray-900">
+                {t("more") || "More"}
+              </DialogTitle>
+              <button
+                type="button"
+                onClick={() => setIsMobileMoreOpen(false)}
+                className="rounded-full p-1 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700"
+                aria-label="Close"
+              >
+                <IoCloseOutline className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-sm">
+              {/* Store Location */}
+              {currentTradeRole !== "BUYER" && (
+                <button
+                  type="button"
+                  className="flex w-full items-center justify-between rounded-lg border border-gray-200 px-3 py-2 text-left text-gray-800 transition-colors hover:bg-gray-50"
+                >
+                  <span>{t("store_location")}</span>
+                  <span className="text-xs text-gray-400">Coming soon</span>
+                </button>
+              )}
+
+              {/* Track Your Order */}
+              <Link
+                href="/my-orders"
+                className="flex w-full items-center justify-between rounded-lg border border-gray-200 px-3 py-2 text-left text-gray-800 transition-colors hover:bg-gray-50"
+              >
+                <span>{t("track_your_order")}</span>
+                <span className="text-xs text-blue-600 underline">
+                  {t("view") || "View"}
+                </span>
+              </Link>
+
+              {/* Currency Selector */}
+              <div className="rounded-lg border border-gray-200 px-3 py-2">
+                <span className="block text-xs font-medium text-gray-500">
+                  {t("currency") || "Currency"}
+                </span>
+                <select
+                  dir={langDir}
+                  className="mt-1 w-full cursor-pointer rounded-md border border-gray-200 bg-white px-2 py-1 text-sm text-gray-800 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  value={selectedCurrency}
+                  onChange={(e: any) => {
+                    const value = e.target?.value || "OMR";
+                    setSelectedCurrency(value);
+                    window.localStorage.setItem("currency", value);
+                    changeCurrency(value);
+                  }}
+                >
+                  {currencies.map((item: { code: string }) => (
+                    <option value={item.code} key={item.code}>
+                      {item.code}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Language Selector */}
+              <div className="rounded-lg border border-gray-200 px-3 py-2">
+                <span className="block text-xs font-medium text-gray-500">
+                  {t("language") || "Language"}
+                </span>
+                <select
+                  dir={langDir}
+                  className="mt-1 w-full cursor-pointer rounded-md border border-gray-200 bg-white px-2 py-1 text-sm text-gray-800 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  value={selectedLocale}
+                  onChange={async (e) => {
+                    const newLocale = e.target.value;
+                    setSelectedLocale(newLocale);
+                    await applyTranslation(newLocale);
+                    router.refresh();
+                  }}
+                >
+                  {languages.map(
+                    (language: { locale: string; name: string }) => (
+                      <option key={language.locale} value={language.locale}>
+                        {language.name}
+                      </option>
+                    ),
+                  )}
+                </select>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={isQueryModalOpen} onOpenChange={handleToggleQueryModal}>
         <DialogContent
