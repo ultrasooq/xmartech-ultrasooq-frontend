@@ -44,10 +44,10 @@ const scrollbarStyles = `
   }
 `;
 
-if (typeof document !== 'undefined') {
-  const styleId = 'category-sidebar-scrollbar-styles';
+if (typeof document !== "undefined") {
+  const styleId = "category-sidebar-scrollbar-styles";
   if (!document.getElementById(styleId)) {
-    const style = document.createElement('style');
+    const style = document.createElement("style");
     style.id = styleId;
     style.textContent = scrollbarStyles;
     document.head.appendChild(style);
@@ -80,7 +80,7 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
   const [hasBeenShown, setHasBeenShown] = useState(false);
   const [categoriesWithSubcategories, setCategoriesWithSubcategories] =
     useState<Array<{ category: any; subcategories: any[] }>>([]);
-  
+
   // Track selected category ID at each level (up to 6 levels)
   // Level 0: Main category, Level 1-5: Subcategories
   const [selectedLevels, setSelectedLevels] = useState<(number | null)[]>([
@@ -94,11 +94,13 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
 
   // Mobile navigation stack: tracks the path of selected categories
   // Each item: { level: number, categoryId: number, categoryName: string }
-  const [mobileNavStack, setMobileNavStack] = useState<Array<{
-    level: number;
-    categoryId: number;
-    categoryName: string;
-  }>>([]);
+  const [mobileNavStack, setMobileNavStack] = useState<
+    Array<{
+      level: number;
+      categoryId: number;
+      categoryName: string;
+    }>
+  >([]);
 
   // Store loaded children for each category path
   const [loadedChildren, setLoadedChildren] = useState<Map<string, any[]>>(
@@ -178,15 +180,21 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
   }, [mainCategories, mainCategoryIdsWithSubcategories]);
 
   // Recursive function to fetch all category levels
-  const fetchCategoryWithChildren = async (category: any, level: number = 0): Promise<any> => {
+  const fetchCategoryWithChildren = async (
+    category: any,
+    level: number = 0,
+  ): Promise<any> => {
     try {
       const response = await fetchCategory({
         categoryId: category.id.toString(),
       });
       const children = response?.data?.data?.children || [];
-      
+
       const childrenWithNested = children.map((child: any) => {
-        const hasChildren = child.children && Array.isArray(child.children) && child.children.length > 0;
+        const hasChildren =
+          child.children &&
+          Array.isArray(child.children) &&
+          child.children.length > 0;
         return {
           ...child,
           children: [],
@@ -212,11 +220,17 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
   };
 
   // Fetch children for a specific category on-demand
-  const fetchCategoryChildren = async (categoryId: number, originalChildren?: any[]): Promise<any[]> => {
+  const fetchCategoryChildren = async (
+    categoryId: number,
+    originalChildren?: any[],
+  ): Promise<any[]> => {
     try {
       if (originalChildren && originalChildren.length > 0) {
         return originalChildren.map((child: any) => {
-          const hasChildren = child.children && Array.isArray(child.children) && child.children.length > 0;
+          const hasChildren =
+            child.children &&
+            Array.isArray(child.children) &&
+            child.children.length > 0;
           return {
             ...child,
             children: [],
@@ -230,9 +244,12 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
         categoryId: categoryId.toString(),
       });
       const children = response?.data?.data?.children || [];
-      
+
       return children.map((child: any) => {
-        const hasChildren = child.children && Array.isArray(child.children) && child.children.length > 0;
+        const hasChildren =
+          child.children &&
+          Array.isArray(child.children) &&
+          child.children.length > 0;
         return {
           ...child,
           children: [],
@@ -241,7 +258,10 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
         };
       });
     } catch (error) {
-      console.error(`Error fetching children for category ${categoryId}:`, error);
+      console.error(
+        `Error fetching children for category ${categoryId}:`,
+        error,
+      );
       return [];
     }
   };
@@ -253,10 +273,13 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
 
       const categoriesData = await Promise.all(
         mainCategories.map(async (category: any) => {
-          const categoryWithChildren = await fetchCategoryWithChildren(category, 0);
-          return { 
-            category: categoryWithChildren, 
-            subcategories: categoryWithChildren.children || [] 
+          const categoryWithChildren = await fetchCategoryWithChildren(
+            category,
+            0,
+          );
+          return {
+            category: categoryWithChildren,
+            subcategories: categoryWithChildren.children || [],
           };
         }),
       );
@@ -268,7 +291,14 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
         );
         if (firstCategoryWithSubcategories) {
           setSelectedMainCategory(firstCategoryWithSubcategories.category.id);
-          setSelectedLevels([firstCategoryWithSubcategories.category.id, null, null, null, null, null]);
+          setSelectedLevels([
+            firstCategoryWithSubcategories.category.id,
+            null,
+            null,
+            null,
+            null,
+            null,
+          ]);
         }
       }
     };
@@ -301,30 +331,32 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
 
     // Check cache first
     const path = selectedLevels.slice(0, level + 1);
-    const pathKey = path.join('-');
+    const pathKey = path.join("-");
     if (loadedChildren.has(pathKey)) {
       return loadedChildren.get(pathKey) || [];
     }
 
     // Traverse the tree to find the category at this level
     let currentCategories = selectedCategory.subcategories;
-    
+
     for (let i = 1; i <= level; i++) {
       const selectedId = selectedLevels[i];
       if (!selectedId) return [];
-      
-      const selectedItem = currentCategories.find((cat: any) => cat.id === selectedId);
+
+      const selectedItem = currentCategories.find(
+        (cat: any) => cat.id === selectedId,
+      );
       if (!selectedItem) {
         // Try cache for this level
         const cachePath = selectedLevels.slice(0, i + 1);
-        const cacheKey = cachePath.join('-');
+        const cacheKey = cachePath.join("-");
         if (loadedChildren.has(cacheKey)) {
           currentCategories = loadedChildren.get(cacheKey) || [];
           continue;
         }
         return [];
       }
-      
+
       // If this is the target level, return its children
       if (i === level) {
         if (selectedItem.children && selectedItem.children.length > 0) {
@@ -336,14 +368,14 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
         }
         return [];
       }
-      
+
       // Otherwise, continue traversing
       if (selectedItem.children && selectedItem.children.length > 0) {
         currentCategories = selectedItem.children;
       } else {
         // Check cache
         const cachePath = selectedLevels.slice(0, i + 1);
-        const cacheKey = cachePath.join('-');
+        const cacheKey = cachePath.join("-");
         if (loadedChildren.has(cacheKey)) {
           currentCategories = loadedChildren.get(cacheKey) || [];
         } else {
@@ -356,7 +388,11 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
   };
 
   // Handle category hover at a specific level (for categories with children)
-  const handleCategoryHover = async (categoryId: number, level: number, category: any) => {
+  const handleCategoryHover = async (
+    categoryId: number,
+    level: number,
+    category: any,
+  ) => {
     const hasChildren =
       (category.children &&
         Array.isArray(category.children) &&
@@ -379,12 +415,15 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
 
     // Fetch children if not already loaded
     const path = newSelectedLevels.slice(0, level + 1);
-    const pathKey = path.join('-');
-    
+    const pathKey = path.join("-");
+
     if (!loadedChildren.has(pathKey)) {
       const originalChildren = category._originalChildren || [];
-      const children = await fetchCategoryChildren(categoryId, originalChildren);
-      
+      const children = await fetchCategoryChildren(
+        categoryId,
+        originalChildren,
+      );
+
       // Store loaded children
       setLoadedChildren((prev) => {
         const newMap = new Map(prev);
@@ -411,7 +450,7 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
               }
               const nextId = pathIds[currentLevel];
               if (!nextId) return categories;
-              
+
               return categories.map((cat) => ({
                 ...cat,
                 children: updateCategoryTree(
@@ -452,17 +491,21 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
     }
   };
 
-  // Handle main category hover (level 0)
-  const handleMainCategoryHover = (categoryId: number) => {
+  // Handle main category click (level 0)
+  const handleMainCategoryClick = (categoryId: number) => {
     setSelectedMainCategory(categoryId);
     setSelectedLevels([categoryId, null, null, null, null, null]);
     setLoadedChildren(new Map());
   };
 
   // Mobile: Get current categories to display based on nav stack
-  const getMobileCurrentCategories = (): { categories: any[]; level: number; title: string } => {
+  const getMobileCurrentCategories = (): {
+    categories: any[];
+    level: number;
+    title: string;
+  } => {
     const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
-    
+
     if (!isMobile) {
       return { categories: [], level: -1, title: "" };
     }
@@ -470,7 +513,9 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
     // If stack is empty, show main categories
     if (mobileNavStack.length === 0) {
       return {
-        categories: categoriesWithSubcategoriesFiltered.map(({ category }) => category),
+        categories: categoriesWithSubcategoriesFiltered.map(
+          ({ category }) => category,
+        ),
         level: 0,
         title: "Categories",
       };
@@ -478,13 +523,13 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
 
     // Get the last item in the stack
     const lastItem = mobileNavStack[mobileNavStack.length - 1];
-    
+
     // Get categories for the next level (children of the last selected category)
     // The level parameter in getCategoriesForLevel represents which level's children to show
     // So if lastItem.level is 0, we want level 0's children (which are at level 1)
     // If lastItem.level is 1, we want level 1's children (which are at level 2)
     const categories = getCategoriesForLevel(lastItem.level);
-    
+
     return {
       categories: categories || [],
       level: lastItem.level,
@@ -501,18 +546,18 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
     if (level === 0) {
       // Find the category in categoriesWithSubcategoriesFiltered
       const categoryWithSubs = categoriesWithSubcategoriesFiltered.find(
-        ({ category: cat }) => cat.id === category.id
+        ({ category: cat }) => cat.id === category.id,
       );
-      
+
       if (categoryWithSubs && categoryWithSubs.subcategories.length > 0) {
         // Set as selected main category and load its children
         setSelectedMainCategory(category.id);
         setSelectedLevels([category.id, null, null, null, null, null]);
         setLoadedChildren(new Map());
-        
+
         // Load first level children
         await handleCategoryHover(category.id, 0, category);
-        
+
         // Push to navigation stack
         setMobileNavStack([
           {
@@ -530,9 +575,13 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
 
     // For subcategories (level > 0)
     const hasChildren =
-      (category.children && Array.isArray(category.children) && category.children.length > 0) ||
+      (category.children &&
+        Array.isArray(category.children) &&
+        category.children.length > 0) ||
       category.hasChildren ||
-      (category._originalChildren && Array.isArray(category._originalChildren) && category._originalChildren.length > 0);
+      (category._originalChildren &&
+        Array.isArray(category._originalChildren) &&
+        category._originalChildren.length > 0);
 
     if (hasChildren) {
       // Update selectedLevels to include this category
@@ -543,10 +592,10 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
         newSelectedLevels[i] = null;
       }
       setSelectedLevels(newSelectedLevels);
-      
+
       // Load children if not already loaded
       await handleCategoryHover(category.id, level, category);
-      
+
       // Push to navigation stack
       setMobileNavStack((prev) => [
         ...prev,
@@ -566,7 +615,7 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
   const handleMobileBack = () => {
     setMobileNavStack((prev) => {
       const newStack = prev.slice(0, -1);
-      
+
       // Update selectedLevels to match the new stack
       if (newStack.length === 0) {
         // Back to main categories - reset to initial state
@@ -583,7 +632,7 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
         }
         setSelectedLevels(newSelectedLevels);
       }
-      
+
       return newStack;
     });
   };
@@ -602,8 +651,14 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
     window.addEventListener("closeCategorySidebar", handleCloseCategorySidebar);
 
     return () => {
-      window.removeEventListener("openCategorySidebar", handleOpenCategorySidebar);
-      window.removeEventListener("closeCategorySidebar", handleCloseCategorySidebar);
+      window.removeEventListener(
+        "openCategorySidebar",
+        handleOpenCategorySidebar,
+      );
+      window.removeEventListener(
+        "closeCategorySidebar",
+        handleCloseCategorySidebar,
+      );
     };
   }, []);
 
@@ -642,8 +697,8 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
     if (shouldShow) {
       // Prevent body scroll
       const originalOverflow = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
-      
+      document.body.style.overflow = "hidden";
+
       return () => {
         document.body.style.overflow = originalOverflow;
       };
@@ -652,321 +707,62 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
 
   if (!hasBeenShown && !shouldShow) return null;
 
-  // Scrollable main category column component
-  const ScrollableMainColumn: React.FC<{
-    children: React.ReactNode;
-  }> = ({ children }) => {
-    const [isScrolling, setIsScrolling] = useState(false);
-    const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-    const columnRef = useRef<HTMLDivElement>(null);
+  // === DESKTOP: Build breadcrumb trail from selectedLevels ===
+  const getBreadcrumbTrail = (): Array<{ id: number; name: string; level: number }> => {
+    const trail: Array<{ id: number; name: string; level: number }> = [];
 
-    useEffect(() => {
-      const column = columnRef.current;
-      if (!column) return;
+    // Main category (level 0)
+    if (selectedLevels[0]) {
+      const mainCat = categoriesWithSubcategoriesFiltered.find(
+        ({ category }) => category.id === selectedLevels[0],
+      );
+      if (mainCat) {
+        trail.push({ id: mainCat.category.id, name: mainCat.category.name, level: 0 });
+      }
+    }
 
-      const handleScroll = () => {
-        setIsScrolling(true);
-        if (scrollTimeoutRef.current) {
-          clearTimeout(scrollTimeoutRef.current);
-        }
-        scrollTimeoutRef.current = setTimeout(() => {
-          setIsScrolling(false);
-        }, 1000);
-      };
+    // Deeper levels
+    for (let i = 1; i < 6; i++) {
+      if (!selectedLevels[i]) break;
+      const cats = getCategoriesForLevel(i - 1);
+      const found = cats.find((c: any) => c.id === selectedLevels[i]);
+      if (found) {
+        trail.push({ id: found.id, name: found.name, level: i });
+      }
+    }
 
-      column.addEventListener('scroll', handleScroll);
-      return () => {
-        column.removeEventListener('scroll', handleScroll);
-        if (scrollTimeoutRef.current) {
-          clearTimeout(scrollTimeoutRef.current);
-        }
-      };
-    }, []);
-
-    return (
-      <div
-        ref={columnRef}
-        className={cn(
-          "flex-shrink-0 h-full overflow-y-auto bg-gray-50 border-r border-gray-200 custom-scrollbar",
-          "w-[180px] sm:w-[200px] md:w-[240px]",
-          isScrolling && "scrolling"
-        )}
-        style={{
-          scrollbarWidth: 'thin',
-          scrollbarColor: 'transparent transparent',
-        }}
-        onWheel={(e) => {
-          // Ensure scroll works smoothly
-          const element = columnRef.current;
-          if (element) {
-            const { scrollTop, scrollHeight, clientHeight } = element;
-            const canScrollUp = scrollTop > 0;
-            const canScrollDown = scrollTop < scrollHeight - clientHeight - 1;
-            
-            // Only prevent default if at boundary
-            if ((e.deltaY < 0 && !canScrollUp) || (e.deltaY > 0 && !canScrollDown)) {
-              e.preventDefault();
-            }
-            e.stopPropagation();
-          }
-        }}
-      >
-        {children}
-      </div>
-    );
+    return trail;
   };
 
-  // Scrollable horizontal container component
-  const ScrollableHorizontalContainer: React.FC<{
-    children: React.ReactNode;
-  }> = ({ children }) => {
-    const [isScrolling, setIsScrolling] = useState(false);
-    const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-    const containerRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-      const container = containerRef.current;
-      if (!container) return;
-
-      const handleScroll = () => {
-        setIsScrolling(true);
-        if (scrollTimeoutRef.current) {
-          clearTimeout(scrollTimeoutRef.current);
+  // === DESKTOP: Get the deepest active subcategories to display in grid ===
+  const getActiveGridCategories = (): { categories: any[]; level: number } => {
+    // Find the deepest level that has a selection, and show its children
+    for (let i = 5; i >= 0; i--) {
+      if (selectedLevels[i]) {
+        const cats = getCategoriesForLevel(i);
+        if (cats.length > 0) {
+          return { categories: cats, level: i };
         }
-        scrollTimeoutRef.current = setTimeout(() => {
-          setIsScrolling(false);
-        }, 1000);
-      };
-
-      container.addEventListener('scroll', handleScroll);
-      return () => {
-        container.removeEventListener('scroll', handleScroll);
-        if (scrollTimeoutRef.current) {
-          clearTimeout(scrollTimeoutRef.current);
-        }
-      };
-    }, []);
-
-    return (
-      <div
-        ref={containerRef}
-        className={cn(
-          "flex-1 flex overflow-x-auto min-w-0 h-full custom-scrollbar",
-          isScrolling && "scrolling"
-        )}
-        style={{
-          scrollbarWidth: 'thin',
-          scrollbarColor: 'transparent transparent',
-        }}
-      >
-        {children}
-      </div>
-    );
-  };
-
-  // Scrollable column component
-  const ScrollableColumn: React.FC<{
-    level: number;
-    title: string;
-    categories: any[];
-    selectedId: number | null;
-    onCategoryHover: (categoryId: number, category: any) => void;
-    onCategoryClick: (categoryId: number) => void;
-  }> = ({ level, title, categories, selectedId, onCategoryHover, onCategoryClick }) => {
-    const [isScrolling, setIsScrolling] = useState(false);
-    const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-    const columnRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-      const column = columnRef.current;
-      if (!column) return;
-
-      const handleScroll = () => {
-        setIsScrolling(true);
-        if (scrollTimeoutRef.current) {
-          clearTimeout(scrollTimeoutRef.current);
-        }
-        scrollTimeoutRef.current = setTimeout(() => {
-          setIsScrolling(false);
-        }, 1000);
-      };
-
-      column.addEventListener('scroll', handleScroll);
-      return () => {
-        column.removeEventListener('scroll', handleScroll);
-        if (scrollTimeoutRef.current) {
-          clearTimeout(scrollTimeoutRef.current);
-        }
-      };
-    }, []);
-
-    return (
-      <div
-        ref={columnRef}
-        className={cn(
-          "flex-shrink-0 h-full overflow-y-auto border-r border-gray-200 bg-white custom-scrollbar",
-          "w-[180px] sm:w-[200px] md:w-[240px]",
-          isScrolling && "scrolling"
-        )}
-        style={{
-          scrollbarWidth: 'thin',
-          scrollbarColor: 'transparent transparent',
-        }}
-        onWheel={(e) => {
-          // Ensure smooth scrolling
-          const element = columnRef.current;
-          if (element) {
-            const { scrollTop, scrollHeight, clientHeight } = element;
-            const canScrollUp = scrollTop > 0;
-            const canScrollDown = scrollTop < scrollHeight - clientHeight - 1;
-            
-            // Only prevent default if at boundary to allow natural scroll behavior
-            if ((e.deltaY < 0 && !canScrollUp) || (e.deltaY > 0 && !canScrollDown)) {
-              e.preventDefault();
-            }
-            // Stop propagation to prevent body scroll
-            e.stopPropagation();
-          }
-        }}
-      >
-        <div className="p-4">
-          <h3 className="text-sm font-semibold text-gray-900 mb-3 sticky top-0 bg-white pb-2 border-b border-gray-200 z-10 -mx-4 -mt-4 px-4 pt-4">
-            {translate(title)}
-          </h3>
-          <div className="space-y-1">
-            {categories.map((item: any) => {
-              const isSelected = selectedId === item.id;
-              const hasChildren =
-                (item.children &&
-                  Array.isArray(item.children) &&
-                  item.children.length > 0) ||
-                item.hasChildren ||
-                (item._originalChildren &&
-                  Array.isArray(item._originalChildren) &&
-                  item._originalChildren.length > 0);
-
-              return (
-                <div
-                  key={item.id}
-                  className={cn(
-                    "flex items-center gap-3 px-3 py-2 rounded-md transition-colors",
-                    hasChildren ? "cursor-default" : "cursor-pointer",
-                    isSelected
-                      ? "bg-blue-50 text-blue-700 font-medium border border-blue-200"
-                      : "hover:bg-gray-50 text-gray-700",
-                  )}
-                  onMouseEnter={(e) => {
-                    // Only use hover on desktop
-                    if (window.innerWidth >= 768 && hasChildren) {
-                      const timeoutId = setTimeout(() => {
-                        onCategoryHover(item.id, item);
-                      }, 200);
-                      (e.currentTarget as any)._hoverTimeout = timeoutId;
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    // Only use hover on desktop
-                    if (window.innerWidth >= 768) {
-                      const target = e.currentTarget as any;
-                      if (target._hoverTimeout) {
-                        clearTimeout(target._hoverTimeout);
-                        target._hoverTimeout = null;
-                      }
-                    }
-                  }}
-                  onClick={() => {
-                    if (hasChildren) {
-                      // On mobile, clicking a category with children should navigate to it
-                      if (window.innerWidth < 768) {
-                        onCategoryHover(item.id, item);
-                      }
-                    } else {
-                      onCategoryClick(item.id);
-                    }
-                  }}
-                  onWheel={(e) => {
-                    // Clear any pending hover when scrolling
-                    const target = e.currentTarget as any;
-                    if (target._hoverTimeout) {
-                      clearTimeout(target._hoverTimeout);
-                      target._hoverTimeout = null;
-                    }
-                    // Allow scroll to work - don't stop propagation so parent can handle it
-                  }}
-                >
-                  {item.icon ? (
-                    <img
-                      src={item.icon}
-                      alt={item.name}
-                      height={20}
-                      width={20}
-                      className="object-contain flex-shrink-0"
-                    />
-                  ) : (
-                    <div className="h-5 w-5 flex-shrink-0 rounded bg-gray-200" />
-                  )}
-                  <span className="text-sm flex-1 text-left line-clamp-1">
-                    {translate(item.name)}
-                  </span>
-                  {hasChildren && (
-                    <svg
-                      className="w-4 h-4 text-gray-400 flex-shrink-0"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 5l7 7-7 7"
-                      />
-                    </svg>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // Render a category column
-  const renderCategoryColumn = (level: number, title: string) => {
-    const categories = getCategoriesForLevel(level);
-    if (categories.length === 0) return null;
-
-    const selectedId = selectedLevels[level + 1];
-
-    return (
-      <ScrollableColumn
-        key={level}
-        level={level}
-        title={title}
-        categories={categories}
-        selectedId={selectedId}
-        onCategoryHover={(categoryId, category) => handleCategoryHover(categoryId, level + 1, category)}
-        onCategoryClick={handleCategoryClick}
-      />
-    );
+      }
+    }
+    // Fallback: show level 0 subcategories
+    const cats = getCategoriesForLevel(0);
+    return { categories: cats, level: 0 };
   };
 
   // Get title for a column based on selected category
   const getColumnTitle = (level: number): string => {
     if (level === 0) {
-      // Show the main category name for level 0
       const selectedCategory = categoriesWithSubcategoriesFiltered.find(
         ({ category }) => category.id === selectedLevels[0],
       );
       return translate(selectedCategory?.category.name) || t("categories");
     }
-    
-    // For deeper levels, show the parent category name (the one selected at the previous level)
+
     const prevLevel = level - 1;
     const selectedId = selectedLevels[prevLevel + 1];
     if (!selectedId) return `Level ${level + 1}`;
-    
+
     const categories = getCategoriesForLevel(prevLevel);
     const selectedCategory = categories.find((c: any) => c.id === selectedId);
     return translate(selectedCategory?.name) || `Level ${level + 1}`;
@@ -977,28 +773,17 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
       {/* Backdrop */}
       <div
         className={cn(
-          "fixed inset-0 z-[90] bg-black/30 transition-opacity duration-500",
+          "fixed inset-0 z-[90] bg-black/20 backdrop-blur-[2px] transition-all duration-300",
           shouldShow
             ? "pointer-events-auto opacity-100"
             : "pointer-events-none opacity-0",
         )}
         onClick={(e) => {
-          // Only close if clicking directly on backdrop, not on children
-          // Check if the click target is the backdrop itself
           if (e.target === e.currentTarget) {
-            // Close on backdrop click
             onClose();
           }
         }}
-        // Disabled: Remove auto-close on mouse leave
-        // onMouseEnter={() => {
-        //   // Only use hover on desktop
-        //   if (window.innerWidth >= 768) {
-        //     setIsHovered(false);
-        //   }
-        // }}
         onTouchStart={(e) => {
-          // Close on touch for mobile
           if (window.innerWidth < 768) {
             onClose();
           }
@@ -1009,229 +794,391 @@ const CategorySidebar: React.FC<CategorySidebarProps> = ({
       <div
         ref={containerRef}
         className={cn(
-          "fixed right-0 left-0 z-[100] bg-white shadow-2xl",
-          "transition-all duration-500 ease-out",
-          // Mobile: full screen height, Desktop: fixed height
-          "h-[calc(100vh-var(--header-height,116px))] md:h-[400px]",
+          "fixed left-0 right-0 z-[100] overflow-hidden",
+          "bg-white shadow-[0_8px_30px_rgba(0,0,0,0.12)]",
+          "transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]",
+          // Mobile: full screen, Desktop: compact height
+          "h-[calc(100vh-var(--header-height,116px))] md:h-[420px]",
           shouldShow
-            ? "pointer-events-auto translate-y-0 scale-y-100 opacity-100"
-            : "pointer-events-none -translate-y-8 scale-y-95 opacity-0",
+            ? "pointer-events-auto translate-y-0 opacity-100"
+            : "pointer-events-none -translate-y-3 opacity-0",
         )}
-        style={{
-          top: `${headerHeight}px`,
-          transformOrigin: "top center",
-          "--header-height": `${headerHeight}px`,
-        } as React.CSSProperties & { "--header-height": string }}
-        onClick={(e) => {
-          // Prevent clicks inside the panel from bubbling to backdrop
-          e.stopPropagation();
-        }}
-        onMouseEnter={() => {
-          // Only use hover on desktop
-          if (window.innerWidth >= 768) {
-            setIsHovered(true);
-          }
-        }}
-        // Disabled: Remove auto-close on mouse leave
-        // onMouseLeave={() => {
-        //   // Only use hover on desktop
-        //   if (window.innerWidth >= 768) {
-        //     setIsHovered(false);
-        //   }
-        // }}
+        style={
+          {
+            top: `${headerHeight}px`,
+            transformOrigin: "top center",
+            "--header-height": `${headerHeight}px`,
+          } as React.CSSProperties & { "--header-height": string }
+        }
+        onClick={(e) => e.stopPropagation()}
         onWheel={(e) => {
-          // Prevent scroll propagation to body when scrolling within sidebar
-          const target = e.currentTarget;
-          const scrollableElement = (e.target as HTMLElement).closest('.custom-scrollbar') as HTMLElement;
-          
+          const scrollableElement = (e.target as HTMLElement).closest(
+            ".custom-scrollbar",
+          ) as HTMLElement;
+
           if (scrollableElement) {
             const { scrollTop, scrollHeight, clientHeight } = scrollableElement;
-            const { scrollLeft, scrollWidth, clientWidth } = scrollableElement;
-            
-            // Check if we can scroll in the direction of the wheel event
             const canScrollUp = scrollTop > 0;
             const canScrollDown = scrollTop < scrollHeight - clientHeight;
-            const canScrollLeft = scrollLeft > 0;
-            const canScrollRight = scrollLeft < scrollWidth - clientWidth;
-            
-            // Only prevent default if we're at the boundary and trying to scroll further
+
             if (e.deltaY < 0 && !canScrollUp) {
               e.preventDefault();
               e.stopPropagation();
             } else if (e.deltaY > 0 && !canScrollDown) {
               e.preventDefault();
               e.stopPropagation();
-            } else if (e.deltaX < 0 && !canScrollLeft) {
-              e.preventDefault();
-              e.stopPropagation();
-            } else if (e.deltaX > 0 && !canScrollRight) {
-              e.preventDefault();
-              e.stopPropagation();
             } else {
-              // Prevent propagation to body when scrolling within sidebar
               e.stopPropagation();
             }
           } else {
-            // If not scrolling a scrollable element, prevent propagation
             e.stopPropagation();
           }
         }}
-        onTouchMove={(e) => {
-          // Prevent touch scroll propagation to body
-          e.stopPropagation();
-        }}
+        onTouchMove={(e) => e.stopPropagation()}
         dir={langDir}
       >
-        <div className="relative flex h-full w-full items-start justify-start bg-white">
-          {/* Mobile View - Drill-down navigation */}
-          <div className="md:hidden flex flex-col h-full w-full">
-            {/* Header with Back Button and Close Icon */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-white">
-              {mobileNavStack.length > 0 ? (
-                <button
-                  onClick={handleMobileBack}
+        {/* ============ MOBILE VIEW ============ */}
+        <div className="flex h-full w-full flex-col md:hidden">
+          {/* Mobile Header */}
+          <div className="flex items-center justify-between border-b border-gray-100 bg-gradient-to-r from-slate-50 to-white px-4 py-3">
+            {mobileNavStack.length > 0 ? (
+              <button
+                onClick={handleMobileBack}
+                className={cn(
+                  "flex items-center gap-2 text-gray-700 transition-colors hover:text-gray-900",
+                  langDir === "rtl" ? "flex-row-reverse" : "",
+                )}
+              >
+                <ChevronLeft
                   className={cn(
-                    "flex items-center gap-2 text-gray-700 hover:text-gray-900 transition-colors",
-                    langDir === "rtl" ? "flex-row-reverse" : ""
+                    "h-5 w-5",
+                    langDir === "rtl" ? "rotate-180" : "",
                   )}
-                >
-                  <ChevronLeft className={cn("h-5 w-5", langDir === "rtl" ? "rotate-180" : "")} />
-                  <span className="text-sm font-medium">
-                    {mobileNavStack.length > 1 
-                      ? translate(mobileNavStack[mobileNavStack.length - 2].categoryName)
-                      : t("all_categories")}
-                  </span>
-                </button>
-              ) : (
-                <div></div>
-              )}
-            </div>
-
-            {/* Category Name Section */}
-            {mobileNavStack.length > 0 && (
-              <div className="px-4 py-3 border-b border-gray-200 bg-white">
-                <span className="text-base font-semibold text-gray-900">
-                  {translate(mobileNavStack[mobileNavStack.length - 1].categoryName)}
+                />
+                <span className="text-sm font-medium">
+                  {mobileNavStack.length > 1
+                    ? translate(
+                        mobileNavStack[mobileNavStack.length - 2].categoryName,
+                      )
+                    : t("all_categories")}
                 </span>
-              </div>
+              </button>
+            ) : (
+              <div></div>
             )}
+          </div>
 
-            {/* Current Level Categories */}
-            <div className="flex-1 overflow-y-auto">
-              <div className="py-2">
-                {(() => {
-                  const { categories, title } = getMobileCurrentCategories();
-                  
-                  return categories.map((category: any) => {
-                    const hasChildren =
-                      (category.children && Array.isArray(category.children) && category.children.length > 0) ||
-                      category.hasChildren ||
-                      (category._originalChildren && Array.isArray(category._originalChildren) && category._originalChildren.length > 0);
+          {/* Mobile Category Name Section */}
+          {mobileNavStack.length > 0 && (
+            <div className="border-b border-gray-100 bg-white px-4 py-2.5">
+              <span className="text-[15px] font-semibold text-gray-900">
+                {translate(
+                  mobileNavStack[mobileNavStack.length - 1].categoryName,
+                )}
+              </span>
+            </div>
+          )}
 
-                    return (
-                      <div
-                        key={category.id}
-                        className={cn(
-                          "flex items-center gap-3 px-4 py-3 mx-2 rounded-md transition-colors cursor-pointer",
-                          "hover:bg-gray-50 active:bg-gray-100"
-                        )}
-                        onClick={() => {
-                          // Calculate the level of the categories being shown
-                          // If stack is empty, we're showing main categories (level 0)
-                          // If stack has items, we're showing children of the last item (at lastItem.level + 1)
-                          const categoryLevel = mobileNavStack.length === 0 
-                            ? 0 
-                            : (mobileNavStack[mobileNavStack.length - 1].level + 1);
-                          handleMobileCategoryClick(category, categoryLevel);
-                        }}
-                      >
-                        {category.icon ? (
+          {/* Mobile Category List */}
+          <div className="custom-scrollbar flex-1 overflow-y-auto bg-white">
+            <div className="py-1">
+              {(() => {
+                const { categories, title } = getMobileCurrentCategories();
+
+                return categories.map((category: any) => {
+                  const hasChildren =
+                    (category.children &&
+                      Array.isArray(category.children) &&
+                      category.children.length > 0) ||
+                    category.hasChildren ||
+                    (category._originalChildren &&
+                      Array.isArray(category._originalChildren) &&
+                      category._originalChildren.length > 0);
+
+                  return (
+                    <div
+                      key={category.id}
+                      className={cn(
+                        "mx-2 flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 transition-all duration-200",
+                        "hover:bg-slate-50 active:bg-slate-100",
+                      )}
+                      onClick={() => {
+                        const categoryLevel =
+                          mobileNavStack.length === 0
+                            ? 0
+                            : mobileNavStack[mobileNavStack.length - 1].level + 1;
+                        handleMobileCategoryClick(category, categoryLevel);
+                      }}
+                    >
+                      {category.icon ? (
+                        <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-slate-100">
                           <img
                             src={category.icon}
                             alt={category.name}
-                            height={24}
-                            width={24}
-                            className="object-contain flex-shrink-0"
+                            height={20}
+                            width={20}
+                            className="object-contain"
                           />
-                        ) : (
-                          <div className="h-6 w-6 flex-shrink-0 rounded bg-gray-200" />
-                        )}
-                        <span className="text-base flex-1 text-left text-gray-900">
-                          {translate(category.name)}
-                        </span>
-                        {hasChildren && (
-                          <ChevronLeft className={cn("h-5 w-5 text-gray-400 flex-shrink-0", langDir === "rtl" ? "" : "rotate-180")} />
-                        )}
-                      </div>
-                    );
-                  });
-                })()}
-              </div>
+                        </div>
+                      ) : (
+                        <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-slate-100 to-slate-200">
+                          <div className="h-4 w-4 rounded bg-slate-300" />
+                        </div>
+                      )}
+                      <span className="flex-1 text-left text-[14px] font-medium text-gray-800">
+                        {translate(category.name)}
+                      </span>
+                      {hasChildren && (
+                        <ChevronLeft
+                          className={cn(
+                            "h-4 w-4 flex-shrink-0 text-gray-400",
+                            langDir === "rtl" ? "" : "rotate-180",
+                          )}
+                        />
+                      )}
+                    </div>
+                  );
+                });
+              })()}
             </div>
           </div>
+        </div>
 
-          {/* Desktop View - Multi-column layout */}
-          <div className="hidden md:flex h-full w-full relative">
-            {/* Column 1: Main Categories (Left Sidebar) */}
-            {categoriesWithSubcategoriesFiltered.length > 0 && (
-              <ScrollableMainColumn>
-                <div className="py-2">
-                  {categoriesWithSubcategoriesFiltered.map(
-                    ({ category }) => {
-                      const isMainActive = selectedLevels[0] === category.id;
+        {/* ============ DESKTOP VIEW — MEGA MENU ============ */}
+        <div className="relative hidden h-full w-full md:flex">
+          {/* LEFT SIDEBAR — Main Categories (narrow, dark-themed) */}
+          {categoriesWithSubcategoriesFiltered.length > 0 && (
+            <div
+              className="custom-scrollbar h-full w-[220px] flex-shrink-0 overflow-y-auto border-r border-gray-100 bg-gradient-to-b from-slate-50 to-white"
+              style={{
+                scrollbarWidth: "thin",
+                scrollbarColor: "transparent transparent",
+              }}
+            >
+              <div className="py-1.5">
+                {categoriesWithSubcategoriesFiltered.map(({ category }) => {
+                  const isMainActive = selectedLevels[0] === category.id;
+
+                  return (
+                    <div
+                      key={category.id}
+                      className={cn(
+                        "group relative mx-1.5 my-0.5 flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 transition-all duration-200",
+                        isMainActive
+                          ? "bg-blue-600 text-white shadow-sm shadow-blue-200"
+                          : "text-gray-700 hover:bg-slate-100",
+                      )}
+                      onClick={() => {
+                        handleMainCategoryClick(category.id);
+                      }}
+                    >
+                      {category.icon ? (
+                        <div className={cn(
+                          "flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-md transition-colors",
+                          isMainActive ? "bg-white/20" : "bg-white shadow-sm",
+                        )}>
+                          <img
+                            src={category.icon}
+                            alt={category.name}
+                            height={18}
+                            width={18}
+                            className={cn(
+                              "object-contain",
+                              isMainActive && "brightness-0 invert",
+                            )}
+                          />
+                        </div>
+                      ) : (
+                        <div className={cn(
+                          "flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-md",
+                          isMainActive ? "bg-white/20" : "bg-slate-200",
+                        )}>
+                          <div className={cn(
+                            "h-3.5 w-3.5 rounded-sm",
+                            isMainActive ? "bg-white/50" : "bg-slate-400",
+                          )} />
+                        </div>
+                      )}
+                      <span
+                        className={cn(
+                          "line-clamp-1 flex-1 text-left text-[13px] leading-tight",
+                          isMainActive
+                            ? "font-semibold"
+                            : "font-medium group-hover:text-gray-900",
+                        )}
+                      >
+                        {translate(category.name)}
+                      </span>
+                      {/* Active arrow indicator */}
+                      <svg
+                        className={cn(
+                          "h-3.5 w-3.5 flex-shrink-0 transition-all",
+                          isMainActive ? "text-white/70" : "text-gray-300 group-hover:text-gray-500",
+                        )}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5l7 7-7 7"
+                        />
+                      </svg>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* RIGHT PANEL — Subcategories Grid */}
+          <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+            {/* Breadcrumb Header */}
+            {(() => {
+              const trail = getBreadcrumbTrail();
+              if (trail.length === 0) return null;
+
+              return (
+                <div className="flex items-center gap-1.5 border-b border-gray-100 bg-gradient-to-r from-slate-50/80 to-transparent px-5 py-2.5">
+                  <span className="text-xs font-medium text-gray-400">{t("categories")}</span>
+                  {trail.map((crumb, idx) => (
+                    <React.Fragment key={crumb.id}>
+                      <svg className="h-3 w-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                      <button
+                        onClick={() => {
+                          if (crumb.level === 0) {
+                            handleMainCategoryClick(crumb.id);
+                          } else {
+                            // Reset levels below this one
+                            const newLevels = [...selectedLevels];
+                            for (let j = crumb.level + 1; j < 6; j++) {
+                              newLevels[j] = null;
+                            }
+                            setSelectedLevels(newLevels);
+                          }
+                        }}
+                        className={cn(
+                          "text-xs font-medium transition-colors",
+                          idx === trail.length - 1
+                            ? "text-blue-600"
+                            : "text-gray-500 hover:text-blue-600",
+                        )}
+                      >
+                        {translate(crumb.name)}
+                      </button>
+                    </React.Fragment>
+                  ))}
+                </div>
+              );
+            })()}
+
+            {/* Subcategories Grid Content */}
+            <div className="custom-scrollbar flex-1 overflow-y-auto px-5 py-4"
+              style={{
+                scrollbarWidth: "thin",
+                scrollbarColor: "transparent transparent",
+              }}
+            >
+              {(() => {
+                const { categories: gridCategories, level: gridLevel } = getActiveGridCategories();
+
+                if (gridCategories.length === 0) {
+                  return (
+                    <div className="flex h-full items-center justify-center">
+                      <p className="text-sm text-gray-400">{t("categories")}</p>
+                    </div>
+                  );
+                }
+
+                return (
+                  <div className="grid grid-cols-3 gap-2 lg:grid-cols-4 xl:grid-cols-5">
+                    {gridCategories.map((item: any) => {
+                      const hasChildren =
+                        (item.children &&
+                          Array.isArray(item.children) &&
+                          item.children.length > 0) ||
+                        item.hasChildren ||
+                        (item._originalChildren &&
+                          Array.isArray(item._originalChildren) &&
+                          item._originalChildren.length > 0);
+
+                      const isSelected = selectedLevels[gridLevel + 1] === item.id;
 
                       return (
                         <div
-                          key={category.id}
+                          key={item.id}
                           className={cn(
-                            "flex cursor-pointer items-center gap-x-3 px-4 py-3 transition-colors",
-                            {
-                              "bg-white border-r-2 border-blue-600": isMainActive,
-                              "hover:bg-gray-100": !isMainActive,
-                            },
+                            "group relative flex cursor-pointer items-center gap-2.5 rounded-xl border px-3 py-2.5 transition-all duration-200",
+                            isSelected
+                              ? "border-blue-200 bg-blue-50 shadow-sm shadow-blue-100"
+                              : "border-gray-100 bg-white hover:border-blue-100 hover:bg-blue-50/50 hover:shadow-sm",
                           )}
-                          onMouseEnter={() => {
-                            handleMainCategoryHover(category.id);
+                          onClick={() => {
+                            if (hasChildren) {
+                              handleCategoryHover(item.id, gridLevel + 1, item);
+                            } else {
+                              handleCategoryClick(item.id);
+                            }
                           }}
                         >
-                          {category.icon ? (
-                            <img
-                              src={category.icon}
-                              alt={category.name}
-                              height={20}
-                              width={20}
-                              className="object-contain flex-shrink-0"
-                            />
+                          {item.icon ? (
+                            <div className={cn(
+                              "flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg transition-colors",
+                              isSelected ? "bg-blue-100" : "bg-slate-100 group-hover:bg-blue-100",
+                            )}>
+                              <img
+                                src={item.icon}
+                                alt={item.name}
+                                height={18}
+                                width={18}
+                                className="object-contain"
+                              />
+                            </div>
                           ) : (
-                            <div className="h-5 w-5 flex-shrink-0 rounded bg-gray-200" />
+                            <div className={cn(
+                              "flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg transition-colors",
+                              isSelected ? "bg-blue-100" : "bg-slate-100 group-hover:bg-blue-100",
+                            )}>
+                              <div className="h-3.5 w-3.5 rounded-sm bg-slate-300" />
+                            </div>
                           )}
-                          <span
-                            className={cn(
-                              "text-sm flex-1 text-left",
-                              isMainActive
-                                ? "text-gray-900 font-medium"
-                                : "text-gray-700",
-                            )}
-                          >
-                            {translate(category.name)}
+                          <span className={cn(
+                            "line-clamp-2 flex-1 text-left text-[13px] leading-tight",
+                            isSelected
+                              ? "font-semibold text-blue-700"
+                              : "font-medium text-gray-700 group-hover:text-gray-900",
+                          )}>
+                            {translate(item.name)}
                           </span>
+                          {hasChildren && (
+                            <svg
+                              className={cn(
+                                "h-3.5 w-3.5 flex-shrink-0 transition-colors",
+                                isSelected ? "text-blue-400" : "text-gray-300 group-hover:text-blue-400",
+                              )}
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M9 5l7 7-7 7"
+                              />
+                            </svg>
+                          )}
                         </div>
                       );
-                    },
-                  )}
-                </div>
-              </ScrollableMainColumn>
-            )}
-
-            {/* Columns 2-6: Subcategories (Dynamic Columns) */}
-            <ScrollableHorizontalContainer>
-              {selectedLevels[0] && renderCategoryColumn(0, getColumnTitle(0))}
-              {selectedLevels[1] && renderCategoryColumn(1, getColumnTitle(1))}
-              {selectedLevels[2] && renderCategoryColumn(2, getColumnTitle(2))}
-              {selectedLevels[3] && renderCategoryColumn(3, getColumnTitle(3))}
-              {selectedLevels[4] && renderCategoryColumn(4, getColumnTitle(4))}
-              {selectedLevels[5] && renderCategoryColumn(5, getColumnTitle(5))}
-            </ScrollableHorizontalContainer>
+                    })}
+                  </div>
+                );
+              })()}
+            </div>
           </div>
         </div>
       </div>

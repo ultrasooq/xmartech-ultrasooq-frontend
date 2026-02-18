@@ -30,6 +30,7 @@ import {
   StoreIcon,
   ShoppingBagIcon,
   FileSearchIcon,
+  LayoutDashboard,
   UserCheckIcon,
   WalletIcon,
 } from "lucide-react";
@@ -101,6 +102,7 @@ const Sidebar: React.FC<SidebarProps> = ({ notificationCount }) => {
     // Map translation keys to their short versions (if they exist in translations)
     // Otherwise, we'll truncate the full label
     const shortLabelKeyMap: Record<string, string> = {
+      dashboard: "dashboard",
       rfq_requests: "rfq",
       rfq_quotes: "rfq",
       cart: "cart",
@@ -199,6 +201,16 @@ const Sidebar: React.FC<SidebarProps> = ({ notificationCount }) => {
     if (currentTradeRole === "FREELANCER") {
       baseItems.push(
         {
+          icon: <LayoutDashboard className="h-5 w-5 text-slate-600" />,
+          label: t("dashboard"),
+          translationKey: "dashboard",
+          shortLabel: getShortLabel("dashboard"),
+          path: "/vendor-dashboard",
+          onClick: () => {
+            router.push("/vendor-dashboard");
+          },
+        },
+        {
           icon: <PackageIcon className="h-5 w-5 text-blue-600" />,
           label: t("my_products"),
           translationKey: "my_products",
@@ -274,6 +286,16 @@ const Sidebar: React.FC<SidebarProps> = ({ notificationCount }) => {
     // COMPANY specific items
     if (currentTradeRole === "COMPANY") {
       baseItems.push(
+        {
+          icon: <LayoutDashboard className="h-5 w-5 text-slate-600" />,
+          label: t("dashboard"),
+          translationKey: "dashboard",
+          shortLabel: getShortLabel("dashboard"),
+          path: "/vendor-dashboard",
+          onClick: () => {
+            router.push("/vendor-dashboard");
+          },
+        },
         {
           icon: <PackageIcon className="h-5 w-5 text-blue-600" />,
           label: t("my_products"),

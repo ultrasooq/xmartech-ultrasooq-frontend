@@ -29,6 +29,7 @@ export default function EmailChangeVerifyPage() {
   const [otp, setOtp] = useState(new Array(4).fill(""));
   const [count, setCount] = useState(120);
   const refs = useRef<HTMLInputElement[]>([]);
+  const isAutoSubmitting = useRef(false);
   const form = useForm({
     defaultValues: {
       email: "",
@@ -174,6 +175,30 @@ export default function EmailChangeVerifyPage() {
     }
   };
 
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData("text");
+    // Extract only digits and take first 4 characters
+    const digits = pastedData.replace(/\D/g, "").slice(0, 4);
+    
+    if (digits.length === 0) {
+      return;
+    }
+
+    const newOtp = [...otp];
+    // Fill the OTP fields with pasted digits
+    for (let i = 0; i < 4; i++) {
+      newOtp[i] = digits[i] || "";
+    }
+    setOtp(newOtp);
+
+    // Focus the next empty field or the last field if all are filled
+    const nextIndex = Math.min(digits.length, 3);
+    if (refs.current[nextIndex]) {
+      refs.current[nextIndex].focus();
+    }
+  };
+
   useEffect(() => {
     if (window) {
       const storedEmail = sessionStorage.getItem("email");
@@ -191,6 +216,22 @@ export default function EmailChangeVerifyPage() {
 
     return () => clearInterval(countDown);
   }, [count, startTimer]);
+
+  // Auto-submit when all 4 OTP fields are filled
+  useEffect(() => {
+    const combinedOtp = otp.join("");
+    if (
+      combinedOtp.length === 4 &&
+      !isAutoSubmitting.current &&
+      !changeEmailVerify.isPending
+    ) {
+      isAutoSubmitting.current = true;
+      const formData = form.getValues();
+      onSubmit(formData).finally(() => {
+        isAutoSubmitting.current = false;
+      });
+    }
+  }, [otp]);
 
   return (
     <section className="relative w-full py-7">
@@ -231,6 +272,7 @@ export default function EmailChangeVerifyPage() {
                           onChange={(e) => handleChange(e, index)}
                           onClick={() => handleClick(index)}
                           onKeyDown={(e) => handleKeyDown(e, index)}
+                          onPaste={handlePaste}
                           className="h-16 w-16! rounded-lg border-gray-300 text-center text-2xl focus-visible:ring-0!"
                           autoFocus={index === 0}
                           key={index}
